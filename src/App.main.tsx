@@ -1,0 +1,185 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Public pages
+import HomePage from './App';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+
+// Shop pages (public)
+import BeatsShop from './pages/shop/BeatsPage';
+
+// Customer pages (protected - user role)
+import CustomerDashboard from './pages/customer/DashboardPage';
+import CustomerOrders from './pages/customer/OrdersPage';
+import CustomerDownloads from './pages/customer/DownloadsPage';
+import CustomerProfile from './pages/customer/ProfilePage';
+import CustomerShop from './pages/customer/ShopPage';
+
+// Artist pages (protected - artist role)
+import ArtistDashboard from './pages/artist/DashboardPage';
+import ArtistCollaborations from './pages/artist/CollaborationsPage';
+import ArtistShop from './pages/artist/ShopPage';
+import ArtistOrders from './pages/artist/OrdersPage';
+import ArtistProfile from './pages/artist/ProfilePage';
+
+// Admin pages (protected - admin role)
+import AdminDashboard from './pages/admin/DashboardPage';
+import AdminBeats from './pages/admin/BeatsPage';
+import AdminOrders from './pages/admin/OrdersPage';
+import AdminCollaborations from './pages/admin/CollaborationsPage';
+import AdminSettings from './pages/admin/SettingsPage';
+
+const MainApp: React.FC = () => {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* Shop Routes (public) */}
+          <Route path="/shop/beats" element={<BeatsShop />} />
+
+          {/* Customer Routes (protected - user role only) */}
+          <Route
+            path="/customer/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/shop"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerShop />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/orders"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/downloads"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerDownloads />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/profile"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerProfile />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Artist Routes (protected - artist role only) */}
+          <Route
+            path="/artist/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['artist']}>
+                <ArtistDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artist/collaborations"
+            element={
+              <ProtectedRoute allowedRoles={['artist']}>
+                <ArtistCollaborations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artist/beats"
+            element={
+              <ProtectedRoute allowedRoles={['artist']}>
+                <ArtistShop />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artist/orders"
+            element={
+              <ProtectedRoute allowedRoles={['artist']}>
+                <ArtistOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artist/profile"
+            element={
+              <ProtectedRoute allowedRoles={['artist']}>
+                <ArtistProfile />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Routes (protected - admin role only) */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/beats"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminBeats />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/collaborations"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminCollaborations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminSettings />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Redirect /admin to dashboard */}
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+
+          {/* 404 */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+};
+
+export default MainApp;
