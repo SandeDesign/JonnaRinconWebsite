@@ -12,6 +12,8 @@ import {
   Menu,
   X,
   Settings,
+  Handshake,
+  UserPlus,
 } from 'lucide-react';
 
 interface CustomerLayoutProps {
@@ -34,6 +36,8 @@ const CustomerLayout: React.FC<CustomerLayoutProps> = ({ children }) => {
     { name: 'Shop Beats', href: '/customer/shop', icon: Music },
     { name: 'My Orders', href: '/customer/orders', icon: ShoppingCart },
     { name: 'Downloads', href: '/customer/downloads', icon: Download },
+    { name: 'Collaborations', href: '/customer/collaborations', icon: Handshake },
+    { name: 'Become Artist', href: '/customer/request-artist-role', icon: UserPlus },
     { name: 'Chat', href: '/customer/chat', icon: MessageSquare },
     { name: 'Profile', href: '/customer/profile', icon: User },
     { name: 'Settings', href: '/customer/settings', icon: Settings },
