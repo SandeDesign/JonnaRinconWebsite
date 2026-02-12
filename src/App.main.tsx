@@ -17,6 +17,7 @@ import CustomerOrders from './pages/customer/OrdersPage';
 import CustomerDownloads from './pages/customer/DownloadsPage';
 import CustomerProfile from './pages/customer/ProfilePage';
 import CustomerShop from './pages/customer/ShopPage';
+import CustomerChat from './pages/customer/ChatPage';
 
 // Artist pages (protected - artist role)
 import ArtistDashboard from './pages/artist/DashboardPage';
@@ -33,6 +34,7 @@ import AdminContent from './pages/admin/ContentPage';
 import AdminAnalytics from './pages/admin/AnalyticsPage';
 import AdminCollaborations from './pages/admin/CollaborationsPage';
 import AdminSettings from './pages/admin/SettingsPage';
+import AdminChat from './pages/admin/ChatPage';
 
 // Manager pages (protected - manager role)
 import ManagerDashboard from './pages/manager/DashboardPage';
@@ -90,6 +92,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['user']}>
                 <CustomerProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/chat"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerChat />
               </ProtectedRoute>
             }
           />
@@ -190,6 +200,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminSettings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/chat"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminChat />
               </ProtectedRoute>
             }
           />
