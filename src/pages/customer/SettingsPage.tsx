@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import CustomerLayout from '../../components/customer/CustomerLayout';
 import { useAuth } from '../../contexts/AuthContext';
-import { User, Save } from 'lucide-react';
-import { updateProfile } from 'firebase/auth';
+import { User, Save, Lock } from 'lucide-react';
+import { updateProfile, updatePassword } from 'firebase/auth';
 
 const CustomerSettings: React.FC = () => {
   const { user } = useAuth();
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Password change state
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +39,44 @@ const CustomerSettings: React.FC = () => {
       setMessage({ type: 'error', text: '❌ Failed to update username. Please try again.' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    // Validation
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: 'error', text: '❌ Password must be at least 6 characters long.' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: 'error', text: '❌ Passwords do not match.' });
+      return;
+    }
+
+    setPasswordLoading(true);
+    setPasswordMessage(null);
+
+    try {
+      await updatePassword(user, newPassword);
+      setPasswordMessage({ type: 'success', text: '✅ Password updated successfully!' });
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      console.error('Failed to update password:', error);
+      if (error.code === 'auth/requires-recent-login') {
+        setPasswordMessage({
+          type: 'error',
+          text: '❌ For security reasons, please sign out and sign in again before changing your password.'
+        });
+      } else {
+        setPasswordMessage({ type: 'error', text: '❌ Failed to update password. Please try again.' });
+      }
+    } finally {
+      setPasswordLoading(false);
     }
   };
 
@@ -119,6 +163,74 @@ const CustomerSettings: React.FC = () => {
                 <>
                   <Save size={20} />
                   Save Changes
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Password Change Section */}
+        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <Lock size={20} />
+            Change Password
+          </h2>
+          <form onSubmit={handlePasswordChange} className="space-y-4">
+            {/* New Password */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                New Password <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="password"
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password (min. 6 characters)"
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Confirm Password <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+              />
+            </div>
+
+            {/* Password Message */}
+            {passwordMessage && (
+              <div
+                className={`p-4 rounded-lg ${
+                  passwordMessage.type === 'success'
+                    ? 'bg-green-900/30 border border-green-700 text-green-300'
+                    : 'bg-red-900/30 border border-red-700 text-red-300'
+                }`}
+              >
+                {passwordMessage.text}
+              </div>
+            )}
+
+            {/* Change Password Button */}
+            <button
+              type="submit"
+              disabled={passwordLoading || !newPassword || !confirmPassword}
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 px-6 py-3 rounded-lg text-white font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {passwordLoading ? (
+                <>Changing Password...</>
+              ) : (
+                <>
+                  <Lock size={20} />
+                  Change Password
                 </>
               )}
             </button>

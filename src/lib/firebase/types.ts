@@ -57,6 +57,8 @@ export type ManagerPermission =
 
 export type LicenseType = 'basic' | 'premium' | 'exclusive';
 
+export type BeatType = 'free' | 'basic' | 'premium' | 'exclusive';
+
 export interface LicenseDetails {
   type: LicenseType;
   price: number;
@@ -92,6 +94,7 @@ export interface Beat {
 
   // Status
   status: 'draft' | 'published' | 'archived' | 'sold';
+  beatType?: BeatType; // Optional beat classification (free, basic, premium, exclusive)
   featured: boolean;
   trending: boolean;
 
