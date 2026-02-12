@@ -16,15 +16,18 @@ import CustomerDashboard from './pages/customer/DashboardPage';
 import CustomerOrders from './pages/customer/OrdersPage';
 import CustomerDownloads from './pages/customer/DownloadsPage';
 import CustomerProfile from './pages/customer/ProfilePage';
+import CustomerSettings from './pages/customer/SettingsPage';
 import CustomerShop from './pages/customer/ShopPage';
 import CustomerChat from './pages/customer/ChatPage';
 
 // Artist pages (protected - artist role)
 import ArtistDashboard from './pages/artist/DashboardPage';
 import ArtistCollaborations from './pages/artist/CollaborationsPage';
+import ArtistRequestCollab from './pages/artist/RequestCollabPage';
 import ArtistShop from './pages/artist/ShopPage';
 import ArtistOrders from './pages/artist/OrdersPage';
 import ArtistProfile from './pages/artist/ProfilePage';
+import ArtistSettings from './pages/artist/SettingsPage';
 
 // Admin pages (protected - admin role)
 import AdminDashboard from './pages/admin/DashboardPage';
@@ -33,6 +36,7 @@ import AdminOrders from './pages/admin/OrdersPage';
 import AdminContent from './pages/admin/ContentPage';
 import AdminAnalytics from './pages/admin/AnalyticsPage';
 import AdminCollaborations from './pages/admin/CollaborationsPage';
+import AdminCollabRequests from './pages/admin/CollabRequestsPage';
 import AdminSettings from './pages/admin/SettingsPage';
 import AdminChat from './pages/admin/ChatPage';
 
@@ -103,6 +107,14 @@ const MainApp: React.FC = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/customer/settings"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerSettings />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Artist Routes (protected - artist role only) */}
           <Route
@@ -118,6 +130,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['artist']}>
                 <ArtistCollaborations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artist/request-collab"
+            element={
+              <ProtectedRoute allowedRoles={['artist']}>
+                <ArtistRequestCollab />
               </ProtectedRoute>
             }
           />
@@ -142,6 +162,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['artist']}>
                 <ArtistProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artist/settings"
+            element={
+              <ProtectedRoute allowedRoles={['artist']}>
+                <ArtistSettings />
               </ProtectedRoute>
             }
           />
@@ -192,6 +220,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminCollaborations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/collab-requests"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminCollabRequests />
               </ProtectedRoute>
             }
           />
