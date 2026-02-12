@@ -8,6 +8,7 @@ import {
   LogOut,
   Menu,
   X,
+  Handshake,
 } from 'lucide-react';
 
 interface ManagerLayoutProps {
@@ -28,6 +29,7 @@ const ManagerLayout: React.FC<ManagerLayoutProps> = ({ children }) => {
   const navigation = [
     { name: 'Dashboard', href: '/manager/dashboard', icon: LayoutDashboard },
     { name: 'Beats', href: '/manager/beats', icon: Music },
+    { name: 'Collaborations', href: '/manager/collaborations', icon: Handshake },
     { name: 'Chat', href: '/manager/chat', icon: MessageSquare },
   ];
 
