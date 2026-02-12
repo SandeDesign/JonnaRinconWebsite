@@ -24,49 +24,54 @@ const CustomerChat: React.FC = () => {
   useEffect(() => {
     if (!user) return;
 
-    // Load messages for this customer
     const messagesRef = collection(db, 'supportMessages');
-    const q = query(
+    const allMessages = new Map<string, ChatMessage>();
+
+    // Listener 1: messages SENT by customer
+    const qSent = query(
       messagesRef,
       where('senderId', '==', user.uid),
       orderBy('createdAt', 'asc')
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs: ChatMessage[] = [];
+    const unsubscribeSent = onSnapshot(qSent, (snapshot) => {
       snapshot.forEach((doc) => {
-        msgs.push({ id: doc.id, ...doc.data() } as ChatMessage);
+        allMessages.set(doc.id, { id: doc.id, ...doc.data() } as ChatMessage);
       });
-      setMessages(msgs);
+
+      // Update state with merged messages
+      const merged = Array.from(allMessages.values()).sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return aTime - bTime;
+      });
+      setMessages(merged);
     });
 
-    // Also load messages sent TO this customer
-    const qIncoming = query(
+    // Listener 2: messages RECEIVED by customer
+    const qReceived = query(
       messagesRef,
       where('recipientId', '==', user.uid),
       orderBy('createdAt', 'asc')
     );
 
-    const unsubscribeIncoming = onSnapshot(qIncoming, (snapshot) => {
+    const unsubscribeReceived = onSnapshot(qReceived, (snapshot) => {
       snapshot.forEach((doc) => {
-        const msg = { id: doc.id, ...doc.data() } as ChatMessage;
-        // Add if not already in messages
-        if (!msgs.find(m => m.id === doc.id)) {
-          msgs.push(msg);
-        }
+        allMessages.set(doc.id, { id: doc.id, ...doc.data() } as ChatMessage);
       });
-      // Sort by createdAt
-      msgs.sort((a, b) => {
+
+      // Update state with merged messages
+      const merged = Array.from(allMessages.values()).sort((a, b) => {
         const aTime = a.createdAt?.toMillis?.() || 0;
         const bTime = b.createdAt?.toMillis?.() || 0;
         return aTime - bTime;
       });
-      setMessages([...msgs]);
+      setMessages(merged);
     });
 
     return () => {
-      unsubscribe();
-      unsubscribeIncoming();
+      unsubscribeSent();
+      unsubscribeReceived();
     };
   }, [user]);
 
