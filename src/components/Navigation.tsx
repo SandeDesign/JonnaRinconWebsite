@@ -477,10 +477,10 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
                           </>
                         ) : (
                           <>
-                            <Link to="/register" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-purple-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
-                              Sign Up
+                            <Link to="/login" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-purple-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
+                              Sign In
                             </Link>
-                            
+
                             {/* A2: Don't have an account tekst */}
                             <div className="mt-4">
                               <p className="text-gray-400 text-base">
@@ -560,10 +560,10 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
                         </>
                       ) : (
                         <>
-                          <Link to="/register" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-purple-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
-                            Sign Up
+                          <Link to="/login" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-purple-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
+                            Sign In
                           </Link>
-                          
+
                           {/* A2: Don't have an account tekst - mobile */}
                           <div className="mt-2">
                             <p className="text-gray-400 text-sm">
