@@ -29,6 +29,8 @@ import ArtistProfile from './pages/artist/ProfilePage';
 import AdminDashboard from './pages/admin/DashboardPage';
 import AdminBeats from './pages/admin/BeatsPage';
 import AdminOrders from './pages/admin/OrdersPage';
+import AdminContent from './pages/admin/ContentPage';
+import AdminAnalytics from './pages/admin/AnalyticsPage';
 import AdminCollaborations from './pages/admin/CollaborationsPage';
 import AdminSettings from './pages/admin/SettingsPage';
 
@@ -151,6 +153,22 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/content"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminContent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/analytics"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminAnalytics />
               </ProtectedRoute>
             }
           />
