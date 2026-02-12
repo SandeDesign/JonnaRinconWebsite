@@ -103,6 +103,9 @@ const BeatsPage: React.FC = () => {
                     Status
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                    Type
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
                     Plays
                   </th>
                   <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">
@@ -113,13 +116,13 @@ const BeatsPage: React.FC = () => {
               <tbody className="divide-y divide-gray-700">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
                       Loading beats...
                     </td>
                   </tr>
                 ) : beats.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
                       No beats yet. Create your first beat!
                     </td>
                   </tr>
@@ -158,6 +161,21 @@ const BeatsPage: React.FC = () => {
                           }`}
                         >
                           {beat.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2 py-1 rounded text-sm capitalize ${
+                            beat.beatType === 'free'
+                              ? 'bg-green-500/20 text-green-400'
+                              : beat.beatType === 'exclusive'
+                              ? 'bg-orange-500/20 text-orange-400'
+                              : beat.beatType === 'premium'
+                              ? 'bg-purple-500/20 text-purple-400'
+                              : 'bg-blue-500/20 text-blue-400'
+                          }`}
+                        >
+                          {beat.beatType || 'basic'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-gray-300">{beat.plays}</td>
@@ -228,6 +246,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
     artworkUrl: beat?.artworkUrl || '',
     slug: beat?.slug || '',
     status: beat?.status || 'draft',
+    beatType: beat?.beatType || 'basic',
     featured: beat?.featured || false,
     basicPrice: beat?.licenses?.basic?.price || 29,
     premiumPrice: beat?.licenses?.premium?.price || 49,
@@ -281,6 +300,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
         artworkUrl: formData.artworkUrl,
         slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, '-'),
         status: formData.status,
+        beatType: formData.beatType,
         featured: formData.featured,
         trending: false,
         licenses: {
@@ -407,6 +427,25 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
                 <option value="published">Published</option>
                 <option value="archived">Archived</option>
               </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Beat Type</label>
+              <select
+                value={formData.beatType}
+                onChange={(e) => setFormData({ ...formData, beatType: e.target.value as any })}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+              >
+                <option value="free">Free</option>
+                <option value="basic">Basic</option>
+                <option value="premium">Premium</option>
+                <option value="exclusive">Exclusive</option>
+              </select>
+              <p className="text-xs text-gray-400 mt-1">
+                Classify this beat (free beats have no cost, basic/premium/exclusive are paid tiers)
+              </p>
             </div>
           </div>
 
