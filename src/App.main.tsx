@@ -15,6 +15,7 @@ import BeatsShop from './pages/shop/BeatsPage';
 import CustomerDashboard from './pages/customer/DashboardPage';
 import CustomerOrders from './pages/customer/OrdersPage';
 import CustomerDownloads from './pages/customer/DownloadsPage';
+import CustomerFreeDownloads from './pages/customer/FreeDownloadsPage';
 import CustomerProfile from './pages/customer/ProfilePage';
 import CustomerSettings from './pages/customer/SettingsPage';
 import CustomerCollaborations from './pages/customer/CollaborationsPage';
@@ -28,6 +29,7 @@ import ArtistCollaborations from './pages/artist/CollaborationsPage';
 import ArtistRequestCollab from './pages/artist/RequestCollabPage';
 import ArtistShop from './pages/artist/ShopPage';
 import ArtistOrders from './pages/artist/OrdersPage';
+import ArtistFreeDownloads from './pages/artist/FreeDownloadsPage';
 import ArtistChat from './pages/artist/ChatPage';
 import ArtistProfile from './pages/artist/ProfilePage';
 import ArtistSettings from './pages/artist/SettingsPage';
@@ -93,6 +95,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['user']}>
                 <CustomerDownloads />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/free-downloads"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerFreeDownloads />
               </ProtectedRoute>
             }
           />
@@ -175,6 +185,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['artist']}>
                 <ArtistOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artist/free-downloads"
+            element={
+              <ProtectedRoute allowedRoles={['artist']}>
+                <ArtistFreeDownloads />
               </ProtectedRoute>
             }
           />
