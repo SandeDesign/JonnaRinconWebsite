@@ -8,7 +8,7 @@ import {
 
 // Upload-Post API configuration
 const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlY2huaWVrQGpvbm5hcmluY29uLm5sIiwiZXhwIjo0OTI0NDk3Nzc0LCJqdGkiOiIwZjY2YjZmNS01OTg2LTRmMzYtYTVlMy01Yzc4MTFhYjJiOGUifQ.o_SjqVg7uIvu5TL9hsjkPD6_Io5CODTMi9XY7kM-f-0';
-const API_BASE = 'https://api.upload-post.com/api';
+const API_BASE = '/api/upload-post';
 const PROFILE_USER = 'jonnarincon';
 
 // Types
@@ -74,7 +74,7 @@ const ContentPage: React.FC = () => {
       setRefreshing(true);
 
       // Fetch scheduled posts
-      const scheduledRes = await apiCall('/scheduled').catch(() => ({ scheduled: [] }));
+      const scheduledRes = await apiCall('/uploadposts/schedule').catch(() => ({ scheduled: [] }));
       const scheduled: ScheduledPost[] = (scheduledRes.scheduled || scheduledRes.data || []).map((item: any) => ({
         id: item.id || item.job_id || item._id || String(Math.random()),
         jobId: item.job_id || item.id || item._id,
@@ -89,7 +89,7 @@ const ContentPage: React.FC = () => {
       setScheduledPosts(scheduled);
 
       // Fetch upload history
-      const historyRes = await apiCall('/history?limit=50').catch(() => ({ uploads: [] }));
+      const historyRes = await apiCall('/uploadposts/history?limit=50').catch(() => ({ uploads: [] }));
       const history: HistoryPost[] = (historyRes.uploads || historyRes.data || []).map((item: any) => ({
         id: item.id || item.request_id || item._id || String(Math.random()),
         title: item.title || item.caption || 'Untitled',
@@ -165,7 +165,7 @@ const ContentPage: React.FC = () => {
   const handleCancelScheduled = async (jobId: string) => {
     if (!confirm('Cancel this scheduled post?')) return;
     try {
-      await apiCall(`/scheduled/${jobId}`, { method: 'DELETE' });
+      await apiCall(`/uploadposts/schedule/${jobId}`, { method: 'DELETE' });
       await fetchData();
     } catch (error: any) {
       alert('Failed to cancel: ' + error.message);
@@ -578,51 +578,53 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ onClose, onSave, pres
       const formData = new FormData();
       formData.append('user', PROFILE_USER);
       formData.append('title', title);
-      formData.append('platforms', JSON.stringify(platforms));
+      platforms.forEach(p => formData.append('platform[]', p));
 
       if (description) formData.append('description', description);
 
       // Scheduling
       if (isScheduled && scheduledDate) {
         const isoDate = new Date(scheduledDate).toISOString();
-        formData.append('scheduledDate', isoDate);
+        formData.append('scheduled_date', isoDate);
         formData.append('timezone', Intl.DateTimeFormat().resolvedOptions().timeZone);
       }
 
       // Instagram options
       if (platforms.includes('instagram')) {
         if (postType === 'video') {
-          formData.append('instagramMediaType', igMediaType === 'IMAGE' ? 'REELS' : igMediaType);
+          formData.append('media_type', igMediaType === 'IMAGE' ? 'REELS' : igMediaType);
         } else if (postType === 'photo') {
-          formData.append('instagramMediaType', igMediaType === 'REELS' ? 'IMAGE' : igMediaType);
+          formData.append('media_type', igMediaType === 'REELS' ? 'IMAGE' : igMediaType);
         }
       }
 
       // YouTube options
       if (platforms.includes('youtube')) {
-        formData.append('youtubePrivacyStatus', ytPrivacy);
-        if (ytTags) formData.append('youtubeTags', ytTags);
-        formData.append('youtubeCategoryId', ytCategoryId);
-        if (description) formData.append('youtubeDescription', description);
+        formData.append('privacyStatus', ytPrivacy);
+        if (ytTags) {
+          ytTags.split(',').map(t => t.trim()).filter(Boolean).forEach(tag => formData.append('tags[]', tag));
+        }
+        formData.append('categoryId', ytCategoryId);
+        if (description) formData.append('youtube_description', description);
       }
 
       let endpoint = '/upload';
       if (postType === 'photo') {
-        endpoint = '/upload/photos';
+        endpoint = '/upload_photos';
         if (mediaFile) {
-          formData.append('files', mediaFile);
+          formData.append('photos[]', mediaFile);
         } else if (mediaUrl) {
-          formData.append('urls', JSON.stringify([mediaUrl]));
+          formData.append('photos[]', mediaUrl);
         }
       } else if (postType === 'video') {
         endpoint = '/upload';
         if (mediaFile) {
-          formData.append('file', mediaFile);
+          formData.append('video', mediaFile);
         } else if (mediaUrl) {
-          formData.append('url', mediaUrl);
+          formData.append('video', mediaUrl);
         }
       } else {
-        endpoint = '/upload/text';
+        endpoint = '/upload_text';
       }
 
       setUploadStatus('Uploading to platforms...');
