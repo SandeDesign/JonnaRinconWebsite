@@ -11,5 +11,12 @@ export default defineConfig({
     fs: {
       strict: false,
     },
+    proxy: {
+      '/api/upload-post': {
+        target: 'https://api.upload-post.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/upload-post/, '/api'),
+      },
+    },
   },
 });
