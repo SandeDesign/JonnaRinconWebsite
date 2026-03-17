@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Firebase imports
@@ -38,6 +38,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [currentPage, setCurrentPage] = useState(0);
   
   // FIREBASE REAL-TIME LISTENER
@@ -61,6 +62,8 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
           return {
             id: doc.id,
             ...data,
+            audio_url: data.audioUrl || data.audio_url || '',
+            artwork_url: data.artworkUrl || data.artwork_url || '',
             price: data.licenses?.basic?.price || data.price || 29,
             created_at: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
             updated_at: data.updatedAt?.toDate().toISOString() || new Date().toISOString(),
@@ -91,6 +94,23 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
   useEffect(() => {
     setCurrentPage(0);
   }, [viewMode]);
+
+  // Audio afspelen/pauzeren bij playingId wijziging
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (playingId) {
+      const beat = beats.find(b => b.id === playingId);
+      if (beat?.audio_url) {
+        if (audioRef.current.src !== beat.audio_url) {
+          audioRef.current.src = beat.audio_url;
+        }
+        audioRef.current.play().catch(() => {});
+      }
+    } else {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+    }
+  }, [playingId, beats]);
 
   const filterBeats = () => {
     let filtered = [...beats];
@@ -444,6 +464,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
           </div>
         )}
       </div>
+      <audio ref={audioRef} onEnded={() => setPlayingId(null)} />
     </section>
   );
 }
