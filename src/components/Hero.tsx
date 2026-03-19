@@ -1,8 +1,59 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
+
+const TARGET_TEXT = 'JONNA RINCON';
+const GLYPHS = '!@#$%^&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function useCyberDecode(text: string, startDelay = 300) {
+  const [display, setDisplay] = useState('');
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let lockedCount = 0;
+    let interval: ReturnType<typeof setInterval>;
+    let tickCount = 0;
+
+    const timeout = setTimeout(() => {
+      interval = setInterval(() => {
+        tickCount++;
+
+        // Lock next character every 3 ticks (~90ms at 30ms interval)
+        if (tickCount % 3 === 0 && lockedCount < text.length) {
+          lockedCount++;
+        }
+
+        // Build display string
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+          if (i < lockedCount) {
+            result += text[i];
+          } else if (text[i] === ' ') {
+            result += ' ';
+          } else {
+            result += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          }
+        }
+        setDisplay(result);
+
+        if (lockedCount >= text.length) {
+          clearInterval(interval);
+          setDone(true);
+        }
+      }, 30);
+    }, startDelay);
+
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [text, startDelay]);
+
+  return { display, done };
+}
 
 export default function Hero() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const gradientRef = useRef<HTMLDivElement>(null);
+  const { display, done } = useCyberDecode(TARGET_TEXT);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY;
@@ -63,17 +114,24 @@ export default function Hero() {
       </div>
 
       {/* Content — grote naam + buttons onderaan */}
-      <div className="relative z-10 w-full flex flex-col items-center pb-24 md:pb-32 px-6 animate-fade-in">
-        {/* JONNA RINCON — grote tekst zoals CATHARINA op Martin Garrix */}
+      <div className="relative z-10 w-full flex flex-col items-center pb-24 md:pb-32 px-6">
+        {/* JONNA RINCON — cyber decode animatie */}
         <h1
           className="text-white font-black uppercase leading-none tracking-tighter text-center select-none"
-          style={{ fontSize: 'clamp(3rem, 12vw, 12rem)' }}
+          style={{
+            fontSize: 'clamp(2.6rem, 10.2vw, 10.2rem)',
+            fontFamily: 'inherit',
+            minHeight: '1.1em',
+          }}
         >
-          JONNA RINCON
+          {display || '\u00A0'}
         </h1>
 
-        {/* Buttons — wit, clean, Martin Garrix stijl */}
-        <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8">
+        {/* Buttons — fade in nadat tekst klaar is */}
+        <div
+          className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8 transition-opacity duration-700"
+          style={{ opacity: done ? 1 : 0 }}
+        >
           <a
             href="#beats"
             className="px-8 py-3.5 bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 hover:scale-105 active:scale-95 text-center min-w-[180px]"
