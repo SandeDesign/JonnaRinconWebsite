@@ -113,7 +113,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
               <img
                 src="/Jonna Rincon Logo WH.png"
                 alt="Jonna Rincon"
-                className="h-10 w-auto"
+                className="h-20 w-auto"
               />
             </Link>
           </div>
@@ -125,7 +125,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
               <img
                 src="/Jonna Rincon Logo WH.png"
                 alt="Jonna Rincon"
-                className="h-8 w-auto"
+                className="h-14 w-auto"
               />
             </Link>
           </div>
@@ -187,7 +187,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
                 <img
                   src="/Jonna Rincon Logo WH.png"
                   alt="Jonna Rincon"
-                  className="h-8 w-auto"
+                  className="h-14 w-auto"
                 />
               </Link>
             </div>
@@ -244,7 +244,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
               <img
                 src="/Jonna Rincon Logo WH.png"
                 alt="Jonna Rincon"
-                className="h-6 w-auto"
+                className="h-10 w-auto"
               />
             </Link>
 
