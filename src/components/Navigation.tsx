@@ -102,7 +102,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-30">
-      <div className="w-full pl-4 pr-4 py-5">
+      <div className="w-full pl-4 pr-4 py-4 md:py-5">
         {/* DESKTOP Layout */}
         <div className="hidden md:flex items-center justify-between">
           {/* Logo animatie - midden → links */}
@@ -113,7 +113,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
               <img
                 src="/Jonna Rincon Logo WH.png"
                 alt="Jonna Rincon"
-                className="h-20 w-auto"
+                className="h-28 md:h-36 w-auto"
               />
             </Link>
           </div>
@@ -125,7 +125,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
               <img
                 src="/Jonna Rincon Logo WH.png"
                 alt="Jonna Rincon"
-                className="h-14 w-auto"
+                className="h-20 w-auto"
               />
             </Link>
           </div>
@@ -187,7 +187,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
                 <img
                   src="/Jonna Rincon Logo WH.png"
                   alt="Jonna Rincon"
-                  className="h-14 w-auto"
+                  className="h-20 w-auto"
                 />
               </Link>
             </div>
@@ -244,7 +244,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
               <img
                 src="/Jonna Rincon Logo WH.png"
                 alt="Jonna Rincon"
-                className="h-10 w-auto"
+                className="h-14 w-auto"
               />
             </Link>
 

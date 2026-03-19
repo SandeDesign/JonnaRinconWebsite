@@ -1,6 +1,8 @@
 import { Radio, Calendar, Clock } from 'lucide-react';
+import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 
 export default function LiveStudio() {
+  const studioTitle = useCyberDecodeInView('Live Studio');
   const isLive = false;
 
   return (
@@ -8,7 +10,7 @@ export default function LiveStudio() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-3 mb-4">
-          <h2 className="text-3xl md:text-6xl font-black uppercase tracking-wider">Live Studio</h2>
+          <h2 ref={studioTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black uppercase tracking-wider">{studioTitle.display}</h2>
           </div>
         </div>
 

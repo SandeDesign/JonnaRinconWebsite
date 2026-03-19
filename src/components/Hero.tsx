@@ -16,8 +16,8 @@ function useCyberDecode(text: string, startDelay = 300) {
       interval = setInterval(() => {
         tickCount++;
 
-        // Lock next character every 3 ticks (~90ms at 30ms interval)
-        if (tickCount % 3 === 0 && lockedCount < text.length) {
+        // Lock next character every 5 ticks (~150ms at 30ms interval) - slower decode
+        if (tickCount % 5 === 0 && lockedCount < text.length) {
           lockedCount++;
         }
 

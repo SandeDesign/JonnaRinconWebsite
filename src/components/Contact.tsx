@@ -1,7 +1,9 @@
 import { Mail, Instagram, Youtube, Cloud as CloudIcon, Music } from 'lucide-react';
 import { useState } from 'react';
+import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 
 export default function Contact() {
+  const contactTitle = useCyberDecodeInView('Get In Touch');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,7 +20,7 @@ export default function Contact() {
    <section id="contact" className="py-24 pb-32 px-4 bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">Get In Touch</h2>
+          <h2 ref={contactTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">{contactTitle.display}</h2>
           <p className="text-xl text-gray-400">Let's create something amazing together</p>
         </div>
 

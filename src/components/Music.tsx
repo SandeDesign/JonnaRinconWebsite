@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 
 export default function Music() {
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
+  const musicTitle = useCyberDecodeInView('Music');
+  const youtubeTitle = useCyberDecodeInView('YouTube');
 
   const spotifyPlaylists = [
     {
@@ -66,9 +69,9 @@ export default function Music() {
       <section id="music" className="py-12 md:py-24 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full scale-85 md:scale-100 origin-center">
           <div className="text-center mb-8 md:mb-16">
-            <h2 className="text-3xl md:text-6xl font-black uppercase tracking-wider">
+            <h2 ref={musicTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black uppercase tracking-wider">
               <span className="md:hidden">{spotifyPlaylists[currentPlaylist].name}</span>
-              <span className="hidden md:block">Music</span>
+              <span className="hidden md:block">{musicTitle.display}</span>
             </h2>
           </div>
 
@@ -168,10 +171,10 @@ export default function Music() {
       </section>
 
       {/* YOUTUBE */}
-      <section id="youtube" className="py-12 md:py-44 md:mt-96 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
+      <section id="youtube" className="py-12 md:py-20 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full scale-[0.70] md:scale-100 origin-center">
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">YouTube</h2>
+            <h2 ref={youtubeTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">{youtubeTitle.display}</h2>
             <p className="text-base md:text-xl text-gray-400">Watch my latest DJ sets and vlogs</p>
           </div>
 
