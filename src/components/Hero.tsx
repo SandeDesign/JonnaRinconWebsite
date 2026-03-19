@@ -1,4 +1,3 @@
-import { Music, Sparkles, Play } from 'lucide-react';
 import { useEffect, useRef, useCallback } from 'react';
 
 export default function Hero() {
@@ -40,22 +39,15 @@ export default function Hero() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
-  const scrollToNextSection = () => {
-    const aboutSection = document.getElementById('about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center -mt-24">
-      {/* Fullscreen Background Image - FIXED zodat het altijd zichtbaar blijft */}
-      <div className="fixed inset-0 w-full h-screen -z-10" style={{backgroundColor: '#c4beb4'}}>
+    <section className="relative w-full min-h-screen flex items-end justify-center -mt-24">
+      {/* Fullscreen Background Image - FIXED */}
+      <div className="fixed inset-0 w-full h-screen -z-10">
         <img
           src="/JEIGHTENESIS.jpg"
           alt="Jonna Rincon"
-          className="w-full h-full object-contain"
-          style={{objectFit: 'contain', objectPosition: 'center'}}
+          className="w-full h-full object-cover"
+          style={{objectPosition: 'center'}}
         />
         {/* Dynamische Overlay - wordt donkerder + blurred bij scrollen */}
         <div
@@ -65,34 +57,37 @@ export default function Hero() {
         ></div>
         <div
           ref={gradientRef}
-          className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40"
+          className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"
           style={{ opacity: 0 }}
         ></div>
       </div>
 
-      {/* Content Container - Buttons iets onder het midden */}
-      <div className="relative z-10 w-full min-h-screen flex items-center justify-center px-6 pt-24">
-        <div className="flex flex-col sm:flex-row gap-4 animate-fade-in">
-          {/* Browse Beats Button - Transparant met paarse omlijning */}
+      {/* Content — grote naam + buttons onderaan */}
+      <div className="relative z-10 w-full flex flex-col items-center pb-24 md:pb-32 px-6 animate-fade-in">
+        {/* JONNA RINCON — grote tekst zoals CATHARINA op Martin Garrix */}
+        <h1
+          className="text-white font-black uppercase leading-none tracking-tighter text-center select-none"
+          style={{ fontSize: 'clamp(3rem, 12vw, 12rem)' }}
+        >
+          JONNA RINCON
+        </h1>
+
+        {/* Buttons — wit, clean, Martin Garrix stijl */}
+        <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8">
           <a
             href="#beats"
-            className="group relative px-10 py-5 backdrop-blur-md bg-purple-900/20 border-2 border-purple-500/50 rounded-xl font-bold text-xl transition-all duration-300 hover:border-purple-400 hover:bg-purple-600/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-3 min-w-[220px]"
+            className="px-8 py-3.5 bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 hover:scale-105 active:scale-95 text-center min-w-[180px]"
           >
-            <Play className="w-6 h-6" fill="currentColor" />
-            <span>Browse Beats</span>
+            Browse Beats
           </a>
-
-          {/* Listen Now Button - Transparant met paarse omlijning */}
           <a
             href="#music"
-            className="group relative px-10 py-5 backdrop-blur-md bg-purple-900/20 border-2 border-purple-500/50 rounded-xl font-bold text-xl transition-all duration-300 hover:border-purple-400 hover:bg-purple-600/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-3 min-w-[220px]"
+            className="px-8 py-3.5 bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 hover:scale-105 active:scale-95 text-center min-w-[180px]"
           >
-            <span>Listen Now</span>
+            Listen Now
           </a>
         </div>
       </div>
-
-      {/* Scroll Indicator - VERWIJDERD */}
     </section>
   );
 }
