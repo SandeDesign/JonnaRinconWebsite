@@ -32,89 +32,52 @@
 
 @layer utilities {
   .neon-glow {
-    text-shadow: 0 0 10px #c77dff, 0 0 20px #c77dff, 0 0 30px #9d4edd, 0 0 40px #9d4edd, 0 0 50px #7b2cbf;
-    animation: glow-pulse 3s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(255,255,255,0.3), 0 0 20px rgba(255,255,255,0.15);
   }
 
   .neon-glow-reduced {
-    text-shadow: 0 0 8px #c77dff, 0 0 16px #c77dff, 0 0 24px #9d4edd, 0 0 32px #9d4edd, 0 0 40px #7b2cbf;
-    animation: glow-pulse-reduced 3s ease-in-out infinite;
+    text-shadow: 0 0 8px rgba(255,255,255,0.2), 0 0 16px rgba(255,255,255,0.1);
   }
 
   .neon-glow-minimal {
-    text-shadow: 0 0 4px rgba(199, 125, 255, 0.4), 0 0 8px rgba(199, 125, 255, 0.3), 0 0 12px rgba(157, 78, 221, 0.2);
-    animation: glow-pulse-minimal 3s ease-in-out infinite;
-  }
-
-  @keyframes glow-pulse {
-    0%, 100% {
-      text-shadow: 0 0 10px #c77dff, 0 0 20px #c77dff, 0 0 30px #9d4edd, 0 0 40px #9d4edd;
-    }
-    50% {
-      text-shadow: 0 0 15px #c77dff, 0 0 30px #c77dff, 0 0 45px #9d4edd, 0 0 60px #9d4edd, 0 0 75px #7b2cbf;
-    }
-  }
-
-  @keyframes glow-pulse-reduced {
-    0%, 100% {
-      text-shadow: 0 0 8px #c77dff, 0 0 16px #c77dff, 0 0 24px #9d4edd, 0 0 32px #9d4edd;
-    }
-    50% {
-      text-shadow: 0 0 12px #c77dff, 0 0 24px #c77dff, 0 0 36px #9d4edd, 0 0 48px #9d4edd, 0 0 60px #7b2cbf;
-    }
-  }
-
-  @keyframes glow-pulse-minimal {
-    0%, 100% {
-      text-shadow: 0 0 4px rgba(199, 125, 255, 0.3), 0 0 8px rgba(199, 125, 255, 0.2), 0 0 12px rgba(157, 78, 221, 0.15);
-    }
-    50% {
-      text-shadow: 0 0 6px rgba(199, 125, 255, 0.4), 0 0 12px rgba(199, 125, 255, 0.3), 0 0 18px rgba(157, 78, 221, 0.2);
-    }
+    text-shadow: 0 0 4px rgba(255,255,255,0.15), 0 0 8px rgba(255,255,255,0.08);
   }
 
   .neon-border {
-    box-shadow: 0 0 10px #c77dff, 0 0 20px #9d4edd, inset 0 0 10px #7b2cbf;
-    animation: border-pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes border-pulse {
-    0%, 100% {
-      box-shadow: 0 0 10px #c77dff, 0 0 20px #9d4edd, inset 0 0 10px #7b2cbf;
-    }
-    50% {
-      box-shadow: 0 0 15px #c77dff, 0 0 30px #9d4edd, 0 0 40px #7b2cbf, inset 0 0 15px #7b2cbf;
-    }
+    box-shadow: 0 0 10px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
   }
 
   .neon-border-subtle {
-    box-shadow: 0 0 5px #c77dff, 0 0 10px #9d4edd;
+    box-shadow: 0 0 5px rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
     transition: all 0.3s ease;
   }
 
   .neon-border-subtle:hover {
-    box-shadow: 0 0 15px #c77dff, 0 0 25px #9d4edd, 0 0 35px #7b2cbf;
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
     transform: translateY(-2px);
   }
 
   .glass {
-    background: rgba(157, 78, 221, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(199, 125, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
   }
 
   .glass:hover {
-    background: rgba(157, 78, 221, 0.15);
-    border-color: rgba(199, 125, 255, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
   .gradient-purple {
-    background: linear-gradient(135deg, #1a0033 0%, #000000 50%, #1a0033 100%);
+    background: linear-gradient(135deg, #111 0%, #000 50%, #111 100%);
   }
 
   .gradient-purple-overlay {
-    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(123,44,191,0.3) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 100%);
   }
 
   @keyframes float {
@@ -215,7 +178,7 @@
   }
 
   .shimmer {
-    background: linear-gradient(90deg, transparent, rgba(199, 125, 255, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     background-size: 1000px 100%;
     animation: shimmer 3s infinite;
   }
@@ -226,7 +189,7 @@
 
   .hover-lift:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 60px rgba(157, 78, 221, 0.4);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   }
 
   @keyframes rotate-slow {

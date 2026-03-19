@@ -1,9 +1,8 @@
-import { Music2, ListMusic, Youtube, Instagram, Music as MusicIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Music() {
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
-  
+
   const spotifyPlaylists = [
     {
       name: 'Top Tracks',
@@ -66,24 +65,20 @@ export default function Music() {
       {/* MUSIC SECTIE */}
       <section id="music" className="py-12 md:py-24 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full scale-85 md:scale-100 origin-center">
-          {/* Header - Mobile: playlist naam, Desktop: "Music" */}
           <div className="text-center mb-8 md:mb-16">
-            <h2 className="text-3xl md:text-6xl font-bold neon-glow">
+            <h2 className="text-3xl md:text-6xl font-black uppercase tracking-wider">
               <span className="md:hidden">{spotifyPlaylists[currentPlaylist].name}</span>
               <span className="hidden md:block">Music</span>
             </h2>
           </div>
 
           {/* Spotify Player */}
-          <div className="glass rounded-2xl p-8 neon-border-subtle">
-            {/* Switcher bolletjes - Mobile: gecentreerd, Desktop: met playlist naam */}
+          <div className="bg-white/5 border border-white/10 rounded-lg p-8">
             <div className="flex items-center justify-center gap-6 mb-6">
-              {/* Desktop: playlist naam links van bolletjes */}
-              <p className="hidden md:block text-2xl md:text-3xl font-bold neon-glow">
+              <p className="hidden md:block text-2xl md:text-3xl font-bold text-white">
                 {spotifyPlaylists[currentPlaylist].name}
               </p>
 
-              {/* Bolletjes - altijd gecentreerd */}
               <div className="flex gap-3">
                 {spotifyPlaylists.map((playlist, index) => (
                   <button
@@ -91,7 +86,7 @@ export default function Music() {
                     onClick={() => setCurrentPlaylist(index)}
                     className={`w-4 h-4 rounded-full transition-all ${
                       currentPlaylist === index
-                        ? 'bg-purple-500 w-8'
+                        ? 'bg-white w-8'
                         : 'bg-gray-600 hover:bg-gray-500'
                     }`}
                     title={playlist.name}
@@ -127,7 +122,7 @@ export default function Music() {
               href="https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 w-full inline-block text-center py-3 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold transition-all neon-border-subtle hover:scale-105"
+              className="mt-6 w-full inline-block text-center py-3 bg-white text-black hover:bg-gray-200 rounded-lg font-semibold transition-all hover:scale-105"
             >
               Open in Spotify
             </a>
@@ -135,15 +130,14 @@ export default function Music() {
         </div>
       </section>
 
-      {/* COMPILATIONS - Mobile: header "Playlists", Desktop: geen header */}
+      {/* COMPILATIONS */}
       <section id="compilations" className="py-12 md:py-0 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full">
-          {/* Header - ALLEEN MOBILE */}
           <div className="text-center mb-8 md:hidden">
-            <h2 className="text-3xl font-bold neon-glow">Playlists</h2>
+            <h2 className="text-3xl font-black uppercase tracking-wider">Playlists</h2>
           </div>
 
-          <div className="glass rounded-2xl p-8 neon-border-subtle">
+          <div className="bg-white/5 border border-white/10 rounded-lg p-8">
             <div className="flex justify-center">
               <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-3 max-w-5xl">
                 {compilations.map((compilation) => (
@@ -154,11 +148,11 @@ export default function Music() {
                     rel="noopener noreferrer"
                     className="group text-center"
                   >
-                    <h4 className="text-sm font-bold mb-2 text-purple-300 truncate">
+                    <h4 className="text-sm font-bold mb-2 text-gray-300 truncate">
                       {compilation.name}
                     </h4>
-                    
-                    <div className="aspect-square rounded-lg overflow-hidden hover:scale-105 transition-all glass neon-border-subtle hover:neon-border">
+
+                    <div className="aspect-square rounded-lg overflow-hidden hover:scale-105 transition-all border border-white/10">
                       <img
                         src={compilation.cover}
                         alt={compilation.name}
@@ -173,18 +167,17 @@ export default function Music() {
         </div>
       </section>
 
-      {/* YOUTUBE - Mobile: scale 70% (30% kleiner), Desktop: normaal */}
+      {/* YOUTUBE */}
       <section id="youtube" className="py-12 md:py-44 md:mt-96 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full scale-[0.70] md:scale-100 origin-center">
-          {/* Header */}
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-6xl font-bold mb-4 neon-glow">YouTube</h2>
+            <h2 className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">YouTube</h2>
             <p className="text-base md:text-xl text-gray-400">Watch my latest DJ sets and vlogs</p>
           </div>
 
-          <div className="glass rounded-2xl p-8 neon-border-subtle">
+          <div className="bg-white/5 border border-white/10 rounded-lg p-8">
             <div className="relative rounded-xl overflow-hidden group cursor-pointer">
-              <div 
+              <div
                 className="absolute inset-0 z-10 transition-opacity duration-500 group-[.playing]:opacity-0 group-[.playing]:pointer-events-none"
                 onClick={(e) => {
                   const container = e.currentTarget.closest('.relative');
@@ -196,8 +189,8 @@ export default function Music() {
                   }
                 }}
               >
-                <img 
-                  src="DJI_20251017150728_0019_D.JPG" 
+                <img
+                  src="DJI_20251017150728_0019_D.JPG"
                   alt="YouTube thumbnail"
                   className="w-full h-full object-cover"
                 />
@@ -227,7 +220,7 @@ export default function Music() {
               href="https://youtube.com/@jonnarincon?si=zp6ECLUFUSCXIhhn"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 w-full inline-block text-center py-3 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold transition-all neon-border-subtle hover:scale-105"
+              className="mt-6 w-full inline-block text-center py-3 bg-white text-black hover:bg-gray-200 rounded-lg font-semibold transition-all hover:scale-105"
             >
               Visit Channel
             </a>

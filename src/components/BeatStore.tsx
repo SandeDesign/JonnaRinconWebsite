@@ -49,20 +49,18 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  
+
   // FIREBASE REAL-TIME LISTENER
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    // Query Firestore beats collection
     const beatsQuery = query(
       collection(db, 'beats'),
-      where('status', '==', 'published'), // Alleen gepubliceerde beats
+      where('status', '==', 'published'),
       orderBy('createdAt', 'desc')
     );
 
-    // Real-time listener
     const unsubscribe = onSnapshot(
       beatsQuery,
       (snapshot) => {
@@ -90,21 +88,17 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
       }
     );
 
-    // Cleanup listener on unmount
     return () => unsubscribe();
   }, []);
 
-  // Filter beats wanneer search/genre wijzigt
   useEffect(() => {
     filterBeats();
   }, [searchTerm, selectedGenre, beats]);
 
-  // Reset page bij view mode wijziging
   useEffect(() => {
     setCurrentPage(0);
   }, [viewMode]);
 
-  // Audio afspelen/pauzeren bij playingId wijziging
   useEffect(() => {
     if (!audioRef.current) return;
     if (playingId) {
@@ -126,7 +120,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(beat => 
+      filtered = filtered.filter(beat =>
         beat.title.toLowerCase().includes(term) ||
         beat.genre.toLowerCase().includes(term) ||
         beat.tags.some(tag => tag.toLowerCase().includes(term))
@@ -141,10 +135,8 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
     setCurrentPage(0);
   };
 
-  // Extract genres from real data
   const genres = ['All', ...Array.from(new Set(beats.map(b => b.genre)))];
 
-  // Pagination
   const getBeatsPerPage = () => {
     if (viewMode === 'grid') {
       return window.innerWidth < 768 ? 6 : 12;
@@ -171,32 +163,29 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
     }
   };
 
-  // Get featured beats
   const featuredBeats = beats.filter(beat => beat.featured).slice(0, 6);
 
   return (
     <section id="beats" className="min-h-screen py-24 px-4 bg-transparent flex flex-col">
       <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
         <div className="text-center mb-6 md:mb-12">
-          <h2 className="text-3xl md:text-6xl font-bold neon-glow">Beat Store</h2>
+          <h2 className="text-3xl md:text-6xl font-black uppercase tracking-wider">Beat Store</h2>
         </div>
 
         {/* Featured Beats Section */}
         {!loading && featuredBeats.length > 0 && (
           <div className="mb-8 md:mb-12">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">⭐</span>
-              <h3 className="text-2xl md:text-3xl font-bold text-purple-400">Featured Beats</h3>
+              <h3 className="text-2xl md:text-3xl font-bold text-white">Featured Beats</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
               {featuredBeats.map((beat) => (
                 <div
                   key={beat.id}
-                  className="glass rounded-xl overflow-hidden hover:scale-105 transition-all group flex flex-col relative neon-border"
+                  className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:scale-105 transition-all group flex flex-col relative"
                 >
-                  {/* Featured Badge */}
-                  <div className="absolute top-2 right-2 z-10 bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-                    ⭐ FEATURED
+                  <div className="absolute top-2 right-2 z-10 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                    FEATURED
                   </div>
 
                   <div className="relative aspect-square">
@@ -222,17 +211,17 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
                     <p className="text-xs text-gray-400 mb-2 truncate">{beat.artist}</p>
 
                     <div className="flex gap-1 mb-2">
-                      <span className="px-2 py-0.5 bg-purple-900/30 rounded text-xs">{beat.bpm}</span>
-                      <span className="px-2 py-0.5 bg-purple-900/30 rounded text-xs">{beat.key}</span>
+                      <span className="px-2 py-0.5 bg-white/5 rounded text-xs">{beat.bpm}</span>
+                      <span className="px-2 py-0.5 bg-white/5 rounded text-xs">{beat.key}</span>
                     </div>
 
                     <div className="mt-auto flex items-center justify-between">
-                      <span className="text-base md:text-lg font-black text-purple-400">
-                        €{beat.price.toFixed(0)}
+                      <span className="text-base md:text-lg font-black text-red-500">
+                        &euro;{beat.price.toFixed(0)}
                       </span>
                       <button
                         onClick={() => onAddToCart(beat, 'basic')}
-                        className="p-2 bg-purple-600 hover:bg-purple-700 rounded-full transition-all hover:scale-110"
+                        className="p-2 bg-red-600 hover:bg-red-700 rounded-full transition-all hover:scale-110"
                       >
                         <ShoppingCart className="w-4 h-4" />
                       </button>
@@ -242,8 +231,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
               ))}
             </div>
 
-            {/* Divider */}
-            <div className="my-8 border-t border-purple-900/50"></div>
+            <div className="my-8 border-t border-white/10"></div>
           </div>
         )}
 
@@ -254,22 +242,22 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
         {/* Search + Filters */}
         <div className="mb-6 flex gap-2 items-center">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-purple-400" />
+            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
             <input
               type="text"
               placeholder="Search beats..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-4 glass rounded-xl text-white text-sm md:text-base placeholder-gray-500 focus:outline-none focus:neon-border transition-all"
+              className="w-full pl-10 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-4 bg-white/5 border border-white/10 rounded-lg text-white text-sm md:text-base placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all"
             />
           </div>
 
           <div className="relative w-24 md:w-auto">
-            <Filter className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 md:w-4 md:h-4 text-purple-400" />
+            <Filter className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" />
             <select
               value={selectedGenre}
               onChange={(e) => setSelectedGenre(e.target.value)}
-              className="w-full pl-7 md:pl-10 pr-2 md:pr-3 py-2.5 md:py-4 glass rounded-xl text-white text-xs md:text-sm focus:outline-none focus:neon-border transition-all appearance-none cursor-pointer"
+              className="w-full pl-7 md:pl-10 pr-2 md:pr-3 py-2.5 md:py-4 bg-white/5 border border-white/10 rounded-lg text-white text-xs md:text-sm focus:outline-none focus:border-white/30 transition-all appearance-none cursor-pointer"
             >
               {genres.map((genre) => (
                 <option key={genre} value={genre} className="bg-gray-900">
@@ -281,7 +269,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
 
           <button
             onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
-            className="p-2.5 md:p-4 glass rounded-xl text-white hover:bg-purple-600/30 transition-all neon-border-subtle"
+            className="p-2.5 md:p-4 bg-white/5 border border-white/10 rounded-lg text-white hover:bg-white/10 transition-all"
           >
             {viewMode === 'list' ? (
               <Grid3x3 className="w-4 h-4 md:w-5 md:h-5" />
@@ -294,25 +282,23 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
         {/* LOADING STATE */}
         {loading ? (
           <div className="flex justify-center items-center flex-1">
-            <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin neon-border"></div>
+            <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : error ? (
-          /* ERROR STATE */
           <div className="text-center flex-1 flex items-center justify-center">
-            <div className="glass p-8 rounded-xl neon-border max-w-md">
-              <p className="text-2xl text-red-400 mb-4">⚠️ {error}</p>
+            <div className="bg-white/5 border border-white/10 p-8 rounded-lg max-w-md">
+              <p className="text-2xl text-red-400 mb-4">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-semibold transition-all"
+                className="bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-lg font-semibold transition-all"
               >
                 Retry
               </button>
             </div>
           </div>
         ) : filteredBeats.length === 0 ? (
-          /* NO RESULTS */
           <div className="text-center flex-1 flex items-center justify-center">
-            <div className="glass p-8 rounded-xl neon-border max-w-md">
+            <div className="bg-white/5 border border-white/10 p-8 rounded-lg max-w-md">
               <p className="text-2xl text-gray-400 mb-4">No beats found</p>
               {beats.length === 0 ? (
                 <p className="text-gray-500">Add beats via the admin dashboard</p>
@@ -327,7 +313,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
             {currentBeats.map((beat, index) => (
               <div
                 key={beat.id}
-                className="glass hover:bg-purple-900/20 rounded-xl p-2 md:p-4 transition-all hover:scale-[1.02] group"
+                className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg p-2 md:p-4 transition-all hover:scale-[1.02] group"
               >
                 <div className="grid grid-cols-12 gap-2 md:gap-4 items-center">
                   <div className="col-span-1 text-gray-400 text-xs md:text-sm font-semibold">
@@ -356,8 +342,8 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
                       <div className="flex items-center gap-2">
                         <p className="text-white text-xs md:text-base font-semibold truncate">{beat.title}</p>
                         {beat.featured && (
-                          <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-1.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap flex-shrink-0">
-                            ⭐ FEATURED
+                          <span className="bg-red-600 text-white px-1.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap flex-shrink-0">
+                            FEATURED
                           </span>
                         )}
                       </div>
@@ -370,16 +356,16 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
                   </div>
 
                   <div className="col-span-2 text-gray-400 text-xs md:text-sm">
-                    {beat.bpm} BPM • {beat.key}
+                    {beat.bpm} BPM &bull; {beat.key}
                   </div>
 
                   <div className="col-span-2 flex items-center justify-end gap-2 md:gap-3">
-                    <span className="text-sm md:text-xl font-bold text-purple-400">
-                      €{beat.price.toFixed(2)}
+                    <span className="text-sm md:text-xl font-bold text-red-500">
+                      &euro;{beat.price.toFixed(2)}
                     </span>
                     <button
                       onClick={() => onAddToCart(beat, 'basic')}
-                      className="p-1.5 md:p-2 bg-purple-600 hover:bg-purple-700 rounded-full transition-all hover:scale-110"
+                      className="p-1.5 md:p-2 bg-red-600 hover:bg-red-700 rounded-full transition-all hover:scale-110"
                     >
                       <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
                     </button>
@@ -394,7 +380,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
             {currentBeats.map((beat) => (
               <div
                 key={beat.id}
-                className="glass rounded-xl overflow-hidden hover:scale-[1.02] transition-all group flex flex-col"
+                className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:scale-[1.02] transition-all group flex flex-col"
                 style={{ minHeight: window.innerWidth < 768 ? '130px' : '180px' }}
               >
                 <div className="relative aspect-square">
@@ -414,8 +400,8 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
                     )}
                   </button>
                   {beat.featured && (
-                    <div className="absolute top-0.5 right-0.5 md:top-2 md:right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-xs font-bold shadow-lg">
-                      ⭐
+                    <div className="absolute top-0.5 right-0.5 md:top-2 md:right-2 bg-red-600 text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-xs font-bold shadow-lg">
+                      F
                     </div>
                   )}
                 </div>
@@ -425,17 +411,17 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
                   <p className="text-xs text-gray-400 mb-0.5 md:mb-2 truncate">{beat.genre}</p>
 
                   <div className="flex gap-0.5 md:gap-1 mb-0.5 md:mb-1">
-                    <span className="px-1 md:px-2 py-0.5 bg-purple-900/30 rounded text-xs leading-none">{beat.bpm}</span>
-                    <span className="px-1 md:px-2 py-0.5 bg-purple-900/30 rounded text-xs leading-none">{beat.key}</span>
+                    <span className="px-1 md:px-2 py-0.5 bg-white/5 rounded text-xs leading-none">{beat.bpm}</span>
+                    <span className="px-1 md:px-2 py-0.5 bg-white/5 rounded text-xs leading-none">{beat.key}</span>
                   </div>
 
                   <div className="mt-auto flex items-center justify-between">
-                    <span className="text-xs md:text-base font-black text-purple-400">
-                      €{beat.price.toFixed(0)}
+                    <span className="text-xs md:text-base font-black text-red-500">
+                      &euro;{beat.price.toFixed(0)}
                     </span>
                     <button
                       onClick={() => onAddToCart(beat, 'basic')}
-                      className="p-1.5 md:p-2 bg-purple-600 hover:bg-purple-700 rounded-full transition-all hover:scale-110"
+                      className="p-1.5 md:p-2 bg-red-600 hover:bg-red-700 rounded-full transition-all hover:scale-110"
                     >
                       <ShoppingCart className="w-3 h-3 md:w-4 md:h-4" />
                     </button>
@@ -452,20 +438,20 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
             <button
               onClick={goToPrevPage}
               disabled={currentPage === 0}
-              className="p-2 md:p-3 glass rounded-xl hover:bg-purple-600/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-2 md:p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               title="Previous page"
             >
               <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
             </button>
-            
-            <span className="text-xl md:text-2xl font-bold text-purple-400 px-3 md:px-4 min-w-[40px] md:min-w-[50px] text-center">
+
+            <span className="text-xl md:text-2xl font-bold text-white px-3 md:px-4 min-w-[40px] md:min-w-[50px] text-center">
               {currentPage + 1}
             </span>
 
             <button
               onClick={goToNextPage}
               disabled={currentPage >= totalPages - 1}
-              className="p-2 md:p-3 glass rounded-xl hover:bg-purple-600/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-2 md:p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               title="Next page"
             >
               <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
