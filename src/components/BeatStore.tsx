@@ -5,6 +5,15 @@ import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, ChevronLeft, 
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase/config';
 
+/** Convert Nextcloud/ownCloud share URLs to direct download URLs */
+function toDirectUrl(url: string): string {
+  if (!url) return url;
+  if (url.includes('/index.php/s/') && !url.endsWith('/download')) {
+    return url.replace(/\/?$/, '/download');
+  }
+  return url;
+}
+
 interface Beat {
   id: string;
   title: string;
@@ -62,8 +71,8 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
           return {
             id: doc.id,
             ...data,
-            audio_url: data.audioUrl || data.audio_url || '',
-            artwork_url: data.artworkUrl || data.artwork_url || '',
+            audio_url: toDirectUrl(data.audioUrl || data.audio_url || ''),
+            artwork_url: toDirectUrl(data.artworkUrl || data.artwork_url || ''),
             price: data.licenses?.basic?.price || data.price || 29,
             created_at: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
             updated_at: data.updatedAt?.toDate().toISOString() || new Date().toISOString(),
