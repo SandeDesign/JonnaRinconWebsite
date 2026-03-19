@@ -50,12 +50,12 @@ export default function Hero() {
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center -mt-24">
       {/* Fullscreen Background Image - FIXED zodat het altijd zichtbaar blijft */}
-      <div className="fixed inset-0 w-full h-screen -z-10">
+      <div className="fixed inset-0 w-full h-screen -z-10" style={{backgroundColor: '#c4beb4'}}>
         <img
-          src="/DJ Screenshot 3-2-26.png"
+          src="/JEIGHTENESIS.jpg"
           alt="Jonna Rincon"
-          className="w-full h-full object-cover"
-          style={{objectFit: 'cover', objectPosition: 'center'}}
+          className="w-full h-full object-contain"
+          style={{objectFit: 'contain', objectPosition: 'center'}}
         />
         {/* Dynamische Overlay - wordt donkerder + blurred bij scrollen */}
         <div
