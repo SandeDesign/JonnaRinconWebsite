@@ -113,8 +113,8 @@ export default function Hero() {
         ></div>
       </div>
 
-      {/* Content — grote naam + buttons onderaan */}
-      <div className="relative z-10 w-full flex flex-col items-center px-6">
+      {/* Content — titel gecentreerd, buttons onderaan (onder de pet) */}
+      <div className="relative z-10 w-full h-screen flex flex-col items-center justify-center px-6">
         {/* JONNA RINCON — cyber decode animatie */}
         <h1
           className="text-white font-black uppercase leading-none tracking-tighter text-center select-none"
@@ -127,9 +127,9 @@ export default function Hero() {
           {display || '\u00A0'}
         </h1>
 
-        {/* Buttons — fade in nadat tekst klaar is */}
+        {/* Buttons — absoluut gepositioneerd onderaan het scherm, onder de pet */}
         <div
-          className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8 transition-opacity duration-700"
+          className="absolute bottom-12 md:bottom-16 flex flex-col sm:flex-row gap-3 transition-opacity duration-700"
           style={{ opacity: done ? 1 : 0 }}
         >
           <a
