@@ -198,7 +198,6 @@ function App() {
             <span className="text-xs font-bold text-white/70 uppercase tracking-[0.25em] whitespace-nowrap group-hover:text-white transition-colors">
               {scrollDirection === 'up' ? 'Back to top' : 'Scroll down'}
             </span>
-            <span className="text-white/50 text-sm">✕</span>
             <svg
               className={`w-4 h-4 text-white/50 transition-transform duration-300 ${scrollDirection === 'up' ? 'rotate-180' : ''}`}
               fill="none"
@@ -211,7 +210,7 @@ function App() {
         </button>
       </div>
 
-      <main className="pt-20">
+      <main className="pt-32 md:pt-40">
         <div id="hero" className="h-screen overflow-hidden"><Hero /></div>
         <About />
         <Marquee />

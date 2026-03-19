@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 
 // Firebase imports
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
@@ -38,6 +39,7 @@ interface BeatStoreProps {
 }
 
 export default function BeatStore({ onAddToCart }: BeatStoreProps) {
+  const beatTitle = useCyberDecodeInView('Beat Store');
   // STATE - REAL DATA FROM FIREBASE
   const [beats, setBeats] = useState<Beat[]>([]);
   const [filteredBeats, setFilteredBeats] = useState<Beat[]>([]);
@@ -169,7 +171,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
     <section id="beats" className="min-h-screen py-24 px-4 bg-transparent flex flex-col">
       <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
         <div className="text-center mb-6 md:mb-12">
-          <h2 className="text-3xl md:text-6xl font-black uppercase tracking-wider">Beat Store</h2>
+          <h2 ref={beatTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black uppercase tracking-wider">{beatTitle.display}</h2>
         </div>
 
         {/* Featured Beats Section */}

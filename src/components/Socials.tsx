@@ -1,6 +1,8 @@
 import { Youtube, Instagram, Music2 } from 'lucide-react';
+import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 
 export default function Socials() {
+  const socialTitle = useCyberDecodeInView('Social Media');
   const socialPlatforms = [
     {
       name: 'Instagram',
@@ -32,7 +34,7 @@ export default function Socials() {
     <section id="socials" className="py-64 pb-64 px-4 bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">Social Media</h2>
+          <h2 ref={socialTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">{socialTitle.display}</h2>
         </div>
 
         {/* Social Platform Grid */}

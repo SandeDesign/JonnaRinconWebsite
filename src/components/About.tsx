@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import SocialCardCarousel from './SocialCard';
 import { useInView } from '../hooks/useInView';
+import { useCyberDecodeOnChange } from '../hooks/useCyberDecode';
 
 // Soft hyphen in filename — matches actual file on disk
 const SCHERM_PREFIX = 'Scherm\u00ADafbeelding';
@@ -99,8 +100,8 @@ const SLIDES: SlideContent[] = [
 export default function About() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [textRef, textInView] = useInView();
-
   const current = SLIDES[activeIndex];
+  const decodedTitle = useCyberDecodeOnChange(current.title);
 
   return (
     <section id="about" className="py-12 md:py-20 px-4 bg-transparent">
@@ -125,9 +126,9 @@ export default function About() {
             <div className="overflow-hidden mb-3 md:mb-4">
               <h2
                 key={current.title}
-                className="text-3xl md:text-5xl font-black uppercase tracking-wider animate-slide-up"
+                className="text-3xl md:text-5xl font-black uppercase tracking-wider"
               >
-                {current.title}
+                {decodedTitle}
               </h2>
             </div>
             <div className="w-12 h-0.5 bg-white/30 mb-4 md:mb-6" />
