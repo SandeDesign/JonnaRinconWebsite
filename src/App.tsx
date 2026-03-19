@@ -20,7 +20,6 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<'down' | 'up'>('down');
-  const [hasClickedButton, setHasClickedButton] = useState(false);
 
   // Dynamische sections
   const getSections = () => {
@@ -74,10 +73,6 @@ function App() {
 
   const scrollToNext = () => {
     const isMobile = window.innerWidth < 768;
-    
-    if (!hasClickedButton) {
-      setHasClickedButton(true);
-    }
     
     if (scrollDirection === 'down') {
       // Normale scroll - GEEN speciale About logica meer
@@ -179,9 +174,6 @@ function App() {
     };
   }, []);
 
-  const isAtEnd = currentSection === sections.length - 1;
-  const showText = !hasClickedButton || isAtEnd;
-  const buttonText = scrollDirection === 'up' ? 'Back' : 'Click Me!';
 
   return (
     <div className="min-h-screen">
@@ -195,48 +187,28 @@ function App() {
         onCheckout={handleCheckout}
       />
 
-      {/* Scroll Button */}
-      <>
-        <div className="hidden md:block fixed bottom-8 left-8 z-50">
-          <button
-            onClick={scrollToNext}
-            className="animate-bounce cursor-pointer hover:scale-110 transition-all focus:outline-none backdrop-blur-md bg-purple-900/20 px-4 py-3 rounded-full border-2 border-purple-500/50 hover:border-purple-400 hover:bg-purple-600/30 duration-300"
-            style={{ width: showText ? '80px' : '56px' }}
-          >
-            <div className="flex flex-col items-center justify-center gap-2 min-h-[44px]">
-              {showText && <span className="text-sm text-purple-300 font-light whitespace-nowrap">{buttonText}</span>}
-              <svg 
-                className={`w-5 h-5 text-purple-400 transition-transform duration-300 ${scrollDirection === 'up' ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
-          </button>
-        </div>
-
-        <div className="md:hidden fixed bottom-8 left-8 z-50">
-          <button
-            onClick={scrollToNext}
-            className="cursor-pointer hover:scale-110 transition-all focus:outline-none backdrop-blur-md bg-purple-900/20 px-4 py-3 rounded-full border-2 border-purple-500/50 hover:border-purple-400 hover:bg-purple-600/30 duration-300"
-            style={{ width: showText ? '100px' : '56px' }}
-          >
-            <div className="flex flex-col items-center justify-center gap-2 min-h-[44px]">
-              {showText && <span className="text-xs text-purple-300 font-light whitespace-nowrap">{buttonText}</span>}
-              <svg 
-                className={`w-5 h-5 text-purple-400 transition-transform duration-300 ${scrollDirection === 'up' ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
-          </button>
-        </div>
-      </>
+      {/* Scroll Indicator — Martin Garrix stijl */}
+      <div className="fixed bottom-8 left-8 z-50">
+        <button
+          onClick={scrollToNext}
+          className="cursor-pointer hover:opacity-80 transition-all duration-300 focus:outline-none group"
+        >
+          <div className="flex flex-col items-center gap-1.5">
+            <span className="text-xs font-bold text-white/70 uppercase tracking-[0.25em] whitespace-nowrap group-hover:text-white transition-colors">
+              {scrollDirection === 'up' ? 'Back to top' : 'Scroll down'}
+            </span>
+            <span className="text-white/50 text-sm">✕</span>
+            <svg
+              className={`w-4 h-4 text-white/50 transition-transform duration-300 ${scrollDirection === 'up' ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </div>
+        </button>
+      </div>
 
       <main className="pt-20">
         <div id="hero" className="h-screen overflow-hidden"><Hero /></div>
