@@ -37,22 +37,18 @@ export default function BeatCard({ beat, onAddToCart }: BeatCardProps) {
   };
 
   return (
-    <div className="group glass rounded-2xl overflow-hidden hover-lift hover:neon-border transition-all duration-300">
+    <div className="group bg-white/5 border border-white/10 rounded-lg overflow-hidden hover-lift transition-all duration-300">
       <div className="relative aspect-square overflow-hidden">
         <img
           src={beat.artwork_url}
           alt={beat.title}
-          className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-2 transition-all duration-700"
+          className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300"></div>
 
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <div className="absolute inset-0 shimmer"></div>
-        </div>
-
         <button
           onClick={togglePlay}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gradient-to-br from-purple-600 to-purple-800 rounded-full flex items-center justify-center neon-border hover:scale-125 active:scale-95 transition-all duration-300 shadow-2xl"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 hover:scale-125 active:scale-95 transition-all duration-300 shadow-2xl border border-white/20"
         >
           {isPlaying ? (
             <Pause className="w-10 h-10" fill="currentColor" />
@@ -62,8 +58,8 @@ export default function BeatCard({ beat, onAddToCart }: BeatCardProps) {
         </button>
 
         {beat.featured && (
-          <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold neon-border-subtle animate-pulse">
-            ⭐ FEATURED
+          <div className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-full text-xs font-bold animate-pulse">
+            FEATURED
           </div>
         )}
 
@@ -71,17 +67,17 @@ export default function BeatCard({ beat, onAddToCart }: BeatCardProps) {
       </div>
 
       <div className="p-6">
-        <h3 className="text-2xl font-bold mb-2 text-purple-200">{beat.title}</h3>
+        <h3 className="text-2xl font-bold mb-2 text-white">{beat.title}</h3>
         <p className="text-gray-400 mb-4">{beat.artist}</p>
 
         <div className="flex flex-wrap gap-2 mb-4">
-          <span className="px-3 py-1 bg-purple-900/30 rounded-full text-sm border border-purple-500/30">
+          <span className="px-3 py-1 bg-white/5 rounded-full text-sm border border-white/10">
             {beat.bpm} BPM
           </span>
-          <span className="px-3 py-1 bg-purple-900/30 rounded-full text-sm border border-purple-500/30">
+          <span className="px-3 py-1 bg-white/5 rounded-full text-sm border border-white/10">
             {beat.key}
           </span>
-          <span className="px-3 py-1 bg-purple-900/30 rounded-full text-sm border border-purple-500/30">
+          <span className="px-3 py-1 bg-white/5 rounded-full text-sm border border-white/10">
             {beat.genre}
           </span>
         </div>
@@ -92,8 +88,8 @@ export default function BeatCard({ beat, onAddToCart }: BeatCardProps) {
               onClick={() => setSelectedLicense('basic')}
               className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 selectedLicense === 'basic'
-                  ? 'bg-purple-600 text-white neon-border-subtle'
-                  : 'bg-purple-900/20 text-purple-300 hover:bg-purple-900/40'
+                  ? 'bg-white text-black'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10'
               }`}
             >
               Basic
@@ -104,8 +100,8 @@ export default function BeatCard({ beat, onAddToCart }: BeatCardProps) {
               onClick={() => setSelectedLicense('premium')}
               className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 selectedLicense === 'premium'
-                  ? 'bg-purple-600 text-white neon-border-subtle'
-                  : 'bg-purple-900/20 text-purple-300 hover:bg-purple-900/40'
+                  ? 'bg-white text-black'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10'
               }`}
             >
               Premium
@@ -116,8 +112,8 @@ export default function BeatCard({ beat, onAddToCart }: BeatCardProps) {
               onClick={() => setSelectedLicense('exclusive')}
               className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 selectedLicense === 'exclusive'
-                  ? 'bg-purple-600 text-white neon-border-subtle'
-                  : 'bg-purple-900/20 text-purple-300 hover:bg-purple-900/40'
+                  ? 'bg-white text-black'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10'
               }`}
             >
               Exclusive
@@ -126,12 +122,12 @@ export default function BeatCard({ beat, onAddToCart }: BeatCardProps) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(199,125,255,0.5)]">
-            €{getLicensePrice().toFixed(2)}
+          <span className="text-4xl font-black text-white">
+            &euro;{getLicensePrice().toFixed(2)}
           </span>
           <button
             onClick={() => onAddToCart(beat, selectedLicense)}
-            className="group/btn flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 rounded-full font-bold transition-all duration-300 neon-border-subtle hover:scale-110 active:scale-95 shadow-xl hover:shadow-purple-500/50"
+            className="group/btn flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-bold transition-all duration-300 hover:scale-110 active:scale-95"
           >
             <ShoppingCart className="w-5 h-5 group-hover/btn:animate-bounce" />
             <span>Add to Cart</span>
