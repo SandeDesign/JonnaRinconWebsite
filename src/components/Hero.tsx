@@ -52,7 +52,7 @@ export default function Hero() {
       {/* Fullscreen Background Image - FIXED zodat het altijd zichtbaar blijft */}
       <div className="fixed inset-0 w-full h-screen -z-10">
         <img
-          src="/DJ Screenshot 3-2-26.png"
+          src="/JEIGHTENESIS.jpg"
           alt="Jonna Rincon"
           className="w-full h-full object-cover"
           style={{objectFit: 'cover', objectPosition: 'center'}}
