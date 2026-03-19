@@ -1,105 +1,90 @@
-import { useState } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
-
 export default function About() {
-  const [currentImage, setCurrentImage] = useState(0);
-
-  const images = [
-    '/DJI_20251115114029_0004_D.JPG',
-    '/IMG_1027.jpg',
-    '/Maastricht Screenshot 15-12-25.png'
-  ];
-
-  const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
-  };
-
   return (
-    <section id="about" className="py-8 md:py-80 pb-49 px-4 bg-transparent">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-32">
-          {/* GALERIJ */}
-          <div id="about-gallery" className="py-12 md:py-0">
-            <div className="relative rounded-lg overflow-hidden shadow-2xl">
-              {images.map((img, idx) => (
-                <div
-                  key={idx}
-                  className={`transition-opacity duration-500 ${
-                    idx === currentImage ? 'opacity-100' : 'opacity-0 absolute inset-0'
-                  }`}
-                >
-                  <img
-                    src={img}
-                    alt={`Jonna Rincon ${idx + 1}`}
-                    className="w-full h-auto object-cover"
-                    style={{ minHeight: '300px', maxHeight: '500px' }}
-                  />
-                </div>
-              ))}
-            </div>
+    <section id="about" className="py-16 md:py-32 px-4 bg-transparent">
+      <div className="max-w-[1400px] mx-auto">
 
-            {/* Navigation buttons */}
-            <div className="flex items-center justify-center gap-6 mt-6">
-              <button
-                onClick={prevImage}
-                className="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/10 hover:scale-110 transition-all"
-                aria-label="Previous image"
-              >
-                <ChevronUp className="w-5 h-5 lg:w-7 lg:h-7 rotate-[-90deg]" />
-              </button>
-
-              <div className="flex gap-2">
-                {images.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImage(idx)}
-                    className={`h-2 rounded-full transition-all ${
-                      idx === currentImage ? 'w-8 bg-white' : 'w-2 bg-gray-600'
-                    }`}
-                    aria-label={`Go to image ${idx + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={nextImage}
-                className="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/10 hover:scale-110 transition-all"
-                aria-label="Next image"
-              >
-                <ChevronDown className="w-5 h-5 lg:w-7 lg:h-7 rotate-[-90deg]" />
-              </button>
-            </div>
-          </div>
-
-          {/* BIO */}
-          <div id="about-bio" className="pt-4 md:pt-0">
-            <h3 className="text-2xl lg:text-5xl font-black mb-2 md:mb-4 uppercase tracking-wider">About Jonna</h3>
-            <div className="space-y-2 text-gray-300 text-xs lg:text-lg leading-relaxed">
-              <p>
-                Jonathan aka <span className="text-white font-semibold">j18</span> is a human being with a creative mind which is described by many people as <span className="italic">"not from this world"</span>. You may already recognize his J18 tag at the beginning and/or end of every track, or by the clock sound in his work.
-              </p>
-              <p>
-                Mostly known for his raw and authentic moombahton style in tracks or beats. But have in mind that this young man has much to offer. From modern rap beats to the dirty old classic hip hop beats, from warm and smooth r&b instrumentals to the world of EDM (electronic dance music) to studying to jonna's lo-fi instrumentals which he made on his trip on earth;
-              </p>
-              <p>
-                Born in Maastricht, The Netherlands & based in Tilburg he began making music when first made contact with any music instrument nearby. When he visited his nephews in Dominican Republic, he was shown FL Studio for the first time. When Jonna saw that it was possible to make a track with a PC, he made his first track immediately together with his oldest nephew and that's where the music production journey started.
-              </p>
-              <p>
-                10+ Years later and the stuff what he can do with a creative program like that is absolute crazy. From the most little things and the most weird noises....never-mind, Jonna Rincon is able to make something out of it... And you can hear that on songs like <span className="text-gray-400">___</span> and <span className="text-gray-400">___</span> which have been played on MTV and the Dutch Radio. Not there yet, but on the way. J18
-              </p>
-              <p className="text-gray-400 font-semibold text-xs lg:text-xl italic">
-                (J18=Jeighteen) (Jeighteen=his tag & clothing/brand & nickname)
-              </p>
-              <p className="text-gray-400 font-semibold text-xs lg:text-xl">
-                Based in the Netherlands, working with artists worldwide.
-              </p>
-            </div>
+        {/* BLOK 1: THE STORY */}
+        <div className="mb-16 md:mb-32">
+          <h2 className="text-4xl md:text-7xl font-black uppercase tracking-wider mb-6 md:mb-8">
+            The Story
+          </h2>
+          <p className="text-base md:text-lg text-gray-400 leading-relaxed max-w-3xl mb-10 md:mb-14">
+            Jonathan aka <span className="text-white font-semibold">j18</span> is a human being with a creative mind which is described by many people as <span className="italic">"not from this world"</span>. You may already recognize his J18 tag at the beginning and/or end of every track, or by the clock sound in his work.
+          </p>
+          <div className="w-full overflow-hidden rounded-lg">
+            <img
+              src="/DJI_20251115114029_0004_D.JPG"
+              alt="Jonna Rincon aerial"
+              className="w-full h-[300px] md:h-[600px] object-cover"
+            />
           </div>
         </div>
+
+        {/* BLOK 2: THE SOUND — foto links, tekst rechts */}
+        <div className="mb-16 md:mb-32 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16 items-center">
+          <div className="overflow-hidden rounded-lg">
+            <img
+              src="/DJ Screenshot 3-2-26.png"
+              alt="Jonna Rincon DJ"
+              className="w-full h-[300px] md:h-[500px] object-cover"
+            />
+          </div>
+          <div>
+            <h2 className="text-4xl md:text-7xl font-black uppercase tracking-wider mb-6 md:mb-8">
+              The Sound
+            </h2>
+            <p className="text-base md:text-lg text-gray-400 leading-relaxed">
+              Mostly known for his raw and authentic moombahton style in tracks or beats. But have in mind that this young man has much to offer. From modern rap beats to the dirty old classic hip hop beats, from warm and smooth r&b instrumentals to the world of EDM (electronic dance music) to studying to jonna's lo-fi instrumentals which he made on his trip on earth.
+            </p>
+          </div>
+        </div>
+
+        {/* BLOK 3: THE JOURNEY — tekst links, foto rechts */}
+        <div className="mb-16 md:mb-32 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-16 items-center">
+          <div className="order-2 md:order-1">
+            <h2 className="text-4xl md:text-7xl font-black uppercase tracking-wider mb-6 md:mb-8">
+              The Journey
+            </h2>
+            <p className="text-base md:text-lg text-gray-400 leading-relaxed">
+              Born in Maastricht, The Netherlands & based in Tilburg he began making music when first made contact with any music instrument nearby. When he visited his nephews in Dominican Republic, he was shown FL Studio for the first time. When Jonna saw that it was possible to make a track with a PC, he made his first track immediately together with his oldest nephew and that's where the music production journey started.
+            </p>
+          </div>
+          <div className="order-1 md:order-2 overflow-hidden rounded-lg">
+            <img
+              src="/Schermafbeelding 2025-12-16 om 17.09.27.png"
+              alt="Jonna Rincon studio"
+              className="w-full h-[300px] md:h-[500px] object-cover"
+            />
+          </div>
+        </div>
+
+        {/* BLOK 4: Foto grid + closing quote */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-10 md:mb-14">
+          <div className="overflow-hidden rounded-lg">
+            <img
+              src="/IMG_1027.jpg"
+              alt="Jonna Rincon"
+              className="w-full h-[250px] md:h-[400px] object-cover"
+            />
+          </div>
+          <div className="overflow-hidden rounded-lg">
+            <img
+              src="/Maastricht Screenshot 15-12-25.png"
+              alt="Jonna Rincon Maastricht"
+              className="w-full h-[250px] md:h-[400px] object-cover"
+            />
+          </div>
+        </div>
+
+        <div className="text-center">
+          <p className="text-gray-400 font-semibold text-sm md:text-xl italic mb-2">
+            (J18=Jeighteen) (Jeighteen=his tag & clothing/brand & nickname)
+          </p>
+          <p className="text-gray-500 text-sm md:text-lg">
+            10+ years of production. Based in the Netherlands, working with artists worldwide.
+          </p>
+        </div>
+
       </div>
     </section>
   );
