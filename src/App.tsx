@@ -76,7 +76,11 @@ function App() {
 
   const scrollToNext = () => {
     const isMobile = window.innerWidth < 768;
-    
+
+    if (!hasClickedButton) {
+      setHasClickedButton(true);
+    }
+
     if (scrollDirection === 'down') {
       // Normale scroll - GEEN speciale About logica meer
       const nextIndex = Math.min(currentSection + 1, sections.length - 1);
@@ -181,6 +185,9 @@ function App() {
     };
   }, []);
 
+  const isAtEnd = currentSection === sections.length - 1;
+  const showText = !hasClickedButton || isAtEnd;
+  const buttonText = scrollDirection === 'up' ? 'Back' : 'Click Me!';
 
   return (
     <div className="min-h-screen">
