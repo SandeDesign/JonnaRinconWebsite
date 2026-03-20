@@ -21,6 +21,7 @@ function App() {
   const [currentSection, setCurrentSection] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<'down' | 'up'>('down');
   const [hasClickedButton, setHasClickedButton] = useState(false);
+  const [isDarkOverlay, setIsDarkOverlay] = useState(false);
 
   // Dynamische sections
   const getSections = () => {
@@ -119,10 +120,14 @@ function App() {
     }
   };
 
-  // Detect current section on scroll - REAL-TIME SYNC
+  // Detect current section on scroll - REAL-TIME SYNC + overlay darkness
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      // Determine if overlay is dark enough for white elements
+      const scrollPercent = (window.scrollY / window.innerHeight) * 100;
+      setIsDarkOverlay(scrollPercent >= 15);
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = document.getElementById(sections[i]);
@@ -185,7 +190,7 @@ function App() {
 
   return (
     <div className="min-h-screen">
-      <Navigation cartItemCount={cartItems.length} onCartClick={() => setIsCartOpen(true)} />
+      <Navigation cartItemCount={cartItems.length} onCartClick={() => setIsCartOpen(true)} isDarkOverlay={isDarkOverlay} />
 
       <ShoppingCart
         isOpen={isCartOpen}
@@ -200,15 +205,19 @@ function App() {
         <div className="hidden md:block fixed bottom-8 left-8 z-50">
           <button
             onClick={scrollToNext}
-            className="animate-bounce cursor-pointer hover:scale-110 transition-all focus:outline-none backdrop-blur-md bg-purple-900/20 px-4 py-3 rounded-full border-2 border-purple-500/50 hover:border-purple-400 hover:bg-purple-600/30 duration-300"
+            className={`animate-bounce cursor-pointer hover:scale-110 transition-all duration-500 focus:outline-none px-4 py-3 rounded-full border-2 ${
+              isDarkOverlay
+                ? 'backdrop-blur-md bg-purple-900/20 border-purple-500/50 hover:border-purple-400 hover:bg-purple-600/30'
+                : 'bg-black/30 border-black/50 hover:border-black/70 hover:bg-black/40'
+            }`}
             style={{ width: showText ? '80px' : '56px' }}
           >
             <div className="flex flex-col items-center justify-center gap-2 min-h-[44px]">
-              {showText && <span className="text-sm text-purple-300 font-light whitespace-nowrap">{buttonText}</span>}
-              <svg 
-                className={`w-5 h-5 text-purple-400 transition-transform duration-300 ${scrollDirection === 'up' ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
+              {showText && <span className={`text-sm font-light whitespace-nowrap transition-colors duration-500 ${isDarkOverlay ? 'text-purple-300' : 'text-black/70'}`}>{buttonText}</span>}
+              <svg
+                className={`w-5 h-5 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${isDarkOverlay ? 'text-purple-400' : 'text-black'}`}
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -220,15 +229,19 @@ function App() {
         <div className="md:hidden fixed bottom-8 left-8 z-50">
           <button
             onClick={scrollToNext}
-            className="cursor-pointer hover:scale-110 transition-all focus:outline-none backdrop-blur-md bg-purple-900/20 px-4 py-3 rounded-full border-2 border-purple-500/50 hover:border-purple-400 hover:bg-purple-600/30 duration-300"
+            className={`cursor-pointer hover:scale-110 transition-all duration-500 focus:outline-none px-4 py-3 rounded-full border-2 ${
+              isDarkOverlay
+                ? 'backdrop-blur-md bg-purple-900/20 border-purple-500/50 hover:border-purple-400 hover:bg-purple-600/30'
+                : 'bg-black/30 border-black/50 hover:border-black/70 hover:bg-black/40'
+            }`}
             style={{ width: showText ? '100px' : '56px' }}
           >
             <div className="flex flex-col items-center justify-center gap-2 min-h-[44px]">
-              {showText && <span className="text-xs text-purple-300 font-light whitespace-nowrap">{buttonText}</span>}
-              <svg 
-                className={`w-5 h-5 text-purple-400 transition-transform duration-300 ${scrollDirection === 'up' ? 'rotate-180' : ''}`} 
-                fill="none" 
-                stroke="currentColor" 
+              {showText && <span className={`text-xs font-light whitespace-nowrap transition-colors duration-500 ${isDarkOverlay ? 'text-purple-300' : 'text-black/70'}`}>{buttonText}</span>}
+              <svg
+                className={`w-5 h-5 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${isDarkOverlay ? 'text-purple-400' : 'text-black'}`}
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
