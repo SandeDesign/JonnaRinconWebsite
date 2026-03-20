@@ -9,6 +9,7 @@ import LiveStudio from './components/LiveStudio';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
+import Marquee from './components/Marquee';
 import { Beat, CartItem } from './lib/types';
 
 // FIREBASE IMPORTS - NO MORE database.ts
@@ -75,10 +76,6 @@ function App() {
 
   const scrollToNext = () => {
     const isMobile = window.innerWidth < 768;
-    
-    if (!hasClickedButton) {
-      setHasClickedButton(true);
-    }
     
     if (scrollDirection === 'down') {
       // Normale scroll - GEEN speciale About logica meer
@@ -184,9 +181,6 @@ function App() {
     };
   }, []);
 
-  const isAtEnd = currentSection === sections.length - 1;
-  const showText = !hasClickedButton || isAtEnd;
-  const buttonText = scrollDirection === 'up' ? 'Back' : 'Click Me!';
 
   return (
     <div className="min-h-screen">
@@ -254,6 +248,7 @@ function App() {
       <main className="pt-20">
         <div id="hero" className="h-screen overflow-hidden"><Hero /></div>
         <About />
+        <Marquee />
         <BeatStore onAddToCart={handleAddToCart} />
         <Music />
         <Socials />
