@@ -1,105 +1,181 @@
-import { useState } from 'react';
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import SocialCardCarousel from './SocialCard';
+import { useInView } from '../hooks/useInView';
+import { useCyberDecodeOnChange } from '../hooks/useCyberDecode';
+
+// Soft hyphen in filename — matches actual file on disk
+const SCHERM_PREFIX = 'Scherm\u00ADafbeelding';
+
+interface SlideContent {
+  title: string;
+  text: ReactNode;
+  imageSrc: string;
+  imageAlt: string;
+  location: string;
+  caption: string;
+  likes: number;
+}
+
+const SLIDES: SlideContent[] = [
+  {
+    title: 'The Story',
+    text: (
+      <>
+        Jonathan aka <span className="text-white font-semibold">j18</span> is a human being with a creative mind which is described by many people as{' '}
+        <span className="italic text-gray-300">"not from this world"</span>. You may already recognize his{' '}
+        <span className="text-white font-semibold">J18 tag</span> at the beginning and/or end of every track, or by the clock sound in his work.
+      </>
+    ),
+    imageSrc: '/DJI_20251115114029_0004_D.JPG',
+    imageAlt: 'Jonna Rincon aerial',
+    location: 'Netherlands',
+    caption: 'Creative mind at work. The story continues...',
+    likes: 847,
+  },
+  {
+    title: 'The Sound',
+    text: (
+      <>
+        Mostly known for his raw and authentic{' '}
+        <span className="text-white/80 font-medium">moombahton</span> style in tracks or beats. But have in mind that this young man has much to offer. From modern{' '}
+        <span className="text-white/80 font-medium">rap beats</span> to the dirty old classic{' '}
+        <span className="text-white/80 font-medium">hip hop</span> beats, from warm and smooth{' '}
+        <span className="text-white/80 font-medium">r&b</span> instrumentals to the world of{' '}
+        <span className="text-white/80 font-medium">EDM</span> to studying to jonna's{' '}
+        <span className="text-white/80 font-medium">lo-fi</span> instrumentals which he made on his trip on earth.
+      </>
+    ),
+    imageSrc: '/DJ Screenshot 3-2-26.png',
+    imageAlt: 'Jonna Rincon DJ',
+    location: 'DJ Set',
+    caption: 'Raw and authentic. From moombahton to lo-fi.',
+    likes: 623,
+  },
+  {
+    title: 'The Journey',
+    text: (
+      <>
+        Born in <span className="text-white font-semibold">Maastricht, The Netherlands</span> & based in{' '}
+        <span className="text-white font-semibold">Tilburg</span> he began making music when first made contact with any music instrument nearby. When he visited his nephews in{' '}
+        <span className="text-white font-semibold">Dominican Republic</span>, he was shown{' '}
+        <span className="text-white font-semibold">FL Studio</span> for the first time. When Jonna saw that it was possible to make a track with a PC, he made his first track immediately together with his oldest nephew and that's where the music production journey started.
+      </>
+    ),
+    imageSrc: `/${SCHERM_PREFIX} 2025-12-16 om 17.09.27.png`,
+    imageAlt: 'Jonna Rincon studio',
+    location: 'In the studio',
+    caption: 'Where it all began. FL Studio changed everything.',
+    likes: 512,
+  },
+  {
+    title: 'The Grind',
+    text: (
+      <>
+        With over <span className="text-white font-semibold">10+ years</span> of production under his belt, Jonna continues to push boundaries. From his home base in{' '}
+        <span className="text-white font-semibold">Tilburg</span> he works with artists worldwide, always staying true to his roots while exploring new sounds.
+      </>
+    ),
+    imageSrc: '/IMG_1027.jpg',
+    imageAlt: 'Jonna Rincon',
+    location: 'Tilburg, NL',
+    caption: '10+ years of production. The grind never stops.',
+    likes: 934,
+  },
+  {
+    title: 'The Roots',
+    text: (
+      <>
+        <span className="italic text-gray-300">(J18=Jeighteen)</span> — his tag, his clothing brand & his nickname. Everything started in{' '}
+        <span className="text-white font-semibold">Maastricht</span>. The city where the roots are. Born and raised, now based in the Netherlands working with artists worldwide.
+      </>
+    ),
+    imageSrc: '/Maastricht Screenshot 15-12-25.png',
+    imageAlt: 'Jonna Rincon Maastricht',
+    location: 'Maastricht, NL',
+    caption: 'Where the roots are. Born and raised.',
+    likes: 718,
+  },
+];
 
 export default function About() {
-  const [currentImage, setCurrentImage] = useState(0);
-
-  const images = [
-    '/DJI_20251115114029_0004_D.JPG',
-    '/IMG_1027.jpg',
-    '/Maastricht Screenshot 15-12-25.png'
-  ];
-
-  const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
-  };
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [textRef, textInView] = useInView();
+  const current = SLIDES[activeIndex];
+  const decodedTitle = useCyberDecodeOnChange(current.title);
 
   return (
-    <section id="about" className="py-8 md:py-80 pb-49 px-4 bg-transparent">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-32">
-          {/* GALERIJ - Met ID en extra spacing op mobile */}
-          <div id="about-gallery" className="py-12 md:py-0">
-            {/* Main Image carousel */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              {images.map((img, idx) => (
-                <div
-                  key={idx}
-                  className={`transition-opacity duration-500 ${
-                    idx === currentImage ? 'opacity-100' : 'opacity-0 absolute inset-0'
+    <section id="about" className="py-12 md:py-20 px-4 bg-transparent">
+      <div className="max-w-[1100px] mx-auto">
+
+        {/* Main layout: text left, carousel right */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+
+          {/* Left side — text content */}
+          <div
+            ref={textRef}
+            className={`transition-all duration-700 ease-out ${
+              textInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            {/* Slide counter */}
+            <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-medium">
+              {String(activeIndex + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
+            </p>
+
+            {/* Title with transition */}
+            <div className="overflow-hidden mb-3 md:mb-4">
+              <h2
+                key={current.title}
+                className="text-3xl md:text-5xl font-black uppercase tracking-wider"
+              >
+                {decodedTitle}
+              </h2>
+            </div>
+            <div className="w-12 h-0.5 bg-white/30 mb-4 md:mb-6" />
+
+            {/* Body text with transition */}
+            <div
+              key={activeIndex}
+              className="animate-fade-in"
+            >
+              <p className="text-base md:text-lg text-gray-400 leading-relaxed">
+                {current.text}
+              </p>
+            </div>
+
+            {/* Slide nav pills (desktop) */}
+            <div className="hidden md:flex gap-2 mt-8">
+              {SLIDES.map((slide, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveIndex(i)}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider font-medium rounded-full border transition-all duration-300 ${
+                    i === activeIndex
+                      ? 'bg-white text-black border-white'
+                      : 'bg-transparent text-gray-500 border-white/10 hover:border-white/30 hover:text-gray-300'
                   }`}
                 >
-                  <img
-                    src={img}
-                    alt={`Jonna Rincon ${idx + 1}`}
-                    className="w-full h-auto object-cover"
-                    style={{ minHeight: '300px', maxHeight: '500px' }}
-                  />
-                </div>
+                  {slide.title}
+                </button>
               ))}
             </div>
-
-            {/* Navigation buttons onder foto */}
-            <div className="flex items-center justify-center gap-6 mt-6">
-              <button
-                onClick={prevImage}
-                className="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-black/60 backdrop-blur-md border border-purple-500/30 flex items-center justify-center hover:bg-purple-600/80 hover:scale-110 transition-all"
-                aria-label="Previous image"
-              >
-                <ChevronUp className="w-5 h-5 lg:w-7 lg:h-7 rotate-[-90deg]" />
-              </button>
-
-              <div className="flex gap-2">
-                {images.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentImage(idx)}
-                    className={`h-2 rounded-full transition-all ${
-                      idx === currentImage ? 'w-8 bg-purple-400' : 'w-2 bg-gray-600'
-                    }`}
-                    aria-label={`Go to image ${idx + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={nextImage}
-                className="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-black/60 backdrop-blur-md border border-purple-500/30 flex items-center justify-center hover:bg-purple-600/80 hover:scale-110 transition-all"
-                aria-label="Next image"
-              >
-                <ChevronDown className="w-5 h-5 lg:w-7 lg:h-7 rotate-[-90deg]" />
-              </button>
-            </div>
           </div>
 
-          {/* BIO - Met ID en VEEL KLEINERE TEKST + MINDER PADDING TOP MOBILE */}
-          <div id="about-bio" className="pt-4 md:pt-0">
-            <h3 className="text-2xl lg:text-4xl font-bold mb-2 md:mb-4 neon-glow">About Jonna</h3>
-            <div className="space-y-2 text-gray-300 text-xs lg:text-lg leading-relaxed">
-              <p>
-                Jonathan aka <span className="text-purple-400 font-semibold">j18</span> is a human being with a creative mind which is described by many people as <span className="italic">"not from this world"</span>. You may already recognize his J18 tag at the beginning and/or end of every track, or by the clock sound in his work.
-              </p>
-              <p>
-                Mostly known for his raw and authentic moombahton style in tracks or beats. But have in mind that this young man has much to offer. From modern rap beats to the dirty old classic hip hop beats, from warm and smooth r&b instrumentals to the world of EDM (electronic dance music) to studying to jonna's lo-fi instrumentals which he made on his trip on earth;
-              </p>
-              <p>
-                Born in Maastricht, The Netherlands & based in Tilburg he began making music when first made contact with any music instrument nearby. When he visited his nephews in Dominican Republic, he was shown FL Studio for the first time. When Jonna saw that it was possible to make a track with a PC, he made his first track immediately together with his oldest nephew and that's where the music production journey started.
-              </p>
-              <p>
-                10+ Years later and the stuff what he can do with a creative program like that is absolute crazy. From the most little things and the most weird noises....never-mind, Jonna Rincon is able to make something out of it... And you can hear that on songs like <span className="text-purple-400">___</span> and <span className="text-purple-400">___</span> which have been played on MTV and the Dutch Radio. Not there yet, but on the way. J18
-              </p>
-              <p className="text-purple-300 font-semibold text-xs lg:text-xl italic">
-                (J18=Jeighteen) (Jeighteen=his tag & clothing/brand & nickname)
-              </p>
-              <p className="text-purple-300 font-semibold text-xs lg:text-xl">
-                Based in the Netherlands, working with artists worldwide.
-              </p>
-            </div>
+          {/* Right side — social card carousel */}
+          <div className="flex justify-center md:justify-end">
+            <SocialCardCarousel
+              slides={SLIDES.map((s) => ({
+                imageSrc: s.imageSrc,
+                imageAlt: s.imageAlt,
+                location: s.location,
+                caption: s.caption,
+                likes: s.likes,
+              }))}
+              activeIndex={activeIndex}
+              onIndexChange={setActiveIndex}
+            />
           </div>
+
         </div>
       </div>
     </section>

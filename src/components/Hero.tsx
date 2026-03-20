@@ -1,9 +1,59 @@
-import { Music, Sparkles, Play } from 'lucide-react';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
+
+const TARGET_TEXT = 'JONNA RINCON';
+const GLYPHS = '!@#$%^&*0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function useCyberDecode(text: string, startDelay = 300) {
+  const [display, setDisplay] = useState('');
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let lockedCount = 0;
+    let interval: ReturnType<typeof setInterval>;
+    let tickCount = 0;
+
+    const timeout = setTimeout(() => {
+      interval = setInterval(() => {
+        tickCount++;
+
+        // Lock next character every 5 ticks (~150ms at 30ms interval) - slower decode
+        if (tickCount % 5 === 0 && lockedCount < text.length) {
+          lockedCount++;
+        }
+
+        // Build display string
+        let result = '';
+        for (let i = 0; i < text.length; i++) {
+          if (i < lockedCount) {
+            result += text[i];
+          } else if (text[i] === ' ') {
+            result += ' ';
+          } else {
+            result += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          }
+        }
+        setDisplay(result);
+
+        if (lockedCount >= text.length) {
+          clearInterval(interval);
+          setDone(true);
+        }
+      }, 30);
+    }, startDelay);
+
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [text, startDelay]);
+
+  return { display, done };
+}
 
 export default function Hero() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const gradientRef = useRef<HTMLDivElement>(null);
+  const { display, done } = useCyberDecode(TARGET_TEXT);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY;
@@ -46,22 +96,15 @@ export default function Hero() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
-  const scrollToNextSection = () => {
-    const aboutSection = document.getElementById('about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center -mt-24">
-      {/* Fullscreen Background Image - FIXED zodat het altijd zichtbaar blijft */}
+      {/* Fullscreen Background Image - FIXED */}
       <div className="fixed inset-0 w-full h-screen -z-10">
         <img
-          src="/DJ Screenshot 3-2-26.png"
+          src="/JEIGHTENESIS.jpg"
           alt="Jonna Rincon"
           className="w-full h-full object-cover"
-          style={{objectFit: 'cover', objectPosition: 'center'}}
+          style={{objectPosition: 'center'}}
         />
         {/* Dynamische Overlay - wordt donkerder + blurred bij scrollen */}
         <div
@@ -71,34 +114,44 @@ export default function Hero() {
         ></div>
         <div
           ref={gradientRef}
-          className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40"
+          className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"
           style={{ opacity: 0 }}
         ></div>
       </div>
 
-      {/* Content Container - Buttons iets onder het midden */}
-      <div className="relative z-10 w-full min-h-screen flex items-center justify-center px-6 pt-24">
-        <div className="flex flex-col sm:flex-row gap-4 animate-fade-in">
-          {/* Browse Beats Button - Transparant met paarse omlijning */}
+      {/* Content — titel gecentreerd, buttons onderaan (onder de pet) */}
+      <div className="relative z-10 w-full h-screen flex flex-col items-center justify-center px-6">
+        {/* JONNA RINCON — cyber decode animatie */}
+        <h1
+          className="text-white font-black uppercase leading-none tracking-tighter text-center select-none"
+          style={{
+            fontSize: 'clamp(2.6rem, 10.2vw, 10.2rem)',
+            fontFamily: 'inherit',
+            minHeight: '1.1em',
+          }}
+        >
+          {display || '\u00A0'}
+        </h1>
+
+        {/* Buttons — absoluut gepositioneerd onderaan het scherm, onder de pet */}
+        <div
+          className="absolute bottom-12 md:bottom-16 flex flex-col sm:flex-row gap-3 transition-opacity duration-700"
+          style={{ opacity: done ? 1 : 0 }}
+        >
           <a
             href="#beats"
-            className="group relative px-10 py-5 backdrop-blur-md bg-purple-900/20 border-2 border-purple-500/50 rounded-xl font-bold text-xl transition-all duration-300 hover:border-purple-400 hover:bg-purple-600/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-3 min-w-[220px]"
+            className="px-8 py-3.5 bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 hover:scale-105 active:scale-95 text-center min-w-[180px]"
           >
-            <Play className="w-6 h-6" fill="currentColor" />
-            <span>Browse Beats</span>
+            Browse Beats
           </a>
-
-          {/* Listen Now Button - Transparant met paarse omlijning */}
           <a
             href="#music"
-            className="group relative px-10 py-5 backdrop-blur-md bg-purple-900/20 border-2 border-purple-500/50 rounded-xl font-bold text-xl transition-all duration-300 hover:border-purple-400 hover:bg-purple-600/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-3 min-w-[220px]"
+            className="px-8 py-3.5 bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 hover:scale-105 active:scale-95 text-center min-w-[180px]"
           >
-            <span>Listen Now</span>
+            Listen Now
           </a>
         </div>
       </div>
-
-      {/* Scroll Indicator - VERWIJDERD */}
     </section>
   );
 }
