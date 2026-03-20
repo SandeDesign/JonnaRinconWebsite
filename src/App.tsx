@@ -9,6 +9,7 @@ import LiveStudio from './components/LiveStudio';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
+import Marquee from './components/Marquee';
 import { Beat, CartItem } from './lib/types';
 
 // FIREBASE IMPORTS - NO MORE database.ts
@@ -254,6 +255,7 @@ function App() {
       <main className="pt-20">
         <div id="hero" className="h-screen overflow-hidden"><Hero /></div>
         <About />
+        <Marquee />
         <BeatStore onAddToCart={handleAddToCart} />
         <Music />
         <Socials />
