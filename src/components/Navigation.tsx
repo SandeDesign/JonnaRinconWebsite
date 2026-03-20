@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,13 +6,13 @@ import { useAuth } from '../contexts/AuthContext';
 interface NavigationProps {
   cartItemCount?: number;
   onCartClick?: () => void;
+  isDarkOverlay?: boolean;
 }
 
-export default function Navigation({ cartItemCount = 0, onCartClick }: NavigationProps) {
+export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverlay = false }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [scrolled, setScrolled] = useState(false);
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [authName, setAuthName] = useState('');
@@ -49,13 +49,6 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
     }
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -105,30 +98,21 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
       <div className="w-full pl-4 pr-4 py-4 md:py-5">
         {/* DESKTOP Layout */}
         <div className="hidden md:flex items-center justify-between">
-          {/* Logo animatie - midden → links */}
-          <div className={`absolute left-1/2 -translate-x-1/2 transition-opacity duration-500 ${
-            scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
-          }`}>
-            <Link to="/" className="flex items-center group">
-              <img
-                src="/Jonna Rincon Logo WH.png"
-                alt="Jonna Rincon"
-                className="h-32 md:h-44 w-auto"
-              />
-            </Link>
-          </div>
-
-          <div className={`transition-opacity duration-500 ${
-            scrolled ? 'opacity-100' : 'opacity-0'
-          }`}>
-            <Link to="/" className="flex items-center group">
-              <img
-                src="/Jonna Rincon Logo WH.png"
-                alt="Jonna Rincon"
-                className="h-32 md:h-44 w-auto"
-              />
-            </Link>
-          </div>
+          {/* Logo altijd linksboven - zwart/wit crossfade op basis van overlay */}
+          <Link to="/" className="relative" style={{ width: '180px', height: '60px' }}>
+            <img
+              src="/Jonna Rincon Logo BL.png"
+              alt="Jonna Rincon"
+              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              style={{ opacity: isDarkOverlay ? 0 : 1 }}
+            />
+            <img
+              src="/Jonna Rincon Logo WH.png"
+              alt="Jonna Rincon"
+              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              style={{ opacity: isDarkOverlay ? 1 : 0 }}
+            />
+          </Link>
 
           <div className="flex items-center gap-5">
             {user ? (
@@ -176,120 +160,66 @@ export default function Navigation({ cartItemCount = 0, onCartClick }: Navigatio
           </div>
         </div>
 
-        {/* MOBILE Layout */}
-        <div className="md:hidden">
-          {/* Positie 1: Top (niet scrolled) - Logo MIDDEN + Buttons ONDER logo */}
-          <div className={`transition-opacity duration-500 ${
-            scrolled ? 'opacity-0 pointer-events-none absolute' : 'opacity-100'
-          }`}>
-            <div className="flex justify-center mb-4">
-              <Link to="/" className="flex items-center">
-                <img
-                  src="/Jonna Rincon Logo WH.png"
-                  alt="Jonna Rincon"
-                  className="h-24 w-auto"
-                />
-              </Link>
-            </div>
+        {/* MOBILE Layout - Logo altijd links, buttons rechts */}
+        <div className="md:hidden flex items-center justify-between">
+          {/* Logo linksboven - zwart/wit crossfade */}
+          <Link to="/" className="relative" style={{ width: '120px', height: '40px' }}>
+            <img
+              src="/Jonna Rincon Logo BL.png"
+              alt="Jonna Rincon"
+              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              style={{ opacity: isDarkOverlay ? 0 : 1 }}
+            />
+            <img
+              src="/Jonna Rincon Logo WH.png"
+              alt="Jonna Rincon"
+              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              style={{ opacity: isDarkOverlay ? 1 : 0 }}
+            />
+          </Link>
 
-            <div className="flex items-center justify-center gap-3">
-              {user ? (
-                <Link
-                  to={getDashboardLink()}
-                  className="rounded-full bg-white flex items-center justify-center text-black font-bold text-sm hover:scale-110 transition-all duration-300"
-                  style={{width: '30px', height: '30px'}}
-                >
-                  {getUserInitials()}
-                </Link>
-              ) : (
-                <button
-                  onClick={handleAuthClick}
-                  className="rounded-full glass flex items-center justify-center text-white hover:text-gray-200 hover:scale-110 transition-all duration-300"
-                  style={{width: '30px', height: '30px'}}
-                >
-                  <User className="w-4 h-4" />
-                </button>
-              )}
-
-              {onCartClick && (
-                <button
-                  onClick={onCartClick}
-                  className="relative glass rounded-full hover:scale-110 transition-all flex items-center justify-center"
-                  style={{width: '30px', height: '30px'}}
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-600 rounded-full flex items-center justify-center text-xs font-black" style={{width: '16px', height: '16px', fontSize: '8px'}}>
-                      {cartItemCount}
-                    </span>
-                  )}
-                </button>
-              )}
-
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="glass rounded-full hover:scale-110 transition-all flex items-center justify-center"
-                style={{width: '30px', height: '30px'}}
-              >
-                {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Positie 2: Na scroll - Logo LINKS + Buttons RECHTS */}
-          <div className={`transition-opacity duration-500 flex items-center justify-between ${
-            scrolled ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'
-          }`}>
-            <Link to="/" className="flex items-start">
-              <img
-                src="/Jonna Rincon Logo WH.png"
-                alt="Jonna Rincon"
-                className="h-24 w-auto"
-              />
-            </Link>
-
-            <div className="flex items-center gap-3">
-              {user ? (
-                <Link
-                  to={getDashboardLink()}
-                  className="rounded-full bg-white flex items-center justify-center text-black font-bold text-xs hover:scale-110 transition-all duration-300"
-                  style={{width: '36px', height: '36px'}}
-                >
-                  {getUserInitials()}
-                </Link>
-              ) : (
-                <button
-                  onClick={handleAuthClick}
-                  className="rounded-full glass flex items-center justify-center text-white hover:text-gray-200 hover:scale-110 transition-all duration-300"
-                  style={{width: '36px', height: '36px'}}
-                >
-                  <User className="w-5 h-5" />
-                </button>
-              )}
-
-              {onCartClick && (
-                <button
-                  onClick={onCartClick}
-                  className="relative glass rounded-full hover:scale-110 transition-all flex items-center justify-center"
-                  style={{width: '36px', height: '36px'}}
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-600 rounded-full flex items-center justify-center text-xs font-black" style={{width: '20px', height: '20px', fontSize: '10px'}}>
-                      {cartItemCount}
-                    </span>
-                  )}
-                </button>
-              )}
-
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="glass rounded-full hover:scale-110 transition-all flex items-center justify-center"
+          {/* Buttons rechts - 36px */}
+          <div className="flex items-center gap-3">
+            {user ? (
+              <Link
+                to={getDashboardLink()}
+                className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold text-xs hover:scale-110 transition-all duration-300"
                 style={{width: '36px', height: '36px'}}
               >
-                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {getUserInitials()}
+              </Link>
+            ) : (
+              <button
+                onClick={handleAuthClick}
+                className="rounded-full glass flex items-center justify-center text-white hover:text-gray-200 hover:scale-110 transition-all duration-300"
+                style={{width: '36px', height: '36px'}}
+              >
+                <User className="w-5 h-5" />
               </button>
-            </div>
+            )}
+
+            {onCartClick && (
+              <button
+                onClick={onCartClick}
+                className="relative glass rounded-full hover:scale-110 transition-all flex items-center justify-center"
+                style={{width: '36px', height: '36px'}}
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-purple-600 rounded-full flex items-center justify-center text-xs font-black" style={{width: '20px', height: '20px', fontSize: '10px'}}>
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+            )}
+
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="glass rounded-full hover:scale-110 transition-all flex items-center justify-center"
+              style={{width: '36px', height: '36px'}}
+            >
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 

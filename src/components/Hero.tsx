@@ -62,6 +62,7 @@ export default function Hero() {
     const scrollPercent = (scrollPosition / windowHeight) * 100;
 
     // Opacity curve
+    const isMobile = window.innerWidth < 768;
     let opacity: number;
     if (scrollPercent < 10) {
       opacity = (scrollPercent / 10) * 0.3;
@@ -69,6 +70,11 @@ export default function Hero() {
       opacity = 0.3 + ((scrollPercent - 10) / 60) * 0.5;
     } else {
       opacity = 0.8;
+    }
+
+    // Mobiel: hogere minimum overlay zodat UI-elementen leesbaar blijven
+    if (isMobile) {
+      opacity = Math.max(opacity, 0.25);
     }
 
     const blur = Math.min((scrollPosition / windowHeight) * 10, 10);
