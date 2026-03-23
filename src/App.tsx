@@ -23,6 +23,7 @@ function App() {
   const [scrollDirection, setScrollDirection] = useState<'down' | 'up'>('down');
   const [hasClickedButton, setHasClickedButton] = useState(false);
   const [isDarkOverlay, setIsDarkOverlay] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Dynamische sections
   const getSections = () => {
@@ -191,7 +192,7 @@ function App() {
 
   return (
     <div className="min-h-screen">
-      <Navigation cartItemCount={cartItems.length} onCartClick={() => setIsCartOpen(true)} isDarkOverlay={isDarkOverlay} />
+      <Navigation cartItemCount={cartItems.length} onCartClick={() => setIsCartOpen(true)} isDarkOverlay={isDarkOverlay} onMenuToggle={setIsMenuOpen} />
 
       <ShoppingCart
         isOpen={isCartOpen}
@@ -201,34 +202,36 @@ function App() {
         onCheckout={handleCheckout}
       />
 
-      {/* Scroll Button - Martin Garrix style: centered bottom, minimal chevron */}
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
-        <button
-          onClick={scrollToNext}
-          className="animate-bounce cursor-pointer hover:scale-125 transition-all duration-500 focus:outline-none flex flex-col items-center gap-2"
-        >
-          {showText && (
-            <span
-              className={`text-[10px] md:text-xs uppercase tracking-[0.3em] font-light transition-colors duration-500 ${
-                isDarkOverlay ? 'text-white/70' : 'text-black/60'
-              }`}
-            >
-              {scrollDirection === 'up' ? 'Back to top' : 'Scroll'}
-            </span>
-          )}
-          <svg
-            className={`w-6 h-6 md:w-7 md:h-7 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${
-              isDarkOverlay ? 'text-white' : 'text-black'
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
+      {/* Scroll Button — bottom-left, hidden when menu is open */}
+      {!isMenuOpen && (
+        <div className="fixed bottom-10 left-8 z-50">
+          <button
+            onClick={scrollToNext}
+            className="animate-bounce cursor-pointer hover:scale-125 transition-all duration-500 focus:outline-none flex flex-col items-center gap-2"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-          </svg>
-        </button>
-      </div>
+            {showText && (
+              <span
+                className={`text-[10px] md:text-xs uppercase tracking-[0.3em] font-light transition-colors duration-500 ${
+                  isDarkOverlay ? 'text-white/70' : 'text-black/60'
+                }`}
+              >
+                {scrollDirection === 'up' ? 'Back to top' : 'Scroll'}
+              </span>
+            )}
+            <svg
+              className={`w-6 h-6 md:w-7 md:h-7 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${
+                isDarkOverlay ? 'text-white' : 'text-black'
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       <main className="pt-20">
         <div id="hero" className="h-screen overflow-hidden"><Hero /></div>

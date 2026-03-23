@@ -88,13 +88,13 @@ export default function Marquee() {
           font-weight: 900;
         }
         .marquee-ltr .marquee-inner {
-          animation: marquee-scroll-ltr 40s linear infinite;
+          animation: marquee-scroll-ltr 50s linear infinite;
         }
         .marquee-rtl .marquee-inner {
-          animation: marquee-scroll-rtl 35s linear infinite;
+          animation: marquee-scroll-rtl 44s linear infinite;
         }
         .marquee-ltr-slow .marquee-inner {
-          animation: marquee-scroll-ltr 50s linear infinite;
+          animation: marquee-scroll-ltr 62s linear infinite;
         }
         @keyframes marquee-scroll-ltr {
           0% { transform: translateX(0); }
