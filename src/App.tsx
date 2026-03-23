@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
 import Marquee from './components/Marquee';
 import MarqueeRed from './components/MarqueeRed';
+import SectionDivider from './components/SectionDivider';
 import { Beat, CartItem } from './lib/types';
 
 // FIREBASE IMPORTS
@@ -186,7 +187,7 @@ function App() {
   const showText = !hasClickedButton || isAtEnd;
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
       <Navigation
         cartItemCount={cartItems.length}
         onCartClick={() => setIsCartOpen(true)}
@@ -244,13 +245,17 @@ function App() {
         <Marquee />
         <BeatStore onAddToCart={handleAddToCart} />
 
-        {/* === ALL SECTIONS — consistent dark theme === */}
-        <Music />
-        <Socials />
-        <MarqueeRed />
-        <div id="live-studio"><LiveStudio /></div>
-        <Contact />
-        <Footer />
+        {/* === ALL SECTIONS — consistent dark theme with solid bg
+            so the hero fixed image doesn't bleed through === */}
+        <div className="bg-black relative z-10">
+          <SectionDivider />
+          <Music />
+          <Socials />
+          <MarqueeRed />
+          <div id="live-studio"><LiveStudio /></div>
+          <Contact />
+          <Footer />
+        </div>
       </main>
     </div>
   );

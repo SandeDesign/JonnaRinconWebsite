@@ -152,7 +152,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
       <div className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
         {/* Logo — top-left */}
         <Link to="/" className="block flex-shrink-0">
-          <div className="relative h-[60px] md:h-[80px]">
+          <div className="relative h-[70px] md:h-[90px]">
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
@@ -186,7 +186,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           {/* MENU button */}
           <button
             onClick={openMenu}
-            className={`text-sm md:text-base font-medium uppercase tracking-[0.2em] transition-all duration-500 hover:opacity-60 cursor-pointer ${navTextColor}`}
+            className={`text-base md:text-lg font-bold uppercase tracking-[0.25em] transition-all duration-500 hover:opacity-60 cursor-pointer ${navTextColor}`}
           >
             Menu
           </button>
