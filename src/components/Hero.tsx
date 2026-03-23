@@ -53,6 +53,7 @@ function useCyberDecode(text: string, startDelay = 300) {
 export default function Hero() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const gradientRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const { display, done } = useCyberDecode(TARGET_TEXT);
 
   const handleScroll = useCallback(() => {
@@ -61,21 +62,26 @@ export default function Hero() {
 
     const scrollPercent = (scrollPosition / windowHeight) * 100;
 
-    // Opacity curve
+    // Opacity curve — now goes to 1.0 so hero fully fades to black before logo section
     const isMobile = window.innerWidth < 768;
     let opacity: number;
     if (scrollPercent < 10) {
       opacity = (scrollPercent / 10) * 0.3;
     } else if (scrollPercent < 70) {
       opacity = 0.3 + ((scrollPercent - 10) / 60) * 0.5;
+    } else if (scrollPercent < 200) {
+      // Continue darkening until fully black
+      opacity = 0.8 + ((scrollPercent - 70) / 130) * 0.2;
     } else {
-      opacity = 0.8;
+      opacity = 1;
     }
 
     // Mobiel: hogere minimum overlay zodat UI-elementen leesbaar blijven
     if (isMobile) {
       opacity = Math.max(opacity, 0.25);
     }
+
+    opacity = Math.min(opacity, 1);
 
     const blur = Math.min((scrollPosition / windowHeight) * 10, 10);
 
@@ -86,7 +92,12 @@ export default function Hero() {
       overlayRef.current.style.webkitBackdropFilter = `blur(${blur}px)`;
     }
     if (gradientRef.current) {
-      gradientRef.current.style.opacity = String(opacity);
+      gradientRef.current.style.opacity = String(Math.min(opacity, 0.8));
+    }
+    // Hide the hero image completely once we're deep into the page
+    // This prevents it from showing through the logo reveal section
+    if (imgRef.current) {
+      imgRef.current.style.opacity = scrollPercent > 250 ? '0' : '1';
     }
   }, []);
 
@@ -101,9 +112,10 @@ export default function Hero() {
       {/* Fullscreen Background Image - FIXED */}
       <div className="fixed inset-0 w-full h-screen -z-10">
         <img
+          ref={imgRef}
           src="/JEIGHTENESIS.jpg"
           alt="Jonna Rincon"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-opacity duration-500"
           style={{objectPosition: 'center'}}
         />
         {/* Dynamische Overlay - wordt donkerder + blurred bij scrollen */}
