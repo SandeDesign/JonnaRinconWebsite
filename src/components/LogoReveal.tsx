@@ -6,12 +6,12 @@ interface LogoRevealProps {
 
 export default function LogoReveal({ onPassedReveal }: LogoRevealProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const circleRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
-  const whiteOverlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!sectionRef.current || !logoRef.current || !whiteOverlayRef.current) return;
+      if (!sectionRef.current || !circleRef.current || !logoRef.current) return;
 
       const rect = sectionRef.current.getBoundingClientRect();
       const vh = window.innerHeight;
@@ -20,36 +20,39 @@ export default function LogoReveal({ onPassedReveal }: LogoRevealProps) {
       const rawProgress = (vh - rect.top) / (vh + sectionHeight);
       const progress = Math.max(0, Math.min(1, rawProgress));
 
-      // Phase 1 (0–0.15): Logo fades in at normal size
-      // Phase 2 (0.15–0.75): Logo scales up — white pixels fill the viewport
-      // Phase 3 (0.75–1.0): White overlay completes the transition
+      // Phase 1 (0–0.20): Logo fades in centered on dark bg
+      // Phase 2 (0.20–0.80): White circle expands from center via clip-path
+      // Phase 3 (0.80–1.0): Circle fills viewport, logo fades out
 
       let logoOpacity: number;
-      let logoScale: number;
-      let whiteOverlayOpacity: number;
+      let circleRadius: number; // percentage for clip-path circle()
 
-      if (progress < 0.15) {
-        const p = progress / 0.15;
+      if (progress < 0.20) {
+        // Logo fades in
+        const p = progress / 0.20;
         logoOpacity = p;
-        logoScale = 1;
-        whiteOverlayOpacity = 0;
-      } else if (progress < 0.75) {
-        const p = (progress - 0.15) / 0.6;
+        circleRadius = 0;
+      } else if (progress < 0.80) {
+        // Circle expands from center — eased curve
+        const p = (progress - 0.20) / 0.60;
         logoOpacity = 1;
-        logoScale = 1 + Math.pow(p, 1.8) * 50;
-        whiteOverlayOpacity = Math.max(0, (p - 0.6) / 0.4);
+        // Ease-out curve: starts fast, slows down — feels natural
+        circleRadius = Math.pow(p, 0.7) * 150; // 0% → 150% (150% guarantees full coverage)
       } else {
-        const p = (progress - 0.75) / 0.25;
-        logoOpacity = 1;
-        logoScale = 51;
-        whiteOverlayOpacity = Math.min(1, 0.4 + p * 0.6);
+        // Complete — logo fades out, circle covers everything
+        const p = (progress - 0.80) / 0.20;
+        logoOpacity = 1 - p;
+        circleRadius = 150;
       }
 
-      logoRef.current.style.opacity = String(logoOpacity);
-      logoRef.current.style.transform = `translate(-50%, -50%) scale(${logoScale})`;
-      whiteOverlayRef.current.style.opacity = String(whiteOverlayOpacity);
+      // Apply clip-path circle — this is the reveal effect
+      // circle(Radius at 50% 50%) = circle expanding from center
+      circleRef.current.style.clipPath = `circle(${circleRadius}% at 50% 50%)`;
 
-      onPassedReveal?.(progress > 0.7);
+      // Logo sits on top
+      logoRef.current.style.opacity = String(logoOpacity);
+
+      onPassedReveal?.(progress > 0.65);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -64,31 +67,26 @@ export default function LogoReveal({ onPassedReveal }: LogoRevealProps) {
       className="relative"
       style={{ height: '300vh' }}
     >
-      {/* Sticky viewport — hero bg (fixed) is visible through this since it's NOT bg-black.
-          The hero's own overlay darkens it. The logo white pixels act as the reveal. */}
-      <div className="sticky top-0 h-screen overflow-hidden bg-black/90">
-        {/* White logo — starts small, scales up. The white pixels fill the screen
-            creating the transition from dark to light. You can still see the
-            hero subtly through the bg-black/90 behind the logo. */}
+      <div className="sticky top-0 h-screen overflow-hidden bg-black">
+        {/* White circle that expands from center via clip-path.
+            Pure CSS — no images needed, works in all modern browsers. */}
+        <div
+          ref={circleRef}
+          className="absolute inset-0 bg-white"
+          style={{ clipPath: 'circle(0% at 50% 50%)' }}
+        />
+
+        {/* Logo centered — visible during the transition */}
         <img
           ref={logoRef}
           src="/Jonna Rincon Logo WH.png"
           alt=""
-          className="absolute top-1/2 left-1/2 pointer-events-none will-change-transform"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
           style={{
             height: '80px',
             width: 'auto',
-            transform: 'translate(-50%, -50%) scale(1)',
             opacity: 0,
-            transformOrigin: 'center center',
           }}
-        />
-
-        {/* White overlay — ensures clean solid white for transition to light mode */}
-        <div
-          ref={whiteOverlayRef}
-          className="absolute inset-0 bg-white pointer-events-none"
-          style={{ opacity: 0 }}
         />
       </div>
     </section>
