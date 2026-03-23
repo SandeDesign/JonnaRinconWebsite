@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Mail, Instagram, Youtube, Music, Cloud as CloudIcon, ArrowUpRight } from 'lucide-react';
+import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 
 const socialLinks = [
   { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/jonnarincon/' },
@@ -13,6 +14,7 @@ const socialLinks = [
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: 'commission', message: '' });
+  const heroTitle = useCyberDecodeInView('Contact');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,9 +34,9 @@ export default function ContactPage() {
       {/* Hero */}
       <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.4em] mb-4">Reach Out</p>
-          <h1 className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
-            Contact
+          <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-4">Reach Out</p>
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
+            {heroTitle.display}
           </h1>
           <p className="text-white/30 text-sm md:text-base mt-6 max-w-md">
             Let's create something amazing together. Get in touch for collaborations, commissions, or bookings.

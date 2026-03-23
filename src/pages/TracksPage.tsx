@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3, Radio, Award, Mic2 } from 'lucide-react';
+import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 
 const tabs = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -64,6 +65,7 @@ const skills = [
 export default function TracksPage() {
   const [activeTab, setActiveTab] = useState('tracks');
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
+  const heroTitle = useCyberDecodeInView('Music');
 
   return (
     <div className="min-h-screen text-white">
@@ -78,9 +80,9 @@ export default function TracksPage() {
       {/* Hero Section */}
       <section className="relative min-h-[70vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.4em] mb-4">Discography</p>
-          <h1 className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
-            Music
+          <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-4">Discography</p>
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
+            {heroTitle.display}
           </h1>
           <p className="text-white/30 text-sm md:text-base mt-6 max-w-lg">
             Over 10 years of production in FL Studio. 100+ original tracks, 100+ remixes, millions of streams.
@@ -133,7 +135,7 @@ export default function TracksPage() {
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight">Listen Now</h2>
-                  <p className="text-white/25 text-sm mt-2">Stream on Spotify — 100+ original tracks</p>
+                  <p className="text-red-500/40 text-sm mt-2">Stream on Spotify — 100+ original tracks</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
