@@ -123,52 +123,55 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-30">
-      {/* Logo — fixed top-left, matching Martin Garrix positioning */}
-      <Link to="/" className="fixed top-6 left-6 md:top-10 md:left-10 z-30 block">
-        {/* Desktop logo */}
-        <div className="hidden md:block relative" style={{ width: '500px', height: '168px' }}>
-          <img
-            src="/Jonna Rincon Logo BL.png"
-            alt="Jonna Rincon"
-            className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
-            style={{ opacity: isDarkOverlay ? 0 : 1 }}
-          />
-          <img
-            src="/Jonna Rincon Logo WH.png"
-            alt="Jonna Rincon"
-            className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
-            style={{ opacity: isDarkOverlay ? 1 : 0 }}
-          />
-        </div>
-        {/* Mobile logo */}
-        <div className="md:hidden relative" style={{ width: '336px', height: '112px' }}>
-          <img
-            src="/Jonna Rincon Logo BL.png"
-            alt="Jonna Rincon"
-            className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
-            style={{ opacity: isDarkOverlay ? 0 : 1 }}
-          />
-          <img
-            src="/Jonna Rincon Logo WH.png"
-            alt="Jonna Rincon"
-            className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
-            style={{ opacity: isDarkOverlay ? 1 : 0 }}
-          />
-        </div>
-      </Link>
+      {/* Top bar — logo left, MENU right, SAME line */}
+      <div className="fixed top-0 left-0 right-0 z-30 flex items-start justify-between px-6 md:px-10 pt-6 md:pt-10">
+        {/* Logo — top-left */}
+        <Link to="/" className="block flex-shrink-0">
+          {/* Desktop logo */}
+          <div className="hidden md:block relative" style={{ width: '500px', height: '168px' }}>
+            <img
+              src="/Jonna Rincon Logo BL.png"
+              alt="Jonna Rincon"
+              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              style={{ opacity: isDarkOverlay ? 0 : 1 }}
+            />
+            <img
+              src="/Jonna Rincon Logo WH.png"
+              alt="Jonna Rincon"
+              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              style={{ opacity: isDarkOverlay ? 1 : 0 }}
+            />
+          </div>
+          {/* Mobile logo */}
+          <div className="md:hidden relative" style={{ width: '336px', height: '112px' }}>
+            <img
+              src="/Jonna Rincon Logo BL.png"
+              alt="Jonna Rincon"
+              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              style={{ opacity: isDarkOverlay ? 0 : 1 }}
+            />
+            <img
+              src="/Jonna Rincon Logo WH.png"
+              alt="Jonna Rincon"
+              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              style={{ opacity: isDarkOverlay ? 1 : 0 }}
+            />
+          </div>
+        </Link>
 
-      {/* MENU button — fixed top-right, same top-line as logo */}
-      <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className={`fixed top-8 right-8 md:top-12 md:right-12 z-30 text-base md:text-xl font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer ${
-          isDarkOverlay ? 'text-white' : 'text-black'
-        }`}
-      >
-        MENU
-        {cartItemCount > 0 && (
-          <span className="absolute -top-1 -right-4 md:-right-5 w-2 md:w-2.5 h-2 md:h-2.5 bg-red-600 rounded-full" />
-        )}
-      </button>
+        {/* MENU button — top-right, same line as logo top */}
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className={`relative text-base md:text-xl font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer mt-1 ${
+            isDarkOverlay ? 'text-white' : 'text-black'
+          }`}
+        >
+          MENU
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1 -right-4 md:-right-5 w-2 md:w-2.5 h-2 md:h-2.5 bg-red-600 rounded-full" />
+          )}
+        </button>
+      </div>
 
       <div className="w-full">
 
@@ -285,13 +288,13 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           <>
             {/* Desktop Menu */}
             <div className="hidden md:block">
-              {/* Backdrop */}
-              <div className="fixed inset-0 bg-black/80 z-[100] animate-fade-in" onClick={closeMenu} />
+              {/* Backdrop — blurred */}
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] animate-fade-in" onClick={closeMenu} />
 
-              {/* Menu Panel — inset, not full-edge */}
+              {/* Menu Panel — glass effect, inset */}
               <div className="fixed inset-0 z-[101] flex items-center justify-center p-10 pointer-events-none">
-                <div className="pointer-events-auto bg-black rounded-2xl overflow-hidden w-full max-w-[1400px] max-h-[90vh] animate-scale-in border border-white/5">
-                  {/* Close button — top right of panel */}
+                <div className="pointer-events-auto bg-black/70 backdrop-blur-2xl rounded-2xl overflow-hidden w-full max-w-[1400px] max-h-[90vh] animate-scale-in border border-white/10 shadow-2xl">
+                  {/* Close button */}
                   <button
                     onClick={closeMenu}
                     className="absolute top-6 right-6 z-[110] transition-all hover:scale-110 hover:rotate-90 duration-300"
@@ -309,12 +312,11 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                         className="absolute inset-0 w-full h-full object-cover"
                         style={{ objectPosition: 'center 35%', filter: 'brightness(0.85) contrast(1.1)' }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/30" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/40" />
                     </div>
 
                     {/* Right — Menu Items */}
                     <div className="flex flex-col justify-between py-12 px-14 overflow-y-auto">
-                      {/* Navigation Items */}
                       <div className="flex-1 flex flex-col justify-center">
                         {menuItems.map((item, i) => (
                           <button
@@ -323,14 +325,14 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                             className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
                           >
                             <div className="flex items-baseline gap-6">
-                              <span className="text-xs text-gray-500 font-medium tracking-wider w-6">
+                              <span className="text-xs text-white/30 font-medium tracking-wider w-6">
                                 {ROMAN[i]}
                               </span>
-                              <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-gray-300 transition-colors duration-300">
+                              <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
                                 {item.label}
                               </span>
                               {item.subtitle && (
-                                <span className="text-sm text-gray-500 font-normal tracking-wide">
+                                <span className="text-sm text-white/40 font-normal tracking-wide">
                                   {item.subtitle}
                                 </span>
                               )}
@@ -338,21 +340,21 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                           </button>
                         ))}
 
-                        {/* Cart item in menu */}
+                        {/* Cart */}
                         {onCartClick && (
                           <button
                             onClick={handleCartClick}
                             className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
                           >
                             <div className="flex items-baseline gap-6">
-                              <span className="text-xs text-gray-500 font-medium tracking-wider w-6">
+                              <span className="text-xs text-white/30 font-medium tracking-wider w-6">
                                 {ROMAN[menuItems.length]}
                               </span>
-                              <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-gray-300 transition-colors duration-300">
+                              <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
                                 CART
                               </span>
                               {cartItemCount > 0 && (
-                                <span className="text-sm text-red-500 font-medium tracking-wide">
+                                <span className="text-sm text-red-400 font-medium tracking-wide">
                                   {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
                                 </span>
                               )}
@@ -360,20 +362,20 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                           </button>
                         )}
 
-                        {/* Auth item in menu */}
+                        {/* Auth */}
                         <button
                           onClick={handleMenuAuthClick}
                           className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
                         >
                           <div className="flex items-baseline gap-6">
-                            <span className="text-xs text-gray-500 font-medium tracking-wider w-6">
+                            <span className="text-xs text-white/30 font-medium tracking-wider w-6">
                               {ROMAN[menuItems.length + (onCartClick ? 1 : 0)]}
                             </span>
-                            <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-gray-300 transition-colors duration-300">
+                            <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
                               {user ? 'DASHBOARD' : 'SIGN IN'}
                             </span>
                             {user && (
-                              <span className="text-sm text-gray-500 font-normal tracking-wide">
+                              <span className="text-sm text-white/40 font-normal tracking-wide">
                                 {user.displayName || user.email}
                               </span>
                             )}
@@ -386,8 +388,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                             className="group w-full text-left py-5 transition-all duration-300 hover:pl-4"
                           >
                             <div className="flex items-baseline gap-6">
-                              <span className="text-xs text-gray-500 font-medium tracking-wider w-6" />
-                              <span className="text-lg uppercase tracking-wider text-gray-500 group-hover:text-red-400 transition-colors duration-300 font-medium">
+                              <span className="text-xs text-white/30 font-medium tracking-wider w-6" />
+                              <span className="text-lg uppercase tracking-wider text-white/40 group-hover:text-red-400 transition-colors duration-300 font-medium">
                                 Sign Out
                               </span>
                             </div>
@@ -397,7 +399,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
                       {/* Bottom bar — social links */}
                       <div className="flex items-center justify-between pt-8 border-t border-white/10">
-                        <p className="text-xs text-gray-600 uppercase tracking-widest font-medium">
+                        <p className="text-xs text-white/20 uppercase tracking-widest font-medium">
                           &copy; 2025 Jonna Rincon
                         </p>
                         <div className="flex items-center gap-6">
@@ -407,7 +409,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                               href={link.href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-gray-400 uppercase tracking-widest font-medium hover:text-white transition-colors duration-300 border-b border-transparent hover:border-white pb-0.5"
+                              className="text-xs text-white/40 uppercase tracking-widest font-medium hover:text-white transition-colors duration-300 border-b border-transparent hover:border-white/50 pb-0.5"
                             >
                               {link.label}
                             </a>
@@ -423,11 +425,11 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
             {/* Mobile Menu */}
             <div className="md:hidden">
               {/* Backdrop */}
-              <div className="fixed inset-0 bg-black/80 z-[100] animate-fade-in" onClick={closeMenu} />
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] animate-fade-in" onClick={closeMenu} />
 
-              {/* Menu Panel — inset */}
+              {/* Menu Panel — glass effect */}
               <div className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none">
-                <div className="pointer-events-auto bg-black rounded-2xl overflow-hidden w-full max-h-[95vh] animate-scale-in border border-white/5 flex flex-col">
+                <div className="pointer-events-auto bg-black/70 backdrop-blur-2xl rounded-2xl overflow-hidden w-full max-h-[95vh] animate-scale-in border border-white/10 shadow-2xl flex flex-col">
                   {/* Close button */}
                   <button
                     onClick={closeMenu}
@@ -444,7 +446,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       className="w-full h-full object-cover"
                       style={{ objectPosition: 'center 35%', filter: 'brightness(0.85) contrast(1.1)' }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
                   </div>
 
                   {/* Menu items */}
@@ -456,14 +458,14 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                         className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
                       >
                         <div className="flex items-baseline gap-4">
-                          <span className="text-[10px] text-gray-500 font-medium tracking-wider w-5">
+                          <span className="text-[10px] text-white/30 font-medium tracking-wider w-5">
                             {ROMAN[i]}
                           </span>
                           <span className="text-2xl font-black uppercase tracking-wider text-white">
                             {item.label}
                           </span>
                           {item.subtitle && (
-                            <span className="text-xs text-gray-500 font-normal tracking-wide">
+                            <span className="text-xs text-white/40 font-normal tracking-wide">
                               {item.subtitle}
                             </span>
                           )}
@@ -478,14 +480,14 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                         className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
                       >
                         <div className="flex items-baseline gap-4">
-                          <span className="text-[10px] text-gray-500 font-medium tracking-wider w-5">
+                          <span className="text-[10px] text-white/30 font-medium tracking-wider w-5">
                             {ROMAN[menuItems.length]}
                           </span>
                           <span className="text-2xl font-black uppercase tracking-wider text-white">
                             CART
                           </span>
                           {cartItemCount > 0 && (
-                            <span className="text-xs text-red-500 font-medium">
+                            <span className="text-xs text-red-400 font-medium">
                               {cartItemCount}
                             </span>
                           )}
@@ -499,7 +501,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
                     >
                       <div className="flex items-baseline gap-4">
-                        <span className="text-[10px] text-gray-500 font-medium tracking-wider w-5">
+                        <span className="text-[10px] text-white/30 font-medium tracking-wider w-5">
                           {ROMAN[menuItems.length + (onCartClick ? 1 : 0)]}
                         </span>
                         <span className="text-2xl font-black uppercase tracking-wider text-white">
@@ -515,7 +517,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       >
                         <div className="flex items-baseline gap-4">
                           <span className="w-5" />
-                          <span className="text-base uppercase tracking-wider text-gray-500 font-medium">
+                          <span className="text-base uppercase tracking-wider text-white/40 font-medium">
                             Sign Out
                           </span>
                         </div>
@@ -532,13 +534,13 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                           href={link.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[10px] text-gray-400 uppercase tracking-widest font-medium hover:text-white transition-colors border-b border-transparent hover:border-white pb-0.5"
+                          className="text-[10px] text-white/40 uppercase tracking-widest font-medium hover:text-white transition-colors border-b border-transparent hover:border-white/50 pb-0.5"
                         >
                           {link.label}
                         </a>
                       ))}
                     </div>
-                    <p className="text-[10px] text-gray-600 uppercase tracking-widest text-center mt-3 font-medium">
+                    <p className="text-[10px] text-white/20 uppercase tracking-widest text-center mt-3 font-medium">
                       &copy; 2025 Jonna Rincon
                     </p>
                   </div>
