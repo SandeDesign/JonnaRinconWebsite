@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
 import Marquee from './components/Marquee';
 import MarqueeRed from './components/MarqueeRed';
+import WaveformDivider from './components/WaveformDivider';
 
 import { Beat, CartItem } from './lib/types';
 
@@ -244,6 +245,7 @@ function App() {
         <About />
         <Marquee />
         <BeatStore onAddToCart={handleAddToCart} />
+        <WaveformDivider />
 
         {/* === ALL SECTIONS — semi-transparent so JEIGHTENESIS background shows through === */}
         <div className="relative z-10">
