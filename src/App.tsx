@@ -211,11 +211,11 @@ function App() {
           >
             {showText && (
               <span
-                className={`text-[10px] md:text-xs uppercase tracking-[0.3em] font-light transition-colors duration-500 ${
-                  isDarkOverlay ? 'text-white/70' : 'text-black/60'
+                className={`text-xs md:text-sm uppercase tracking-[0.3em] font-semibold transition-colors duration-500 ${
+                  isDarkOverlay ? 'text-white/80' : 'text-black/70'
                 }`}
               >
-                {scrollDirection === 'up' ? 'Back to top' : 'Scroll'}
+                {scrollDirection === 'up' ? 'Back to top' : 'Scroll Down'}
               </span>
             )}
             <svg
