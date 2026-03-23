@@ -111,11 +111,11 @@ const ArtistCollaborations: React.FC = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white">My Collaborations</h1>
-          <p className="text-gray-400 mt-2">Manage your collaboration projects with Jonna Rincon</p>
+          <p className="text-white/40 mt-2">Manage your collaboration projects with Jonna Rincon</p>
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-gray-700">
+        <div className="flex gap-4 mb-8 border-b border-white/[0.06]">
           {(['all', 'inquiry', 'in_progress', 'completed'] as const).map((status) => (
             <button
               key={status}
@@ -123,7 +123,7 @@ const ArtistCollaborations: React.FC = () => {
               className={`px-4 py-2 capitalize transition ${
                 filter === status
                   ? 'border-b-2 border-purple-500 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-white/40 hover:text-white'
               }`}
             >
               {status === 'all' ? 'All' : status.replace('_', ' ')}
@@ -140,10 +140,10 @@ const ArtistCollaborations: React.FC = () => {
 
         {/* Collaborations List */}
         {filteredCollaborations.length === 0 ? (
-          <div className="text-center py-12 bg-gray-800 rounded-lg">
+          <div className="text-center py-12 bg-white/[0.04] rounded-lg">
             <div className="text-4xl mb-4">🤝</div>
             <p className="text-xl mb-2">No collaborations found</p>
-            <p className="text-gray-400 mb-6">
+            <p className="text-white/40 mb-6">
               {filter === 'all'
                 ? 'Start collaborating with Jonna Rincon today'
                 : `No ${filter.replace('_', ' ')} collaborations`}
@@ -158,13 +158,13 @@ const ArtistCollaborations: React.FC = () => {
         ) : (
           <div className="space-y-6">
             {filteredCollaborations.map((collab) => (
-              <div key={collab.id} className="bg-gray-800 rounded-lg overflow-hidden">
+              <div key={collab.id} className="bg-white/[0.04] rounded-lg overflow-hidden">
                 {/* Collaboration Header */}
-                <div className="bg-gray-700 p-4">
+                <div className="bg-white/[0.06] p-4">
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="font-bold text-xl mb-2">{collab.title}</h3>
-                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <div className="flex items-center gap-4 text-sm text-white/40">
                         <span className="capitalize">{collab.type}</span>
                         {collab.budget && <span>Budget: €{collab.budget.toFixed(2)}</span>}
                         {collab.startDate && (
@@ -183,7 +183,7 @@ const ArtistCollaborations: React.FC = () => {
                           ? 'bg-purple-900 text-purple-300'
                           : collab.status === 'inquiry'
                           ? 'bg-yellow-900 text-yellow-300'
-                          : 'bg-gray-600 text-gray-300'
+                          : 'bg-white/[0.08] text-white/60'
                       }`}
                     >
                       {collab.status.replace('_', ' ')}
@@ -194,24 +194,24 @@ const ArtistCollaborations: React.FC = () => {
                 {/* Collaboration Details */}
                 <div className="p-6">
                   <div className="mb-4">
-                    <div className="text-sm text-gray-400 mb-1">Description</div>
-                    <p className="text-gray-200">{collab.description}</p>
+                    <div className="text-sm text-white/40 mb-1">Description</div>
+                    <p className="text-white/80">{collab.description}</p>
                   </div>
 
                   {/* Timeline */}
                   {(collab.startDate || collab.endDate || collab.deadline) && (
-                    <div className="mb-4 pb-4 border-b border-gray-700">
-                      <div className="text-sm text-gray-400 mb-2">Timeline</div>
+                    <div className="mb-4 pb-4 border-b border-white/[0.06]">
+                      <div className="text-sm text-white/40 mb-2">Timeline</div>
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         {collab.startDate && (
                           <div>
-                            <span className="text-gray-400">Start: </span>
+                            <span className="text-white/40">Start: </span>
                             {collab.startDate.toDate?.()?.toLocaleDateString() || 'N/A'}
                           </div>
                         )}
                         {collab.deadline && (
                           <div>
-                            <span className="text-gray-400">Deadline: </span>
+                            <span className="text-white/40">Deadline: </span>
                             <span className="text-yellow-400">
                               {collab.deadline.toDate?.()?.toLocaleDateString() || 'N/A'}
                             </span>
@@ -219,7 +219,7 @@ const ArtistCollaborations: React.FC = () => {
                         )}
                         {collab.endDate && (
                           <div>
-                            <span className="text-gray-400">End: </span>
+                            <span className="text-white/40">End: </span>
                             {collab.endDate.toDate?.()?.toLocaleDateString() || 'N/A'}
                           </div>
                         )}
@@ -229,14 +229,14 @@ const ArtistCollaborations: React.FC = () => {
 
                   {/* Payment Info */}
                   {collab.budget && (
-                    <div className="mb-4 pb-4 border-b border-gray-700">
-                      <div className="text-sm text-gray-400 mb-2">Payment</div>
+                    <div className="mb-4 pb-4 border-b border-white/[0.06]">
+                      <div className="text-sm text-white/40 mb-2">Payment</div>
                       <div className="flex gap-8 text-sm">
                         <div>
-                          <span className="text-gray-400">Budget: </span>€{collab.budget.toFixed(2)}
+                          <span className="text-white/40">Budget: </span>€{collab.budget.toFixed(2)}
                         </div>
                         <div>
-                          <span className="text-gray-400">Paid: </span>€{collab.paidAmount.toFixed(2)}
+                          <span className="text-white/40">Paid: </span>€{collab.paidAmount.toFixed(2)}
                         </div>
                         <div>
                           <span
@@ -262,14 +262,14 @@ const ArtistCollaborations: React.FC = () => {
                   {/* Documents */}
                   {(collab.contractPDF || (collab.attachments && collab.attachments.length > 0)) && (
                     <div className="mb-4">
-                      <div className="text-sm text-gray-400 mb-2">Documents</div>
+                      <div className="text-sm text-white/40 mb-2">Documents</div>
                       <div className="flex gap-2">
                         {collab.contractPDF && (
                           <a
                             href={collab.contractPDF}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-sm transition"
+                            className="bg-white/[0.06] hover:bg-white/[0.08] px-4 py-2 rounded text-sm transition"
                           >
                             📄 Contract
                           </a>
@@ -280,7 +280,7 @@ const ArtistCollaborations: React.FC = () => {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-sm transition"
+                            className="bg-white/[0.06] hover:bg-white/[0.08] px-4 py-2 rounded text-sm transition"
                           >
                             📎 Attachment {idx + 1}
                           </a>
@@ -292,13 +292,13 @@ const ArtistCollaborations: React.FC = () => {
                   {/* Notes */}
                   {collab.notes && (
                     <div className="mb-4">
-                      <div className="text-sm text-gray-400 mb-1">Notes</div>
-                      <p className="text-sm text-gray-300">{collab.notes}</p>
+                      <div className="text-sm text-white/40 mb-1">Notes</div>
+                      <p className="text-sm text-white/60">{collab.notes}</p>
                     </div>
                   )}
 
                   {/* Messaging Section */}
-                  <div className="mt-4 pt-4 border-t border-gray-700">
+                  <div className="mt-4 pt-4 border-t border-white/[0.06]">
                     {openChatCollabId === collab.id ? (
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
@@ -308,16 +308,16 @@ const ArtistCollaborations: React.FC = () => {
                           </h4>
                           <button
                             onClick={() => setOpenChatCollabId(null)}
-                            className="text-gray-400 hover:text-white transition"
+                            className="text-white/40 hover:text-white transition"
                           >
                             <X size={20} />
                           </button>
                         </div>
 
                         {/* Messages List */}
-                        <div className="bg-gray-900 rounded-lg p-4 max-h-96 overflow-y-auto space-y-3">
+                        <div className="bg-black rounded-lg p-4 max-h-96 overflow-y-auto space-y-3">
                           {messages[collab.id]?.length === 0 ? (
-                            <div className="text-center text-gray-400 py-8">
+                            <div className="text-center text-white/40 py-8">
                               <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />
                               <p>No messages yet. Start the conversation!</p>
                             </div>
@@ -328,18 +328,18 @@ const ArtistCollaborations: React.FC = () => {
                                 className={`p-3 rounded-lg ${
                                   msg.senderId === user?.uid
                                     ? 'bg-purple-900/30 ml-8'
-                                    : 'bg-gray-800 mr-8'
+                                    : 'bg-white/[0.04] mr-8'
                                 }`}
                               >
                                 <div className="flex justify-between items-start mb-1">
                                   <span className="font-semibold text-sm text-white">
                                     {msg.senderId === user?.uid ? 'You' : msg.senderName}
                                   </span>
-                                  <span className="text-xs text-gray-400">
+                                  <span className="text-xs text-white/40">
                                     {msg.createdAt?.toDate?.()?.toLocaleString() || 'Just now'}
                                   </span>
                                 </div>
-                                <p className="text-gray-300 text-sm">{msg.message}</p>
+                                <p className="text-white/60 text-sm">{msg.message}</p>
                               </div>
                             ))
                           )}
@@ -358,7 +358,7 @@ const ArtistCollaborations: React.FC = () => {
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder="Type your message..."
-                            className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                            className="flex-1 bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
                           />
                           <button
                             type="submit"

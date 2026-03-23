@@ -28,8 +28,8 @@ const OrdersPage: React.FC = () => {
       processing: 'bg-blue-500/20 text-blue-400',
       completed: 'bg-green-500/20 text-green-400',
       failed: 'bg-red-500/20 text-red-400',
-      refunded: 'bg-gray-500/20 text-gray-400',
-      cancelled: 'bg-gray-500/20 text-gray-400',
+      refunded: 'bg-white/[0.06] text-white/40',
+      cancelled: 'bg-white/[0.06] text-white/40',
     };
     return colors[status];
   };
@@ -41,7 +41,7 @@ const OrdersPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">Orders Management</h1>
-            <p className="text-gray-400 mt-2">Manage and process customer orders</p>
+            <p className="text-white/40 mt-2">Manage and process customer orders</p>
           </div>
         </div>
 
@@ -50,7 +50,7 @@ const OrdersPage: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as OrderStatus | 'all')}
-            className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+            className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white"
           >
             <option value="all">All Orders</option>
             <option value="pending">Pending</option>
@@ -64,24 +64,24 @@ const OrdersPage: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Total Orders</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Total Orders</p>
             <p className="text-2xl font-bold text-white mt-1">{orders.length}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Pending</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Pending</p>
             <p className="text-2xl font-bold text-yellow-400 mt-1">
               {orders.filter((o) => o.status === 'pending').length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Completed</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Completed</p>
             <p className="text-2xl font-bold text-green-400 mt-1">
               {orders.filter((o) => o.status === 'completed').length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Total Revenue</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Total Revenue</p>
             <p className="text-2xl font-bold text-white mt-1">
               €{orders.reduce((sum, o) => o.status === 'completed' ? sum + o.total : sum, 0).toFixed(2)}
             </p>
@@ -89,60 +89,60 @@ const OrdersPage: React.FC = () => {
         </div>
 
         {/* Orders Table */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-700">
+              <thead className="bg-white/[0.06]">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Order Number
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Customer
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Items
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Total
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Date
                   </th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-white/60">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-white/[0.06]">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                    <td colSpan={7} className="px-6 py-12 text-center text-white/40">
                       Loading orders...
                     </td>
                   </tr>
                 ) : filteredOrders.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                    <td colSpan={7} className="px-6 py-12 text-center text-white/40">
                       No orders found
                     </td>
                   </tr>
                 ) : (
                   filteredOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-700/50">
+                    <tr key={order.id} className="hover:bg-white/[0.03]">
                       <td className="px-6 py-4">
                         <p className="font-medium text-white">{order.orderNumber}</p>
                       </td>
                       <td className="px-6 py-4">
                         <div>
                           <p className="text-white">{order.customerName || 'Guest'}</p>
-                          <p className="text-sm text-gray-400">{order.customerEmail}</p>
+                          <p className="text-sm text-white/40">{order.customerEmail}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-gray-300">
+                      <td className="px-6 py-4 text-white/60">
                         {order.items.length} item(s)
                       </td>
                       <td className="px-6 py-4">
@@ -162,13 +162,13 @@ const OrdersPage: React.FC = () => {
                           <option value="cancelled">Cancelled</option>
                         </select>
                       </td>
-                      <td className="px-6 py-4 text-gray-300 text-sm">
+                      <td className="px-6 py-4 text-white/60 text-sm">
                         {order.createdAt && new Date((order.createdAt as any).seconds * 1000).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end space-x-2">
                           <button
-                            className="p-2 text-gray-400 hover:text-blue-400 transition-colors"
+                            className="p-2 text-white/40 hover:text-blue-400 transition-colors"
                             title="View details"
                           >
                             <Eye size={18} />

@@ -107,29 +107,29 @@ const ArtistRoleRequestsPage: React.FC = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white">Artist Role Requests</h1>
-          <p className="text-gray-400 mt-2">Review and approve artist role applications</p>
+          <p className="text-white/40 mt-2">Review and approve artist role applications</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Total Requests</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Total Requests</p>
             <p className="text-2xl font-bold text-white mt-1">{requests.length}</p>
           </div>
-          <div className="bg-gray-800 border border-yellow-600 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Pending</p>
+          <div className="bg-white/[0.04] border border-yellow-600 rounded-xl p-4">
+            <p className="text-white/40 text-sm">Pending</p>
             <p className="text-2xl font-bold text-yellow-400 mt-1">
               {requests.filter((r) => r.status === 'pending').length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-green-600 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Approved</p>
+          <div className="bg-white/[0.04] border border-green-600 rounded-xl p-4">
+            <p className="text-white/40 text-sm">Approved</p>
             <p className="text-2xl font-bold text-green-400 mt-1">
               {requests.filter((r) => r.status === 'approved').length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-red-600 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Rejected</p>
+          <div className="bg-white/[0.04] border border-red-600 rounded-xl p-4">
+            <p className="text-white/40 text-sm">Rejected</p>
             <p className="text-2xl font-bold text-red-400 mt-1">
               {requests.filter((r) => r.status === 'rejected').length}
             </p>
@@ -137,7 +137,7 @@ const ArtistRoleRequestsPage: React.FC = () => {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex gap-4 border-b border-gray-700">
+        <div className="flex gap-4 border-b border-white/[0.06]">
           {(['all', 'pending', 'approved', 'rejected'] as const).map((status) => (
             <button
               key={status}
@@ -145,7 +145,7 @@ const ArtistRoleRequestsPage: React.FC = () => {
               className={`px-4 py-2 capitalize transition ${
                 filter === status
                   ? 'border-b-2 border-purple-500 text-white'
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-white/40 hover:text-white'
               }`}
             >
               {status}
@@ -163,19 +163,19 @@ const ArtistRoleRequestsPage: React.FC = () => {
         {/* Requests List */}
         <div className="space-y-4">
           {loading ? (
-            <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center text-gray-400">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
               Loading requests...
             </div>
           ) : filteredRequests.length === 0 ? (
-            <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center">
-              <UserPlus size={48} className="mx-auto mb-4 text-gray-600" />
-              <p className="text-gray-400">No {filter !== 'all' ? filter : ''} requests found</p>
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+              <UserPlus size={48} className="mx-auto mb-4 text-white/20" />
+              <p className="text-white/40">No {filter !== 'all' ? filter : ''} requests found</p>
             </div>
           ) : (
             filteredRequests.map((request) => (
               <div
                 key={request.id}
-                className={`bg-gray-800 border rounded-xl p-6 ${
+                className={`bg-white/[0.04] border rounded-xl p-6 ${
                   request.status === 'pending'
                     ? 'border-yellow-600'
                     : request.status === 'approved'
@@ -201,7 +201,7 @@ const ArtistRoleRequestsPage: React.FC = () => {
                         {request.status}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-white/40">
                       <p className="font-medium text-white">{request.userName}</p>
                       <p>{request.userEmail}</p>
                       <p className="text-xs mt-1">
@@ -232,7 +232,7 @@ const ArtistRoleRequestsPage: React.FC = () => {
                   {request.status !== 'pending' && (
                     <button
                       onClick={() => handleDelete(request.id)}
-                      className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-white text-sm transition"
+                      className="bg-white/[0.06] hover:bg-white/[0.08] px-4 py-2 rounded-lg text-white text-sm transition"
                     >
                       Delete
                     </button>
@@ -240,32 +240,32 @@ const ArtistRoleRequestsPage: React.FC = () => {
                 </div>
 
                 {/* Details */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 p-4 bg-gray-900 rounded-lg">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 p-4 bg-black rounded-lg">
                   <div>
-                    <span className="text-gray-400 text-sm">Location:</span>
+                    <span className="text-white/40 text-sm">Location:</span>
                     <p className="text-white font-medium">
                       {request.city}, {request.region}
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-400 text-sm">Instagram:</span>
+                    <span className="text-white/40 text-sm">Instagram:</span>
                     <p className="text-white font-medium">{request.instagram || 'N/A'}</p>
                   </div>
                   <div>
-                    <span className="text-gray-400 text-sm">Spotify:</span>
+                    <span className="text-white/40 text-sm">Spotify:</span>
                     <p className="text-white font-medium truncate" title={request.spotify}>
                       {request.spotify ? 'Yes' : 'N/A'}
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-400 text-sm">User ID:</span>
+                    <span className="text-white/40 text-sm">User ID:</span>
                     <p className="text-white font-mono text-xs">{request.userId.slice(0, 8)}...</p>
                   </div>
                 </div>
 
                 {/* Roles */}
                 <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-gray-300 mb-2">Artist Roles</h4>
+                  <h4 className="text-sm font-semibold text-white/60 mb-2">Artist Roles</h4>
                   <div className="flex flex-wrap gap-2">
                     {request.roles.map((role) => (
                       <span
@@ -281,8 +281,8 @@ const ArtistRoleRequestsPage: React.FC = () => {
                 {/* Additional Info */}
                 {request.additionalInfo && (
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-300 mb-2">Additional Information</h4>
-                    <p className="text-gray-200 bg-gray-900 p-4 rounded-lg">{request.additionalInfo}</p>
+                    <h4 className="text-sm font-semibold text-white/60 mb-2">Additional Information</h4>
+                    <p className="text-white/80 bg-black p-4 rounded-lg">{request.additionalInfo}</p>
                   </div>
                 )}
               </div>

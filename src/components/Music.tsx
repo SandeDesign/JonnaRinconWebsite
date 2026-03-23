@@ -125,7 +125,7 @@ export default function Music() {
               href="https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 w-full inline-block text-center py-3.5 bg-[#1DB954] hover:bg-[#1ed760] text-black rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02]"
+              className="mt-6 w-full inline-block text-center py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02]"
             >
               Open in Spotify
             </a>

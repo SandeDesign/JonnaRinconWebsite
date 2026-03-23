@@ -47,7 +47,7 @@ const BeatsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">Beats Management</h1>
-            <p className="text-gray-400 mt-2">Manage your beat catalog</p>
+            <p className="text-white/40 mt-2">Manage your beat catalog</p>
           </div>
           <button
             onClick={handleCreate}
@@ -60,24 +60,24 @@ const BeatsPage: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Total Beats</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Total Beats</p>
             <p className="text-2xl font-bold text-white mt-1">{beats.length}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Published</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Published</p>
             <p className="text-2xl font-bold text-white mt-1">
               {beats.filter((b) => b.status === 'published').length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Featured</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Featured</p>
             <p className="text-2xl font-bold text-white mt-1">
               {beats.filter((b) => b.featured).length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Total Plays</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Total Plays</p>
             <p className="text-2xl font-bold text-white mt-1">
               {beats.reduce((sum, b) => sum + b.plays, 0)}
             </p>
@@ -85,50 +85,50 @@ const BeatsPage: React.FC = () => {
         </div>
 
         {/* Beats Table */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-700">
+              <thead className="bg-white/[0.06]">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Beat
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Genre
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     BPM / Key
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Type
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Plays
                   </th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-white/60">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-white/[0.06]">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                    <td colSpan={7} className="px-6 py-12 text-center text-white/40">
                       Loading beats...
                     </td>
                   </tr>
                 ) : beats.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                    <td colSpan={7} className="px-6 py-12 text-center text-white/40">
                       No beats yet. Create your first beat!
                     </td>
                   </tr>
                 ) : (
                   beats.map((beat) => (
-                    <tr key={beat.id} className="hover:bg-gray-700/50">
+                    <tr key={beat.id} className="hover:bg-white/[0.03]">
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
                           <img
@@ -138,7 +138,7 @@ const BeatsPage: React.FC = () => {
                           />
                           <div>
                             <p className="font-medium text-white">{beat.title}</p>
-                            <p className="text-sm text-gray-400">{beat.artist}</p>
+                            <p className="text-sm text-white/40">{beat.artist}</p>
                           </div>
                         </div>
                       </td>
@@ -147,7 +147,7 @@ const BeatsPage: React.FC = () => {
                           {beat.genre}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-300">
+                      <td className="px-6 py-4 text-white/60">
                         {beat.bpm} BPM / {beat.key}
                       </td>
                       <td className="px-6 py-4">
@@ -157,7 +157,7 @@ const BeatsPage: React.FC = () => {
                               ? 'bg-green-500/20 text-green-400'
                               : beat.status === 'draft'
                               ? 'bg-yellow-500/20 text-yellow-400'
-                              : 'bg-gray-500/20 text-gray-400'
+                              : 'bg-white/[0.06] text-white/40'
                           }`}
                         >
                           {beat.status}
@@ -178,26 +178,26 @@ const BeatsPage: React.FC = () => {
                           {beat.beatType || 'basic'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-300">{beat.plays}</td>
+                      <td className="px-6 py-4 text-white/60">{beat.plays}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end space-x-2">
                           <button
                             onClick={() => togglePlay(beat.id)}
-                            className="p-2 text-gray-400 hover:text-purple-400 transition-colors"
+                            className="p-2 text-white/40 hover:text-purple-400 transition-colors"
                             title="Play preview"
                           >
                             {currentlyPlaying === beat.id ? <Pause size={18} /> : <Play size={18} />}
                           </button>
                           <button
                             onClick={() => handleEdit(beat)}
-                            className="p-2 text-gray-400 hover:text-blue-400 transition-colors"
+                            className="p-2 text-white/40 hover:text-blue-400 transition-colors"
                             title="Edit"
                           >
                             <Edit size={18} />
                           </button>
                           <button
                             onClick={() => handleDelete(beat.id)}
-                            className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                            className="p-2 text-white/40 hover:text-red-400 transition-colors"
                             title="Delete"
                           >
                             <Trash2 size={18} />
@@ -352,8 +352,8 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-gray-800 rounded-xl max-w-2xl w-full my-8">
-        <div className="p-6 border-b border-gray-700">
+      <div className="bg-white/[0.04] rounded-xl max-w-2xl w-full my-8">
+        <div className="p-6 border-b border-white/[0.06]">
           <h2 className="text-2xl font-bold text-white">
             {beat ? 'Edit Beat' : 'Add New Beat'}
           </h2>
@@ -362,66 +362,66 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Title</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Title</label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Artist</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Artist</label>
               <input
                 type="text"
                 value={formData.artist}
                 onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">BPM</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">BPM</label>
               <input
                 type="number"
                 value={formData.bpm}
                 onChange={(e) => setFormData({ ...formData, bpm: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Key</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Key</label>
               <input
                 type="text"
                 value={formData.key}
                 onChange={(e) => setFormData({ ...formData, key: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Genre</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Genre</label>
               <input
                 type="text"
                 value={formData.genre}
                 onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Status</label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as Beat['status'] })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
@@ -432,75 +432,75 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
 
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Beat Type</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Beat Type</label>
               <select
                 value={formData.beatType}
                 onChange={(e) => setFormData({ ...formData, beatType: e.target.value as any })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               >
                 <option value="free">Free</option>
                 <option value="basic">Basic</option>
                 <option value="premium">Premium</option>
                 <option value="exclusive">Exclusive</option>
               </select>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-white/40 mt-1">
                 Classify this beat (free beats have no cost, basic/premium/exclusive are paid tiers)
               </p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-white/60 mb-2">
               Tags (comma separated)
             </label>
             <input
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+              className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               placeholder="trap, dark, atmospheric"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Slug</label>
+            <label className="block text-sm font-medium text-white/60 mb-2">Slug</label>
             <input
               type="text"
               value={formData.slug}
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+              className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               placeholder="auto-generated from title"
             />
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Basic Price (€)</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Basic Price (€)</label>
               <input
                 type="number"
                 value={formData.basicPrice}
                 onChange={(e) => setFormData({ ...formData, basicPrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Premium Price (€)</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Premium Price (€)</label>
               <input
                 type="number"
                 value={formData.premiumPrice}
                 onChange={(e) => setFormData({ ...formData, premiumPrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Exclusive Price (€)</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Exclusive Price (€)</label>
               <input
                 type="number"
                 value={formData.exclusivePrice}
                 onChange={(e) => setFormData({ ...formData, exclusivePrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               />
             </div>
           </div>
@@ -513,15 +513,15 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
                 onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                 className="w-4 h-4"
               />
-              <span className="text-sm text-gray-300">Featured Beat</span>
+              <span className="text-sm text-white/60">Featured Beat</span>
             </label>
           </div>
 
-          <div className="flex items-center justify-end space-x-4 pt-4 border-t border-gray-700">
+          <div className="flex items-center justify-end space-x-4 pt-4 border-t border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 text-gray-400 hover:text-white transition-colors"
+              className="px-6 py-2 text-white/40 hover:text-white transition-colors"
             >
               Cancel
             </button>

@@ -11,6 +11,11 @@ import RegisterPage from './pages/RegisterPage';
 // Shop pages (public)
 import BeatsShop from './pages/shop/BeatsPage';
 
+// Standalone pages (public)
+import TracksPage from './pages/TracksPage';
+import SocialsPage from './pages/SocialsPage';
+import ContactPage from './pages/ContactPage';
+
 // Customer pages (protected - user role)
 import CustomerDashboard from './pages/customer/DashboardPage';
 import CustomerOrders from './pages/customer/OrdersPage';
@@ -64,6 +69,11 @@ const MainApp: React.FC = () => {
 
           {/* Shop Routes (public) */}
           <Route path="/shop/beats" element={<BeatsShop />} />
+
+          {/* Standalone Pages (public) */}
+          <Route path="/tracks" element={<TracksPage />} />
+          <Route path="/socials" element={<SocialsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
 
           {/* Customer Routes (protected - user role only) */}
           <Route

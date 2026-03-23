@@ -107,7 +107,7 @@ const AdminSettings: React.FC = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white">Settings</h1>
-          <p className="text-gray-400 mt-2">Manage your platform configuration and preferences</p>
+          <p className="text-white/40 mt-2">Manage your platform configuration and preferences</p>
         </div>
 
         {loading && (
@@ -117,7 +117,7 @@ const AdminSettings: React.FC = () => {
         )}
 
         {/* Tabs */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
           <div className="flex gap-2 overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -128,7 +128,7 @@ const AdminSettings: React.FC = () => {
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                      : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                      : 'text-white/40 hover:bg-white/[0.06] hover:text-white'
                   }`}
                 >
                   <Icon size={18} />
@@ -156,13 +156,13 @@ const AdminSettings: React.FC = () => {
         {activeTab === 'shop' && (
           <div className="space-y-6">
             {/* Shop Features */}
-            <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Shop Features</h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Featured Beats</p>
-                    <p className="text-sm text-gray-400">Show featured badge on selected beats</p>
+                    <p className="text-sm text-white/40">Show featured badge on selected beats</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -173,14 +173,14 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Trending Beats</p>
-                    <p className="text-sm text-gray-400">Show trending badge on popular beats</p>
+                    <p className="text-sm text-white/40">Show trending badge on popular beats</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -191,14 +191,14 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Enable Downloads</p>
-                    <p className="text-sm text-gray-400">Allow customers to download purchased beats</p>
+                    <p className="text-sm text-white/40">Allow customers to download purchased beats</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -209,14 +209,14 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Watermark Previews</p>
-                    <p className="text-sm text-gray-400">Add watermark to preview audio files</p>
+                    <p className="text-sm text-white/40">Add watermark to preview audio files</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -227,18 +227,18 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                   </label>
                 </div>
               </div>
             </div>
 
             {/* Payment Settings */}
-            <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Payment Settings</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-white/60 mb-2">
                     Currency
                   </label>
                   <select
@@ -246,7 +246,7 @@ const AdminSettings: React.FC = () => {
                     onChange={(e) =>
                       setShopSettings({ ...shopSettings, currency: e.target.value })
                     }
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
                   >
                     <option value="EUR">EUR (€)</option>
                     <option value="USD">USD ($)</option>
@@ -255,7 +255,7 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-white/60 mb-2">
                     Tax Rate (%)
                   </label>
                   <input
@@ -264,7 +264,7 @@ const AdminSettings: React.FC = () => {
                     onChange={(e) =>
                       setShopSettings({ ...shopSettings, taxRate: parseFloat(e.target.value) })
                     }
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
                   />
                 </div>
               </div>
@@ -286,16 +286,16 @@ const AdminSettings: React.FC = () => {
         {/* Notifications Settings Tab */}
         {activeTab === 'notifications' && (
           <div className="space-y-6">
-            <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <Bell size={24} className="text-yellow-400" />
                 Notification Settings
               </h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email on New Orders</p>
-                    <p className="text-sm text-gray-400">Get notified when customers place orders</p>
+                    <p className="text-sm text-white/40">Get notified when customers place orders</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -309,14 +309,14 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email on Collaborations</p>
-                    <p className="text-sm text-gray-400">Get notified about collaboration requests</p>
+                    <p className="text-sm text-white/40">Get notified about collaboration requests</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -330,14 +330,14 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email Analytics Reports</p>
-                    <p className="text-sm text-gray-400">Receive weekly analytics reports</p>
+                    <p className="text-sm text-white/40">Receive weekly analytics reports</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -351,14 +351,14 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email Security Alerts</p>
-                    <p className="text-sm text-gray-400">Important security notifications</p>
+                    <p className="text-sm text-white/40">Important security notifications</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -372,14 +372,14 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email New Features</p>
-                    <p className="text-sm text-gray-400">Learn about new features and updates</p>
+                    <p className="text-sm text-white/40">Learn about new features and updates</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -393,14 +393,14 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Push Notifications</p>
-                    <p className="text-sm text-gray-400">Receive browser push notifications</p>
+                    <p className="text-sm text-white/40">Receive browser push notifications</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -414,7 +414,7 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
                   </label>
                 </div>
               </div>
@@ -435,16 +435,16 @@ const AdminSettings: React.FC = () => {
         {/* Security Settings Tab */}
         {activeTab === 'security' && (
           <div className="space-y-6">
-            <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <Shield size={24} className="text-red-400" />
                 Security Settings
               </h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Two-Factor Authentication</p>
-                    <p className="text-sm text-gray-400">Require 2FA for admin accounts</p>
+                    <p className="text-sm text-white/40">Require 2FA for admin accounts</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -458,12 +458,12 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
                   </label>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-white/60 mb-2">
                     Minimum Password Length
                   </label>
                   <div className="flex items-center gap-4">
@@ -478,7 +478,7 @@ const AdminSettings: React.FC = () => {
                           passwordMinLength: parseInt(e.target.value),
                         })
                       }
-                      className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                      className="flex-1 h-2 bg-white/[0.06] rounded-lg appearance-none cursor-pointer"
                     />
                     <span className="text-white font-medium w-12 text-center">
                       {securitySettings.passwordMinLength}
@@ -487,7 +487,7 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-white/60 mb-2">
                     Session Timeout (minutes)
                   </label>
                   <input
@@ -501,17 +501,17 @@ const AdminSettings: React.FC = () => {
                         sessionTimeout: parseInt(e.target.value),
                       })
                     }
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500"
+                    className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500"
                   />
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-white/40 mt-1">
                     Users will be logged out after this period of inactivity
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Enable Auto Backup</p>
-                    <p className="text-sm text-gray-400">Automatically backup database daily</p>
+                    <p className="text-sm text-white/40">Automatically backup database daily</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
@@ -525,12 +525,12 @@ const AdminSettings: React.FC = () => {
                       }
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                    <div className="w-11 h-6 bg-white/[0.08] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-white/20 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
                   </label>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-white/60 mb-2">
                     Backup Frequency
                   </label>
                   <select
@@ -541,7 +541,7 @@ const AdminSettings: React.FC = () => {
                         backupFrequency: e.target.value,
                       })
                     }
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500"
+                    className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500"
                   >
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>

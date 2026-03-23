@@ -10,7 +10,7 @@ export default function Footer() {
               <img
                 src="/Jonna Rincon Logo WH.png"
                 alt="Jonna Rincon"
-                className="h-8 w-auto"
+                className="h-[100px] md:h-[130px] w-auto"
               />
             </div>
             <p className="text-white/30 text-sm leading-relaxed">

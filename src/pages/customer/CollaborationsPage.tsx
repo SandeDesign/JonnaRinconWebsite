@@ -103,23 +103,23 @@ const CustomerCollaborations: React.FC = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white">My Collaborations</h1>
-          <p className="text-gray-400 mt-2">Track your collaborations with Jonna Rincon</p>
+          <p className="text-white/40 mt-2">Track your collaborations with Jonna Rincon</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Total</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Total</p>
             <p className="text-2xl font-bold text-white mt-1">{collaborations.length}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Active</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Active</p>
             <p className="text-2xl font-bold text-blue-400 mt-1">
               {collaborations.filter((c) => ['agreed', 'contract_sent', 'signed', 'in_progress'].includes(c.status)).length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Completed</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Completed</p>
             <p className="text-2xl font-bold text-green-400 mt-1">
               {collaborations.filter((c) => c.status === 'completed').length}
             </p>
@@ -128,19 +128,19 @@ const CustomerCollaborations: React.FC = () => {
 
         {/* Collaborations List */}
         {collaborations.length === 0 ? (
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center">
-            <Handshake size={64} className="mx-auto mb-4 text-gray-600" />
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+            <Handshake size={64} className="mx-auto mb-4 text-white/20" />
             <h2 className="text-2xl font-bold text-white mb-2">No collaborations yet</h2>
-            <p className="text-gray-400">When you start a collaboration, it will appear here</p>
+            <p className="text-white/40">When you start a collaboration, it will appear here</p>
           </div>
         ) : (
           <div className="space-y-4">
             {collaborations.map((collab) => (
-              <div key={collab.id} className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+              <div key={collab.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
                 {/* Header - Clickable */}
                 <div
                   onClick={() => setExpandedCollabId(expandedCollabId === collab.id ? null : collab.id!)}
-                  className="p-6 cursor-pointer hover:bg-gray-750 transition-colors"
+                  className="p-6 cursor-pointer hover:bg-white/[0.05] transition-colors"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -154,7 +154,7 @@ const CustomerCollaborations: React.FC = () => {
                               ? 'bg-cyan-500/20 text-cyan-400'
                               : collab.status === 'signed'
                               ? 'bg-green-500/20 text-green-400'
-                              : 'bg-gray-500/20 text-gray-400'
+                              : 'bg-white/[0.06] text-white/40'
                           }`}
                         >
                           {collab.status.replace('_', ' ')}
@@ -162,38 +162,38 @@ const CustomerCollaborations: React.FC = () => {
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <span className="text-gray-400">Type:</span>
+                          <span className="text-white/40">Type:</span>
                           <p className="text-white font-medium capitalize">{collab.type}</p>
                         </div>
                         <div>
-                          <span className="text-gray-400">Budget:</span>
+                          <span className="text-white/40">Budget:</span>
                           <p className="text-white font-medium">
                             {collab.budget ? `€${collab.budget.toFixed(2)}` : 'N/A'}
                           </p>
                         </div>
                         <div>
-                          <span className="text-gray-400">Payment:</span>
+                          <span className="text-white/40">Payment:</span>
                           <p
                             className={`font-medium ${
                               collab.paymentStatus === 'paid'
                                 ? 'text-green-400'
                                 : collab.paymentStatus === 'partial'
                                 ? 'text-yellow-400'
-                                : 'text-gray-400'
+                                : 'text-white/40'
                             }`}
                           >
                             €{collab.paidAmount.toFixed(2)} ({collab.paymentStatus})
                           </p>
                         </div>
                         <div>
-                          <span className="text-gray-400">Started:</span>
+                          <span className="text-white/40">Started:</span>
                           <p className="text-white font-medium">
                             {collab.startDate?.toDate?.()?.toLocaleDateString() || 'TBD'}
                           </p>
                         </div>
                       </div>
                     </div>
-                    <button className="text-gray-400 hover:text-white transition ml-4">
+                    <button className="text-white/40 hover:text-white transition ml-4">
                       {expandedCollabId === collab.id ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
                     </button>
                   </div>
@@ -201,24 +201,24 @@ const CustomerCollaborations: React.FC = () => {
 
                 {/* Expanded Details */}
                 {expandedCollabId === collab.id && (
-                  <div className="border-t border-gray-700 p-6 space-y-6">
+                  <div className="border-t border-white/[0.06] p-6 space-y-6">
                     {/* Description */}
                     <div>
-                      <h4 className="text-sm font-semibold text-gray-300 mb-2">Description</h4>
-                      <p className="text-gray-200">{collab.description}</p>
+                      <h4 className="text-sm font-semibold text-white/60 mb-2">Description</h4>
+                      <p className="text-white/80">{collab.description}</p>
                     </div>
 
                     {/* Chat Section */}
-                    <div className="bg-gray-900 rounded-lg p-4">
+                    <div className="bg-black rounded-lg p-4">
                       <h4 className="text-lg font-semibold text-white flex items-center gap-2 mb-4">
                         <MessageSquare size={20} className="text-blue-400" />
                         Collaboration Chat
                       </h4>
 
                       {/* Messages List */}
-                      <div className="bg-gray-800 rounded-lg p-4 max-h-80 overflow-y-auto space-y-3 mb-4">
+                      <div className="bg-white/[0.04] rounded-lg p-4 max-h-80 overflow-y-auto space-y-3 mb-4">
                         {(!messages[collab.id!] || messages[collab.id!].length === 0) ? (
-                          <div className="text-center text-gray-400 py-8">
+                          <div className="text-center text-white/40 py-8">
                             <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />
                             <p>No messages yet. Start the conversation!</p>
                           </div>
@@ -229,18 +229,18 @@ const CustomerCollaborations: React.FC = () => {
                               className={`p-3 rounded-lg ${
                                 msg.senderId === user?.uid
                                   ? 'bg-blue-900/30 ml-8'
-                                  : 'bg-gray-700 mr-8'
+                                  : 'bg-white/[0.06] mr-8'
                               }`}
                             >
                               <div className="flex justify-between items-start mb-1">
                                 <span className="font-semibold text-sm text-white">
                                   {msg.senderId === user?.uid ? 'You' : msg.senderName}
                                 </span>
-                                <span className="text-xs text-gray-400">
+                                <span className="text-xs text-white/40">
                                   {msg.createdAt?.toDate?.()?.toLocaleString() || 'Just now'}
                                 </span>
                               </div>
-                              <p className="text-gray-300 text-sm">{msg.message}</p>
+                              <p className="text-white/60 text-sm">{msg.message}</p>
                             </div>
                           ))
                         )}
@@ -259,7 +259,7 @@ const CustomerCollaborations: React.FC = () => {
                           value={newMessage}
                           onChange={(e) => setNewMessage(e.target.value)}
                           placeholder="Type your message..."
-                          className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+                          className="flex-1 bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
                         />
                         <button
                           type="submit"

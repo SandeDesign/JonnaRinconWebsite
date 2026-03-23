@@ -60,16 +60,16 @@ const RequestCollabPage: React.FC = () => {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Request Collaboration</h1>
-          <p className="text-gray-400">
+          <p className="text-white/40">
             Submit a collaboration request to work with Jonna Rincon
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-gray-800 border border-gray-700 rounded-xl p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-white/60 mb-2">
               Project Title <span className="text-red-400">*</span>
             </label>
             <input
@@ -78,20 +78,20 @@ const RequestCollabPage: React.FC = () => {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g., Music Video for Summer Track"
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+              className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
             />
           </div>
 
           {/* Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-white/60 mb-2">
               Collaboration Type <span className="text-red-400">*</span>
             </label>
             <select
               required
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+              className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
             >
               <option value="music_video">Music Video</option>
               <option value="live_performance">Live Performance</option>
@@ -103,7 +103,7 @@ const RequestCollabPage: React.FC = () => {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-white/60 mb-2">
               Project Description <span className="text-red-400">*</span>
             </label>
             <textarea
@@ -112,13 +112,13 @@ const RequestCollabPage: React.FC = () => {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe what you want to collaborate on..."
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+              className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
             />
           </div>
 
           {/* Budget */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-white/60 mb-2">
               Budget (€)
             </label>
             <input
@@ -128,27 +128,27 @@ const RequestCollabPage: React.FC = () => {
               value={formData.budget}
               onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
               placeholder="e.g., 5000"
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+              className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
             />
-            <p className="text-xs text-gray-400 mt-1">Optional - if you have a budget in mind</p>
+            <p className="text-xs text-white/40 mt-1">Optional - if you have a budget in mind</p>
           </div>
 
           {/* Preferred Start Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-white/60 mb-2">
               Preferred Start Date
             </label>
             <input
               type="date"
               value={formData.preferredStartDate}
               onChange={(e) => setFormData({ ...formData, preferredStartDate: e.target.value })}
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+              className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
             />
           </div>
 
           {/* Additional Message */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-white/60 mb-2">
               Additional Message
             </label>
             <textarea
@@ -156,7 +156,7 @@ const RequestCollabPage: React.FC = () => {
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               placeholder="Any additional information you'd like to share..."
-              className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+              className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
             />
           </div>
 

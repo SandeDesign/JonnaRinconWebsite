@@ -62,25 +62,32 @@ export default function Hero() {
 
     const scrollPercent = (scrollPosition / windowHeight) * 100;
 
-    // Opacity curve — darkens as you scroll, fully dark deep in the page
+    // Opacity curve — stays clear for most of the page, only darkens at 80-90%+
     const isMobile = window.innerWidth < 768;
+    const totalHeight = document.documentElement.scrollHeight - windowHeight;
+    const pagePercent = totalHeight > 0 ? (scrollPosition / totalHeight) * 100 : 0;
+
     let opacity: number;
-    if (scrollPercent < 10) {
-      opacity = (scrollPercent / 10) * 0.3;
-    } else if (scrollPercent < 70) {
-      opacity = 0.3 + ((scrollPercent - 10) / 60) * 0.5;
-    } else if (scrollPercent < 200) {
-      opacity = 0.8 + ((scrollPercent - 70) / 130) * 0.2;
+    if (pagePercent < 60) {
+      // Very subtle darkening for first 60% of page
+      opacity = (pagePercent / 60) * 0.15;
+    } else if (pagePercent < 80) {
+      // Gradual increase from 0.15 to 0.5
+      opacity = 0.15 + ((pagePercent - 60) / 20) * 0.35;
+    } else if (pagePercent < 90) {
+      // Rapid darkening 0.5 to 0.9
+      opacity = 0.5 + ((pagePercent - 80) / 10) * 0.4;
     } else {
-      opacity = 1;
+      // Final 10% goes to full dark
+      opacity = 0.9 + ((pagePercent - 90) / 10) * 0.1;
     }
 
-    // Mobiel: hogere minimum overlay zodat UI-elementen leesbaar blijven
     if (isMobile) {
-      opacity = Math.max(opacity, 0.25);
+      opacity = Math.max(opacity, 0.1);
     }
 
-    const blur = Math.min((scrollPosition / windowHeight) * 10, 10);
+    // Blur only kicks in after 70% scroll
+    const blur = pagePercent > 70 ? Math.min(((pagePercent - 70) / 30) * 10, 10) : 0;
 
     // Direct DOM update — no React re-render
     if (overlayRef.current) {
