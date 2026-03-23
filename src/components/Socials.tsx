@@ -1,8 +1,10 @@
 import { Youtube, Instagram, Music2 } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function Socials() {
   const socialTitle = useCyberDecodeInView('Social Media');
+  const { ref: revealRef, isVisible } = useScrollReveal();
   const socialPlatforms = [
     {
       name: 'Instagram',
@@ -31,7 +33,7 @@ export default function Socials() {
   ];
 
   return (
-    <section id="socials" className="py-64 pb-64 px-4 bg-transparent">
+    <section ref={revealRef as React.RefObject<HTMLElement>} id="socials" className={`py-64 pb-64 px-4 bg-transparent transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 ref={socialTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">{socialTitle.display}</h2>

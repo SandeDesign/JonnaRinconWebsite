@@ -104,7 +104,7 @@ export default function About() {
   const decodedTitle = useCyberDecodeOnChange(current.title);
 
   return (
-    <section id="about" className="py-12 md:py-20 px-4 bg-transparent">
+    <section id="about" className={`py-12 md:py-20 px-4 bg-transparent transition-all duration-700 ${textInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <div className="max-w-[1100px] mx-auto">
 
         {/* Main layout: text left, carousel right */}

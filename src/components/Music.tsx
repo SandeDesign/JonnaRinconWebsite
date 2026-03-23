@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function Music() {
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
-  const musicTitle = useCyberDecodeInView('Music');
+  const musicTitle = useCyberDecodeInView('My Tracks');
+  const { ref: revealRef, isVisible } = useScrollReveal();
   const youtubeTitle = useCyberDecodeInView('YouTube');
 
   const spotifyPlaylists = [
@@ -66,7 +68,7 @@ export default function Music() {
   return (
     <>
       {/* MUSIC SECTIE */}
-      <section id="music" className="py-12 md:py-24 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
+      <section ref={revealRef as React.RefObject<HTMLElement>} id="music" className={`py-12 md:py-24 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="max-w-7xl mx-auto w-full scale-85 md:scale-100 origin-center">
           <div className="text-center mb-8 md:mb-16">
             <h2 ref={musicTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black uppercase tracking-wider">
