@@ -1,18 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { X, ShoppingBag } from 'lucide-react';
+import { X, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface NavigationProps {
   cartItemCount?: number;
   onCartClick?: () => void;
   isDarkOverlay?: boolean;
+  isLightMode?: boolean;
   onMenuToggle?: (isOpen: boolean) => void;
 }
 
-const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
-
-export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverlay = false, onMenuToggle }: NavigationProps) {
+export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverlay = false, isLightMode = false, onMenuToggle }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -101,7 +100,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     closeTimeout.current = setTimeout(() => {
       setIsMenuOpen(false);
       setIsMenuClosing(false);
-    }, 400);
+    }, 500);
   };
 
   const openMenu = () => {
@@ -125,17 +124,24 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     }
   };
 
-  // Build menu items — compact: only BEAT STORE, MY TRACKS
-  const menuItems: { label: string; subtitle?: string; action: () => void }[] = [
+  // Determine nav colors based on context
+  const useWhiteNav = isDarkOverlay && !isLightMode;
+  const useBlackNav = isLightMode || !isDarkOverlay;
+
+  const navTextColor = useWhiteNav ? 'text-white' : 'text-black';
+
+  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void }[] = [
     { label: 'BEAT STORE', subtitle: 'Browse instrumentals', action: () => { closeMenu(); navigate('/shop/beats'); } },
     { label: 'MY TRACKS', subtitle: 'Latest releases', action: () => { closeMenu(); window.location.hash = 'music'; } },
+    { label: 'SOCIALS', subtitle: 'Follow the journey', action: () => { closeMenu(); window.location.hash = 'socials'; } },
+    { label: 'CONTACT', subtitle: 'Get in touch', action: () => { closeMenu(); window.location.hash = 'contact'; } },
   ];
 
   const socialLinks = [
-    { label: 'INSTAGRAM', href: 'https://www.instagram.com/jonnarincon/' },
-    { label: 'YOUTUBE', href: 'https://www.youtube.com/jonnarincon' },
-    { label: 'SPOTIFY', href: 'https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F' },
-    { label: 'SOUNDCLOUD', href: 'https://soundcloud.com/jonnarincon' },
+    { label: 'Instagram', href: 'https://www.instagram.com/jonnarincon/' },
+    { label: 'YouTube', href: 'https://www.youtube.com/jonnarincon' },
+    { label: 'Spotify', href: 'https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F' },
+    { label: 'SoundCloud', href: 'https://soundcloud.com/jonnarincon' },
   ];
 
   const menuVisible = isMenuOpen || isMenuClosing;
@@ -143,37 +149,48 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   return (
     <nav className="fixed top-0 left-0 right-0 z-30">
       {/* Top bar — logo left, MENU right */}
-      <div className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-3 md:py-4">
-        {/* Logo — top-left, larger */}
+      <div className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
+        {/* Logo — top-left */}
         <Link to="/" className="block flex-shrink-0">
-          <div className="relative h-[100px] md:h-[140px]">
+          <div className="relative h-[60px] md:h-[80px]">
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
               className="h-full w-auto transition-opacity duration-500"
-              style={{ opacity: isDarkOverlay ? 0 : 1 }}
+              style={{ opacity: useWhiteNav ? 0 : 1 }}
             />
             <img
               src="/Jonna Rincon Logo WH.png"
               alt="Jonna Rincon"
               className="absolute top-0 left-0 h-full w-auto transition-opacity duration-500"
-              style={{ opacity: isDarkOverlay ? 1 : 0 }}
+              style={{ opacity: useWhiteNav ? 1 : 0 }}
             />
           </div>
         </Link>
 
-        {/* MENU button — top-right */}
-        <button
-          onClick={openMenu}
-          className={`relative text-lg md:text-2xl font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer ${
-            isDarkOverlay ? 'text-white' : 'text-black'
-          }`}
-        >
-          MENU
-          {cartItemCount > 0 && (
-            <span className="absolute -top-1 -right-4 md:-right-5 w-2 md:w-2.5 h-2 md:h-2.5 bg-red-600 rounded-full" />
+        {/* Right side — Cart + MENU */}
+        <div className="flex items-center gap-5 md:gap-6">
+          {/* Cart icon */}
+          {onCartClick && cartItemCount > 0 && (
+            <button
+              onClick={onCartClick}
+              className={`relative transition-all duration-300 hover:scale-110 cursor-pointer ${navTextColor}`}
+            >
+              <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-600 rounded-full flex items-center justify-center text-[9px] font-bold text-white">
+                {cartItemCount}
+              </span>
+            </button>
           )}
-        </button>
+
+          {/* MENU button */}
+          <button
+            onClick={openMenu}
+            className={`text-sm md:text-base font-medium uppercase tracking-[0.2em] transition-all duration-500 hover:opacity-60 cursor-pointer ${navTextColor}`}
+          >
+            Menu
+          </button>
+        </div>
       </div>
 
       <div className="w-full">
@@ -286,36 +303,32 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           </>
         )}
 
-        {/* ========== FULLSCREEN MENU OVERLAY ========== */}
+        {/* ========== SIDE PANEL MENU (Martin Garrix style) ========== */}
         {menuVisible && (
           <>
-            {/* Backdrop */}
+            {/* Backdrop — subtle dark overlay */}
             <div
-              className={`fixed inset-0 bg-black/70 z-[100] ${isMenuClosing ? 'animate-menu-fade-out' : 'animate-menu-fade-in'}`}
+              className={`fixed inset-0 z-[100] transition-opacity duration-500 ${
+                isMenuClosing ? 'opacity-0' : 'opacity-100'
+              }`}
+              style={{ backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }}
               onClick={closeMenu}
             />
 
-            {/* Menu Panel — fullscreen with background image */}
+            {/* Side Panel — slides in from right */}
             <div
-              className={`fixed inset-0 z-[101] overflow-hidden ${isMenuClosing ? 'animate-menu-slide-out' : 'animate-menu-slide-in'}`}
+              className={`fixed top-0 right-0 bottom-0 z-[101] w-full md:w-[480px] lg:w-[520px] ${
+                isMenuClosing ? 'animate-panel-slide-out' : 'animate-panel-slide-in'
+              }`}
             >
-              {/* Background image */}
-              <img
-                src="/Menu Foto 1.png"
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ filter: 'brightness(0.4) contrast(1.1)' }}
-                onError={(e) => { (e.target as HTMLImageElement).src = '/menu-artist-image.png'; }}
-              />
-              {/* Dark gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
+              {/* Panel background */}
+              <div className="absolute inset-0 bg-[#0a0a0a]" />
 
-              {/* Menu content */}
-              <div className="relative z-10 h-full flex flex-col px-6 md:px-10">
+              {/* Panel content */}
+              <div className="relative z-10 h-full flex flex-col px-8 md:px-12">
 
-                {/* Top bar — Logo left, Cart + Close right */}
-                <div className="flex items-center justify-between py-3 md:py-4 flex-shrink-0">
-                  {/* Logo — clickable home */}
+                {/* Top bar — Close button */}
+                <div className="flex items-center justify-between py-5 md:py-6 flex-shrink-0">
                   <button
                     onClick={() => { closeMenu(); navigate('/'); }}
                     className="block flex-shrink-0 cursor-pointer"
@@ -323,57 +336,58 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                     <img
                       src="/Jonna Rincon Logo WH.png"
                       alt="Jonna Rincon"
-                      className="h-[100px] md:h-[140px] w-auto"
+                      className="h-[40px] md:h-[50px] w-auto opacity-60 hover:opacity-100 transition-opacity duration-300"
                     />
                   </button>
 
-                  {/* Cart + Close */}
-                  <div className="flex items-center gap-4 md:gap-6">
-                    {/* Cart icon */}
+                  <div className="flex items-center gap-5">
                     {onCartClick && (
                       <button
                         onClick={handleCartClick}
                         className="relative transition-all hover:scale-110 duration-300 cursor-pointer"
                       >
-                        <ShoppingBag className="w-6 h-6 md:w-7 md:h-7 text-white" strokeWidth={1.5} />
+                        <ShoppingBag className="w-5 h-5 text-white/60 hover:text-white transition-colors" strokeWidth={1.5} />
                         {cartItemCount > 0 && (
-                          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-600 rounded-full flex items-center justify-center text-[8px] font-bold text-white">
                             {cartItemCount}
                           </span>
                         )}
                       </button>
                     )}
 
-                    {/* Close button */}
                     <button
                       onClick={closeMenu}
-                      className="transition-all hover:scale-110 hover:rotate-90 duration-300 cursor-pointer"
+                      className="text-sm font-medium uppercase tracking-[0.2em] text-white/60 hover:text-white transition-colors duration-300 cursor-pointer"
                     >
-                      <X className="w-7 h-7 md:w-8 md:h-8 text-white" strokeWidth={2} />
+                      Close
                     </button>
                   </div>
                 </div>
 
-                {/* Center — Menu items */}
-                <div className="flex-1 flex flex-col justify-center">
+                {/* Divider */}
+                <div className="w-full h-px bg-white/[0.06]" />
+
+                {/* Menu items — clean, modern, spaced */}
+                <div className="flex-1 flex flex-col justify-center -mt-8">
                   {menuItems.map((item, i) => (
                     <button
                       key={item.label}
                       onClick={item.action}
-                      className="group w-full text-left py-3 md:py-5 transition-all duration-300 hover:pl-4 cursor-pointer"
+                      className="group w-full text-left py-4 md:py-5 cursor-pointer"
+                      style={{
+                        animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
+                      }}
                     >
-                      <div className="flex items-baseline gap-4 md:gap-6">
-                        <span className="text-xs md:text-sm text-white/30 font-medium tracking-wider w-6 md:w-8">
-                          {ROMAN[i]}
-                        </span>
-                        <span className="text-3xl md:text-5xl xl:text-7xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
-                          {item.label}
-                        </span>
-                        {item.subtitle && (
-                          <span className="hidden md:inline text-sm text-white/40 font-normal tracking-wide">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
+                            {item.label}
+                          </span>
+                          <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
                             {item.subtitle}
                           </span>
-                        )}
+                        </div>
+                        <ArrowUpRight className="w-5 h-5 text-white/10 group-hover:text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </div>
                     </button>
                   ))}
@@ -381,71 +395,102 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                   {/* Auth item */}
                   <button
                     onClick={handleMenuAuthClick}
-                    className="group w-full text-left py-3 md:py-5 transition-all duration-300 hover:pl-4 cursor-pointer"
+                    className="group w-full text-left py-4 md:py-5 cursor-pointer"
+                    style={{
+                      animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + menuItems.length * 0.06}s both`,
+                    }}
                   >
-                    <div className="flex items-baseline gap-4 md:gap-6">
-                      <span className="text-xs md:text-sm text-white/30 font-medium tracking-wider w-6 md:w-8">
-                        {ROMAN[menuItems.length]}
-                      </span>
-                      <span className="text-3xl md:text-5xl xl:text-7xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
-                        {user ? 'DASHBOARD' : 'SIGN IN'}
-                      </span>
-                      {user && (
-                        <span className="hidden md:inline text-sm text-white/40 font-normal tracking-wide">
-                          {user.displayName || user.email}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
+                          {user ? 'DASHBOARD' : 'SIGN IN'}
                         </span>
-                      )}
+                        {user && (
+                          <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium">
+                            {user.displayName || user.email}
+                          </span>
+                        )}
+                      </div>
+                      <ArrowUpRight className="w-5 h-5 text-white/10 group-hover:text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </div>
                   </button>
 
                   {user && (
                     <button
                       onClick={() => { closeMenu(); handleSignOut(); }}
-                      className="group w-full text-left py-2 md:py-3 transition-all duration-300 hover:pl-4 cursor-pointer"
+                      className="text-left py-2 cursor-pointer"
                     >
-                      <div className="flex items-baseline gap-4 md:gap-6">
-                        <span className="w-6 md:w-8" />
-                        <span className="text-base md:text-lg uppercase tracking-wider text-white/40 group-hover:text-red-400 transition-colors duration-300 font-medium">
-                          Sign Out
-                        </span>
-                      </div>
+                      <span className="text-sm uppercase tracking-widest text-white/20 hover:text-red-400 transition-colors duration-300 font-medium">
+                        Sign Out
+                      </span>
                     </button>
                   )}
                 </div>
 
-                {/* Bottom bar — Social links + Contact */}
-                <div className="flex-shrink-0 py-4 md:py-6 border-t border-white/10">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 md:gap-6">
-                      {socialLinks.map((link) => (
-                        <a
-                          key={link.label}
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] md:text-xs text-white/40 uppercase tracking-widest font-medium hover:text-white transition-colors duration-300 border-b border-transparent hover:border-white/50 pb-0.5"
-                        >
-                          {link.label}
-                        </a>
-                      ))}
-                      <button
-                        onClick={() => { closeMenu(); window.location.hash = 'contact'; }}
-                        className="text-[10px] md:text-xs text-white/40 uppercase tracking-widest font-medium hover:text-white transition-colors duration-300 border-b border-transparent hover:border-white/50 pb-0.5 cursor-pointer"
-                      >
-                        CONTACT
-                      </button>
-                    </div>
-                    <p className="text-[10px] md:text-xs text-white/20 uppercase tracking-widest font-medium">
-                      &copy; 2025 Jonna Rincon
-                    </p>
-                  </div>
-                </div>
+                {/* Divider */}
+                <div className="w-full h-px bg-white/[0.06]" />
 
+                {/* Bottom — Social links */}
+                <div className="flex-shrink-0 py-6 md:py-8">
+                  <div className="flex flex-wrap gap-x-5 gap-y-2 mb-4">
+                    {socialLinks.map((link) => (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-white/25 uppercase tracking-[0.15em] font-medium hover:text-white/60 transition-colors duration-300"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-white/15 uppercase tracking-[0.15em] font-medium">
+                    &copy; 2025 Jonna Rincon
+                  </p>
+                </div>
               </div>
             </div>
           </>
         )}
       </div>
+
+      <style>{`
+        @keyframes panel-slide-in {
+          from {
+            transform: translateX(100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        .animate-panel-slide-in {
+          animation: panel-slide-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes panel-slide-out {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(100%);
+          }
+        }
+        .animate-panel-slide-out {
+          animation: panel-slide-out 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+        }
+
+        @keyframes menu-item-reveal {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </nav>
   );
 }

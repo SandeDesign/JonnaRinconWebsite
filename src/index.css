@@ -5,10 +5,18 @@
 @layer base {
   body {
     @apply bg-black text-white font-sans overflow-x-hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html {
     scroll-behavior: smooth;
+  }
+
+  /* Modern selection color */
+  ::selection {
+    background: rgba(220, 38, 38, 0.3);
+    color: inherit;
   }
 }
 
@@ -214,49 +222,7 @@
     animation: heart-pop 0.3s ease-out;
   }
 
-  @keyframes menu-slide-in {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  .animate-menu-slide-in {
-    animation: menu-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  @keyframes menu-slide-out {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
-  .animate-menu-slide-out {
-    animation: menu-slide-out 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards;
-  }
-
-  @keyframes menu-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  .animate-menu-fade-in {
-    animation: menu-fade-in 0.4s ease-out forwards;
-  }
-
-  @keyframes menu-fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
-  .animate-menu-fade-out {
-    animation: menu-fade-out 0.35s ease-in forwards;
-  }
+  /* Menu animations - now in Navigation.tsx inline styles */
 
   .marquee-filled-red {
     color: #dc2626;

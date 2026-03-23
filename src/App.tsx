@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -26,6 +26,7 @@ function App() {
   const [hasClickedButton, setHasClickedButton] = useState(false);
   const [isDarkOverlay, setIsDarkOverlay] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLightMode, setIsLightMode] = useState(false);
 
   // Dynamische sections
   const getSections = () => {
@@ -53,7 +54,6 @@ function App() {
   };
 
   const handleCheckout = async () => {
-    // REAL FIREBASE ORDER CREATION
     const order = {
       customerEmail: 'customer@example.com',
       items: cartItems.map(item => ({
@@ -66,7 +66,7 @@ function App() {
       status: 'pending',
       createdAt: new Date(),
     };
-    
+
     try {
       await addDoc(collection(db, 'orders'), order);
       alert('Order created successfully!');
@@ -85,10 +85,9 @@ function App() {
     }
 
     if (scrollDirection === 'down') {
-      // Normale scroll - GEEN speciale About logica meer
       const nextIndex = Math.min(currentSection + 1, sections.length - 1);
       const targetElement = document.getElementById(sections[nextIndex]);
-      
+
       if (targetElement) {
         if (sections[nextIndex] === 'music' && !isMobile) {
           const elementTop = targetElement.offsetTop;
@@ -99,14 +98,14 @@ function App() {
           setCurrentSection(nextIndex);
         }
       }
-      
+
       if (nextIndex === sections.length - 1) {
         setScrollDirection('up');
       }
     } else {
       const prevIndex = Math.max(currentSection - 1, 0);
       const targetElement = document.getElementById(sections[prevIndex]);
-      
+
       if (targetElement) {
         if (sections[prevIndex] === 'music' && !isMobile) {
           const elementTop = targetElement.offsetTop;
@@ -117,12 +116,17 @@ function App() {
           setCurrentSection(prevIndex);
         }
       }
-      
+
       if (prevIndex === 0) {
         setScrollDirection('down');
       }
     }
   };
+
+  // Polarisation callback from LogoReveal
+  const handlePassedReveal = useCallback((passed: boolean) => {
+    setIsLightMode(passed);
+  }, []);
 
   // Detect current section on scroll - REAL-TIME SYNC + overlay darkness
   useEffect(() => {
@@ -158,14 +162,14 @@ function App() {
   useEffect(() => {
     let savedScrollPosition = 0;
     let isResizing = false;
-    
+
     const handleResizeStart = () => {
       if (!isResizing) {
         isResizing = true;
         savedScrollPosition = window.scrollY;
       }
     };
-    
+
     const handleResizeEnd = () => {
       if (isResizing) {
         window.scrollTo({ top: savedScrollPosition, behavior: 'auto' });
@@ -190,11 +194,16 @@ function App() {
 
   const isAtEnd = currentSection === sections.length - 1;
   const showText = !hasClickedButton || isAtEnd;
-  const buttonText = scrollDirection === 'up' ? 'Back' : 'Click Me!';
 
   return (
     <div className="min-h-screen">
-      <Navigation cartItemCount={cartItems.length} onCartClick={() => setIsCartOpen(true)} isDarkOverlay={isDarkOverlay} onMenuToggle={setIsMenuOpen} />
+      <Navigation
+        cartItemCount={cartItems.length}
+        onCartClick={() => setIsCartOpen(true)}
+        isDarkOverlay={isDarkOverlay}
+        isLightMode={isLightMode}
+        onMenuToggle={setIsMenuOpen}
+      />
 
       <ShoppingCart
         isOpen={isCartOpen}
@@ -209,25 +218,28 @@ function App() {
         <div className="fixed bottom-10 left-8 z-50">
           <button
             onClick={scrollToNext}
-            className="animate-bounce cursor-pointer hover:scale-125 transition-all duration-500 focus:outline-none flex flex-col items-center gap-2"
+            className="cursor-pointer hover:scale-125 transition-all duration-500 focus:outline-none flex flex-col items-center gap-2 group"
           >
             {showText && (
               <span
-                className={`text-xs md:text-sm uppercase tracking-[0.3em] font-semibold transition-colors duration-500 ${
-                  isDarkOverlay ? 'text-white/80' : 'text-black/70'
+                className={`text-[10px] md:text-xs uppercase tracking-[0.3em] font-medium transition-colors duration-500 ${
+                  isLightMode ? 'text-black/50' : isDarkOverlay ? 'text-white/50' : 'text-black/50'
                 }`}
               >
-                {scrollDirection === 'up' ? 'Back to top' : 'Scroll Down'}
+                {scrollDirection === 'up' ? 'Back to top' : 'Scroll'}
               </span>
             )}
+            <div className={`w-[1px] h-8 transition-colors duration-500 ${
+              isLightMode ? 'bg-black/20' : isDarkOverlay ? 'bg-white/20' : 'bg-black/20'
+            }`} />
             <svg
-              className={`w-6 h-6 md:w-7 md:h-7 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${
-                isDarkOverlay ? 'text-white' : 'text-black'
+              className={`w-4 h-4 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${
+                isLightMode ? 'text-black/40' : isDarkOverlay ? 'text-white/40' : 'text-black/40'
               }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              strokeWidth={1.5}
+              strokeWidth={1}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
             </svg>
@@ -236,19 +248,31 @@ function App() {
       )}
 
       <main className="pt-20">
+        {/* === DARK ZONE === */}
         <div id="hero" className="h-screen overflow-hidden"><Hero /></div>
         <About />
         <Marquee />
         <BeatStore onAddToCart={handleAddToCart} />
-        <LogoReveal />
-        <Music />
-        <Socials />
-        <MarqueeRed />
-        <div id="live-studio"><LiveStudio /></div>
-        <Contact />
-      </main>
 
-      <Footer />
+        {/* === TRANSITION ZONE — LogoReveal handles the dark→light switch === */}
+        <LogoReveal onPassedReveal={handlePassedReveal} />
+
+        {/* === LIGHT ZONE — everything after the logo reveal gets light treatment === */}
+        <div
+          className="transition-colors duration-700 ease-out"
+          style={{
+            backgroundColor: isLightMode ? '#ffffff' : '#000000',
+            color: isLightMode ? '#000000' : '#ffffff',
+          }}
+        >
+          <Music isLightMode={isLightMode} />
+          <Socials isLightMode={isLightMode} />
+          <MarqueeRed isLightMode={isLightMode} />
+          <div id="live-studio"><LiveStudio isLightMode={isLightMode} /></div>
+          <Contact isLightMode={isLightMode} />
+          <Footer isLightMode={isLightMode} />
+        </div>
+      </main>
     </div>
   );
 }
