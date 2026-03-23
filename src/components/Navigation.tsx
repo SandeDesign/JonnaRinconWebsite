@@ -125,35 +125,35 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     <nav className="fixed top-0 left-0 right-0 z-30">
       {/* Top bar — logo left, MENU right, SAME line */}
       <div className="fixed top-0 left-0 right-0 z-30 flex items-start justify-between px-6 md:px-10 pt-6 md:pt-10">
-        {/* Logo — top-left */}
+        {/* Logo — top-left, natural height (no fixed container) */}
         <Link to="/" className="block flex-shrink-0">
           {/* Desktop logo */}
-          <div className="hidden md:block relative" style={{ width: '500px', height: '168px' }}>
+          <div className="hidden md:block relative w-[500px]">
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
-              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              className="w-full h-auto transition-opacity duration-500"
               style={{ opacity: isDarkOverlay ? 0 : 1 }}
             />
             <img
               src="/Jonna Rincon Logo WH.png"
               alt="Jonna Rincon"
-              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              className="absolute top-0 left-0 w-full h-auto transition-opacity duration-500"
               style={{ opacity: isDarkOverlay ? 1 : 0 }}
             />
           </div>
           {/* Mobile logo */}
-          <div className="md:hidden relative" style={{ width: '336px', height: '112px' }}>
+          <div className="md:hidden relative w-[336px]">
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
-              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              className="w-full h-auto transition-opacity duration-500"
               style={{ opacity: isDarkOverlay ? 0 : 1 }}
             />
             <img
               src="/Jonna Rincon Logo WH.png"
               alt="Jonna Rincon"
-              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+              className="absolute top-0 left-0 w-full h-auto transition-opacity duration-500"
               style={{ opacity: isDarkOverlay ? 1 : 0 }}
             />
           </div>
@@ -162,7 +162,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
         {/* MENU button — top-right, same line as logo top */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={`relative text-base md:text-xl font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer mt-1 ${
+          className={`relative text-base md:text-xl font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer ${
             isDarkOverlay ? 'text-white' : 'text-black'
           }`}
         >
