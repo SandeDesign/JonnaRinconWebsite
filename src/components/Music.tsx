@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-export default function Music() {
+interface MusicProps {
+  isLightMode?: boolean;
+}
+
+export default function Music({ isLightMode = false }: MusicProps) {
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
   const musicTitle = useCyberDecodeInView('My Tracks');
   const { ref: revealRef, isVisible } = useScrollReveal();
@@ -65,10 +69,18 @@ export default function Music() {
     }
   ];
 
+  const cardBg = isLightMode ? 'bg-black/[0.03] border-black/[0.08]' : 'bg-white/5 border-white/10';
+  const subtleText = isLightMode ? 'text-black/50' : 'text-gray-400';
+  const dotActive = isLightMode ? 'bg-black' : 'bg-white';
+  const dotInactive = isLightMode ? 'bg-black/20 hover:bg-black/30' : 'bg-gray-600 hover:bg-gray-500';
+  const btnStyle = isLightMode
+    ? 'bg-black text-white hover:bg-gray-800'
+    : 'bg-white text-black hover:bg-gray-200';
+
   return (
     <>
       {/* MUSIC SECTIE */}
-      <section ref={revealRef as React.RefObject<HTMLElement>} id="music" className={`py-12 md:py-24 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+      <section ref={revealRef as React.RefObject<HTMLElement>} id="music" className={`py-12 md:py-24 px-4 md:min-h-0 min-h-screen flex items-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="max-w-7xl mx-auto w-full scale-85 md:scale-100 origin-center">
           <div className="text-center mb-8 md:mb-16">
             <h2 ref={musicTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black uppercase tracking-wider">
@@ -78,9 +90,9 @@ export default function Music() {
           </div>
 
           {/* Spotify Player */}
-          <div className="bg-white/5 border border-white/10 rounded-lg p-8">
+          <div className={`${cardBg} border rounded-2xl p-6 md:p-8 transition-colors duration-700`}>
             <div className="flex items-center justify-center gap-6 mb-6">
-              <p className="hidden md:block text-2xl md:text-3xl font-bold text-white">
+              <p className={`hidden md:block text-2xl md:text-3xl font-bold ${isLightMode ? 'text-black' : 'text-white'} transition-colors duration-700`}>
                 {spotifyPlaylists[currentPlaylist].name}
               </p>
 
@@ -89,10 +101,10 @@ export default function Music() {
                   <button
                     key={index}
                     onClick={() => setCurrentPlaylist(index)}
-                    className={`w-4 h-4 rounded-full transition-all ${
+                    className={`h-3 rounded-full transition-all duration-300 ${
                       currentPlaylist === index
-                        ? 'bg-white w-8'
-                        : 'bg-gray-600 hover:bg-gray-500'
+                        ? `${dotActive} w-8`
+                        : `${dotInactive} w-3`
                     }`}
                     title={playlist.name}
                     aria-label={`Switch to ${playlist.name}`}
@@ -127,7 +139,7 @@ export default function Music() {
               href="https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 w-full inline-block text-center py-3 bg-white text-black hover:bg-gray-200 rounded-lg font-semibold transition-all hover:scale-105"
+              className={`mt-6 w-full inline-block text-center py-3 ${btnStyle} rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02]`}
             >
               Open in Spotify
             </a>
@@ -136,13 +148,13 @@ export default function Music() {
       </section>
 
       {/* COMPILATIONS */}
-      <section id="compilations" className="py-12 md:py-0 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
+      <section id="compilations" className="py-12 md:py-0 px-4 md:min-h-0 min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full">
           <div className="text-center mb-8 md:hidden">
             <h2 className="text-3xl font-black uppercase tracking-wider">Playlists</h2>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-lg p-8">
+          <div className={`${cardBg} border rounded-2xl p-6 md:p-8 transition-colors duration-700`}>
             <div className="flex justify-center">
               <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-3 max-w-5xl">
                 {compilations.map((compilation) => (
@@ -153,11 +165,11 @@ export default function Music() {
                     rel="noopener noreferrer"
                     className="group text-center"
                   >
-                    <h4 className="text-sm font-bold mb-2 text-gray-300 truncate">
+                    <h4 className={`text-sm font-bold mb-2 ${subtleText} truncate transition-colors duration-700`}>
                       {compilation.name}
                     </h4>
 
-                    <div className="aspect-square rounded-lg overflow-hidden hover:scale-105 transition-all border border-white/10">
+                    <div className={`aspect-square rounded-xl overflow-hidden hover:scale-105 transition-all border ${isLightMode ? 'border-black/[0.08]' : 'border-white/10'}`}>
                       <img
                         src={compilation.cover}
                         alt={compilation.name}
@@ -173,14 +185,14 @@ export default function Music() {
       </section>
 
       {/* YOUTUBE */}
-      <section id="youtube" className="py-12 md:py-20 px-4 bg-transparent md:min-h-0 min-h-screen flex items-center">
+      <section id="youtube" className="py-12 md:py-20 px-4 md:min-h-0 min-h-screen flex items-center">
         <div className="max-w-7xl mx-auto w-full scale-[0.70] md:scale-100 origin-center">
           <div className="text-center mb-12 md:mb-16">
             <h2 ref={youtubeTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">{youtubeTitle.display}</h2>
-            <p className="text-base md:text-xl text-gray-400">Watch my latest DJ sets and vlogs</p>
+            <p className={`text-base md:text-xl ${subtleText} transition-colors duration-700`}>Watch my latest DJ sets and vlogs</p>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-lg p-8">
+          <div className={`${cardBg} border rounded-2xl p-6 md:p-8 transition-colors duration-700`}>
             <div className="relative rounded-xl overflow-hidden group cursor-pointer">
               <div
                 className="absolute inset-0 z-10 transition-opacity duration-500 group-[.playing]:opacity-0 group-[.playing]:pointer-events-none"
@@ -225,7 +237,7 @@ export default function Music() {
               href="https://youtube.com/@jonnarincon?si=zp6ECLUFUSCXIhhn"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 w-full inline-block text-center py-3 bg-white text-black hover:bg-gray-200 rounded-lg font-semibold transition-all hover:scale-105"
+              className={`mt-6 w-full inline-block text-center py-3 ${btnStyle} rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02]`}
             >
               Visit Channel
             </a>
