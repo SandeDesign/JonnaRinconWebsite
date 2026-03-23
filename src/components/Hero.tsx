@@ -68,18 +68,15 @@ export default function Hero() {
     const pagePercent = totalHeight > 0 ? (scrollPosition / totalHeight) * 100 : 0;
 
     let opacity: number;
-    if (pagePercent < 60) {
-      // Very subtle darkening for first 60% of page
-      opacity = (pagePercent / 60) * 0.15;
+    if (pagePercent < 50) {
+      // Subtle darkening for first 50%
+      opacity = (pagePercent / 50) * 0.2;
     } else if (pagePercent < 80) {
-      // Gradual increase from 0.15 to 0.5
-      opacity = 0.15 + ((pagePercent - 60) / 20) * 0.35;
-    } else if (pagePercent < 90) {
-      // Rapid darkening 0.5 to 0.9
-      opacity = 0.5 + ((pagePercent - 80) / 10) * 0.4;
+      // Gradual increase from 0.2 to 0.5
+      opacity = 0.2 + ((pagePercent - 50) / 30) * 0.3;
     } else {
-      // Final 10% goes to full dark
-      opacity = 0.9 + ((pagePercent - 90) / 10) * 0.1;
+      // Final 20% caps at 0.75 — never goes fully black
+      opacity = 0.5 + ((pagePercent - 80) / 20) * 0.25;
     }
 
     if (isMobile) {
@@ -98,10 +95,9 @@ export default function Hero() {
     if (gradientRef.current) {
       gradientRef.current.style.opacity = String(Math.min(opacity, 0.8));
     }
-    // Hide hero image deep in the page so it doesn't show through sections
+    // Keep image always visible — background for entire site
     if (imgRef.current) {
-      imgRef.current.style.opacity = scrollPercent > 250 ? '0' : '1';
-      imgRef.current.style.transition = 'opacity 0.5s ease';
+      imgRef.current.style.opacity = '1';
     }
   }, []);
 
@@ -130,7 +126,7 @@ export default function Hero() {
         ></div>
         <div
           ref={gradientRef}
-          className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"
+          className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30"
           style={{ opacity: 0 }}
         ></div>
       </div>

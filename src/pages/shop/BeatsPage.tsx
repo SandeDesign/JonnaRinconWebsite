@@ -68,7 +68,13 @@ const BeatsShop: React.FC = () => {
   const genres = ['Trap', 'Hip Hop', 'Drill', 'R&B', 'Pop', 'Electronic', 'Afrobeat'];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
+      {/* Fixed JEIGHTENESIS Background */}
+      <div className="fixed inset-0 w-full h-screen -z-10">
+        <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{objectPosition: 'center'}} />
+        <div className="absolute inset-0 bg-black/75" />
+      </div>
+
       <Navigation isDarkOverlay={true} />
 
       <div className="container mx-auto px-4 pt-28 pb-12">

@@ -20,16 +20,21 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
+      {/* Fixed JEIGHTENESIS Background */}
+      <div className="fixed inset-0 w-full h-screen -z-10">
+        <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{objectPosition: 'center'}} />
+        <div className="absolute inset-0 bg-black/75" />
+      </div>
+
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
       {/* Hero */}
       <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black" />
         <div className="relative z-10 max-w-7xl mx-auto w-full">
           <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.4em] mb-4">Reach Out</p>
-          <h1 className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter">
-            Con<br />tact
+          <h1 className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
+            Contact
           </h1>
           <p className="text-white/30 text-sm md:text-base mt-6 max-w-md">
             Let's create something amazing together. Get in touch for collaborations, commissions, or bookings.
@@ -43,7 +48,7 @@ export default function ContactPage() {
 
           {/* Left - Info */}
           <div className="space-y-5">
-            <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 md:p-8">
+            <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8">
               <h3 className="text-2xl font-black uppercase tracking-tight mb-6">Info</h3>
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
@@ -69,7 +74,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 md:p-8">
+            <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8">
               <h3 className="text-xl font-black uppercase tracking-tight mb-5">Connect</h3>
               <div className="space-y-2">
                 {socialLinks.map((link) => {
@@ -94,7 +99,7 @@ export default function ContactPage() {
             </div>
 
             {/* Services */}
-            <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 md:p-8">
+            <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8">
               <h3 className="text-xl font-black uppercase tracking-tight mb-5">Services</h3>
               <div className="grid grid-cols-2 gap-2">
                 {['Beat Production', 'Mixing & Mastering', 'Collaborations', 'DJ Bookings', 'Custom Beats', 'Sound Design'].map((service) => (
@@ -107,7 +112,7 @@ export default function ContactPage() {
           </div>
 
           {/* Right - Form */}
-          <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 md:p-8 h-fit">
+          <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8 h-fit">
             <h3 className="text-2xl font-black uppercase tracking-tight mb-6">Send a Message</h3>
 
             <form onSubmit={handleSubmit} className="space-y-5">

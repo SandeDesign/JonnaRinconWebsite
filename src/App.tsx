@@ -245,9 +245,8 @@ function App() {
         <Marquee />
         <BeatStore onAddToCart={handleAddToCart} />
 
-        {/* === ALL SECTIONS — consistent dark theme with solid bg
-            so the hero fixed image doesn't bleed through === */}
-        <div className="bg-black relative z-10">
+        {/* === ALL SECTIONS — semi-transparent so JEIGHTENESIS background shows through === */}
+        <div className="relative z-10">
           <Music />
           <Socials />
           <MarqueeRed />
