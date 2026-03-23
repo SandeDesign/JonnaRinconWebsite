@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface NavigationProps {
@@ -8,6 +8,8 @@ interface NavigationProps {
   onCartClick?: () => void;
   isDarkOverlay?: boolean;
 }
+
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
 export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverlay = false }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,7 +51,6 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     }
   };
 
-
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -69,17 +70,20 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     }
   };
 
-  const getUserInitials = () => {
-    if (user?.displayName) {
-      return user.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    }
-    if (user?.email) {
-      return user.email[0].toUpperCase();
-    }
-    return 'U';
+  const toggleAuthMode = () => {
+    setAuthMode(authMode === 'login' ? 'signup' : 'login');
+    setAuthError('');
   };
 
-  const handleAuthClick = () => {
+  const closeMenu = () => setIsMenuOpen(false);
+
+  const handleCartClick = () => {
+    closeMenu();
+    onCartClick?.();
+  };
+
+  const handleMenuAuthClick = () => {
+    closeMenu();
     if (user) {
       navigate(getDashboardLink());
     } else {
@@ -88,18 +92,31 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     }
   };
 
-  const toggleAuthMode = () => {
-    setAuthMode(authMode === 'login' ? 'signup' : 'login');
-    setAuthError('');
-  };
+  // Build menu items
+  const menuItems: { label: string; subtitle?: string; action: () => void }[] = [
+    { label: 'HOME', action: () => { closeMenu(); navigate('/'); } },
+    { label: 'BEATS', subtitle: 'Browse instrumentals', action: () => { closeMenu(); window.location.hash = 'beats'; } },
+    { label: 'MUSIC', subtitle: 'Latest releases', action: () => { closeMenu(); window.location.hash = 'music'; } },
+    { label: 'SHOP', subtitle: 'Beats & Licenses', action: () => { closeMenu(); navigate('/shop/beats'); } },
+    { label: 'SOCIALS', action: () => { closeMenu(); window.location.hash = 'socials'; } },
+    { label: 'CONTACT', action: () => { closeMenu(); window.location.hash = 'contact'; } },
+  ];
+
+  const socialLinks = [
+    { label: 'INSTAGRAM', href: 'https://www.instagram.com/jonnarincon/' },
+    { label: 'YOUTUBE', href: 'https://www.youtube.com/jonnarincon' },
+    { label: 'SPOTIFY', href: 'https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F' },
+    { label: 'SOUNDCLOUD', href: 'https://soundcloud.com/jonnarincon' },
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-30">
-      <div className="w-full pl-4 pr-4 py-4 md:py-5">
+      <div className="w-full px-4 md:px-6 py-4 md:py-5">
+
         {/* DESKTOP Layout */}
-        <div className="hidden md:flex items-center justify-between">
-          {/* Logo altijd linksboven - zwart/wit crossfade op basis van overlay */}
-          <Link to="/" className="relative" style={{ width: '720px', height: '240px' }}>
+        <div className="hidden md:flex items-start justify-between">
+          {/* Logo — top-left */}
+          <Link to="/" className="relative" style={{ width: '500px', height: '168px' }}>
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
@@ -114,56 +131,24 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
             />
           </Link>
 
-          <div className="flex items-center gap-5">
-            {user ? (
-              <Link
-                to={getDashboardLink()}
-                className="rounded-full bg-white flex items-center justify-center text-black font-bold text-base hover:scale-110 transition-all duration-300"
-                style={{width: '60px', height: '60px'}}
-                title={user.displayName || user.email || 'Profile'}
-              >
-                {getUserInitials()}
-              </Link>
-            ) : (
-              <button
-                onClick={handleAuthClick}
-                className="rounded-full glass flex items-center justify-center text-white hover:text-gray-200 hover:scale-110 transition-all duration-300"
-                style={{width: '60px', height: '60px'}}
-                title="Login"
-              >
-                <User className="w-7 h-7" />
-              </button>
+          {/* MENU button — top-right */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={`relative text-sm uppercase tracking-[0.3em] font-medium transition-colors duration-500 hover:opacity-70 cursor-pointer mt-2 ${
+              isDarkOverlay ? 'text-white' : 'text-black'
+            }`}
+          >
+            MENU
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-4 w-2.5 h-2.5 bg-red-600 rounded-full" />
             )}
-
-            {onCartClick && (
-              <button
-                onClick={onCartClick}
-                className="relative glass rounded-full transition-all hover:scale-110 active:scale-95 group/cart"
-                style={{width: '60px', height: '60px', padding: '16px'}}
-              >
-                <ShoppingCart className="w-7 h-7 group-hover/cart:animate-pulse" />
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 rounded-full flex items-center justify-center text-sm font-black animate-pulse" style={{width: '32px', height: '32px'}}>
-                    {cartItemCount}
-                  </span>
-                )}
-              </button>
-            )}
-
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="glass rounded-full transition-all hover:scale-110 active:scale-95 flex items-center justify-center"
-              style={{width: '60px', height: '60px'}}
-            >
-              {isMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
-            </button>
-          </div>
+          </button>
         </div>
 
-        {/* MOBILE Layout - Logo altijd links, buttons rechts */}
-        <div className="md:hidden flex items-center justify-between">
-          {/* Logo linksboven - zwart/wit crossfade */}
-          <Link to="/" className="relative" style={{ width: '480px', height: '160px' }}>
+        {/* MOBILE Layout */}
+        <div className="md:hidden flex items-start justify-between">
+          {/* Logo — top-left */}
+          <Link to="/" className="relative" style={{ width: '336px', height: '112px' }}>
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
@@ -178,70 +163,39 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
             />
           </Link>
 
-          {/* Buttons rechts - 36px */}
-          <div className="flex items-center gap-3">
-            {user ? (
-              <Link
-                to={getDashboardLink()}
-                className="rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold text-xs hover:scale-110 transition-all duration-300"
-                style={{width: '36px', height: '36px'}}
-              >
-                {getUserInitials()}
-              </Link>
-            ) : (
-              <button
-                onClick={handleAuthClick}
-                className="rounded-full glass flex items-center justify-center text-white hover:text-gray-200 hover:scale-110 transition-all duration-300"
-                style={{width: '36px', height: '36px'}}
-              >
-                <User className="w-5 h-5" />
-              </button>
+          {/* MENU button — top-right */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={`relative text-xs uppercase tracking-[0.3em] font-medium transition-colors duration-500 hover:opacity-70 cursor-pointer mt-1 ${
+              isDarkOverlay ? 'text-white' : 'text-black'
+            }`}
+          >
+            MENU
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-3 w-2 h-2 bg-red-600 rounded-full" />
             )}
-
-            {onCartClick && (
-              <button
-                onClick={onCartClick}
-                className="relative glass rounded-full hover:scale-110 transition-all flex items-center justify-center"
-                style={{width: '36px', height: '36px'}}
-              >
-                <ShoppingCart className="w-5 h-5" />
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-purple-600 rounded-full flex items-center justify-center text-xs font-black" style={{width: '20px', height: '20px', fontSize: '10px'}}>
-                    {cartItemCount}
-                  </span>
-                )}
-              </button>
-            )}
-
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="glass rounded-full hover:scale-110 transition-all flex items-center justify-center"
-              style={{width: '36px', height: '36px'}}
-            >
-              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+          </button>
         </div>
 
         {/* Auth Modal */}
         {isAuthModalOpen && (
           <>
             <div
-              className="fixed inset-0 bg-black/30 backdrop-blur-xl z-[120] animate-fade-in"
+              className="fixed inset-0 bg-black/60 backdrop-blur-xl z-[120] animate-fade-in"
               onClick={() => setIsAuthModalOpen(false)}
-            ></div>
+            />
 
             <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 pointer-events-none">
-              <div className="pointer-events-auto bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-scale-in">
+              <div className="pointer-events-auto bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-scale-in">
                 <div className="p-8">
                   <button
                     onClick={() => setIsAuthModalOpen(false)}
-                    className="absolute top-6 right-6 p-2 glass rounded-full transition-all hover:scale-110 hover:rotate-90"
+                    className="absolute top-6 right-6 p-2 rounded-full transition-all hover:scale-110 hover:rotate-90"
                   >
                     <X className="w-5 h-5 text-white" />
                   </button>
 
-                  <h2 className="text-4xl font-black text-white mb-8">
+                  <h2 className="text-4xl font-black text-white mb-8 uppercase tracking-wider">
                     {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
                   </h2>
 
@@ -254,7 +208,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
                     {authMode === 'signup' && (
                       <div>
-                        <label className="block text-sm font-semibold text-gray-300 mb-2">Full Name</label>
+                        <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Full Name</label>
                         <input
                           type="text"
                           value={authName}
@@ -266,7 +220,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                     )}
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Email</label>
+                      <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Email</label>
                       <input
                         type="email"
                         value={authEmail}
@@ -278,7 +232,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-300 mb-2">Password</label>
+                      <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Password</label>
                       <input
                         type="password"
                         value={authPassword}
@@ -311,20 +265,14 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       {authMode === 'login' ? (
                         <>
                           Don't have an account?{' '}
-                          <button
-                            onClick={toggleAuthMode}
-                            className="text-white hover:text-gray-300 font-semibold transition-colors"
-                          >
+                          <button onClick={toggleAuthMode} className="text-white hover:text-gray-300 font-semibold transition-colors">
                             Create one
                           </button>
                         </>
                       ) : (
                         <>
                           Already have an account?{' '}
-                          <button
-                            onClick={toggleAuthMode}
-                            className="text-white hover:text-gray-300 font-semibold transition-colors"
-                          >
+                          <button onClick={toggleAuthMode} className="text-white hover:text-gray-300 font-semibold transition-colors">
                             Sign in
                           </button>
                         </>
@@ -337,85 +285,133 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           </>
         )}
 
-        {/* Menu */}
+        {/* ========== FULL-SCREEN MENU OVERLAY ========== */}
         {isMenuOpen && (
           <>
             {/* Desktop Menu */}
             <div className="hidden md:block">
-              <div
-                className="fixed inset-0 bg-black/30 backdrop-blur-xl z-[100] animate-fade-in"
-                onClick={() => setIsMenuOpen(false)}
-              ></div>
+              <div className="fixed inset-0 bg-black z-[100] animate-fade-in">
+                {/* Close button — top right */}
+                <button
+                  onClick={closeMenu}
+                  className="absolute top-8 right-8 z-[110] transition-all hover:scale-110 hover:rotate-90 duration-300"
+                >
+                  <X className="w-8 h-8 text-white" strokeWidth={2.5} />
+                </button>
 
-              <div className="fixed inset-0 z-[110] flex items-center justify-center p-8 pointer-events-none">
-                <div className="pointer-events-auto bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl max-w-5xl w-full overflow-hidden animate-scale-in">
-                  <div className="grid grid-cols-2 min-h-[600px]">
-                    <div className="relative overflow-hidden bg-black">
-                      <img
-                        src="/menu-artist-image.png"
-                        alt="Jonna Rincon"
-                        className="absolute inset-0 w-full h-full object-cover scale-150"
-                        style={{objectPosition: 'center 35%', filter: 'brightness(0.9) contrast(1.1)'}}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/40"></div>
-                    </div>
+                {/* Main grid: image left, menu right */}
+                <div className="h-full grid grid-cols-[40%_60%]">
+                  {/* Left — Artist Image */}
+                  <div className="relative overflow-hidden">
+                    <img
+                      src="/menu-artist-image.png"
+                      alt="Jonna Rincon"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      style={{ objectPosition: 'center 35%', filter: 'brightness(0.85) contrast(1.1)' }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/30" />
+                  </div>
 
-                    <div className="flex flex-col p-12 justify-center">
+                  {/* Right — Menu Items */}
+                  <div className="flex flex-col justify-between py-16 px-16">
+                    {/* Navigation Items */}
+                    <div className="flex-1 flex flex-col justify-center">
+                      {menuItems.map((item, i) => (
+                        <button
+                          key={item.label}
+                          onClick={item.action}
+                          className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
+                        >
+                          <div className="flex items-baseline gap-6">
+                            <span className="text-xs text-gray-500 font-medium tracking-wider w-6">
+                              {ROMAN[i]}
+                            </span>
+                            <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-gray-300 transition-colors duration-300">
+                              {item.label}
+                            </span>
+                            {item.subtitle && (
+                              <span className="text-sm text-gray-500 font-normal tracking-wide">
+                                {item.subtitle}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+
+                      {/* Cart item in menu */}
+                      {onCartClick && (
+                        <button
+                          onClick={handleCartClick}
+                          className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
+                        >
+                          <div className="flex items-baseline gap-6">
+                            <span className="text-xs text-gray-500 font-medium tracking-wider w-6">
+                              {ROMAN[menuItems.length]}
+                            </span>
+                            <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-gray-300 transition-colors duration-300">
+                              CART
+                            </span>
+                            {cartItemCount > 0 && (
+                              <span className="text-sm text-red-500 font-medium tracking-wide">
+                                {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      )}
+
+                      {/* Auth item in menu */}
                       <button
-                        onClick={() => setIsMenuOpen(false)}
-                        className="absolute top-8 right-8 p-3 glass rounded-full transition-all hover:scale-110 hover:rotate-90"
+                        onClick={user ? handleMenuAuthClick : handleMenuAuthClick}
+                        className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
                       >
-                        <X className="w-6 h-6 text-white" />
+                        <div className="flex items-baseline gap-6">
+                          <span className="text-xs text-gray-500 font-medium tracking-wider w-6">
+                            {ROMAN[menuItems.length + (onCartClick ? 1 : 0)]}
+                          </span>
+                          <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-gray-300 transition-colors duration-300">
+                            {user ? 'DASHBOARD' : 'SIGN IN'}
+                          </span>
+                          {user && (
+                            <span className="text-sm text-gray-500 font-normal tracking-wide">
+                              {user.displayName || user.email}
+                            </span>
+                          )}
+                        </div>
                       </button>
 
-                      <div className="flex flex-col gap-6">
-                        <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
-                          Home
-                        </Link>
-                        <a href="#beats" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
-                          Beats
-                        </a>
-                        <a href="#music" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
-                          Music
-                        </a>
-                        <a href="#socials" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
-                          Socials
-                        </a>
-                        <Link to="/shop/beats" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
-                          Shop
-                        </Link>
-
-                        <div className="border-t border-white/10 my-4"></div>
-
-                        {user ? (
-                          <>
-                            <Link to={getDashboardLink()} onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
-                              Dashboard
-                            </Link>
-                            <button onClick={() => { setIsMenuOpen(false); handleSignOut(); }} className="text-white hover:text-red-400 transition-all font-black text-4xl text-left hover:translate-x-4 transform duration-300">
+                      {user && (
+                        <button
+                          onClick={() => { closeMenu(); handleSignOut(); }}
+                          className="group w-full text-left py-5 transition-all duration-300 hover:pl-4"
+                        >
+                          <div className="flex items-baseline gap-6">
+                            <span className="text-xs text-gray-500 font-medium tracking-wider w-6" />
+                            <span className="text-lg uppercase tracking-wider text-gray-500 group-hover:text-red-400 transition-colors duration-300 font-medium">
                               Sign Out
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <Link to="/login" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-4xl hover:translate-x-4 transform duration-300">
-                              Sign In
-                            </Link>
+                            </span>
+                          </div>
+                        </button>
+                      )}
+                    </div>
 
-                            <div className="mt-4">
-                              <p className="text-gray-400 text-base">
-                                Don't have an account?{' '}
-                                <Link to="/register" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-300 font-semibold transition-colors">
-                                  Create one
-                                </Link>
-                              </p>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      <div className="mt-auto pt-8">
-                        <p className="text-sm text-gray-500">&copy; 2025 Jonna Rincon</p>
+                    {/* Bottom bar — social links */}
+                    <div className="flex items-center justify-between pt-8 border-t border-white/10">
+                      <p className="text-xs text-gray-600 uppercase tracking-widest font-medium">
+                        &copy; 2025 Jonna Rincon
+                      </p>
+                      <div className="flex items-center gap-6">
+                        {socialLinks.map((link) => (
+                          <a
+                            key={link.label}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-gray-400 uppercase tracking-widest font-medium hover:text-white transition-colors duration-300 border-b border-transparent hover:border-white pb-0.5"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -425,83 +421,120 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
             {/* Mobile Menu */}
             <div className="md:hidden">
-              <div
-                className="fixed inset-0 bg-black/25 backdrop-blur-xl z-[100] animate-fade-in"
-                onClick={() => setIsMenuOpen(false)}
-              ></div>
+              <div className="fixed inset-0 bg-black z-[100] animate-fade-in overflow-y-auto">
+                {/* Close button */}
+                <button
+                  onClick={closeMenu}
+                  className="absolute top-5 right-5 z-[110] transition-all hover:scale-110 hover:rotate-90 duration-300"
+                >
+                  <X className="w-6 h-6 text-white" strokeWidth={2.5} />
+                </button>
 
-              <div className="fixed inset-0 z-[110] flex items-center justify-center pointer-events-none">
-                <div className="pointer-events-auto bg-black/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl w-[92%] max-w-lg max-h-[85vh] overflow-hidden flex flex-col animate-scale-in">
-                  <div className="relative overflow-hidden bg-black flex-shrink-0" style={{height: '45vh'}}>
-                    <img
-                      src="/menu-artist-image.png"
-                      alt="Jonna Rincon"
-                      className="w-full h-full object-cover object-center"
-                      style={{objectPosition: 'center 35%', filter: 'brightness(0.85) contrast(1.15) saturate(1.1)'}}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80"></div>
+                {/* Artist image — top */}
+                <div className="relative w-full" style={{ height: '35vh' }}>
+                  <img
+                    src="/menu-artist-image.png"
+                    alt="Jonna Rincon"
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: 'center 35%', filter: 'brightness(0.85) contrast(1.1)' }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black" />
+                </div>
 
+                {/* Menu items */}
+                <div className="px-6 py-6">
+                  {menuItems.map((item, i) => (
                     <button
-                      onClick={() => setIsMenuOpen(false)}
-                      className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-black/60 hover:border-white/20 transition-all"
+                      key={item.label}
+                      onClick={item.action}
+                      className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
                     >
-                      <X className="w-5 h-5 text-white" strokeWidth={2.5} />
+                      <div className="flex items-baseline gap-4">
+                        <span className="text-[10px] text-gray-500 font-medium tracking-wider w-5">
+                          {ROMAN[i]}
+                        </span>
+                        <span className="text-2xl font-black uppercase tracking-wider text-white">
+                          {item.label}
+                        </span>
+                        {item.subtitle && (
+                          <span className="text-xs text-gray-500 font-normal tracking-wide">
+                            {item.subtitle}
+                          </span>
+                        )}
+                      </div>
                     </button>
-                  </div>
+                  ))}
 
-                  <div className="flex-1 flex flex-col justify-center px-10 py-8 overflow-y-auto">
-                    <div className="flex flex-col items-center gap-6 text-center">
-                      <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
-                        Home
-                      </Link>
-                      <a href="#beats" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
-                        Beats
-                      </a>
-                      <a href="#music" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
-                        Music
-                      </a>
-                      <a href="#socials" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
-                        Socials
-                      </a>
-                      <Link to="/shop/beats" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
-                        Shop
-                      </Link>
+                  {/* Cart */}
+                  {onCartClick && (
+                    <button
+                      onClick={handleCartClick}
+                      className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
+                    >
+                      <div className="flex items-baseline gap-4">
+                        <span className="text-[10px] text-gray-500 font-medium tracking-wider w-5">
+                          {ROMAN[menuItems.length]}
+                        </span>
+                        <span className="text-2xl font-black uppercase tracking-wider text-white">
+                          CART
+                        </span>
+                        {cartItemCount > 0 && (
+                          <span className="text-xs text-red-500 font-medium">
+                            {cartItemCount}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  )}
 
-                      <div className="w-16 border-t border-white/10 my-2"></div>
-
-                      {user ? (
-                        <>
-                          <Link to={getDashboardLink()} onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
-                            Dashboard
-                          </Link>
-                          <button onClick={() => { setIsMenuOpen(false); handleSignOut(); }} className="text-white/80 hover:text-red-400 transition-all font-bold text-xl tracking-tight hover:scale-105 transform duration-200">
-                            Sign Out
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <Link to="/login" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-400 transition-all font-black text-3xl tracking-tight hover:scale-105 transform duration-200">
-                            Sign In
-                          </Link>
-
-                          <div className="mt-2">
-                            <p className="text-gray-400 text-sm">
-                              Don't have an account?{' '}
-                              <Link to="/register" onClick={() => setIsMenuOpen(false)} className="text-white hover:text-gray-300 font-semibold transition-colors">
-                                Create one
-                              </Link>
-                            </p>
-                          </div>
-                        </>
-                      )}
+                  {/* Auth */}
+                  <button
+                    onClick={handleMenuAuthClick}
+                    className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
+                  >
+                    <div className="flex items-baseline gap-4">
+                      <span className="text-[10px] text-gray-500 font-medium tracking-wider w-5">
+                        {ROMAN[menuItems.length + (onCartClick ? 1 : 0)]}
+                      </span>
+                      <span className="text-2xl font-black uppercase tracking-wider text-white">
+                        {user ? 'DASHBOARD' : 'SIGN IN'}
+                      </span>
                     </div>
-                  </div>
+                  </button>
 
-                  <div className="flex-shrink-0 py-5 border-t border-white/5">
-                    <p className="text-xs text-gray-500 text-center font-medium tracking-wide">
-                      &copy; 2025 JONNA RINCON
-                    </p>
+                  {user && (
+                    <button
+                      onClick={() => { closeMenu(); handleSignOut(); }}
+                      className="w-full text-left py-4"
+                    >
+                      <div className="flex items-baseline gap-4">
+                        <span className="w-5" />
+                        <span className="text-base uppercase tracking-wider text-gray-500 font-medium">
+                          Sign Out
+                        </span>
+                      </div>
+                    </button>
+                  )}
+                </div>
+
+                {/* Social links — bottom */}
+                <div className="px-6 py-6 border-t border-white/10 mt-2">
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    {socialLinks.map((link) => (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] text-gray-400 uppercase tracking-widest font-medium hover:text-white transition-colors border-b border-transparent hover:border-white pb-0.5"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
                   </div>
+                  <p className="text-[10px] text-gray-600 uppercase tracking-widest text-center mt-4 font-medium">
+                    &copy; 2025 Jonna Rincon
+                  </p>
                 </div>
               </div>
             </div>
