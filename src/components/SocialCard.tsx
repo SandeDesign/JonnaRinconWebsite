@@ -110,7 +110,7 @@ export default function SocialCardCarousel({
       {/* Header */}
       <div className="flex items-center gap-3 p-3">
         <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 flex-shrink-0">
-          <img src="/Logo.png" alt="J18" className="w-full h-full object-cover" />
+          <img src="/icon-96x96.png" alt="J18" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-white leading-tight">Jonna Rincon</p>

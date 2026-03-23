@@ -1,8 +1,8 @@
-const CACHE_NAME = 'jonna-rincon-v1.3.0';
+const CACHE_NAME = 'jonna-rincon-v1.4.0';
 const urlsToCache = [
   '/',
-  '/Logo.png',
-  '/manifest.json'
+  '/icon-192x192.png',
+  '/site.webmanifest'
 ];
 
 // Install event - cache resources
@@ -94,8 +94,8 @@ async function syncOrders() {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'New notification',
-    icon: '/logo.png',
-    badge: '/logo.png',
+    icon: '/icon-192x192.png',
+    badge: '/icon-96x96.png',
     vibrate: [200, 100, 200],
     data: {
       dateOfArrival: Date.now(),
