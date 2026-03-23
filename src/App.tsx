@@ -11,7 +11,7 @@ import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
 import Marquee from './components/Marquee';
 import MarqueeRed from './components/MarqueeRed';
-import SectionDivider from './components/SectionDivider';
+
 import { Beat, CartItem } from './lib/types';
 
 // FIREBASE IMPORTS
@@ -248,7 +248,6 @@ function App() {
         {/* === ALL SECTIONS — consistent dark theme with solid bg
             so the hero fixed image doesn't bleed through === */}
         <div className="bg-black relative z-10">
-          <SectionDivider />
           <Music />
           <Socials />
           <MarqueeRed />

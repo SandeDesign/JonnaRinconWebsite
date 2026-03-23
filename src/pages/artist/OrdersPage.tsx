@@ -49,10 +49,10 @@ const ArtistOrders: React.FC = () => {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-white">My Purchases</h1>
-          <p className="text-gray-400 mt-2">View your beat purchases and licenses</p>
+          <p className="text-white/40 mt-2">View your beat purchases and licenses</p>
         </div>
 
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
           <div className="flex gap-4">
             {(['all', 'completed', 'processing', 'pending'] as const).map((status) => (
               <button
@@ -61,7 +61,7 @@ const ArtistOrders: React.FC = () => {
                 className={`px-4 py-2 rounded-lg capitalize transition ${
                   filter === status
                     ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white'
-                    : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                    : 'text-white/40 hover:bg-white/[0.06] hover:text-white'
                 }`}
               >
                 {status}
@@ -74,10 +74,10 @@ const ArtistOrders: React.FC = () => {
         </div>
 
         {filteredOrders.length === 0 ? (
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center">
-            <Package size={64} className="mx-auto mb-4 text-gray-600" />
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+            <Package size={64} className="mx-auto mb-4 text-white/20" />
             <p className="text-xl text-white mb-2">No purchases found</p>
-            <p className="text-gray-400 mb-6">
+            <p className="text-white/40 mb-6">
               {filter === 'all' ? "You haven't purchased any beats yet" : `No ${filter} orders`}
             </p>
             <Link
@@ -90,11 +90,11 @@ const ArtistOrders: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-                <div className="bg-gray-700/50 p-4 flex justify-between items-center">
+              <div key={order.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+                <div className="bg-white/[0.03] p-4 flex justify-between items-center">
                   <div>
                     <div className="font-semibold text-lg text-white mb-1">{order.orderNumber}</div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-white/40">
                       Placed on {order.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A'}
                     </div>
                   </div>
@@ -128,7 +128,7 @@ const ArtistOrders: React.FC = () => {
                         />
                         <div className="flex-1">
                           <div className="font-semibold text-white">{item.beatTitle}</div>
-                          <div className="text-sm text-gray-400 capitalize">
+                          <div className="text-sm text-white/40 capitalize">
                             {item.licenseType} License
                           </div>
                         </div>

@@ -132,9 +132,9 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   const menuItems: { label: string; subtitle: string; href?: string; action?: () => void }[] = [
     { label: 'BEAT STORE', subtitle: 'Browse instrumentals', action: () => { closeMenu(); navigate('/shop/beats'); } },
-    { label: 'MY TRACKS', subtitle: 'Latest releases', action: () => { closeMenu(); window.location.hash = 'music'; } },
-    { label: 'SOCIALS', subtitle: 'Follow the journey', action: () => { closeMenu(); window.location.hash = 'socials'; } },
-    { label: 'CONTACT', subtitle: 'Get in touch', action: () => { closeMenu(); window.location.hash = 'contact'; } },
+    { label: 'MY TRACKS', subtitle: 'Latest releases', action: () => { closeMenu(); navigate('/tracks'); } },
+    { label: 'SOCIALS', subtitle: 'Follow the journey', action: () => { closeMenu(); navigate('/socials'); } },
+    { label: 'CONTACT', subtitle: 'Get in touch', action: () => { closeMenu(); navigate('/contact'); } },
   ];
 
   const socialLinks = [
@@ -152,7 +152,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
       <div className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
         {/* Logo — top-left */}
         <Link to="/" className="block flex-shrink-0">
-          <div className="relative h-[70px] md:h-[90px]">
+          <div className="relative h-[120px] md:h-[160px]">
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
@@ -186,7 +186,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           {/* MENU button */}
           <button
             onClick={openMenu}
-            className={`text-base md:text-lg font-bold uppercase tracking-[0.25em] transition-all duration-500 hover:opacity-60 cursor-pointer ${navTextColor}`}
+            className={`text-lg md:text-xl font-black uppercase tracking-[0.3em] transition-all duration-500 hover:opacity-60 cursor-pointer ${navTextColor}`}
           >
             Menu
           </button>
@@ -336,7 +336,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                     <img
                       src="/Jonna Rincon Logo WH.png"
                       alt="Jonna Rincon"
-                      className="h-[40px] md:h-[50px] w-auto opacity-60 hover:opacity-100 transition-opacity duration-300"
+                      className="h-[100px] md:h-[130px] w-auto opacity-60 hover:opacity-100 transition-opacity duration-300"
                     />
                   </button>
 

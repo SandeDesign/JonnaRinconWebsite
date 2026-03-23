@@ -150,13 +150,13 @@ const CustomerChat: React.FC = () => {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-white">Support Chat</h1>
-            <p className="text-gray-400 mt-2">Get help from the Jonna Rincon team</p>
+            <p className="text-white/40 mt-2">Get help from the Jonna Rincon team</p>
           </div>
 
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center">
-            <MessageSquare size={64} className="mx-auto mb-4 text-gray-600" />
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+            <MessageSquare size={64} className="mx-auto mb-4 text-white/20" />
             <h2 className="text-2xl font-bold text-white mb-2">No conversations yet</h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-white/40 mb-6">
               Start a conversation with our support team by sending a message below
             </p>
 
@@ -188,7 +188,7 @@ const CustomerChat: React.FC = () => {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message to support..."
-                  className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+                  className="flex-1 bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
                 />
                 <button
                   type="submit"
@@ -211,13 +211,13 @@ const CustomerChat: React.FC = () => {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-white">Support Chat</h1>
-          <p className="text-gray-400 mt-2">Get help from the Jonna Rincon team</p>
+          <p className="text-white/40 mt-2">Get help from the Jonna Rincon team</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Conversations Sidebar */}
-          <div className="lg:col-span-1 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-            <div className="p-4 border-b border-gray-700">
+          <div className="lg:col-span-1 bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-white/[0.06]">
               <h2 className="font-semibold text-white">Conversations</h2>
             </div>
             <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 350px)' }}>
@@ -225,10 +225,10 @@ const CustomerChat: React.FC = () => {
                 <button
                   key={convo.userId}
                   onClick={() => setSelectedConversation(convo.userId)}
-                  className={`w-full p-4 text-left transition border-b border-gray-700 ${
+                  className={`w-full p-4 text-left transition border-b border-white/[0.06] ${
                     selectedConversation === convo.userId
                       ? 'bg-blue-900/30 border-l-4 border-l-blue-500'
-                      : 'hover:bg-gray-750'
+                      : 'hover:bg-white/[0.05]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -240,11 +240,11 @@ const CustomerChat: React.FC = () => {
                         <p className="font-semibold text-white text-sm truncate">
                           {convo.userName}
                         </p>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-white/40">
                           {convo.lastMessageTime?.toDate?.()?.toLocaleDateString() || ''}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400 truncate">{convo.lastMessage}</p>
+                      <p className="text-xs text-white/40 truncate">{convo.lastMessage}</p>
                     </div>
                   </div>
                 </button>
@@ -253,9 +253,9 @@ const CustomerChat: React.FC = () => {
           </div>
 
           {/* Chat Window */}
-          <div className="lg:col-span-2 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
+          <div className="lg:col-span-2 bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
             {/* Chat Header */}
-            <div className="p-4 border-b border-gray-700 bg-gray-750">
+            <div className="p-4 border-b border-white/[0.06] bg-white/[0.05]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold">
                   {conversations.find((c) => c.userId === selectedConversation)?.userName[0] || 'S'}
@@ -264,7 +264,7 @@ const CustomerChat: React.FC = () => {
                   <p className="font-semibold text-white">
                     {conversations.find((c) => c.userId === selectedConversation)?.userName || 'Support'}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-white/40">
                     {conversations.find((c) => c.userId === selectedConversation)?.userEmail || ''}
                   </p>
                 </div>
@@ -274,7 +274,7 @@ const CustomerChat: React.FC = () => {
             {/* Messages */}
             <div className="flex-1 p-6 overflow-y-auto space-y-4">
               {messages.length === 0 ? (
-                <div className="text-center text-gray-400 py-12">
+                <div className="text-center text-white/40 py-12">
                   <MessageSquare size={48} className="mx-auto mb-4 opacity-50" />
                   <p>No messages yet</p>
                 </div>
@@ -285,7 +285,7 @@ const CustomerChat: React.FC = () => {
                     className={`p-4 rounded-lg ${
                       msg.senderId === user?.uid
                         ? 'bg-blue-900/30 ml-12'
-                        : 'bg-gray-700 mr-12'
+                        : 'bg-white/[0.06] mr-12'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
@@ -299,25 +299,25 @@ const CustomerChat: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-white/40">
                         {msg.createdAt?.toDate?.()?.toLocaleString() || 'Just now'}
                       </span>
                     </div>
-                    <p className="text-gray-300">{msg.message}</p>
+                    <p className="text-white/60">{msg.message}</p>
                   </div>
                 ))
               )}
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-700 bg-gray-750">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.06] bg-white/[0.05]">
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
+                  className="flex-1 bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
                 />
                 <button
                   type="submit"

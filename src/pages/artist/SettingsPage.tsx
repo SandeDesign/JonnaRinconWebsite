@@ -86,21 +86,21 @@ const ArtistSettings: React.FC = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white">Profile Settings</h1>
-          <p className="text-gray-400 mt-2">Manage your account information</p>
+          <p className="text-white/40 mt-2">Manage your account information</p>
         </div>
 
         {/* Settings Form */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
           <form onSubmit={handleSave} className="space-y-6">
             {/* Current User Info */}
-            <div className="pb-6 border-b border-gray-700">
+            <div className="pb-6 border-b border-white/[0.06]">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-2xl">
                   {displayName?.[0] || user?.email?.[0] || 'A'}
                 </div>
                 <div>
                   <p className="text-white font-semibold text-lg">{user?.displayName || 'Artist'}</p>
-                  <p className="text-gray-400 text-sm">{user?.email}</p>
+                  <p className="text-white/40 text-sm">{user?.email}</p>
                   <span className="px-2 py-0.5 bg-purple-600 text-purple-100 rounded text-xs mt-1 inline-block">
                     Artist
                   </span>
@@ -110,7 +110,7 @@ const ArtistSettings: React.FC = () => {
 
             {/* Display Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white/60 mb-2">
                 Display Name <span className="text-red-400">*</span>
               </label>
               <input
@@ -119,23 +119,23 @@ const ArtistSettings: React.FC = () => {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Enter your display name"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-white/40 mt-1">
                 This name will be displayed across the platform
               </p>
             </div>
 
             {/* Email (Read Only) */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Email</label>
               <input
                 type="email"
                 value={user?.email || ''}
                 disabled
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-gray-500 cursor-not-allowed"
+                className="w-full bg-black border border-white/[0.06] rounded-lg px-4 py-3 text-white/25 cursor-not-allowed"
               />
-              <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+              <p className="text-xs text-white/40 mt-1">Email cannot be changed</p>
             </div>
 
             {/* Message */}
@@ -170,7 +170,7 @@ const ArtistSettings: React.FC = () => {
         </div>
 
         {/* Password Change Section */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             <Lock size={20} />
             Change Password
@@ -178,7 +178,7 @@ const ArtistSettings: React.FC = () => {
           <form onSubmit={handlePasswordChange} className="space-y-4">
             {/* New Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white/60 mb-2">
                 New Password <span className="text-red-400">*</span>
               </label>
               <input
@@ -187,13 +187,13 @@ const ArtistSettings: React.FC = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password (min. 6 characters)"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
               />
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white/60 mb-2">
                 Confirm Password <span className="text-red-400">*</span>
               </label>
               <input
@@ -202,7 +202,7 @@ const ArtistSettings: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                className="w-full bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
               />
             </div>
 

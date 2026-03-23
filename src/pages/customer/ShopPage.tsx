@@ -74,11 +74,11 @@ const CustomerShop: React.FC = () => {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white">Shop Premium Beats</h1>
-          <p className="text-gray-400 mt-2">Browse and purchase high-quality beats by Jonna Rincon</p>
+          <p className="text-white/40 mt-2">Browse and purchase high-quality beats by Jonna Rincon</p>
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <input
@@ -86,14 +86,14 @@ const CustomerShop: React.FC = () => {
               placeholder="Search beats..."
               value={filter.search || ''}
               onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+              className="bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
             />
 
             {/* Genre Filter */}
             <select
               value={filter.genre || ''}
               onChange={(e) => setFilter({ ...filter, genre: e.target.value || undefined })}
-              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+              className="bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
             >
               <option value="">All Genres</option>
               {genres.map((genre) => (
@@ -109,7 +109,7 @@ const CustomerShop: React.FC = () => {
               onChange={(e) =>
                 setFilter({ ...filter, sortBy: e.target.value as typeof filter.sortBy })
               }
-              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
+              className="bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
             >
               <option value="newest">Newest First</option>
               <option value="popular">Most Popular</option>
@@ -121,7 +121,7 @@ const CustomerShop: React.FC = () => {
             {(filter.genre || filter.search) && (
               <button
                 onClick={() => setFilter({ sortBy: 'newest' })}
-                className="bg-gray-700 hover:bg-gray-600 rounded-lg px-4 py-2 text-white transition"
+                className="bg-white/[0.06] hover:bg-white/[0.08] rounded-lg px-4 py-2 text-white transition"
               >
                 Clear Filters
               </button>
@@ -135,17 +135,17 @@ const CustomerShop: React.FC = () => {
             <div className="text-xl text-white">Loading beats...</div>
           </div>
         ) : beats.length === 0 ? (
-          <div className="text-center py-12 bg-gray-800 border border-gray-700 rounded-xl">
-            <Music size={64} className="mx-auto mb-4 text-gray-600" />
+          <div className="text-center py-12 bg-white/[0.04] border border-white/[0.06] rounded-xl">
+            <Music size={64} className="mx-auto mb-4 text-white/20" />
             <p className="text-xl text-white mb-2">No beats found</p>
-            <p className="text-gray-400">Try adjusting your filters</p>
+            <p className="text-white/40">Try adjusting your filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {beats.map((beat) => (
               <div
                 key={beat.id}
-                className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden hover:border-blue-500/50 transition-all hover:transform hover:scale-105"
+                className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden hover:border-blue-500/50 transition-all hover:transform hover:scale-105"
               >
                 {/* Beat Artwork */}
                 <div className="relative">
@@ -174,10 +174,10 @@ const CustomerShop: React.FC = () => {
                 {/* Beat Info */}
                 <div className="p-4">
                   <h3 className="font-bold text-lg mb-2 text-white">{beat.title}</h3>
-                  <div className="text-sm text-gray-400 mb-3">{beat.artist}</div>
+                  <div className="text-sm text-white/40 mb-3">{beat.artist}</div>
 
                   {/* Beat Details */}
-                  <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
+                  <div className="flex items-center gap-3 text-xs text-white/40 mb-3">
                     <span>{beat.bpm} BPM</span>
                     <span>•</span>
                     <span>{beat.key}</span>
@@ -186,7 +186,7 @@ const CustomerShop: React.FC = () => {
                   </div>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-xs text-gray-400 mb-4">
+                  <div className="flex items-center gap-4 text-xs text-white/40 mb-4">
                     <span className="flex items-center gap-1">
                       <Play size={12} /> {beat.plays.toLocaleString()}
                     </span>
@@ -199,9 +199,9 @@ const CustomerShop: React.FC = () => {
                   </div>
 
                   {/* Price */}
-                  <div className="flex justify-between items-center pt-3 border-t border-gray-700">
+                  <div className="flex justify-between items-center pt-3 border-t border-white/[0.06]">
                     <div>
-                      <div className="text-xs text-gray-400">Starting at</div>
+                      <div className="text-xs text-white/40">Starting at</div>
                       <div className="font-bold text-lg text-white">
                         €{beat.licenses.basic?.price.toFixed(2) || '0.00'}
                       </div>
@@ -221,7 +221,7 @@ const CustomerShop: React.FC = () => {
 
         {/* Results Count */}
         {!loading && beats.length > 0 && (
-          <div className="text-center text-gray-400">
+          <div className="text-center text-white/40">
             Showing {beats.length} beat{beats.length !== 1 ? 's' : ''}
           </div>
         )}

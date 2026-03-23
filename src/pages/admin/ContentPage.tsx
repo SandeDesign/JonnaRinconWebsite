@@ -198,7 +198,7 @@ const ContentPage: React.FC = () => {
     switch (platform.toLowerCase()) {
       case 'instagram': return <Instagram size={14} className="text-pink-400" />;
       case 'youtube': return <Youtube size={14} className="text-red-400" />;
-      default: return <Send size={14} className="text-gray-400" />;
+      default: return <Send size={14} className="text-white/40" />;
     }
   };
 
@@ -214,7 +214,7 @@ const ContentPage: React.FC = () => {
       case 'error':
         return <span className="flex items-center gap-1 text-xs text-red-400"><AlertCircle size={12} /> Failed</span>;
       default:
-        return <span className="flex items-center gap-1 text-xs text-gray-400"><Clock size={12} /> {status}</span>;
+        return <span className="flex items-center gap-1 text-xs text-white/40"><Clock size={12} /> {status}</span>;
     }
   };
 
@@ -225,7 +225,7 @@ const ContentPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">Social Media Planner</h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-white/40 mt-2">
               {profileUsername ? (
                 <>Schedule and manage posts for <span className="text-purple-400">@{profileUsername}</span></>
               ) : (
@@ -236,7 +236,7 @@ const ContentPage: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowSettingsModal(true)}
-              className="p-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-400 hover:text-white transition"
+              className="p-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/40 hover:text-white transition"
               title="Settings"
             >
               <Settings size={20} />
@@ -244,7 +244,7 @@ const ContentPage: React.FC = () => {
             <button
               onClick={fetchData}
               disabled={refreshing}
-              className="p-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-400 hover:text-white transition disabled:opacity-50"
+              className="p-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/40 hover:text-white transition disabled:opacity-50"
               title="Refresh"
             >
               <RefreshCw size={20} className={refreshing ? 'animate-spin' : ''} />
@@ -287,40 +287,40 @@ const ContentPage: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Scheduled</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Scheduled</p>
             <p className="text-2xl font-bold text-blue-400 mt-1">{scheduledPosts.length}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-gray-400 text-sm">Published</p>
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <p className="text-white/40 text-sm">Published</p>
             <p className="text-2xl font-bold text-green-400 mt-1">
               {historyPosts.filter(p => p.status === 'completed' || p.status === 'published').length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 flex items-center gap-3">
             <Instagram size={24} className="text-pink-400" />
             <div>
-              <p className="text-gray-400 text-sm">Instagram</p>
+              <p className="text-white/40 text-sm">Instagram</p>
               <p className="text-white font-bold">{profileUsername ? 'Ready' : 'Not configured'}</p>
             </div>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 flex items-center gap-3">
             <Youtube size={24} className="text-red-400" />
             <div>
-              <p className="text-gray-400 text-sm">YouTube</p>
+              <p className="text-white/40 text-sm">YouTube</p>
               <p className="text-white font-bold">{profileUsername ? 'Ready' : 'Not configured'}</p>
             </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 border-b border-gray-700">
+        <div className="flex gap-2 border-b border-white/[0.06]">
           <button
             onClick={() => setActiveTab('calendar')}
             className={`px-4 py-2 font-medium transition flex items-center gap-2 ${
               activeTab === 'calendar'
                 ? 'text-purple-400 border-b-2 border-purple-400'
-                : 'text-gray-400 hover:text-gray-300'
+                : 'text-white/40 hover:text-white/60'
             }`}
           >
             <CalendarIcon size={18} /> Calendar
@@ -330,7 +330,7 @@ const ContentPage: React.FC = () => {
             className={`px-4 py-2 font-medium transition flex items-center gap-2 ${
               activeTab === 'scheduled'
                 ? 'text-purple-400 border-b-2 border-purple-400'
-                : 'text-gray-400 hover:text-gray-300'
+                : 'text-white/40 hover:text-white/60'
             }`}
           >
             <Clock size={18} /> Scheduled ({scheduledPosts.length})
@@ -340,7 +340,7 @@ const ContentPage: React.FC = () => {
             className={`px-4 py-2 font-medium transition flex items-center gap-2 ${
               activeTab === 'history'
                 ? 'text-purple-400 border-b-2 border-purple-400'
-                : 'text-gray-400 hover:text-gray-300'
+                : 'text-white/40 hover:text-white/60'
             }`}
           >
             <CheckCircle size={18} /> History ({historyPosts.length})
@@ -349,25 +349,25 @@ const ContentPage: React.FC = () => {
 
         {/* Calendar View */}
         {activeTab === 'calendar' && (
-          <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
-              <button onClick={prevMonth} className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white transition">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
+              <button onClick={prevMonth} className="p-2 hover:bg-white/[0.06] rounded-lg text-white/40 hover:text-white transition">
                 <ChevronLeft size={20} />
               </button>
               <div className="flex items-center gap-3">
                 <h2 className="text-xl font-bold text-white">{monthName}</h2>
-                <button onClick={goToToday} className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition">
+                <button onClick={goToToday} className="text-xs px-2 py-1 bg-white/[0.06] hover:bg-white/[0.08] text-white/60 rounded transition">
                   Today
                 </button>
               </div>
-              <button onClick={nextMonth} className="p-2 hover:bg-gray-700 rounded-lg text-gray-400 hover:text-white transition">
+              <button onClick={nextMonth} className="p-2 hover:bg-white/[0.06] rounded-lg text-white/40 hover:text-white transition">
                 <ChevronRight size={20} />
               </button>
             </div>
 
-            <div className="grid grid-cols-7 bg-gray-700/50">
+            <div className="grid grid-cols-7 bg-white/[0.03]">
               {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                <div key={day} className="p-2 text-center text-xs font-semibold text-gray-400 uppercase">
+                <div key={day} className="p-2 text-center text-xs font-semibold text-white/40 uppercase">
                   {day}
                 </div>
               ))}
@@ -378,15 +378,15 @@ const ContentPage: React.FC = () => {
                 <div
                   key={i}
                   onClick={() => handleCalendarDayClick(day)}
-                  className={`min-h-[100px] border-t border-r border-gray-700/50 p-1.5 transition cursor-pointer ${
-                    !day.isCurrentMonth ? 'bg-gray-900/30 opacity-40' :
+                  className={`min-h-[100px] border-t border-r border-white/[0.06]/50 p-1.5 transition cursor-pointer ${
+                    !day.isCurrentMonth ? 'bg-black/30 opacity-40' :
                     day.isToday ? 'bg-purple-900/20 border-l-2 border-l-purple-500' :
-                    'hover:bg-gray-700/30'
+                    'hover:bg-white/[0.06]/30'
                   }`}
                 >
                   <div className={`text-xs font-medium mb-1 ${
                     day.isToday ? 'text-purple-400 font-bold' :
-                    day.isCurrentMonth ? 'text-gray-300' : 'text-gray-600'
+                    day.isCurrentMonth ? 'text-white/60' : 'text-white/20'
                   }`}>
                     {day.date.getDate()}
                   </div>
@@ -413,7 +413,7 @@ const ContentPage: React.FC = () => {
                       );
                     })}
                     {day.posts.length > 3 && (
-                      <div className="text-[10px] text-gray-500 text-center">
+                      <div className="text-[10px] text-white/25 text-center">
                         +{day.posts.length - 3} more
                       </div>
                     )}
@@ -428,14 +428,14 @@ const ContentPage: React.FC = () => {
         {activeTab === 'scheduled' && (
           <div className="space-y-3">
             {loading ? (
-              <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center text-gray-400">
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
                 Loading scheduled posts...
               </div>
             ) : scheduledPosts.length === 0 ? (
-              <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center">
-                <Clock size={48} className="mx-auto mb-4 text-gray-600" />
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+                <Clock size={48} className="mx-auto mb-4 text-white/20" />
                 <h3 className="text-xl font-bold text-white mb-2">No scheduled posts</h3>
-                <p className="text-gray-400 mb-4">Create your first scheduled post to get started</p>
+                <p className="text-white/40 mb-4">Create your first scheduled post to get started</p>
                 <button
                   onClick={() => {
                     if (!profileUsername) {
@@ -451,10 +451,10 @@ const ContentPage: React.FC = () => {
               </div>
             ) : (
               scheduledPosts.map(post => (
-                <div key={post.id} className="bg-gray-800 border border-gray-700 rounded-xl p-4">
+                <div key={post.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-white/[0.06] flex items-center justify-center flex-shrink-0">
                         {post.mediaType === 'video' ? <Film size={20} className="text-red-400" /> :
                          post.mediaType === 'photo' ? <Image size={20} className="text-blue-400" /> :
                          <Type size={20} className="text-green-400" />}
@@ -467,7 +467,7 @@ const ContentPage: React.FC = () => {
                               <span key={i}>{getPlatformIcon(p)}</span>
                             ))}
                           </div>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-white/40">
                             <CalendarIcon size={12} className="inline mr-1" />
                             {new Date(post.scheduledDate).toLocaleString()}
                           </span>
@@ -497,18 +497,18 @@ const ContentPage: React.FC = () => {
         {activeTab === 'history' && (
           <div className="space-y-3">
             {loading ? (
-              <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center text-gray-400">
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
                 Loading history...
               </div>
             ) : historyPosts.length === 0 ? (
-              <div className="bg-gray-800 border border-gray-700 rounded-xl p-12 text-center">
-                <CheckCircle size={48} className="mx-auto mb-4 text-gray-600" />
+              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+                <CheckCircle size={48} className="mx-auto mb-4 text-white/20" />
                 <h3 className="text-xl font-bold text-white mb-2">No posts yet</h3>
-                <p className="text-gray-400">Your published posts will appear here</p>
+                <p className="text-white/40">Your published posts will appear here</p>
               </div>
             ) : (
               historyPosts.map(post => (
-                <div key={post.id} className="bg-gray-800 border border-gray-700 rounded-xl p-4">
+                <div key={post.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       <div className="min-w-0 flex-1">
@@ -530,7 +530,7 @@ const ContentPage: React.FC = () => {
                               );
                             })}
                           </div>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-white/40">
                             {post.createdAt ? new Date(post.createdAt).toLocaleString() : 'N/A'}
                           </span>
                         </div>
@@ -595,28 +595,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ currentUsername, onClose,
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-xl max-w-md w-full">
-        <div className="p-6 border-b border-gray-700 flex items-center justify-between">
+      <div className="bg-white/[0.04] rounded-xl max-w-md w-full">
+        <div className="p-6 border-b border-white/[0.06] flex items-center justify-between">
           <h2 className="text-2xl font-bold text-white">Settings</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition">
+          <button onClick={onClose} className="text-white/40 hover:text-white transition">
             <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-white/60 mb-2">
               Upload-Post.com Username *
             </label>
             <input
               type="text"
               value={username}
               onChange={e => setUsername(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-purple-500"
               placeholder="your-username"
               required
             />
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-white/40 mt-2">
               This is your profile username on Upload-Post.com (not your email)
             </p>
           </div>
@@ -627,11 +627,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ currentUsername, onClose,
             </p>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-700">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 text-gray-400 hover:text-white transition"
+              className="px-6 py-2 text-white/40 hover:text-white transition"
             >
               Cancel
             </button>
@@ -813,25 +813,25 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-gray-800 rounded-xl max-w-2xl w-full my-8">
-        <div className="p-6 border-b border-gray-700 flex items-center justify-between">
+      <div className="bg-white/[0.04] rounded-xl max-w-2xl w-full my-8">
+        <div className="p-6 border-b border-white/[0.06] flex items-center justify-between">
           <h2 className="text-2xl font-bold text-white">
             {isScheduled ? 'Schedule Post' : 'Create Post'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition">
+          <button onClick={onClose} className="text-white/40 hover:text-white transition">
             <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[calc(100vh-200px)] overflow-y-auto">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Content Type</label>
+            <label className="block text-sm font-medium text-white/60 mb-2">Content Type</label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setPostType('photo')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
-                  postType === 'photo' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                  postType === 'photo' ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.08]'
                 }`}
               >
                 <Image size={18} /> Photo
@@ -840,7 +840,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                 type="button"
                 onClick={() => setPostType('video')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
-                  postType === 'video' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                  postType === 'video' ? 'bg-red-600 text-white' : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.08]'
                 }`}
               >
                 <Film size={18} /> Video
@@ -849,7 +849,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                 type="button"
                 onClick={() => setPostType('text')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
-                  postType === 'text' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                  postType === 'text' ? 'bg-green-600 text-white' : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.08]'
                 }`}
               >
                 <Type size={18} /> Text
@@ -858,7 +858,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Post to Platforms</label>
+            <label className="block text-sm font-medium text-white/60 mb-2">Post to Platforms</label>
             <div className="flex gap-2">
               {filteredPlatforms.map(p => {
                 const Icon = p.icon;
@@ -871,7 +871,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition border ${
                       isActive
                         ? `bg-${p.color}-600/20 border-${p.color}-500 text-${p.color}-400`
-                        : 'bg-gray-700 border-gray-600 text-gray-400 hover:bg-gray-600'
+                        : 'bg-white/[0.06] border-white/[0.08] text-white/40 hover:bg-white/[0.08]'
                     }`}
                     style={isActive ? {
                       backgroundColor: p.color === 'pink' ? 'rgba(236,72,153,0.2)' : 'rgba(239,68,68,0.2)',
@@ -888,25 +888,25 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Caption / Title *</label>
+            <label className="block text-sm font-medium text-white/60 mb-2">Caption / Title *</label>
             <textarea
               value={title}
               onChange={e => setTitle(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 resize-none"
+              className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-purple-500 resize-none"
               rows={3}
               placeholder="Write your caption or title..."
               required
             />
-            <p className="text-xs text-gray-500 mt-1">{title.length} characters</p>
+            <p className="text-xs text-white/25 mt-1">{title.length} characters</p>
           </div>
 
           {platforms.includes('youtube') && (
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">YouTube Description</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">YouTube Description</label>
               <textarea
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 resize-none"
+                className="w-full px-4 py-3 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-purple-500 resize-none"
                 rows={3}
                 placeholder="YouTube video description..."
               />
@@ -915,11 +915,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
 
           {postType !== 'text' && (
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-white/60 mb-2">
                 {postType === 'video' ? 'Upload Video' : 'Upload Photo'}
               </label>
               <div className="space-y-2">
-                <label className="flex items-center justify-center gap-2 px-4 py-4 bg-gray-700 border-2 border-dashed border-gray-600 rounded-lg text-gray-400 hover:border-purple-500 hover:text-purple-400 cursor-pointer transition">
+                <label className="flex items-center justify-center gap-2 px-4 py-4 bg-white/[0.06] border-2 border-dashed border-white/[0.08] rounded-lg text-white/40 hover:border-purple-500 hover:text-purple-400 cursor-pointer transition">
                   <Upload size={20} />
                   <span>{mediaFile ? mediaFile.name : `Choose ${postType === 'video' ? 'video' : 'image'} file`}</span>
                   <input
@@ -929,14 +929,14 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                     className="hidden"
                   />
                 </label>
-                <div className="flex items-center gap-2 text-gray-500 text-sm">
+                <div className="flex items-center gap-2 text-white/25 text-sm">
                   <span>or</span>
                 </div>
                 <input
                   type="url"
                   value={mediaUrl}
                   onChange={e => setMediaUrl(e.target.value)}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-purple-500"
                   placeholder="Paste media URL..."
                 />
                 {mediaPreview && (
@@ -958,11 +958,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                 <Instagram size={16} /> Instagram Options
               </h4>
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Media Type</label>
+                <label className="block text-xs text-white/40 mb-1">Media Type</label>
                 <select
                   value={igMediaType}
                   onChange={e => setIgMediaType(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-pink-500"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white text-sm focus:outline-none focus:border-pink-500"
                 >
                   {postType === 'video' ? (
                     <>
@@ -987,11 +987,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
               </h4>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Privacy</label>
+                  <label className="block text-xs text-white/40 mb-1">Privacy</label>
                   <select
                     value={ytPrivacy}
                     onChange={e => setYtPrivacy(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-red-500"
+                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white text-sm focus:outline-none focus:border-red-500"
                   >
                     <option value="public">Public</option>
                     <option value="unlisted">Unlisted</option>
@@ -999,11 +999,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Category</label>
+                  <label className="block text-xs text-white/40 mb-1">Category</label>
                   <select
                     value={ytCategoryId}
                     onChange={e => setYtCategoryId(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-red-500"
+                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white text-sm focus:outline-none focus:border-red-500"
                   >
                     <option value="10">Music</option>
                     <option value="22">People & Blogs</option>
@@ -1015,19 +1015,19 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                 </div>
               </div>
               <div className="mt-3">
-                <label className="block text-xs text-gray-400 mb-1">Tags (comma separated)</label>
+                <label className="block text-xs text-white/40 mb-1">Tags (comma separated)</label>
                 <input
                   type="text"
                   value={ytTags}
                   onChange={e => setYtTags(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-red-500"
+                  className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white text-sm focus:outline-none focus:border-red-500"
                   placeholder="music, beats, producer"
                 />
               </div>
             </div>
           )}
 
-          <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+          <div className="bg-black/50 border border-white/[0.06] rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-semibold text-white flex items-center gap-2">
                 <Clock size={16} /> Schedule Post
@@ -1039,7 +1039,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                   onChange={e => setIsScheduled(e.target.checked)}
                   className="w-4 h-4 rounded"
                 />
-                <span className="text-sm text-gray-300">Schedule for later</span>
+                <span className="text-sm text-white/60">Schedule for later</span>
               </label>
             </div>
             {isScheduled && (
@@ -1047,7 +1047,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
                 type="datetime-local"
                 value={scheduledDate}
                 onChange={e => setScheduledDate(e.target.value)}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-purple-500"
                 required={isScheduled}
               />
             )}
@@ -1060,11 +1060,11 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-700">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 text-gray-400 hover:text-white transition"
+              className="px-6 py-2 text-white/40 hover:text-white transition"
             >
               Cancel
             </button>

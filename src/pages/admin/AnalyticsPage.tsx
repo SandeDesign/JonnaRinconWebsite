@@ -68,13 +68,13 @@ const AnalyticsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">Analytics Dashboard</h1>
-            <p className="text-gray-400 mt-2">Overview of your platform performance</p>
+            <p className="text-white/40 mt-2">Overview of your platform performance</p>
           </div>
           <div>
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value as '7d' | '30d' | '90d' | 'all')}
-              className="bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
+              className="bg-white/[0.04] border border-white/[0.06] text-white rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
             >
               <option value="7d">Last 7 days</option>
               <option value="30d">Last 30 days</option>
@@ -86,9 +86,9 @@ const AnalyticsPage: React.FC = () => {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-400 text-sm">Total Revenue</p>
+              <p className="text-white/40 text-sm">Total Revenue</p>
               <DollarSign className="text-green-400" size={20} />
             </div>
             <p className="text-3xl font-bold text-white">
@@ -97,41 +97,41 @@ const AnalyticsPage: React.FC = () => {
             <div className="flex items-center mt-2 text-sm">
               <TrendingUp className="text-green-400 mr-1" size={16} />
               <span className="text-green-400">+{revenueTrend}%</span>
-              <span className="text-gray-500 ml-1">vs last period</span>
+              <span className="text-white/25 ml-1">vs last period</span>
             </div>
           </div>
 
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-400 text-sm">Total Orders</p>
+              <p className="text-white/40 text-sm">Total Orders</p>
               <ShoppingCart className="text-blue-400" size={20} />
             </div>
             <p className="text-3xl font-bold text-white">{totalOrders}</p>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-white/40 mt-2">
               {orders.filter((o) => o.status === 'completed').length} completed
             </p>
           </div>
 
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-400 text-sm">Total Beats</p>
+              <p className="text-white/40 text-sm">Total Beats</p>
               <Music className="text-purple-400" size={20} />
             </div>
             <p className="text-3xl font-bold text-white">{totalBeats}</p>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-white/40 mt-2">
               {publishedBeats} published • {featuredBeats} featured
             </p>
           </div>
 
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-gray-400 text-sm">Content Views</p>
+              <p className="text-white/40 text-sm">Content Views</p>
               <Eye className="text-pink-400" size={20} />
             </div>
             <p className="text-3xl font-bold text-white">
               {totalViews.toLocaleString()}
             </p>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="text-sm text-white/40 mt-2">
               {publishedContent} published articles
             </p>
           </div>
@@ -139,22 +139,22 @@ const AnalyticsPage: React.FC = () => {
 
         {/* Engagement Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Beat Performance</h3>
               <Music className="text-purple-400" size={20} />
             </div>
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-400">Total Plays</p>
+                <p className="text-sm text-white/40">Total Plays</p>
                 <p className="text-2xl font-bold text-white">{totalPlays.toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Total Downloads</p>
+                <p className="text-sm text-white/40">Total Downloads</p>
                 <p className="text-2xl font-bold text-white">{totalDownloads.toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Avg Plays per Beat</p>
+                <p className="text-sm text-white/40">Avg Plays per Beat</p>
                 <p className="text-2xl font-bold text-white">
                   {totalBeats > 0 ? Math.round(totalPlays / totalBeats) : 0}
                 </p>
@@ -162,24 +162,24 @@ const AnalyticsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Content Engagement</h3>
               <FileText className="text-blue-400" size={20} />
             </div>
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-400">Total Articles</p>
+                <p className="text-sm text-white/40">Total Articles</p>
                 <p className="text-2xl font-bold text-white">{content.length}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Total Likes</p>
+                <p className="text-sm text-white/40">Total Likes</p>
                 <p className="text-2xl font-bold text-white">
                   {content.reduce((sum, c) => sum + c.likes, 0).toLocaleString()}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Total Shares</p>
+                <p className="text-sm text-white/40">Total Shares</p>
                 <p className="text-2xl font-bold text-white">
                   {content.reduce((sum, c) => sum + c.shares, 0).toLocaleString()}
                 </p>
@@ -187,22 +187,22 @@ const AnalyticsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Collaborations</h3>
               <Handshake className="text-green-400" size={20} />
             </div>
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-400">Total Collaborations</p>
+                <p className="text-sm text-white/40">Total Collaborations</p>
                 <p className="text-2xl font-bold text-white">{collaborations.length}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Active</p>
+                <p className="text-sm text-white/40">Active</p>
                 <p className="text-2xl font-bold text-white">{activeCollaborations}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-400">Total Revenue</p>
+                <p className="text-sm text-white/40">Total Revenue</p>
                 <p className="text-2xl font-bold text-white">
                   €{(collabStats?.totalRevenue || 0).toLocaleString()}
                 </p>
@@ -212,19 +212,19 @@ const AnalyticsPage: React.FC = () => {
         </div>
 
         {/* Top Performing Beats */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Top Performing Beats</h3>
           <div className="space-y-3">
             {topBeats.length === 0 ? (
-              <p className="text-gray-400 text-center py-4">No beats available</p>
+              <p className="text-white/40 text-center py-4">No beats available</p>
             ) : (
               topBeats.map((beat, index) => (
                 <div
                   key={beat.id}
-                  className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors"
+                  className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg hover:bg-white/[0.06] transition-colors"
                 >
                   <div className="flex items-center space-x-3">
-                    <span className="text-2xl font-bold text-gray-500">#{index + 1}</span>
+                    <span className="text-2xl font-bold text-white/25">#{index + 1}</span>
                     <img
                       src={beat.artworkUrl}
                       alt={beat.title}
@@ -232,12 +232,12 @@ const AnalyticsPage: React.FC = () => {
                     />
                     <div>
                       <p className="font-medium text-white">{beat.title}</p>
-                      <p className="text-sm text-gray-400">{beat.artist}</p>
+                      <p className="text-sm text-white/40">{beat.artist}</p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-white">{beat.plays.toLocaleString()} plays</p>
-                    <p className="text-sm text-gray-400">{beat.downloads} downloads</p>
+                    <p className="text-sm text-white/40">{beat.downloads} downloads</p>
                   </div>
                 </div>
               ))
@@ -248,27 +248,27 @@ const AnalyticsPage: React.FC = () => {
         {/* Top Content & Recent Orders */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Top Content */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Top Content by Views</h3>
             <div className="space-y-3">
               {topContent.length === 0 ? (
-                <p className="text-gray-400 text-center py-4">No content available</p>
+                <p className="text-white/40 text-center py-4">No content available</p>
               ) : (
                 topContent.map((item, index) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg"
                   >
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
-                      <span className="text-lg font-bold text-gray-500">#{index + 1}</span>
+                      <span className="text-lg font-bold text-white/25">#{index + 1}</span>
                       <div className="min-w-0">
                         <p className="font-medium text-white truncate">{item.title}</p>
-                        <p className="text-xs text-gray-400 capitalize">{item.type}</p>
+                        <p className="text-xs text-white/40 capitalize">{item.type}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-white">{item.views.toLocaleString()}</p>
-                      <p className="text-xs text-gray-400">views</p>
+                      <p className="text-xs text-white/40">views</p>
                     </div>
                   </div>
                 ))
@@ -277,20 +277,20 @@ const AnalyticsPage: React.FC = () => {
           </div>
 
           {/* Recent Orders */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Recent Orders</h3>
             <div className="space-y-3">
               {recentOrders.length === 0 ? (
-                <p className="text-gray-400 text-center py-4">No orders yet</p>
+                <p className="text-white/40 text-center py-4">No orders yet</p>
               ) : (
                 recentOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-white">Order #{order.id.slice(0, 8)}</p>
-                      <p className="text-sm text-gray-400">{order.customerEmail}</p>
+                      <p className="text-sm text-white/40">{order.customerEmail}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-white">€{order.totalAmount}</p>
@@ -300,7 +300,7 @@ const AnalyticsPage: React.FC = () => {
                             ? 'bg-green-500/20 text-green-400'
                             : order.status === 'pending'
                             ? 'bg-yellow-500/20 text-yellow-400'
-                            : 'bg-gray-500/20 text-gray-400'
+                            : 'bg-white/[0.06] text-white/40'
                         }`}
                       >
                         {order.status}
