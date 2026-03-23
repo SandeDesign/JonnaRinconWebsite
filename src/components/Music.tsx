@@ -104,18 +104,19 @@ export default function Music() {
                 <div
                   key={index}
                   className={`transition-opacity duration-500 ${
-                    index === currentPlaylist ? 'opacity-100' : 'opacity-0 absolute inset-0'
+                    index === currentPlaylist ? 'opacity-100 relative z-10' : 'opacity-0 absolute inset-0 z-0 pointer-events-none'
                   }`}
                 >
                   <iframe
                     style={{ borderRadius: '16px' }}
-                    src={playlist.embedUrl}
+                    src={index === currentPlaylist ? playlist.embedUrl : undefined}
                     width="100%"
                     height="400"
                     frameBorder="0"
                     allowFullScreen
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                     loading="lazy"
+                    tabIndex={index === currentPlaylist ? 0 : -1}
                   ></iframe>
                 </div>
               ))}
