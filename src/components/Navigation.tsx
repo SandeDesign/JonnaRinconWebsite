@@ -123,71 +123,54 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-30">
-      <div className="w-full px-6 md:px-10 py-4 md:py-6">
-
-        {/* DESKTOP Layout */}
-        <div className="hidden md:flex items-center justify-between">
-          {/* Logo — top-left */}
-          <Link to="/" className="relative" style={{ width: '500px', height: '168px' }}>
-            <img
-              src="/Jonna Rincon Logo BL.png"
-              alt="Jonna Rincon"
-              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
-              style={{ opacity: isDarkOverlay ? 0 : 1 }}
-            />
-            <img
-              src="/Jonna Rincon Logo WH.png"
-              alt="Jonna Rincon"
-              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
-              style={{ opacity: isDarkOverlay ? 1 : 0 }}
-            />
-          </Link>
-
-          {/* MENU button — top-right, not flush against edge */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`relative text-xl font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer ${
-              isDarkOverlay ? 'text-white' : 'text-black'
-            }`}
-          >
-            MENU
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-5 w-2.5 h-2.5 bg-red-600 rounded-full" />
-            )}
-          </button>
+      {/* Logo — fixed top-left, matching Martin Garrix positioning */}
+      <Link to="/" className="fixed top-6 left-6 md:top-10 md:left-10 z-30 block">
+        {/* Desktop logo */}
+        <div className="hidden md:block relative" style={{ width: '500px', height: '168px' }}>
+          <img
+            src="/Jonna Rincon Logo BL.png"
+            alt="Jonna Rincon"
+            className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+            style={{ opacity: isDarkOverlay ? 0 : 1 }}
+          />
+          <img
+            src="/Jonna Rincon Logo WH.png"
+            alt="Jonna Rincon"
+            className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+            style={{ opacity: isDarkOverlay ? 1 : 0 }}
+          />
         </div>
-
-        {/* MOBILE Layout */}
-        <div className="md:hidden flex items-center justify-between">
-          {/* Logo — top-left */}
-          <Link to="/" className="relative" style={{ width: '336px', height: '112px' }}>
-            <img
-              src="/Jonna Rincon Logo BL.png"
-              alt="Jonna Rincon"
-              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
-              style={{ opacity: isDarkOverlay ? 0 : 1 }}
-            />
-            <img
-              src="/Jonna Rincon Logo WH.png"
-              alt="Jonna Rincon"
-              className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
-              style={{ opacity: isDarkOverlay ? 1 : 0 }}
-            />
-          </Link>
-
-          {/* MENU button — top-right */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`relative text-base font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer ${
-              isDarkOverlay ? 'text-white' : 'text-black'
-            }`}
-          >
-            MENU
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-4 w-2 h-2 bg-red-600 rounded-full" />
-            )}
-          </button>
+        {/* Mobile logo */}
+        <div className="md:hidden relative" style={{ width: '336px', height: '112px' }}>
+          <img
+            src="/Jonna Rincon Logo BL.png"
+            alt="Jonna Rincon"
+            className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+            style={{ opacity: isDarkOverlay ? 0 : 1 }}
+          />
+          <img
+            src="/Jonna Rincon Logo WH.png"
+            alt="Jonna Rincon"
+            className="absolute inset-0 h-full w-auto object-contain transition-opacity duration-500"
+            style={{ opacity: isDarkOverlay ? 1 : 0 }}
+          />
         </div>
+      </Link>
+
+      {/* MENU button — fixed top-right, same top-line as logo */}
+      <button
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className={`fixed top-8 right-8 md:top-12 md:right-12 z-30 text-base md:text-xl font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer ${
+          isDarkOverlay ? 'text-white' : 'text-black'
+        }`}
+      >
+        MENU
+        {cartItemCount > 0 && (
+          <span className="absolute -top-1 -right-4 md:-right-5 w-2 md:w-2.5 h-2 md:h-2.5 bg-red-600 rounded-full" />
+        )}
+      </button>
+
+      <div className="w-full">
 
         {/* Auth Modal */}
         {isAuthModalOpen && (
