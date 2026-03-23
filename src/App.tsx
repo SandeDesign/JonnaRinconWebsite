@@ -127,7 +127,7 @@ function App() {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight / 2;
       const scrollPercent = (window.scrollY / window.innerHeight) * 100;
-      setIsDarkOverlay(scrollPercent >= 15);
+      setIsDarkOverlay(scrollPercent >= 8);
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = document.getElementById(sections[i]);

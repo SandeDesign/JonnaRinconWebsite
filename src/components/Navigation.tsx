@@ -317,30 +317,19 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
             {/* Side Panel — slides in from right */}
             <div
-              className={`fixed top-0 right-0 bottom-0 z-[101] w-full md:w-[480px] lg:w-[520px] ${
+              className={`fixed top-0 right-0 bottom-0 z-[101] w-full md:w-[480px] lg:w-[520px] md:border-l md:border-white/[0.06] ${
                 isMenuClosing ? 'animate-panel-slide-out' : 'animate-panel-slide-in'
               }`}
             >
-              {/* Panel background */}
-              <div className="absolute inset-0 bg-[#0a0a0a]" />
+              {/* Panel background — glassmorphism */}
+              <div className="absolute inset-0 bg-black/70 backdrop-blur-2xl" style={{ WebkitBackdropFilter: 'blur(40px)' }} />
 
               {/* Panel content */}
               <div className="relative z-10 h-full flex flex-col px-8 md:px-12">
 
-                {/* Top bar — Close button */}
+                {/* Top bar — Cart + Close left, Logo right */}
                 <div className="flex items-center justify-between py-5 md:py-6 flex-shrink-0">
-                  <button
-                    onClick={() => { closeMenu(); navigate('/'); }}
-                    className="block flex-shrink-0 cursor-pointer"
-                  >
-                    <img
-                      src="/Jonna Rincon Logo WH.png"
-                      alt="Jonna Rincon"
-                      className="h-[100px] md:h-[130px] w-auto opacity-60 hover:opacity-100 transition-opacity duration-300"
-                    />
-                  </button>
-
-                  <div className="flex items-center gap-5">
+                  <div className="flex items-center gap-4">
                     {onCartClick && (
                       <button
                         onClick={handleCartClick}
@@ -357,11 +346,22 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
                     <button
                       onClick={closeMenu}
-                      className="text-sm font-medium uppercase tracking-[0.2em] text-white/60 hover:text-white transition-colors duration-300 cursor-pointer"
+                      className="p-2 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 cursor-pointer group"
                     >
-                      Close
+                      <X className="w-5 h-5 text-white/60 group-hover:text-white group-hover:rotate-90 transition-all duration-300" />
                     </button>
                   </div>
+
+                  <button
+                    onClick={() => { closeMenu(); navigate('/'); }}
+                    className="block flex-shrink-0 cursor-pointer"
+                  >
+                    <img
+                      src="/Jonna Rincon Logo WH.png"
+                      alt="Jonna Rincon"
+                      className="h-[80px] md:h-[110px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
+                    />
+                  </button>
                 </div>
 
                 {/* Divider */}
@@ -373,21 +373,21 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                     <button
                       key={item.label}
                       onClick={item.action}
-                      className="group w-full text-left py-4 md:py-5 cursor-pointer"
+                      className="group w-full text-left py-4 md:py-5 cursor-pointer border-b border-white/[0.04] last:border-b-0"
                       style={{
                         animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
                       }}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between group-hover:translate-x-2 transition-transform duration-300">
                         <div>
                           <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
                             {item.label}
                           </span>
-                          <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
+                          <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-red-400/60 transition-colors duration-300">
                             {item.subtitle}
                           </span>
                         </div>
-                        <ArrowUpRight className="w-5 h-5 text-white/10 group-hover:text-white/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        <ArrowUpRight className="w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </div>
                     </button>
                   ))}
