@@ -10,6 +10,8 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
 import Marquee from './components/Marquee';
+import LogoReveal from './components/LogoReveal';
+import MarqueeRed from './components/MarqueeRed';
 import { Beat, CartItem } from './lib/types';
 
 // FIREBASE IMPORTS - NO MORE database.ts
@@ -29,9 +31,9 @@ function App() {
   const getSections = () => {
     const isMobile = window.innerWidth < 768;
     if (isMobile) {
-      return ['hero', 'about', 'beats', 'music', 'compilations', 'youtube', 'socials', 'live-studio', 'contact'];
+      return ['hero', 'about', 'beats', 'logo-reveal', 'music', 'compilations', 'youtube', 'socials', 'live-studio', 'contact'];
     }
-    return ['hero', 'about', 'beats', 'music', 'youtube', 'socials', 'live-studio', 'contact'];
+    return ['hero', 'about', 'beats', 'logo-reveal', 'music', 'youtube', 'socials', 'live-studio', 'contact'];
   };
 
   const [sections, setSections] = useState(getSections());
@@ -238,8 +240,10 @@ function App() {
         <About />
         <Marquee />
         <BeatStore onAddToCart={handleAddToCart} />
+        <LogoReveal />
         <Music />
         <Socials />
+        <MarqueeRed />
         <div id="live-studio"><LiveStudio /></div>
         <Contact />
       </main>

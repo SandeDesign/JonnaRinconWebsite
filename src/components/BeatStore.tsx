@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 // Firebase imports
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
@@ -40,6 +41,7 @@ interface BeatStoreProps {
 
 export default function BeatStore({ onAddToCart }: BeatStoreProps) {
   const beatTitle = useCyberDecodeInView('Beat Store');
+  const { ref: revealRef, isVisible: revealVisible } = useScrollReveal();
   // STATE - REAL DATA FROM FIREBASE
   const [beats, setBeats] = useState<Beat[]>([]);
   const [filteredBeats, setFilteredBeats] = useState<Beat[]>([]);
@@ -165,10 +167,17 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
     }
   };
 
-  const featuredBeats = beats.filter(beat => beat.featured).slice(0, 6);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const featuredBeats = beats.filter(beat => beat.featured).slice(0, isMobile ? 2 : 6);
 
   return (
-    <section id="beats" className="min-h-screen py-24 px-4 bg-transparent flex flex-col">
+    <section ref={revealRef as React.RefObject<HTMLElement>} id="beats" className={`min-h-screen py-24 px-4 bg-transparent flex flex-col transition-all duration-700 ${revealVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
         <div className="text-center mb-6 md:mb-12">
           <h2 ref={beatTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black uppercase tracking-wider">{beatTitle.display}</h2>

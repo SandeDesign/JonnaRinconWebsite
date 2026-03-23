@@ -1,12 +1,14 @@
 import { Radio, Calendar, Clock } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function LiveStudio() {
   const studioTitle = useCyberDecodeInView('Live Studio');
+  const { ref: revealRef, isVisible } = useScrollReveal();
   const isLive = false;
 
   return (
-    <section className="py-48 pb-64 px-4 bg-transparent">
+    <section ref={revealRef as React.RefObject<HTMLElement>} className={`py-48 pb-64 px-4 bg-transparent transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-3 mb-4">

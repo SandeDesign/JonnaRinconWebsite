@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { X, ShoppingBag } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface NavigationProps {
@@ -14,6 +14,7 @@ const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
 export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverlay = false, onMenuToggle }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuClosing, setIsMenuClosing] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [authEmail, setAuthEmail] = useState('');
@@ -23,17 +24,25 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const [authLoading, setAuthLoading] = useState(false);
   const { user, signIn, signUp, signOut } = useAuth();
   const navigate = useNavigate();
+  const closeTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Lock scroll when menu is open
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
-    } else {
+    } else if (!isMenuClosing) {
       document.body.style.overflow = '';
     }
     onMenuToggle?.(isMenuOpen);
     return () => { document.body.style.overflow = ''; };
-  }, [isMenuOpen, onMenuToggle]);
+  }, [isMenuOpen, isMenuClosing, onMenuToggle]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    };
+  }, []);
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +96,19 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     setAuthError('');
   };
 
-  const closeMenu = () => setIsMenuOpen(false);
+  const closeMenu = () => {
+    setIsMenuClosing(true);
+    closeTimeout.current = setTimeout(() => {
+      setIsMenuOpen(false);
+      setIsMenuClosing(false);
+    }, 400);
+  };
+
+  const openMenu = () => {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    setIsMenuClosing(false);
+    setIsMenuOpen(true);
+  };
 
   const handleCartClick = () => {
     closeMenu();
@@ -104,14 +125,10 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     }
   };
 
-  // Build menu items
+  // Build menu items — compact: only BEAT STORE, MY TRACKS
   const menuItems: { label: string; subtitle?: string; action: () => void }[] = [
-    { label: 'HOME', action: () => { closeMenu(); navigate('/'); } },
-    { label: 'BEATS', subtitle: 'Browse instrumentals', action: () => { closeMenu(); window.location.hash = 'beats'; } },
-    { label: 'MUSIC', subtitle: 'Latest releases', action: () => { closeMenu(); window.location.hash = 'music'; } },
-    { label: 'SHOP', subtitle: 'Beats & Licenses', action: () => { closeMenu(); navigate('/shop/beats'); } },
-    { label: 'SOCIALS', action: () => { closeMenu(); window.location.hash = 'socials'; } },
-    { label: 'CONTACT', action: () => { closeMenu(); window.location.hash = 'contact'; } },
+    { label: 'BEAT STORE', subtitle: 'Browse instrumentals', action: () => { closeMenu(); navigate('/shop/beats'); } },
+    { label: 'MY TRACKS', subtitle: 'Latest releases', action: () => { closeMenu(); window.location.hash = 'music'; } },
   ];
 
   const socialLinks = [
@@ -121,13 +138,15 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     { label: 'SOUNDCLOUD', href: 'https://soundcloud.com/jonnarincon' },
   ];
 
+  const menuVisible = isMenuOpen || isMenuClosing;
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-30">
-      {/* Top bar — logo left, MENU right, SAME line */}
-      <div className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-6 md:py-8">
-        {/* Logo — top-left */}
+      {/* Top bar — logo left, MENU right */}
+      <div className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-3 md:py-4">
+        {/* Logo — top-left, larger */}
         <Link to="/" className="block flex-shrink-0">
-          <div className="relative h-[60px] md:h-[80px]">
+          <div className="relative h-[100px] md:h-[140px]">
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
@@ -143,9 +162,9 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           </div>
         </Link>
 
-        {/* MENU button — top-right, same line as logo */}
+        {/* MENU button — top-right */}
         <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onClick={openMenu}
           className={`relative text-lg md:text-2xl font-black uppercase tracking-wider transition-colors duration-500 hover:opacity-70 cursor-pointer ${
             isDarkOverlay ? 'text-white' : 'text-black'
           }`}
@@ -267,268 +286,161 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           </>
         )}
 
-        {/* ========== MENU OVERLAY ========== */}
-        {isMenuOpen && (
+        {/* ========== FULLSCREEN MENU OVERLAY ========== */}
+        {menuVisible && (
           <>
-            {/* Desktop Menu */}
-            <div className="hidden md:block">
-              {/* Backdrop — blurred */}
-              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] animate-fade-in" onClick={closeMenu} />
+            {/* Backdrop */}
+            <div
+              className={`fixed inset-0 bg-black/70 z-[100] ${isMenuClosing ? 'animate-menu-fade-out' : 'animate-menu-fade-in'}`}
+              onClick={closeMenu}
+            />
 
-              {/* Menu Panel — glass effect, inset */}
-              <div className="fixed inset-0 z-[101] flex items-center justify-center p-10 pointer-events-none">
-                <div className="pointer-events-auto bg-black/70 backdrop-blur-2xl rounded-2xl overflow-hidden w-full max-w-[1400px] max-h-[90vh] animate-scale-in border border-white/10 shadow-2xl">
-                  {/* Close button */}
+            {/* Menu Panel — fullscreen with background image */}
+            <div
+              className={`fixed inset-0 z-[101] overflow-hidden ${isMenuClosing ? 'animate-menu-slide-out' : 'animate-menu-slide-in'}`}
+            >
+              {/* Background image */}
+              <img
+                src="/Menu Foto 1.png"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ filter: 'brightness(0.4) contrast(1.1)' }}
+                onError={(e) => { (e.target as HTMLImageElement).src = '/menu-artist-image.png'; }}
+              />
+              {/* Dark gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70" />
+
+              {/* Menu content */}
+              <div className="relative z-10 h-full flex flex-col px-6 md:px-10">
+
+                {/* Top bar — Logo left, Cart + Close right */}
+                <div className="flex items-center justify-between py-3 md:py-4 flex-shrink-0">
+                  {/* Logo — clickable home */}
                   <button
-                    onClick={closeMenu}
-                    className="absolute top-6 right-6 z-[110] transition-all hover:scale-110 hover:rotate-90 duration-300"
+                    onClick={() => { closeMenu(); navigate('/'); }}
+                    className="block flex-shrink-0 cursor-pointer"
                   >
-                    <X className="w-8 h-8 text-white" strokeWidth={2.5} />
-                  </button>
-
-                  {/* Main grid: image left, menu right */}
-                  <div className="h-[90vh] max-h-[90vh] grid grid-cols-[40%_60%]">
-                    {/* Left — Artist Image */}
-                    <div className="relative overflow-hidden">
-                      <img
-                        src="/menu-artist-image.png"
-                        alt="Jonna Rincon"
-                        className="absolute inset-0 w-full h-full object-cover"
-                        style={{ objectPosition: 'center 35%', filter: 'brightness(0.85) contrast(1.1)' }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/40" />
-                    </div>
-
-                    {/* Right — Menu Items */}
-                    <div className="flex flex-col justify-between py-12 px-14 overflow-y-auto">
-                      <div className="flex-1 flex flex-col justify-center">
-                        {menuItems.map((item, i) => (
-                          <button
-                            key={item.label}
-                            onClick={item.action}
-                            className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
-                          >
-                            <div className="flex items-baseline gap-6">
-                              <span className="text-xs text-white/30 font-medium tracking-wider w-6">
-                                {ROMAN[i]}
-                              </span>
-                              <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
-                                {item.label}
-                              </span>
-                              {item.subtitle && (
-                                <span className="text-sm text-white/40 font-normal tracking-wide">
-                                  {item.subtitle}
-                                </span>
-                              )}
-                            </div>
-                          </button>
-                        ))}
-
-                        {/* Cart */}
-                        {onCartClick && (
-                          <button
-                            onClick={handleCartClick}
-                            className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
-                          >
-                            <div className="flex items-baseline gap-6">
-                              <span className="text-xs text-white/30 font-medium tracking-wider w-6">
-                                {ROMAN[menuItems.length]}
-                              </span>
-                              <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
-                                CART
-                              </span>
-                              {cartItemCount > 0 && (
-                                <span className="text-sm text-red-400 font-medium tracking-wide">
-                                  {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
-                                </span>
-                              )}
-                            </div>
-                          </button>
-                        )}
-
-                        {/* Auth */}
-                        <button
-                          onClick={handleMenuAuthClick}
-                          className="group w-full text-left border-b border-white/10 py-5 transition-all duration-300 hover:pl-4"
-                        >
-                          <div className="flex items-baseline gap-6">
-                            <span className="text-xs text-white/30 font-medium tracking-wider w-6">
-                              {ROMAN[menuItems.length + (onCartClick ? 1 : 0)]}
-                            </span>
-                            <span className="text-4xl xl:text-5xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
-                              {user ? 'DASHBOARD' : 'SIGN IN'}
-                            </span>
-                            {user && (
-                              <span className="text-sm text-white/40 font-normal tracking-wide">
-                                {user.displayName || user.email}
-                              </span>
-                            )}
-                          </div>
-                        </button>
-
-                        {user && (
-                          <button
-                            onClick={() => { closeMenu(); handleSignOut(); }}
-                            className="group w-full text-left py-5 transition-all duration-300 hover:pl-4"
-                          >
-                            <div className="flex items-baseline gap-6">
-                              <span className="text-xs text-white/30 font-medium tracking-wider w-6" />
-                              <span className="text-lg uppercase tracking-wider text-white/40 group-hover:text-red-400 transition-colors duration-300 font-medium">
-                                Sign Out
-                              </span>
-                            </div>
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Bottom bar — social links */}
-                      <div className="flex items-center justify-between pt-8 border-t border-white/10">
-                        <p className="text-xs text-white/20 uppercase tracking-widest font-medium">
-                          &copy; 2025 Jonna Rincon
-                        </p>
-                        <div className="flex items-center gap-6">
-                          {socialLinks.map((link) => (
-                            <a
-                              key={link.label}
-                              href={link.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs text-white/40 uppercase tracking-widest font-medium hover:text-white transition-colors duration-300 border-b border-transparent hover:border-white/50 pb-0.5"
-                            >
-                              {link.label}
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile Menu */}
-            <div className="md:hidden">
-              {/* Backdrop */}
-              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] animate-fade-in" onClick={closeMenu} />
-
-              {/* Menu Panel — glass effect */}
-              <div className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none">
-                <div className="pointer-events-auto bg-black/70 backdrop-blur-2xl rounded-2xl overflow-hidden w-full max-h-[95vh] animate-scale-in border border-white/10 shadow-2xl flex flex-col">
-                  {/* Close button */}
-                  <button
-                    onClick={closeMenu}
-                    className="absolute top-4 right-4 z-[110] transition-all hover:scale-110 hover:rotate-90 duration-300"
-                  >
-                    <X className="w-6 h-6 text-white" strokeWidth={2.5} />
-                  </button>
-
-                  {/* Artist image — top */}
-                  <div className="relative w-full flex-shrink-0" style={{ height: '30vh' }}>
                     <img
-                      src="/menu-artist-image.png"
+                      src="/Jonna Rincon Logo WH.png"
                       alt="Jonna Rincon"
-                      className="w-full h-full object-cover"
-                      style={{ objectPosition: 'center 35%', filter: 'brightness(0.85) contrast(1.1)' }}
+                      className="h-[100px] md:h-[140px] w-auto"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
-                  </div>
+                  </button>
 
-                  {/* Menu items */}
-                  <div className="px-6 py-6 flex-1 overflow-y-auto">
-                    {menuItems.map((item, i) => (
-                      <button
-                        key={item.label}
-                        onClick={item.action}
-                        className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
-                      >
-                        <div className="flex items-baseline gap-4">
-                          <span className="text-[10px] text-white/30 font-medium tracking-wider w-5">
-                            {ROMAN[i]}
-                          </span>
-                          <span className="text-2xl font-black uppercase tracking-wider text-white">
-                            {item.label}
-                          </span>
-                          {item.subtitle && (
-                            <span className="text-xs text-white/40 font-normal tracking-wide">
-                              {item.subtitle}
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-
-                    {/* Cart */}
+                  {/* Cart + Close */}
+                  <div className="flex items-center gap-4 md:gap-6">
+                    {/* Cart icon */}
                     {onCartClick && (
                       <button
                         onClick={handleCartClick}
-                        className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
+                        className="relative transition-all hover:scale-110 duration-300 cursor-pointer"
                       >
-                        <div className="flex items-baseline gap-4">
-                          <span className="text-[10px] text-white/30 font-medium tracking-wider w-5">
-                            {ROMAN[menuItems.length]}
+                        <ShoppingBag className="w-6 h-6 md:w-7 md:h-7 text-white" strokeWidth={1.5} />
+                        {cartItemCount > 0 && (
+                          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+                            {cartItemCount}
                           </span>
-                          <span className="text-2xl font-black uppercase tracking-wider text-white">
-                            CART
-                          </span>
-                          {cartItemCount > 0 && (
-                            <span className="text-xs text-red-400 font-medium">
-                              {cartItemCount}
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </button>
                     )}
 
-                    {/* Auth */}
+                    {/* Close button */}
                     <button
-                      onClick={handleMenuAuthClick}
-                      className="group w-full text-left border-b border-white/10 py-4 transition-all duration-300 active:pl-2"
+                      onClick={closeMenu}
+                      className="transition-all hover:scale-110 hover:rotate-90 duration-300 cursor-pointer"
                     >
-                      <div className="flex items-baseline gap-4">
-                        <span className="text-[10px] text-white/30 font-medium tracking-wider w-5">
-                          {ROMAN[menuItems.length + (onCartClick ? 1 : 0)]}
+                      <X className="w-7 h-7 md:w-8 md:h-8 text-white" strokeWidth={2} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Center — Menu items */}
+                <div className="flex-1 flex flex-col justify-center">
+                  {menuItems.map((item, i) => (
+                    <button
+                      key={item.label}
+                      onClick={item.action}
+                      className="group w-full text-left py-3 md:py-5 transition-all duration-300 hover:pl-4 cursor-pointer"
+                    >
+                      <div className="flex items-baseline gap-4 md:gap-6">
+                        <span className="text-xs md:text-sm text-white/30 font-medium tracking-wider w-6 md:w-8">
+                          {ROMAN[i]}
                         </span>
-                        <span className="text-2xl font-black uppercase tracking-wider text-white">
-                          {user ? 'DASHBOARD' : 'SIGN IN'}
+                        <span className="text-3xl md:text-5xl xl:text-7xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
+                          {item.label}
+                        </span>
+                        {item.subtitle && (
+                          <span className="hidden md:inline text-sm text-white/40 font-normal tracking-wide">
+                            {item.subtitle}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+
+                  {/* Auth item */}
+                  <button
+                    onClick={handleMenuAuthClick}
+                    className="group w-full text-left py-3 md:py-5 transition-all duration-300 hover:pl-4 cursor-pointer"
+                  >
+                    <div className="flex items-baseline gap-4 md:gap-6">
+                      <span className="text-xs md:text-sm text-white/30 font-medium tracking-wider w-6 md:w-8">
+                        {ROMAN[menuItems.length]}
+                      </span>
+                      <span className="text-3xl md:text-5xl xl:text-7xl font-black uppercase tracking-wider text-white group-hover:text-white/70 transition-colors duration-300">
+                        {user ? 'DASHBOARD' : 'SIGN IN'}
+                      </span>
+                      {user && (
+                        <span className="hidden md:inline text-sm text-white/40 font-normal tracking-wide">
+                          {user.displayName || user.email}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+
+                  {user && (
+                    <button
+                      onClick={() => { closeMenu(); handleSignOut(); }}
+                      className="group w-full text-left py-2 md:py-3 transition-all duration-300 hover:pl-4 cursor-pointer"
+                    >
+                      <div className="flex items-baseline gap-4 md:gap-6">
+                        <span className="w-6 md:w-8" />
+                        <span className="text-base md:text-lg uppercase tracking-wider text-white/40 group-hover:text-red-400 transition-colors duration-300 font-medium">
+                          Sign Out
                         </span>
                       </div>
                     </button>
+                  )}
+                </div>
 
-                    {user && (
-                      <button
-                        onClick={() => { closeMenu(); handleSignOut(); }}
-                        className="w-full text-left py-4"
-                      >
-                        <div className="flex items-baseline gap-4">
-                          <span className="w-5" />
-                          <span className="text-base uppercase tracking-wider text-white/40 font-medium">
-                            Sign Out
-                          </span>
-                        </div>
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Social links — bottom */}
-                  <div className="px-6 py-5 border-t border-white/10 flex-shrink-0">
-                    <div className="flex flex-wrap gap-4 justify-center">
+                {/* Bottom bar — Social links + Contact */}
+                <div className="flex-shrink-0 py-4 md:py-6 border-t border-white/10">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 md:gap-6">
                       {socialLinks.map((link) => (
                         <a
                           key={link.label}
                           href={link.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[10px] text-white/40 uppercase tracking-widest font-medium hover:text-white transition-colors border-b border-transparent hover:border-white/50 pb-0.5"
+                          className="text-[10px] md:text-xs text-white/40 uppercase tracking-widest font-medium hover:text-white transition-colors duration-300 border-b border-transparent hover:border-white/50 pb-0.5"
                         >
                           {link.label}
                         </a>
                       ))}
+                      <button
+                        onClick={() => { closeMenu(); window.location.hash = 'contact'; }}
+                        className="text-[10px] md:text-xs text-white/40 uppercase tracking-widest font-medium hover:text-white transition-colors duration-300 border-b border-transparent hover:border-white/50 pb-0.5 cursor-pointer"
+                      >
+                        CONTACT
+                      </button>
                     </div>
-                    <p className="text-[10px] text-white/20 uppercase tracking-widest text-center mt-3 font-medium">
+                    <p className="text-[10px] md:text-xs text-white/20 uppercase tracking-widest font-medium">
                       &copy; 2025 Jonna Rincon
                     </p>
                   </div>
                 </div>
+
               </div>
             </div>
           </>

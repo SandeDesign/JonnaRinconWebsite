@@ -68,18 +68,18 @@ const BeatsShop: React.FC = () => {
   const genres = ['Trap', 'Hip Hop', 'Drill', 'R&B', 'Pop', 'Electronic', 'Afrobeat'];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <Navigation />
+    <div className="min-h-screen bg-black text-white">
+      <Navigation isDarkOverlay={true} />
 
       <div className="container mx-auto px-4 pt-28 pb-12">
         {/* Hero Section */}
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Premium Beats</h1>
-          <p className="text-xl text-gray-400">Explore high-quality beats by Jonna Rincon</p>
+          <h1 className="text-5xl font-black mb-4 uppercase tracking-wider text-white">Beat Store</h1>
+          <p className="text-xl text-white/40">Explore high-quality beats by Jonna Rincon</p>
         </div>
 
         {/* Filters */}
-        <div className="mb-8 bg-gray-800 rounded-lg p-6">
+        <div className="mb-8 bg-white/5 border border-white/10 rounded-lg p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <input
@@ -87,14 +87,14 @@ const BeatsShop: React.FC = () => {
               placeholder="Search beats..."
               value={filter.search || ''}
               onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
+              className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-all"
             />
 
             {/* Genre Filter */}
             <select
               value={filter.genre || ''}
               onChange={(e) => setFilter({ ...filter, genre: e.target.value || undefined })}
-              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
+              className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-white/30 transition-all"
             >
               <option value="">All Genres</option>
               {genres.map((genre) => (
@@ -110,7 +110,7 @@ const BeatsShop: React.FC = () => {
               onChange={(e) =>
                 setFilter({ ...filter, sortBy: e.target.value as typeof filter.sortBy })
               }
-              className="bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
+              className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-white/30 transition-all"
             >
               <option value="newest">Newest First</option>
               <option value="popular">Most Popular</option>
@@ -122,7 +122,7 @@ const BeatsShop: React.FC = () => {
             {(filter.genre || filter.search) && (
               <button
                 onClick={() => setFilter({ sortBy: 'newest' })}
-                className="bg-gray-700 hover:bg-gray-600 rounded-lg px-4 py-2 transition"
+                className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-4 py-2 transition-all text-white"
               >
                 Clear Filters
               </button>
@@ -133,13 +133,12 @@ const BeatsShop: React.FC = () => {
         {/* Beats Grid */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="text-xl">Loading beats...</div>
+            <div className="text-xl text-white/40">Loading beats...</div>
           </div>
         ) : beats.length === 0 ? (
-          <div className="text-center py-12 bg-gray-800 rounded-lg">
-            <div className="text-4xl mb-4">🎵</div>
+          <div className="text-center py-12 bg-white/5 border border-white/10 rounded-lg">
             <p className="text-xl mb-2">No beats found</p>
-            <p className="text-gray-400">Try adjusting your filters</p>
+            <p className="text-white/40">Try adjusting your filters</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -147,7 +146,7 @@ const BeatsShop: React.FC = () => {
               <Link
                 key={beat.id}
                 to={`/shop/beats/${beat.id}`}
-                className="bg-gray-800 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-200"
+                className="bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:scale-105 transition-all duration-300 hover:border-white/20"
               >
                 {/* Beat Artwork */}
                 <div className="relative">
@@ -157,47 +156,47 @@ const BeatsShop: React.FC = () => {
                     className="w-full h-48 object-cover"
                   />
                   {beat.featured && (
-                    <div className="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                    <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
                       FEATURED
                     </div>
                   )}
                   {beat.trending && (
-                    <div className="absolute top-2 right-2 bg-red-500 px-2 py-1 rounded text-xs font-bold">
-                      🔥 TRENDING
+                    <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
+                      TRENDING
                     </div>
                   )}
                 </div>
 
                 {/* Beat Info */}
                 <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2">{beat.title}</h3>
-                  <div className="text-sm text-gray-400 mb-3">{beat.artist}</div>
+                  <h3 className="font-bold text-lg mb-2 text-white">{beat.title}</h3>
+                  <div className="text-sm text-white/40 mb-3">{beat.artist}</div>
 
                   {/* Beat Details */}
-                  <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
+                  <div className="flex items-center gap-3 text-xs text-white/40 mb-3">
                     <span>{beat.bpm} BPM</span>
-                    <span>•</span>
+                    <span>·</span>
                     <span>{beat.key}</span>
-                    <span>•</span>
+                    <span>·</span>
                     <span>{beat.genre}</span>
                   </div>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-xs text-gray-400 mb-4">
-                    <span>▶️ {beat.plays.toLocaleString()}</span>
-                    <span>❤️ {beat.likes.toLocaleString()}</span>
-                    <span>⬇️ {beat.downloads.toLocaleString()}</span>
+                  <div className="flex items-center gap-4 text-xs text-white/30 mb-4">
+                    <span>{beat.plays.toLocaleString()} plays</span>
+                    <span>{beat.likes.toLocaleString()} likes</span>
+                    <span>{beat.downloads.toLocaleString()} downloads</span>
                   </div>
 
                   {/* Price */}
-                  <div className="flex justify-between items-center pt-3 border-t border-gray-700">
+                  <div className="flex justify-between items-center pt-3 border-t border-white/10">
                     <div>
-                      <div className="text-xs text-gray-400">Starting at</div>
-                      <div className="font-bold text-lg">
-                        €{beat.licenses.basic?.price.toFixed(2) || '0.00'}
+                      <div className="text-xs text-white/30">Starting at</div>
+                      <div className="font-bold text-lg text-white">
+                        &euro;{beat.licenses.basic?.price.toFixed(2) || '0.00'}
                       </div>
                     </div>
-                    <div className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded transition">
+                    <div className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-semibold transition-all text-white text-sm">
                       View Beat
                     </div>
                   </div>
@@ -209,7 +208,7 @@ const BeatsShop: React.FC = () => {
 
         {/* Results Count */}
         {!loading && beats.length > 0 && (
-          <div className="mt-8 text-center text-gray-400">
+          <div className="mt-8 text-center text-white/30">
             Showing {beats.length} beat{beats.length !== 1 ? 's' : ''}
           </div>
         )}
