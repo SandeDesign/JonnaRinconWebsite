@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-interface MusicProps {
-  isLightMode?: boolean;
-}
-
-export default function Music({ isLightMode = false }: MusicProps) {
+export default function Music() {
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
   const musicTitle = useCyberDecodeInView('My Tracks');
   const { ref: revealRef, isVisible } = useScrollReveal();
@@ -37,7 +33,7 @@ export default function Music({ isLightMode = false }: MusicProps) {
 
   const compilations = [
     {
-       id: 'This Is Jonna Rincon',
+      id: 'This Is Jonna Rincon',
       name: 'This Is',
       url: 'https://open.spotify.com/playlist/37i9dQZF1DZ06evO3LPWh3?si=9f9b5ebdf6de4887',
       cover: 'ThisIsJonna.png'
@@ -54,8 +50,8 @@ export default function Music({ isLightMode = false }: MusicProps) {
       url: 'https://open.spotify.com/playlist/5smfHiU4egb6uyHYzgmqdC?si=b9cc2a2438b640ef',
       cover: 'MixedBy.png'
     },
-     {
-   id: 'Moombahton',
+    {
+      id: 'Moombahton',
       name: 'Moombah Time',
       url: 'https://open.spotify.com/playlist/37i9dQZF1DZ06evO3LPWh3?si=3cf757f3a9604be9',
       cover: 'MoombahTime.png'
@@ -69,42 +65,32 @@ export default function Music({ isLightMode = false }: MusicProps) {
     }
   ];
 
-  const cardBg = isLightMode ? 'bg-black/[0.03] border-black/[0.08]' : 'bg-white/5 border-white/10';
-  const subtleText = isLightMode ? 'text-black/50' : 'text-gray-400';
-  const dotActive = isLightMode ? 'bg-black' : 'bg-white';
-  const dotInactive = isLightMode ? 'bg-black/20 hover:bg-black/30' : 'bg-gray-600 hover:bg-gray-500';
-  const btnStyle = isLightMode
-    ? 'bg-black text-white hover:bg-gray-800'
-    : 'bg-white text-black hover:bg-gray-200';
-
   return (
     <>
-      {/* MUSIC SECTIE */}
-      <section ref={revealRef as React.RefObject<HTMLElement>} id="music" className={`py-12 md:py-24 px-4 md:min-h-0 min-h-screen flex items-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        <div className="max-w-7xl mx-auto w-full scale-85 md:scale-100 origin-center">
-          <div className="text-center mb-8 md:mb-16">
-            <h2 ref={musicTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black uppercase tracking-wider">
+      {/* MUSIC */}
+      <section ref={revealRef as React.RefObject<HTMLElement>} id="music" className={`py-16 md:py-32 px-4 md:min-h-0 min-h-screen flex items-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 ref={musicTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-4xl md:text-7xl font-black uppercase tracking-wider text-white">
               <span className="md:hidden">{spotifyPlaylists[currentPlaylist].name}</span>
               <span className="hidden md:block">{musicTitle.display}</span>
             </h2>
           </div>
 
-          {/* Spotify Player */}
-          <div className={`${cardBg} border rounded-2xl p-6 md:p-8 transition-colors duration-700`}>
+          <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 md:p-8">
             <div className="flex items-center justify-center gap-6 mb-6">
-              <p className={`hidden md:block text-2xl md:text-3xl font-bold ${isLightMode ? 'text-black' : 'text-white'} transition-colors duration-700`}>
+              <p className="hidden md:block text-xl font-semibold text-white/80">
                 {spotifyPlaylists[currentPlaylist].name}
               </p>
-
-              <div className="flex gap-3">
+              <div className="flex gap-2.5">
                 {spotifyPlaylists.map((playlist, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentPlaylist(index)}
-                    className={`h-3 rounded-full transition-all duration-300 ${
+                    className={`h-2.5 rounded-full transition-all duration-300 ${
                       currentPlaylist === index
-                        ? `${dotActive} w-8`
-                        : `${dotInactive} w-3`
+                        ? 'bg-white w-8'
+                        : 'bg-white/20 hover:bg-white/30 w-2.5'
                     }`}
                     title={playlist.name}
                     aria-label={`Switch to ${playlist.name}`}
@@ -113,7 +99,7 @@ export default function Music({ isLightMode = false }: MusicProps) {
               </div>
             </div>
 
-            <div className="rounded-xl overflow-hidden relative">
+            <div className="rounded-2xl overflow-hidden relative">
               {spotifyPlaylists.map((playlist, index) => (
                 <div
                   key={index}
@@ -122,7 +108,7 @@ export default function Music({ isLightMode = false }: MusicProps) {
                   }`}
                 >
                   <iframe
-                    style={{ borderRadius: '12px' }}
+                    style={{ borderRadius: '16px' }}
                     src={playlist.embedUrl}
                     width="100%"
                     height="400"
@@ -139,7 +125,7 @@ export default function Music({ isLightMode = false }: MusicProps) {
               href="https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F"
               target="_blank"
               rel="noopener noreferrer"
-              className={`mt-6 w-full inline-block text-center py-3 ${btnStyle} rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02]`}
+              className="mt-6 w-full inline-block text-center py-3.5 bg-[#1DB954] hover:bg-[#1ed760] text-black rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02]"
             >
               Open in Spotify
             </a>
@@ -149,14 +135,14 @@ export default function Music({ isLightMode = false }: MusicProps) {
 
       {/* COMPILATIONS */}
       <section id="compilations" className="py-12 md:py-0 px-4 md:min-h-0 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto w-full">
+        <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-8 md:hidden">
-            <h2 className="text-3xl font-black uppercase tracking-wider">Playlists</h2>
+            <h2 className="text-3xl font-black uppercase tracking-wider text-white">Playlists</h2>
           </div>
 
-          <div className={`${cardBg} border rounded-2xl p-6 md:p-8 transition-colors duration-700`}>
+          <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 md:p-8">
             <div className="flex justify-center">
-              <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-3 max-w-5xl">
+              <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-4 max-w-5xl">
                 {compilations.map((compilation) => (
                   <a
                     key={compilation.id}
@@ -165,11 +151,10 @@ export default function Music({ isLightMode = false }: MusicProps) {
                     rel="noopener noreferrer"
                     className="group text-center"
                   >
-                    <h4 className={`text-sm font-bold mb-2 ${subtleText} truncate transition-colors duration-700`}>
+                    <h4 className="text-xs font-semibold mb-2 text-white/40 truncate uppercase tracking-wider">
                       {compilation.name}
                     </h4>
-
-                    <div className={`aspect-square rounded-xl overflow-hidden hover:scale-105 transition-all border ${isLightMode ? 'border-black/[0.08]' : 'border-white/10'}`}>
+                    <div className="aspect-square rounded-2xl overflow-hidden hover:scale-105 transition-all duration-300 border border-white/[0.06]">
                       <img
                         src={compilation.cover}
                         alt={compilation.name}
@@ -185,15 +170,15 @@ export default function Music({ isLightMode = false }: MusicProps) {
       </section>
 
       {/* YOUTUBE */}
-      <section id="youtube" className="py-12 md:py-20 px-4 md:min-h-0 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto w-full scale-[0.70] md:scale-100 origin-center">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 ref={youtubeTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">{youtubeTitle.display}</h2>
-            <p className={`text-base md:text-xl ${subtleText} transition-colors duration-700`}>Watch my latest DJ sets and vlogs</p>
+      <section id="youtube" className="py-16 md:py-32 px-4 md:min-h-0 min-h-screen flex items-center">
+        <div className="max-w-6xl mx-auto w-full scale-[0.70] md:scale-100 origin-center">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 ref={youtubeTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-4xl md:text-7xl font-black mb-3 uppercase tracking-wider text-white">{youtubeTitle.display}</h2>
+            <p className="text-base md:text-lg text-white/40">Watch my latest DJ sets and vlogs</p>
           </div>
 
-          <div className={`${cardBg} border rounded-2xl p-6 md:p-8 transition-colors duration-700`}>
-            <div className="relative rounded-xl overflow-hidden group cursor-pointer">
+          <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 md:p-8">
+            <div className="relative rounded-2xl overflow-hidden group cursor-pointer">
               <div
                 className="absolute inset-0 z-10 transition-opacity duration-500 group-[.playing]:opacity-0 group-[.playing]:pointer-events-none"
                 onClick={(e) => {
@@ -229,7 +214,7 @@ export default function Music({ isLightMode = false }: MusicProps) {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                style={{ borderRadius: '12px' }}
+                style={{ borderRadius: '16px' }}
               ></iframe>
             </div>
 
@@ -237,7 +222,7 @@ export default function Music({ isLightMode = false }: MusicProps) {
               href="https://youtube.com/@jonnarincon?si=zp6ECLUFUSCXIhhn"
               target="_blank"
               rel="noopener noreferrer"
-              className={`mt-6 w-full inline-block text-center py-3 ${btnStyle} rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02]`}
+              className="mt-6 w-full inline-block text-center py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02]"
             >
               Visit Channel
             </a>

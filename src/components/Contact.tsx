@@ -3,11 +3,7 @@ import { useState } from 'react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
-interface ContactProps {
-  isLightMode?: boolean;
-}
-
-export default function Contact({ isLightMode = false }: ContactProps) {
+export default function Contact() {
   const contactTitle = useCyberDecodeInView('Get In Touch');
   const { ref: revealRef, isVisible } = useScrollReveal();
   const [formData, setFormData] = useState({
@@ -22,140 +18,101 @@ export default function Contact({ isLightMode = false }: ContactProps) {
     console.log('Form submitted:', formData);
   };
 
-  const cardBg = isLightMode ? 'bg-black/[0.03] border-black/[0.08]' : 'bg-white/5 border-white/10';
-  const headingColor = isLightMode ? 'text-black' : 'text-white';
-  const subtleText = isLightMode ? 'text-black/40' : 'text-gray-400';
-  const iconColor = isLightMode ? 'text-black/30' : 'text-gray-400';
-  const inputBg = isLightMode
-    ? 'bg-black/[0.03] border-black/[0.08] text-black placeholder-black/30 focus:border-black/20'
-    : 'bg-white/5 border-white/10 text-white placeholder-gray-500 focus:border-white/30';
-  const labelColor = isLightMode ? 'text-black/50' : 'text-gray-300';
-  const linkCardBg = isLightMode ? 'bg-black/[0.03] hover:bg-black/[0.06] border-black/[0.08]' : 'bg-white/5 hover:bg-white/10 border-white/10';
-  const btnStyle = isLightMode ? 'bg-black text-white hover:bg-gray-800' : 'bg-white text-black hover:bg-gray-200';
-
   return (
-   <section ref={revealRef as React.RefObject<HTMLElement>} id="contact" className={`py-24 pb-32 px-4 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 ref={contactTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-3xl md:text-6xl font-black mb-4 uppercase tracking-wider">{contactTitle.display}</h2>
-          <p className={`text-xl ${subtleText} transition-colors duration-700`}>Let's create something amazing together</p>
+    <section ref={revealRef as React.RefObject<HTMLElement>} id="contact" className={`py-24 pb-32 px-4 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12 md:mb-16">
+          <h2 ref={contactTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-4xl md:text-7xl font-black mb-3 uppercase tracking-wider text-white">{contactTitle.display}</h2>
+          <p className="text-lg text-white/40">Let's create something amazing together</p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          <div>
-            <div className={`${cardBg} border rounded-2xl p-6 md:p-8 mb-8 transition-colors duration-700`}>
-              <h3 className={`text-3xl font-bold mb-6 ${headingColor} transition-colors duration-700`}>Contact Info</h3>
-
-              <div className="space-y-6">
+        <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
+          {/* Left - Info */}
+          <div className="space-y-5">
+            <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 md:p-8">
+              <h3 className="text-2xl font-bold mb-6 text-white">Contact Info</h3>
+              <div className="space-y-5">
                 <div className="flex items-start gap-4">
-                  <Mail className={`w-6 h-6 ${iconColor} mt-1 transition-colors duration-700`} />
+                  <Mail className="w-5 h-5 text-white/25 mt-0.5" />
                   <div>
-                    <p className={`font-semibold mb-1 ${headingColor} transition-colors duration-700`}>Email</p>
-                    <a
-                      href="mailto:contact@jonnarincon.com"
-                      className={`${subtleText} hover:${headingColor} transition-colors duration-300`}
-                    >
+                    <p className="font-semibold mb-0.5 text-white text-sm">Email</p>
+                    <a href="mailto:contact@jonnarincon.com" className="text-white/40 hover:text-white transition-colors text-sm">
                       contact@jonnarincon.com
                     </a>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-4">
-                  <Music className={`w-6 h-6 ${iconColor} mt-1 transition-colors duration-700`} />
+                  <Music className="w-5 h-5 text-white/25 mt-0.5" />
                   <div>
-                    <p className={`font-semibold mb-1 ${headingColor} transition-colors duration-700`}>Response Time</p>
-                    <p className={`${subtleText} transition-colors duration-700`}>Usually within 24 hours</p>
+                    <p className="font-semibold mb-0.5 text-white text-sm">Response Time</p>
+                    <p className="text-white/40 text-sm">Usually within 24 hours</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className={`${cardBg} border rounded-2xl p-6 md:p-8 transition-colors duration-700`}>
-              <h3 className={`text-2xl font-bold mb-6 ${headingColor} transition-colors duration-700`}>Connect</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <a
-                  href="https://www.instagram.com/jonnarincon/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center gap-3 p-4 ${linkCardBg} border rounded-xl transition-all duration-300 hover:scale-[1.03]`}
-                >
-                  <Instagram className={`w-6 h-6 ${iconColor} transition-colors duration-700`} />
-                  <span className={`font-semibold ${headingColor} transition-colors duration-700`}>Instagram</span>
+            <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 md:p-8">
+              <h3 className="text-xl font-bold mb-5 text-white">Connect</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <a href="https://www.instagram.com/jonnarincon/" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-2xl transition-all duration-300 hover:scale-[1.03]">
+                  <Instagram className="w-5 h-5 text-white/30" />
+                  <span className="font-semibold text-white text-sm">Instagram</span>
                 </a>
-
-                <a
-                  href="https://www.youtube.com/jonnarincon"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center gap-3 p-4 ${linkCardBg} border rounded-xl transition-all duration-300 hover:scale-[1.03]`}
-                >
-                  <Youtube className={`w-6 h-6 ${iconColor} transition-colors duration-700`} />
-                  <span className={`font-semibold ${headingColor} transition-colors duration-700`}>YouTube</span>
+                <a href="https://www.youtube.com/jonnarincon" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-2xl transition-all duration-300 hover:scale-[1.03]">
+                  <Youtube className="w-5 h-5 text-white/30" />
+                  <span className="font-semibold text-white text-sm">YouTube</span>
                 </a>
-
-                <a
-                  href="https://soundcloud.com/jonnarincon"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center gap-3 p-4 ${linkCardBg} border rounded-xl transition-all duration-300 hover:scale-[1.03]`}
-                >
-                  <CloudIcon className={`w-6 h-6 ${iconColor} transition-colors duration-700`} />
-                  <span className={`font-semibold ${headingColor} transition-colors duration-700`}>SoundCloud</span>
+                <a href="https://soundcloud.com/jonnarincon" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-2xl transition-all duration-300 hover:scale-[1.03]">
+                  <CloudIcon className="w-5 h-5 text-white/30" />
+                  <span className="font-semibold text-white text-sm">SoundCloud</span>
                 </a>
-
-                <a
-                  href="https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center gap-3 p-4 ${linkCardBg} border rounded-xl transition-all duration-300 hover:scale-[1.03]`}
-                >
-                  <Music className={`w-6 h-6 ${iconColor} transition-colors duration-700`} />
-                  <span className={`font-semibold ${headingColor} transition-colors duration-700`}>Spotify</span>
+                <a href="https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-2xl transition-all duration-300 hover:scale-[1.03]">
+                  <Music className="w-5 h-5 text-white/30" />
+                  <span className="font-semibold text-white text-sm">Spotify</span>
                 </a>
               </div>
             </div>
           </div>
 
-          <div className={`${cardBg} border rounded-2xl p-6 md:p-8 transition-colors duration-700`}>
-            <h3 className={`text-3xl font-bold mb-6 ${headingColor} transition-colors duration-700`}>Send a Message</h3>
+          {/* Right - Form */}
+          <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 md:p-8">
+            <h3 className="text-2xl font-bold mb-6 text-white">Send a Message</h3>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${labelColor} transition-colors duration-700`}>
-                  Name
-                </label>
+                <label className="block text-xs font-semibold mb-2 text-white/50 uppercase tracking-wider">Name</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={`w-full px-4 py-3 ${inputBg} border rounded-xl focus:outline-none transition-all duration-300`}
+                  className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/20 rounded-2xl focus:outline-none focus:border-white/20 transition-all duration-300"
                   placeholder="Your name"
                 />
               </div>
 
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${labelColor} transition-colors duration-700`}>
-                  Email
-                </label>
+                <label className="block text-xs font-semibold mb-2 text-white/50 uppercase tracking-wider">Email</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full px-4 py-3 ${inputBg} border rounded-xl focus:outline-none transition-all duration-300`}
+                  className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/20 rounded-2xl focus:outline-none focus:border-white/20 transition-all duration-300"
                   placeholder="your@email.com"
                 />
               </div>
 
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${labelColor} transition-colors duration-700`}>
-                  Subject
-                </label>
+                <label className="block text-xs font-semibold mb-2 text-white/50 uppercase tracking-wider">Subject</label>
                 <select
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className={`w-full px-4 py-3 ${inputBg} border rounded-xl focus:outline-none transition-all duration-300 appearance-none cursor-pointer`}
+                  className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.08] text-white rounded-2xl focus:outline-none focus:border-white/20 transition-all duration-300 appearance-none cursor-pointer"
                 >
                   <option value="commission">Beat Commission</option>
                   <option value="collaboration">Collaboration</option>
@@ -165,22 +122,20 @@ export default function Contact({ isLightMode = false }: ContactProps) {
               </div>
 
               <div>
-                <label className={`block text-sm font-semibold mb-2 ${labelColor} transition-colors duration-700`}>
-                  Message
-                </label>
+                <label className="block text-xs font-semibold mb-2 text-white/50 uppercase tracking-wider">Message</label>
                 <textarea
                   required
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  rows={6}
-                  className={`w-full px-4 py-3 ${inputBg} border rounded-xl focus:outline-none transition-all duration-300 resize-none`}
+                  rows={5}
+                  className="w-full px-4 py-3 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/20 rounded-2xl focus:outline-none focus:border-white/20 transition-all duration-300 resize-none"
                   placeholder="Tell me about your project..."
                 />
               </div>
 
               <button
                 type="submit"
-                className={`w-full py-4 ${btnStyle} rounded-xl font-bold text-lg transition-all duration-300 hover:scale-[1.02]`}
+                className="w-full py-4 bg-white text-black rounded-2xl font-bold text-lg transition-all duration-300 hover:bg-white/90 hover:scale-[1.02]"
               >
                 Send Message
               </button>

@@ -1,8 +1,4 @@
-interface MarqueeRedProps {
-  isLightMode?: boolean;
-}
-
-export default function MarqueeRed({ isLightMode = false }: MarqueeRedProps) {
+export default function MarqueeRed() {
   const items = [
     'PRODUCER',
     'LIVE STREAMER',
@@ -39,12 +35,10 @@ export default function MarqueeRed({ isLightMode = false }: MarqueeRedProps) {
     </>
   );
 
-  // In light mode, use darker stroke colors
-  const strokeColor = isLightMode ? 'rgba(220, 38, 38, 0.25)' : 'rgba(220, 38, 38, 0.6)';
+  const strokeColor = 'rgba(220, 38, 38, 0.6)';
 
   return (
     <div className="overflow-hidden py-6 md:py-10 select-none flex flex-col gap-2 md:gap-3">
-      {/* Row 1: left to right */}
       <div className="marquee-red-row marquee-red-ltr">
         <div className="marquee-red-inner">
           <span className="marquee-red-text" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
@@ -52,7 +46,6 @@ export default function MarqueeRed({ isLightMode = false }: MarqueeRedProps) {
         </div>
       </div>
 
-      {/* Row 2: right to left */}
       <div className="marquee-red-row marquee-red-rtl">
         <div className="marquee-red-inner">
           <span className="marquee-red-text" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
@@ -60,7 +53,6 @@ export default function MarqueeRed({ isLightMode = false }: MarqueeRedProps) {
         </div>
       </div>
 
-      {/* Row 3: left to right, slower */}
       <div className="marquee-red-row marquee-red-ltr-slow">
         <div className="marquee-red-inner">
           <span className="marquee-red-text" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
