@@ -2,10 +2,10 @@
   "name": "Jonna Rincon - J18",
   "short_name": "J18",
   "description": "Premium beats and music production by Jonna Rincon",
-  "start_url": "/login",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#9333ea",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
   "icons": [
     {
