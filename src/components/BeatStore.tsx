@@ -40,7 +40,7 @@ interface BeatStoreProps {
 }
 
 export default function BeatStore({ onAddToCart }: BeatStoreProps) {
-  const beatTitle = useCyberDecodeInView('Beat Store');
+  const beatTitle = useCyberDecodeInView('Beat Shop');
   const { ref: revealRef, isVisible: revealVisible } = useScrollReveal();
   // STATE - REAL DATA FROM FIREBASE
   const [beats, setBeats] = useState<Beat[]>([]);

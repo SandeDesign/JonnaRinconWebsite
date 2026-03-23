@@ -68,18 +68,15 @@ export default function Hero() {
     const pagePercent = totalHeight > 0 ? (scrollPosition / totalHeight) * 100 : 0;
 
     let opacity: number;
-    if (pagePercent < 15) {
-      // Quick initial darkening — readable text sooner
-      opacity = (pagePercent / 15) * 0.3;
-    } else if (pagePercent < 50) {
-      // Steady darkening from 0.3 to 0.55
-      opacity = 0.3 + ((pagePercent - 15) / 35) * 0.25;
-    } else if (pagePercent < 80) {
-      // Gradual increase from 0.55 to 0.7
-      opacity = 0.55 + ((pagePercent - 50) / 30) * 0.15;
+    if (pagePercent < 5) {
+      // Immediately start darkening
+      opacity = (pagePercent / 5) * 0.45;
+    } else if (pagePercent < 15) {
+      // Reach target darkness by About section
+      opacity = 0.45 + ((pagePercent - 5) / 10) * 0.15;
     } else {
-      // Final 20% caps at 0.8
-      opacity = 0.7 + ((pagePercent - 80) / 20) * 0.1;
+      // Sustain ~0.6-0.7 from About all the way to Footer
+      opacity = 0.6 + ((pagePercent - 15) / 85) * 0.15;
     }
 
     if (isMobile) {

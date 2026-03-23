@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Instagram, Youtube, Music2, ExternalLink } from 'lucide-react';
+import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 
 const platforms = [
   {
@@ -63,6 +64,7 @@ const platforms = [
 
 export default function SocialsPage() {
   const [email, setEmail] = useState('');
+  const heroTitle = useCyberDecodeInView('Socials');
 
   return (
     <div className="min-h-screen text-white">
@@ -77,9 +79,9 @@ export default function SocialsPage() {
       {/* Hero */}
       <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.4em] mb-4">Connect</p>
-          <h1 className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
-            Socials
+          <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-4">Connect</p>
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
+            {heroTitle.display}
           </h1>
           <p className="text-white/30 text-sm md:text-base mt-6 max-w-md">
             Follow the journey across all platforms. Stay updated on new releases, behind the scenes, and exclusive content.

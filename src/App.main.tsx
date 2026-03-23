@@ -13,6 +13,8 @@ import BeatsShop from './pages/shop/BeatsPage';
 
 // Standalone pages (public)
 import TracksPage from './pages/TracksPage';
+import ReleasesPage from './pages/ReleasesPage';
+import DownloadGatePage from './pages/DownloadGatePage';
 import SocialsPage from './pages/SocialsPage';
 import ContactPage from './pages/ContactPage';
 
@@ -72,6 +74,8 @@ const MainApp: React.FC = () => {
 
           {/* Standalone Pages (public) */}
           <Route path="/tracks" element={<TracksPage />} />
+          <Route path="/releases" element={<ReleasesPage />} />
+          <Route path="/download/:trackId" element={<DownloadGatePage />} />
           <Route path="/socials" element={<SocialsPage />} />
           <Route path="/contact" element={<ContactPage />} />
 
