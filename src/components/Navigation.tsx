@@ -99,7 +99,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
         {/* DESKTOP Layout */}
         <div className="hidden md:flex items-center justify-between">
           {/* Logo altijd linksboven - zwart/wit crossfade op basis van overlay */}
-          <Link to="/" className="relative" style={{ width: '180px', height: '60px' }}>
+          <Link to="/" className="relative" style={{ width: '720px', height: '240px' }}>
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"
@@ -163,7 +163,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
         {/* MOBILE Layout - Logo altijd links, buttons rechts */}
         <div className="md:hidden flex items-center justify-between">
           {/* Logo linksboven - zwart/wit crossfade */}
-          <Link to="/" className="relative" style={{ width: '120px', height: '40px' }}>
+          <Link to="/" className="relative" style={{ width: '480px', height: '160px' }}>
             <img
               src="/Jonna Rincon Logo BL.png"
               alt="Jonna Rincon"

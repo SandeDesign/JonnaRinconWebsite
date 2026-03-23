@@ -201,56 +201,34 @@ function App() {
         onCheckout={handleCheckout}
       />
 
-      {/* Scroll Button */}
-      <>
-        <div className="hidden md:block fixed bottom-8 left-8 z-50">
-          <button
-            onClick={scrollToNext}
-            className={`animate-bounce cursor-pointer hover:scale-110 transition-all duration-500 focus:outline-none px-4 py-3 rounded-full border-2 ${
-              isDarkOverlay
-                ? 'backdrop-blur-md bg-purple-900/20 border-purple-500/50 hover:border-purple-400 hover:bg-purple-600/30'
-                : 'bg-black/30 border-black/50 hover:border-black/70 hover:bg-black/40'
+      {/* Scroll Button - Martin Garrix style: centered bottom, minimal chevron */}
+      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+        <button
+          onClick={scrollToNext}
+          className="animate-bounce cursor-pointer hover:scale-125 transition-all duration-500 focus:outline-none flex flex-col items-center gap-2"
+        >
+          {showText && (
+            <span
+              className={`text-[10px] md:text-xs uppercase tracking-[0.3em] font-light transition-colors duration-500 ${
+                isDarkOverlay ? 'text-white/70' : 'text-black/60'
+              }`}
+            >
+              {scrollDirection === 'up' ? 'Back to top' : 'Scroll'}
+            </span>
+          )}
+          <svg
+            className={`w-6 h-6 md:w-7 md:h-7 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${
+              isDarkOverlay ? 'text-white' : 'text-black'
             }`}
-            style={{ width: showText ? '80px' : '56px' }}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
           >
-            <div className="flex flex-col items-center justify-center gap-2 min-h-[44px]">
-              {showText && <span className={`text-sm font-light whitespace-nowrap transition-colors duration-500 ${isDarkOverlay ? 'text-purple-300' : 'text-black/70'}`}>{buttonText}</span>}
-              <svg
-                className={`w-5 h-5 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${isDarkOverlay ? 'text-purple-400' : 'text-black'}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
-          </button>
-        </div>
-
-        <div className="md:hidden fixed bottom-8 left-8 z-50">
-          <button
-            onClick={scrollToNext}
-            className={`cursor-pointer hover:scale-110 transition-all duration-500 focus:outline-none px-4 py-3 rounded-full border-2 ${
-              isDarkOverlay
-                ? 'backdrop-blur-md bg-purple-900/20 border-purple-500/50 hover:border-purple-400 hover:bg-purple-600/30'
-                : 'bg-black/30 border-black/50 hover:border-black/70 hover:bg-black/40'
-            }`}
-            style={{ width: showText ? '100px' : '56px' }}
-          >
-            <div className="flex flex-col items-center justify-center gap-2 min-h-[44px]">
-              {showText && <span className={`text-xs font-light whitespace-nowrap transition-colors duration-500 ${isDarkOverlay ? 'text-purple-300' : 'text-black/70'}`}>{buttonText}</span>}
-              <svg
-                className={`w-5 h-5 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${isDarkOverlay ? 'text-purple-400' : 'text-black'}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
-          </button>
-        </div>
-      </>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+          </svg>
+        </button>
+      </div>
 
       <main className="pt-20">
         <div id="hero" className="h-screen overflow-hidden"><Hero /></div>
