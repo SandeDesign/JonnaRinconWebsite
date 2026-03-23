@@ -265,6 +265,16 @@ function App() {
             color: isLightMode ? '#000000' : '#ffffff',
           }}
         >
+          {/* Logo landing — first thing you see after the white transition */}
+          <div className="flex items-center justify-center py-16 md:py-24">
+            <img
+              src="/Jonna Rincon Logo BL.png"
+              alt="Jonna Rincon"
+              className="h-16 md:h-24 w-auto transition-opacity duration-700"
+              style={{ opacity: isLightMode ? 1 : 0 }}
+            />
+          </div>
+
           <Music isLightMode={isLightMode} />
           <Socials isLightMode={isLightMode} />
           <MarqueeRed isLightMode={isLightMode} />

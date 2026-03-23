@@ -6,71 +6,50 @@ interface LogoRevealProps {
 
 export default function LogoReveal({ onPassedReveal }: LogoRevealProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const maskRef = useRef<HTMLDivElement>(null);
-  const darkOverlayRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLImageElement>(null);
   const whiteOverlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!sectionRef.current || !maskRef.current || !darkOverlayRef.current || !whiteOverlayRef.current) return;
+      if (!sectionRef.current || !logoRef.current || !whiteOverlayRef.current) return;
 
       const rect = sectionRef.current.getBoundingClientRect();
       const vh = window.innerHeight;
       const sectionHeight = sectionRef.current.offsetHeight;
 
-      // progress: 0 = section top at viewport bottom, 1 = section bottom at viewport top
       const rawProgress = (vh - rect.top) / (vh + sectionHeight);
       const progress = Math.max(0, Math.min(1, rawProgress));
 
-      // === PHASE BREAKDOWN ===
-      // Phase 1 (0–0.12): Dark overlay fades in over the hero bg, mask fades in small
-      // Phase 2 (0.12–0.70): Mask scales up — you see white THROUGH the logo shape
-      // Phase 3 (0.70–1.0): White overlay completes the transition
+      // Phase 1 (0–0.15): Logo fades in at normal size
+      // Phase 2 (0.15–0.75): Logo scales up — white pixels fill the viewport
+      // Phase 3 (0.75–1.0): White overlay completes the transition
 
-      let darkOpacity: number;
-      let maskScale: number;
-      let maskOpacity: number;
-      let whiteOpacity: number;
+      let logoOpacity: number;
+      let logoScale: number;
+      let whiteOverlayOpacity: number;
 
-      if (progress < 0.12) {
-        // Darken the hero bg, start showing the mask
-        const p = progress / 0.12;
-        darkOpacity = p * 0.85;
-        maskOpacity = p;
-        maskScale = 1;
-        whiteOpacity = 0;
-      } else if (progress < 0.70) {
-        // Main phase — mask scales up, white revealed through logo shape
-        const p = (progress - 0.12) / 0.58;
-        darkOpacity = 0.85 + p * 0.15; // goes to 1.0
-        maskOpacity = 1;
-        // Exponential curve for natural feel — slow start, dramatic end
-        maskScale = 1 + Math.pow(p, 2) * 55;
-        // White overlay starts late in this phase
-        whiteOpacity = Math.max(0, (p - 0.75) / 0.25) * 0.3;
+      if (progress < 0.15) {
+        const p = progress / 0.15;
+        logoOpacity = p;
+        logoScale = 1;
+        whiteOverlayOpacity = 0;
+      } else if (progress < 0.75) {
+        const p = (progress - 0.15) / 0.6;
+        logoOpacity = 1;
+        logoScale = 1 + Math.pow(p, 1.8) * 50;
+        whiteOverlayOpacity = Math.max(0, (p - 0.6) / 0.4);
       } else {
-        // Completion — white takes over fully
-        const p = (progress - 0.70) / 0.30;
-        darkOpacity = 1;
-        maskOpacity = 1;
-        maskScale = 56;
-        whiteOpacity = 0.3 + p * 0.7;
+        const p = (progress - 0.75) / 0.25;
+        logoOpacity = 1;
+        logoScale = 51;
+        whiteOverlayOpacity = Math.min(1, 0.4 + p * 0.6);
       }
 
-      // Direct DOM updates — 60fps
-      darkOverlayRef.current.style.opacity = String(darkOpacity);
+      logoRef.current.style.opacity = String(logoOpacity);
+      logoRef.current.style.transform = `translate(-50%, -50%) scale(${logoScale})`;
+      whiteOverlayRef.current.style.opacity = String(whiteOverlayOpacity);
 
-      // The mask: a white div masked by the logo PNG
-      // As mask-size grows, more white is revealed through the logo shape
-      const maskSize = maskScale * 120; // 120px base → scales to ~6700px
-      maskRef.current.style.opacity = String(maskOpacity);
-      maskRef.current.style.setProperty('-webkit-mask-size', `auto ${maskSize}px`);
-      maskRef.current.style.setProperty('mask-size', `auto ${maskSize}px`);
-
-      whiteOverlayRef.current.style.opacity = String(whiteOpacity);
-
-      // Notify parent
-      onPassedReveal?.(progress > 0.65);
+      onPassedReveal?.(progress > 0.7);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -85,38 +64,27 @@ export default function LogoReveal({ onPassedReveal }: LogoRevealProps) {
       className="relative"
       style={{ height: '300vh' }}
     >
-      {/* Sticky viewport */}
-      <div className="sticky top-0 h-screen overflow-hidden">
-
-        {/* Layer 1: The hero bg is still visible here (it's fixed behind everything).
-            This dark overlay goes over it to darken it during the transition. */}
-        <div
-          ref={darkOverlayRef}
-          className="absolute inset-0 bg-black pointer-events-none"
-          style={{ opacity: 0 }}
-        />
-
-        {/* Layer 2: WHITE div masked by the logo PNG.
-            You see white THROUGH the logo shape. As mask-size grows,
-            the logo shape gets bigger and reveals more white.
-            This is the martingarrix.com effect. */}
-        <div
-          ref={maskRef}
-          className="absolute inset-0 bg-white pointer-events-none will-change-transform"
+      {/* Sticky viewport — hero bg (fixed) is visible through this since it's NOT bg-black.
+          The hero's own overlay darkens it. The logo white pixels act as the reveal. */}
+      <div className="sticky top-0 h-screen overflow-hidden bg-black/90">
+        {/* White logo — starts small, scales up. The white pixels fill the screen
+            creating the transition from dark to light. You can still see the
+            hero subtly through the bg-black/90 behind the logo. */}
+        <img
+          ref={logoRef}
+          src="/Jonna Rincon Logo WH.png"
+          alt=""
+          className="absolute top-1/2 left-1/2 pointer-events-none will-change-transform"
           style={{
+            height: '80px',
+            width: 'auto',
+            transform: 'translate(-50%, -50%) scale(1)',
             opacity: 0,
-            WebkitMaskImage: 'url(/Jonna Rincon Logo WH.png)',
-            maskImage: 'url(/Jonna Rincon Logo WH.png)',
-            WebkitMaskPosition: 'center center',
-            maskPosition: 'center center',
-            WebkitMaskRepeat: 'no-repeat',
-            maskRepeat: 'no-repeat',
-            WebkitMaskSize: 'auto 120px',
-            maskSize: 'auto 120px',
-          } as React.CSSProperties}
+            transformOrigin: 'center center',
+          }}
         />
 
-        {/* Layer 3: Solid white overlay for final clean transition */}
+        {/* White overlay — ensures clean solid white for transition to light mode */}
         <div
           ref={whiteOverlayRef}
           className="absolute inset-0 bg-white pointer-events-none"
