@@ -132,7 +132,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   const menuItems: { label: string; subtitle: string; href?: string; action?: () => void }[] = [
     { label: 'BEAT STORE', subtitle: 'Browse instrumentals', action: () => { closeMenu(); navigate('/shop/beats'); } },
-    { label: 'MY TRACKS', subtitle: 'Latest releases', action: () => { closeMenu(); navigate('/tracks'); } },
+    { label: 'MUSIC', subtitle: 'Full discography', action: () => { closeMenu(); navigate('/tracks'); } },
     { label: 'SOCIALS', subtitle: 'Follow the journey', action: () => { closeMenu(); navigate('/socials'); } },
     { label: 'CONTACT', subtitle: 'Get in touch', action: () => { closeMenu(); navigate('/contact'); } },
   ];
@@ -311,7 +311,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
               className={`fixed inset-0 z-[100] transition-opacity duration-500 ${
                 isMenuClosing ? 'opacity-0' : 'opacity-100'
               }`}
-              style={{ backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }}
+              style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
               onClick={closeMenu}
             />
 

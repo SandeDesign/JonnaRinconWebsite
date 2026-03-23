@@ -65,16 +65,21 @@ export default function SocialsPage() {
   const [email, setEmail] = useState('');
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
+      {/* Fixed JEIGHTENESIS Background */}
+      <div className="fixed inset-0 w-full h-screen -z-10">
+        <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{objectPosition: 'center'}} />
+        <div className="absolute inset-0 bg-black/75" />
+      </div>
+
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
       {/* Hero */}
       <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black" />
         <div className="relative z-10 max-w-7xl mx-auto w-full">
           <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.4em] mb-4">Connect</p>
-          <h1 className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter">
-            Social<br />Media
+          <h1 className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
+            Socials
           </h1>
           <p className="text-white/30 text-sm md:text-base mt-6 max-w-md">
             Follow the journey across all platforms. Stay updated on new releases, behind the scenes, and exclusive content.
@@ -94,7 +99,7 @@ export default function SocialsPage() {
                   href={platform.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-6 md:p-8 hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02]"
+                  className="group relative bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8 hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08]"
                 >
                   <div className="flex items-start justify-between mb-6">
                     <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${platform.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
@@ -123,7 +128,7 @@ export default function SocialsPage() {
       {/* Newsletter */}
       <section className="px-6 md:px-12 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-8 md:p-12 text-center">
+          <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-8 md:p-12 text-center">
             <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">Stay in the Loop</h2>
             <p className="text-white/30 text-sm md:text-base mb-8 max-w-md mx-auto">
               Subscribe for early access to new beats, exclusive content, and special offers
