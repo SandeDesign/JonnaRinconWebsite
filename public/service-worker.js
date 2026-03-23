@@ -1,7 +1,7 @@
-const CACHE_NAME = 'jonna-rincon-v1.2.2.1';
+const CACHE_NAME = 'jonna-rincon-v1.3.0';
 const urlsToCache = [
   '/',
-  '/logo.png',
+  '/Logo.png',
   '/manifest.json'
 ];
 
