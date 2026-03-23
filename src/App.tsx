@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Navigation from './components/Navigation';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -10,11 +10,10 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
 import Marquee from './components/Marquee';
-import LogoReveal from './components/LogoReveal';
 import MarqueeRed from './components/MarqueeRed';
 import { Beat, CartItem } from './lib/types';
 
-// FIREBASE IMPORTS - NO MORE database.ts
+// FIREBASE IMPORTS
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from './lib/firebase/config';
 
@@ -26,15 +25,13 @@ function App() {
   const [hasClickedButton, setHasClickedButton] = useState(false);
   const [isDarkOverlay, setIsDarkOverlay] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLightMode, setIsLightMode] = useState(false);
 
-  // Dynamische sections
   const getSections = () => {
     const isMobile = window.innerWidth < 768;
     if (isMobile) {
-      return ['hero', 'about', 'beats', 'logo-reveal', 'music', 'compilations', 'youtube', 'socials', 'live-studio', 'contact'];
+      return ['hero', 'about', 'beats', 'music', 'compilations', 'youtube', 'socials', 'live-studio', 'contact'];
     }
-    return ['hero', 'about', 'beats', 'logo-reveal', 'music', 'youtube', 'socials', 'live-studio', 'contact'];
+    return ['hero', 'about', 'beats', 'music', 'youtube', 'socials', 'live-studio', 'contact'];
   };
 
   const [sections, setSections] = useState(getSections());
@@ -123,17 +120,10 @@ function App() {
     }
   };
 
-  // Polarisation callback from LogoReveal
-  const handlePassedReveal = useCallback((passed: boolean) => {
-    setIsLightMode(passed);
-  }, []);
-
-  // Detect current section on scroll - REAL-TIME SYNC + overlay darkness
+  // Detect current section on scroll
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight / 2;
-
-      // Determine if overlay is dark enough for white elements
       const scrollPercent = (window.scrollY / window.innerHeight) * 100;
       setIsDarkOverlay(scrollPercent >= 15);
 
@@ -158,7 +148,7 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [sections]);
 
-  // Lock section during resize - PREVENT SCROLL JUMP
+  // Lock section during resize
   useEffect(() => {
     let savedScrollPosition = 0;
     let isResizing = false;
@@ -196,12 +186,12 @@ function App() {
   const showText = !hasClickedButton || isAtEnd;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black text-white">
       <Navigation
         cartItemCount={cartItems.length}
         onCartClick={() => setIsCartOpen(true)}
         isDarkOverlay={isDarkOverlay}
-        isLightMode={isLightMode}
+        isLightMode={false}
         onMenuToggle={setIsMenuOpen}
       />
 
@@ -213,7 +203,7 @@ function App() {
         onCheckout={handleCheckout}
       />
 
-      {/* Scroll Button — bottom-left, hidden when menu is open */}
+      {/* Scroll Button */}
       {!isMenuOpen && (
         <div className="fixed bottom-10 left-8 z-50">
           <button
@@ -223,18 +213,18 @@ function App() {
             {showText && (
               <span
                 className={`text-[10px] md:text-xs uppercase tracking-[0.3em] font-medium transition-colors duration-500 ${
-                  isLightMode ? 'text-black/50' : isDarkOverlay ? 'text-white/50' : 'text-black/50'
+                  isDarkOverlay ? 'text-white/50' : 'text-black/50'
                 }`}
               >
                 {scrollDirection === 'up' ? 'Back to top' : 'Scroll'}
               </span>
             )}
             <div className={`w-[1px] h-8 transition-colors duration-500 ${
-              isLightMode ? 'bg-black/20' : isDarkOverlay ? 'bg-white/20' : 'bg-black/20'
+              isDarkOverlay ? 'bg-white/20' : 'bg-black/20'
             }`} />
             <svg
               className={`w-4 h-4 transition-all duration-500 ${scrollDirection === 'up' ? 'rotate-180' : ''} ${
-                isLightMode ? 'text-black/40' : isDarkOverlay ? 'text-white/40' : 'text-black/40'
+                isDarkOverlay ? 'text-white/40' : 'text-black/40'
               }`}
               fill="none"
               stroke="currentColor"
@@ -248,40 +238,19 @@ function App() {
       )}
 
       <main className="pt-20">
-        {/* === DARK ZONE === */}
+        {/* === HERO + DARK SECTIONS === */}
         <div id="hero" className="h-screen overflow-hidden"><Hero /></div>
         <About />
         <Marquee />
         <BeatStore onAddToCart={handleAddToCart} />
 
-        {/* === TRANSITION ZONE — LogoReveal handles the dark→light switch === */}
-        <LogoReveal onPassedReveal={handlePassedReveal} />
-
-        {/* === LIGHT ZONE — everything after the logo reveal gets light treatment === */}
-        <div
-          className="transition-colors duration-700 ease-out"
-          style={{
-            backgroundColor: isLightMode ? '#ffffff' : '#000000',
-            color: isLightMode ? '#000000' : '#ffffff',
-          }}
-        >
-          {/* Logo landing — first thing you see after the white transition */}
-          <div className="flex items-center justify-center py-16 md:py-24">
-            <img
-              src="/Jonna Rincon Logo BL.png"
-              alt="Jonna Rincon"
-              className="h-16 md:h-24 w-auto transition-opacity duration-700"
-              style={{ opacity: isLightMode ? 1 : 0 }}
-            />
-          </div>
-
-          <Music isLightMode={isLightMode} />
-          <Socials isLightMode={isLightMode} />
-          <MarqueeRed isLightMode={isLightMode} />
-          <div id="live-studio"><LiveStudio isLightMode={isLightMode} /></div>
-          <Contact isLightMode={isLightMode} />
-          <Footer isLightMode={isLightMode} />
-        </div>
+        {/* === ALL SECTIONS — consistent dark theme === */}
+        <Music />
+        <Socials />
+        <MarqueeRed />
+        <div id="live-studio"><LiveStudio /></div>
+        <Contact />
+        <Footer />
       </main>
     </div>
   );

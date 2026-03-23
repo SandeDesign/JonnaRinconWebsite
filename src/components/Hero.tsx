@@ -62,16 +62,17 @@ export default function Hero() {
 
     const scrollPercent = (scrollPosition / windowHeight) * 100;
 
-    // Opacity curve — darkens as you scroll but stays at 0.85 max
-    // The LogoReveal section handles the final darkening with its own overlay
+    // Opacity curve — darkens as you scroll, fully dark deep in the page
     const isMobile = window.innerWidth < 768;
     let opacity: number;
     if (scrollPercent < 10) {
       opacity = (scrollPercent / 10) * 0.3;
     } else if (scrollPercent < 70) {
       opacity = 0.3 + ((scrollPercent - 10) / 60) * 0.5;
+    } else if (scrollPercent < 200) {
+      opacity = 0.8 + ((scrollPercent - 70) / 130) * 0.2;
     } else {
-      opacity = 0.85;
+      opacity = 1;
     }
 
     // Mobiel: hogere minimum overlay zodat UI-elementen leesbaar blijven
@@ -90,9 +91,9 @@ export default function Hero() {
     if (gradientRef.current) {
       gradientRef.current.style.opacity = String(Math.min(opacity, 0.8));
     }
-    // Keep hero visible but very dark deep in the page
-    // The LogoReveal section's dark overlay covers it during transition
+    // Hide hero image deep in the page so it doesn't show through sections
     if (imgRef.current) {
+      imgRef.current.style.opacity = scrollPercent > 250 ? '0' : '1';
       imgRef.current.style.transition = 'opacity 0.5s ease';
     }
   }, []);
