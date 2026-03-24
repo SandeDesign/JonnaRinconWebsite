@@ -140,7 +140,7 @@ const ArtistCollaborations: React.FC = () => {
 
         {/* Collaborations List */}
         {filteredCollaborations.length === 0 ? (
-          <div className="text-center py-12 bg-white/[0.04] rounded-lg">
+          <div className="text-center py-12 bg-white/[0.08] rounded-lg">
             <div className="text-4xl mb-4">🤝</div>
             <p className="text-xl mb-2">No collaborations found</p>
             <p className="text-white/40 mb-6">
@@ -158,7 +158,7 @@ const ArtistCollaborations: React.FC = () => {
         ) : (
           <div className="space-y-6">
             {filteredCollaborations.map((collab) => (
-              <div key={collab.id} className="bg-white/[0.04] rounded-lg overflow-hidden">
+              <div key={collab.id} className="bg-white/[0.08] rounded-lg overflow-hidden">
                 {/* Collaboration Header */}
                 <div className="bg-white/[0.06] p-4">
                   <div className="flex justify-between items-start">
@@ -328,7 +328,7 @@ const ArtistCollaborations: React.FC = () => {
                                 className={`p-3 rounded-lg ${
                                   msg.senderId === user?.uid
                                     ? 'bg-purple-900/30 ml-8'
-                                    : 'bg-white/[0.04] mr-8'
+                                    : 'bg-white/[0.08] mr-8'
                                 }`}
                               >
                                 <div className="flex justify-between items-start mb-1">

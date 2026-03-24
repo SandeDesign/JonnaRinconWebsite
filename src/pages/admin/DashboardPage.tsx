@@ -42,7 +42,7 @@ const DashboardPage: React.FC = () => {
           </div>
           <Link
             to="/"
-            className="bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] px-4 py-2 rounded-2xl text-white/80 font-medium transition-all flex items-center gap-2 text-sm flex-shrink-0"
+            className="bg-white/[0.08] hover:bg-white/[0.08] border border-white/[0.06] px-4 py-2 rounded-2xl text-white/80 font-medium transition-all flex items-center gap-2 text-sm flex-shrink-0"
           >
             <Home size={16} />
             <span className="hidden sm:inline">Home</span>
@@ -54,7 +54,7 @@ const DashboardPage: React.FC = () => {
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div key={stat.name} className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 sm:p-6 hover:border-white/[0.12] transition-all duration-300">
+              <div key={stat.name} className="bg-white/[0.08] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 sm:p-6 hover:border-white/[0.12] transition-all duration-300">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <p className="text-xs text-white/30 uppercase tracking-wider">{stat.name}</p>
@@ -73,14 +73,14 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Recent Orders */}
-        <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 sm:p-6">
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 sm:p-6">
           <h2 className="text-lg font-bold text-white mb-4">Recent Orders</h2>
           <div className="space-y-2">
             {recentOrders.length === 0 ? (
               <p className="text-white/30 text-center py-8 text-sm">No orders yet</p>
             ) : (
               recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-3.5 bg-white/[0.03] rounded-2xl hover:bg-white/[0.06] transition-all gap-3">
+                <div key={order.id} className="flex items-center justify-between p-3.5 bg-white/[0.06] rounded-2xl hover:bg-white/[0.06] transition-all gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-medium text-sm truncate">{order.orderNumber}</p>
                     <p className="text-xs text-white/25 truncate">{order.customerEmail}</p>
@@ -103,28 +103,28 @@ const DashboardPage: React.FC = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Link to="/admin/beats" className="group bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
+          <Link to="/admin/beats" className="group bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
             <div className="w-10 h-10 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Music size={18} className="text-purple-400" />
             </div>
             <h3 className="text-white font-semibold text-sm">Manage Beats</h3>
             <p className="text-white/25 text-xs mt-0.5">Add or edit beats</p>
           </Link>
-          <Link to="/admin/orders" className="group bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
+          <Link to="/admin/orders" className="group bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
             <div className="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <ShoppingBag size={18} className="text-blue-400" />
             </div>
             <h3 className="text-white font-semibold text-sm">View Orders</h3>
             <p className="text-white/25 text-xs mt-0.5">Process orders</p>
           </Link>
-          <Link to="/admin/content" className="group bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
+          <Link to="/admin/content" className="group bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
             <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Users size={18} className="text-emerald-400" />
             </div>
             <h3 className="text-white font-semibold text-sm">Content</h3>
             <p className="text-white/25 text-xs mt-0.5">Manage content</p>
           </Link>
-          <Link to="/admin/collaborations" className="group bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
+          <Link to="/admin/collaborations" className="group bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
             <div className="w-10 h-10 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Handshake size={18} className="text-orange-400" />
             </div>

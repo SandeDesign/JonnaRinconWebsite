@@ -56,7 +56,7 @@ const CustomerDashboard: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-white">Dashboard</h1>
             <p className="text-sm text-white/30 mt-1">Welcome back, {user?.displayName || 'Customer'}!</p>
           </div>
-          <Link to="/" className="bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] px-4 py-2 rounded-2xl text-white/80 font-medium transition-all flex items-center gap-2 text-sm flex-shrink-0">
+          <Link to="/" className="bg-white/[0.08] hover:bg-white/[0.08] border border-white/[0.06] px-4 py-2 rounded-2xl text-white/80 font-medium transition-all flex items-center gap-2 text-sm flex-shrink-0">
             <Home size={16} />
             <span className="hidden sm:inline">Home</span>
           </Link>
@@ -66,7 +66,7 @@ const CustomerDashboard: React.FC = () => {
           {statsCards.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div key={stat.name} className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 sm:p-6 hover:border-white/[0.12] transition-all duration-300">
+              <div key={stat.name} className="bg-white/[0.08] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 sm:p-6 hover:border-white/[0.12] transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-white/30 uppercase tracking-wider">{stat.name}</p>
@@ -82,7 +82,7 @@ const CustomerDashboard: React.FC = () => {
           })}
         </div>
 
-        <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 sm:p-6">
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 sm:p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold text-white">Recent Orders</h2>
             <Link to="/customer/orders" className="text-white/30 hover:text-white text-xs uppercase tracking-wider transition-colors">View All</Link>
@@ -98,7 +98,7 @@ const CustomerDashboard: React.FC = () => {
           ) : (
             <div className="space-y-2">
               {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-3.5 bg-white/[0.03] rounded-2xl hover:bg-white/[0.06] transition-all">
+                <div key={order.id} className="flex items-center justify-between p-3.5 bg-white/[0.06] rounded-2xl hover:bg-white/[0.06] transition-all">
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-medium text-sm truncate">{order.orderNumber}</p>
                     <p className="text-xs text-white/25">{order.items.length} item(s) &middot; {order.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A'}</p>
@@ -118,28 +118,28 @@ const CustomerDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <Link to="/shop/beats" className="group bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
+          <Link to="/shop/beats" className="group bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
             <div className="w-10 h-10 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <ShoppingBag size={18} className="text-purple-400" />
             </div>
             <h3 className="text-white font-semibold text-sm">Browse Beats</h3>
             <p className="text-white/25 text-xs mt-0.5">Find your next hit</p>
           </Link>
-          <Link to="/customer/orders" className="group bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
+          <Link to="/customer/orders" className="group bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
             <div className="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <ShoppingBag size={18} className="text-blue-400" />
             </div>
             <h3 className="text-white font-semibold text-sm">My Orders</h3>
             <p className="text-white/25 text-xs mt-0.5">View order history</p>
           </Link>
-          <Link to="/customer/downloads" className="group bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
+          <Link to="/customer/downloads" className="group bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
             <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Download size={18} className="text-emerald-400" />
             </div>
             <h3 className="text-white font-semibold text-sm">Downloads</h3>
             <p className="text-white/25 text-xs mt-0.5">Access your beats</p>
           </Link>
-          <Link to="/customer/profile" className="group bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
+          <Link to="/customer/profile" className="group bg-white/[0.08] border border-white/[0.06] hover:border-white/[0.12] rounded-3xl p-5 transition-all duration-300">
             <div className="w-10 h-10 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <TrendingUp size={18} className="text-orange-400" />
             </div>

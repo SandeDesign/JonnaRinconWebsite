@@ -74,7 +74,7 @@ const AnalyticsPage: React.FC = () => {
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value as '7d' | '30d' | '90d' | 'all')}
-              className="bg-white/[0.04] border border-white/[0.06] text-white rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
+              className="bg-white/[0.08] border border-white/[0.06] text-white rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
             >
               <option value="7d">Last 7 days</option>
               <option value="30d">Last 30 days</option>
@@ -86,7 +86,7 @@ const AnalyticsPage: React.FC = () => {
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
               <p className="text-white/40 text-sm">Total Revenue</p>
               <DollarSign className="text-green-400" size={20} />
@@ -101,7 +101,7 @@ const AnalyticsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
               <p className="text-white/40 text-sm">Total Orders</p>
               <ShoppingCart className="text-blue-400" size={20} />
@@ -112,7 +112,7 @@ const AnalyticsPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
               <p className="text-white/40 text-sm">Total Beats</p>
               <Music className="text-purple-400" size={20} />
@@ -123,7 +123,7 @@ const AnalyticsPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-2">
               <p className="text-white/40 text-sm">Content Views</p>
               <Eye className="text-pink-400" size={20} />
@@ -139,7 +139,7 @@ const AnalyticsPage: React.FC = () => {
 
         {/* Engagement Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Beat Performance</h3>
               <Music className="text-purple-400" size={20} />
@@ -162,7 +162,7 @@ const AnalyticsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Content Engagement</h3>
               <FileText className="text-blue-400" size={20} />
@@ -187,7 +187,7 @@ const AnalyticsPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Collaborations</h3>
               <Handshake className="text-green-400" size={20} />
@@ -212,7 +212,7 @@ const AnalyticsPage: React.FC = () => {
         </div>
 
         {/* Top Performing Beats */}
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Top Performing Beats</h3>
           <div className="space-y-3">
             {topBeats.length === 0 ? (
@@ -221,7 +221,7 @@ const AnalyticsPage: React.FC = () => {
               topBeats.map((beat, index) => (
                 <div
                   key={beat.id}
-                  className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg hover:bg-white/[0.06] transition-colors"
+                  className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg hover:bg-white/[0.06] transition-colors"
                 >
                   <div className="flex items-center space-x-3">
                     <span className="text-2xl font-bold text-white/25">#{index + 1}</span>
@@ -248,7 +248,7 @@ const AnalyticsPage: React.FC = () => {
         {/* Top Content & Recent Orders */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Top Content */}
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Top Content by Views</h3>
             <div className="space-y-3">
               {topContent.length === 0 ? (
@@ -257,7 +257,7 @@ const AnalyticsPage: React.FC = () => {
                 topContent.map((item, index) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg"
+                    className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg"
                   >
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
                       <span className="text-lg font-bold text-white/25">#{index + 1}</span>
@@ -277,7 +277,7 @@ const AnalyticsPage: React.FC = () => {
           </div>
 
           {/* Recent Orders */}
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Recent Orders</h3>
             <div className="space-y-3">
               {recentOrders.length === 0 ? (
@@ -286,7 +286,7 @@ const AnalyticsPage: React.FC = () => {
                 recentOrders.map((order) => (
                   <div
                     key={order.id}
-                    className="flex items-center justify-between p-3 bg-white/[0.03] rounded-lg"
+                    className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-white">Order #{order.id.slice(0, 8)}</p>

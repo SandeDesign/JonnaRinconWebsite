@@ -153,7 +153,7 @@ const CustomerChat: React.FC = () => {
             <p className="text-white/40 mt-2">Get help from the Jonna Rincon team</p>
           </div>
 
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
             <MessageSquare size={64} className="mx-auto mb-4 text-white/20" />
             <h2 className="text-2xl font-bold text-white mb-2">No conversations yet</h2>
             <p className="text-white/40 mb-6">
@@ -216,7 +216,7 @@ const CustomerChat: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Conversations Sidebar */}
-          <div className="lg:col-span-1 bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="lg:col-span-1 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
             <div className="p-4 border-b border-white/[0.06]">
               <h2 className="font-semibold text-white">Conversations</h2>
             </div>
@@ -253,7 +253,7 @@ const CustomerChat: React.FC = () => {
           </div>
 
           {/* Chat Window */}
-          <div className="lg:col-span-2 bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
+          <div className="lg:col-span-2 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
             {/* Chat Header */}
             <div className="p-4 border-b border-white/[0.06] bg-white/[0.05]">
               <div className="flex items-center gap-3">

@@ -78,7 +78,7 @@ const CustomerShop: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <input
@@ -135,7 +135,7 @@ const CustomerShop: React.FC = () => {
             <div className="text-xl text-white">Loading beats...</div>
           </div>
         ) : beats.length === 0 ? (
-          <div className="text-center py-12 bg-white/[0.04] border border-white/[0.06] rounded-xl">
+          <div className="text-center py-12 bg-white/[0.08] border border-white/[0.06] rounded-xl">
             <Music size={64} className="mx-auto mb-4 text-white/20" />
             <p className="text-xl text-white mb-2">No beats found</p>
             <p className="text-white/40">Try adjusting your filters</p>
@@ -145,7 +145,7 @@ const CustomerShop: React.FC = () => {
             {beats.map((beat) => (
               <div
                 key={beat.id}
-                className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden hover:border-blue-500/50 transition-all hover:transform hover:scale-105"
+                className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden hover:border-blue-500/50 transition-all hover:transform hover:scale-105"
               >
                 {/* Beat Artwork */}
                 <div className="relative">

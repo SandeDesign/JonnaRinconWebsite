@@ -40,23 +40,23 @@ const ManagerBeats: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total Beats</p>
             <p className="text-2xl font-bold text-white mt-1">{beats.length}</p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Published</p>
             <p className="text-2xl font-bold text-white mt-1">
               {beats.filter((b) => b.status === 'published').length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Featured</p>
             <p className="text-2xl font-bold text-white mt-1">
               {beats.filter((b) => b.featured).length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total Plays</p>
             <p className="text-2xl font-bold text-white mt-1">
               {beats.reduce((sum, b) => sum + b.plays, 0).toLocaleString()}
@@ -70,7 +70,7 @@ const ManagerBeats: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="bg-white/[0.04] border border-white/[0.06] text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+            className="bg-white/[0.08] border border-white/[0.06] text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
           >
             <option value="all">All Status</option>
             <option value="published">Published</option>
@@ -80,7 +80,7 @@ const ManagerBeats: React.FC = () => {
         </div>
 
         {/* Beats Table */}
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/[0.06]">
@@ -108,7 +108,7 @@ const ManagerBeats: React.FC = () => {
                   </tr>
                 ) : (
                   filteredBeats.map((beat) => (
-                    <tr key={beat.id} className="hover:bg-white/[0.03]">
+                    <tr key={beat.id} className="hover:bg-white/[0.06]">
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
                           <img
@@ -225,8 +225,8 @@ const EditBeatModal: React.FC<EditBeatModalProps> = ({ beat, onClose, onSave }) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white/[0.04] rounded-xl max-w-2xl w-full p-6">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+      <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-2xl w-full p-6">
         <h2 className="text-2xl font-bold text-white mb-6">Edit Beat</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
