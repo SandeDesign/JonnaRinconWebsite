@@ -108,17 +108,17 @@ const CustomerCollaborations: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total</p>
             <p className="text-2xl font-bold text-white mt-1">{collaborations.length}</p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Active</p>
             <p className="text-2xl font-bold text-blue-400 mt-1">
               {collaborations.filter((c) => ['agreed', 'contract_sent', 'signed', 'in_progress'].includes(c.status)).length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Completed</p>
             <p className="text-2xl font-bold text-green-400 mt-1">
               {collaborations.filter((c) => c.status === 'completed').length}
@@ -128,7 +128,7 @@ const CustomerCollaborations: React.FC = () => {
 
         {/* Collaborations List */}
         {collaborations.length === 0 ? (
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
             <Handshake size={64} className="mx-auto mb-4 text-white/20" />
             <h2 className="text-2xl font-bold text-white mb-2">No collaborations yet</h2>
             <p className="text-white/40">When you start a collaboration, it will appear here</p>
@@ -136,7 +136,7 @@ const CustomerCollaborations: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {collaborations.map((collab) => (
-              <div key={collab.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+              <div key={collab.id} className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
                 {/* Header - Clickable */}
                 <div
                   onClick={() => setExpandedCollabId(expandedCollabId === collab.id ? null : collab.id!)}
@@ -216,7 +216,7 @@ const CustomerCollaborations: React.FC = () => {
                       </h4>
 
                       {/* Messages List */}
-                      <div className="bg-white/[0.04] rounded-lg p-4 max-h-80 overflow-y-auto space-y-3 mb-4">
+                      <div className="bg-white/[0.08] rounded-lg p-4 max-h-80 overflow-y-auto space-y-3 mb-4">
                         {(!messages[collab.id!] || messages[collab.id!].length === 0) ? (
                           <div className="text-center text-white/40 py-8">
                             <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />

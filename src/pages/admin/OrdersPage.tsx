@@ -50,7 +50,7 @@ const OrdersPage: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as OrderStatus | 'all')}
-            className="px-4 py-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white"
+            className="px-4 py-2 bg-white/[0.08] border border-white/[0.06] rounded-lg text-white"
           >
             <option value="all">All Orders</option>
             <option value="pending">Pending</option>
@@ -64,23 +64,23 @@ const OrdersPage: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total Orders</p>
             <p className="text-2xl font-bold text-white mt-1">{orders.length}</p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Pending</p>
             <p className="text-2xl font-bold text-yellow-400 mt-1">
               {orders.filter((o) => o.status === 'pending').length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Completed</p>
             <p className="text-2xl font-bold text-green-400 mt-1">
               {orders.filter((o) => o.status === 'completed').length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total Revenue</p>
             <p className="text-2xl font-bold text-white mt-1">
               €{orders.reduce((sum, o) => o.status === 'completed' ? sum + o.total : sum, 0).toFixed(2)}
@@ -89,7 +89,7 @@ const OrdersPage: React.FC = () => {
         </div>
 
         {/* Orders Table */}
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/[0.06]">
@@ -132,7 +132,7 @@ const OrdersPage: React.FC = () => {
                   </tr>
                 ) : (
                   filteredOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-white/[0.03]">
+                    <tr key={order.id} className="hover:bg-white/[0.06]">
                       <td className="px-6 py-4">
                         <p className="font-medium text-white">{order.orderNumber}</p>
                       </td>

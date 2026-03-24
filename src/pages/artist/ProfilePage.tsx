@@ -76,7 +76,7 @@ const ArtistProfile: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1">
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 text-center">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6 text-center">
               <div className="w-24 h-24 bg-gradient-to-r from-orange-600 to-red-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
                 {user?.displayName?.charAt(0)?.toUpperCase() || <User size={32} className="text-white" />}
               </div>
@@ -95,7 +95,7 @@ const ArtistProfile: React.FC = () => {
               </div>
             )}
 
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-white">Profile Information</h2>
                 {!isEditing && (
@@ -147,7 +147,7 @@ const ArtistProfile: React.FC = () => {
               )}
             </div>
 
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-6">Change Password</h2>
               <form onSubmit={handleUpdatePassword}>
                 <div className="mb-4">
@@ -173,7 +173,7 @@ const ArtistProfile: React.FC = () => {
               </form>
             </div>
 
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-6">Account Actions</h2>
               <button onClick={handleSignOut}
                 className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-lg text-white font-medium transition-all flex items-center justify-center gap-2">

@@ -66,7 +66,7 @@ const RequestCollabPage: React.FC = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6 space-y-6">
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">

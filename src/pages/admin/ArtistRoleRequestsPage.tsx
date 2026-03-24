@@ -112,23 +112,23 @@ const ArtistRoleRequestsPage: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total Requests</p>
             <p className="text-2xl font-bold text-white mt-1">{requests.length}</p>
           </div>
-          <div className="bg-white/[0.04] border border-yellow-600 rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-yellow-600 rounded-xl p-4">
             <p className="text-white/40 text-sm">Pending</p>
             <p className="text-2xl font-bold text-yellow-400 mt-1">
               {requests.filter((r) => r.status === 'pending').length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-green-600 rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-green-600 rounded-xl p-4">
             <p className="text-white/40 text-sm">Approved</p>
             <p className="text-2xl font-bold text-green-400 mt-1">
               {requests.filter((r) => r.status === 'approved').length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-red-600 rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-red-600 rounded-xl p-4">
             <p className="text-white/40 text-sm">Rejected</p>
             <p className="text-2xl font-bold text-red-400 mt-1">
               {requests.filter((r) => r.status === 'rejected').length}
@@ -163,11 +163,11 @@ const ArtistRoleRequestsPage: React.FC = () => {
         {/* Requests List */}
         <div className="space-y-4">
           {loading ? (
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
               Loading requests...
             </div>
           ) : filteredRequests.length === 0 ? (
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
               <UserPlus size={48} className="mx-auto mb-4 text-white/20" />
               <p className="text-white/40">No {filter !== 'all' ? filter : ''} requests found</p>
             </div>
@@ -175,7 +175,7 @@ const ArtistRoleRequestsPage: React.FC = () => {
             filteredRequests.map((request) => (
               <div
                 key={request.id}
-                className={`bg-white/[0.04] border rounded-xl p-6 ${
+                className={`bg-white/[0.08] border rounded-xl p-6 ${
                   request.status === 'pending'
                     ? 'border-yellow-600'
                     : request.status === 'approved'

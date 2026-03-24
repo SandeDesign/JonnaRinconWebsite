@@ -117,7 +117,7 @@ const AdminSettings: React.FC = () => {
         )}
 
         {/* Tabs */}
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
           <div className="flex gap-2 overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -156,10 +156,10 @@ const AdminSettings: React.FC = () => {
         {activeTab === 'shop' && (
           <div className="space-y-6">
             {/* Shop Features */}
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Shop Features</h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Featured Beats</p>
                     <p className="text-sm text-white/40">Show featured badge on selected beats</p>
@@ -177,7 +177,7 @@ const AdminSettings: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Trending Beats</p>
                     <p className="text-sm text-white/40">Show trending badge on popular beats</p>
@@ -195,7 +195,7 @@ const AdminSettings: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Enable Downloads</p>
                     <p className="text-sm text-white/40">Allow customers to download purchased beats</p>
@@ -213,7 +213,7 @@ const AdminSettings: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Watermark Previews</p>
                     <p className="text-sm text-white/40">Add watermark to preview audio files</p>
@@ -234,7 +234,7 @@ const AdminSettings: React.FC = () => {
             </div>
 
             {/* Payment Settings */}
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4">Payment Settings</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -286,13 +286,13 @@ const AdminSettings: React.FC = () => {
         {/* Notifications Settings Tab */}
         {activeTab === 'notifications' && (
           <div className="space-y-6">
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <Bell size={24} className="text-yellow-400" />
                 Notification Settings
               </h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email on New Orders</p>
                     <p className="text-sm text-white/40">Get notified when customers place orders</p>
@@ -313,7 +313,7 @@ const AdminSettings: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email on Collaborations</p>
                     <p className="text-sm text-white/40">Get notified about collaboration requests</p>
@@ -334,7 +334,7 @@ const AdminSettings: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email Analytics Reports</p>
                     <p className="text-sm text-white/40">Receive weekly analytics reports</p>
@@ -355,7 +355,7 @@ const AdminSettings: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email Security Alerts</p>
                     <p className="text-sm text-white/40">Important security notifications</p>
@@ -376,7 +376,7 @@ const AdminSettings: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Email New Features</p>
                     <p className="text-sm text-white/40">Learn about new features and updates</p>
@@ -397,7 +397,7 @@ const AdminSettings: React.FC = () => {
                   </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Push Notifications</p>
                     <p className="text-sm text-white/40">Receive browser push notifications</p>
@@ -435,13 +435,13 @@ const AdminSettings: React.FC = () => {
         {/* Security Settings Tab */}
         {activeTab === 'security' && (
           <div className="space-y-6">
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <Shield size={24} className="text-red-400" />
                 Security Settings
               </h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Two-Factor Authentication</p>
                     <p className="text-sm text-white/40">Require 2FA for admin accounts</p>
@@ -508,7 +508,7 @@ const AdminSettings: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-white/[0.06] rounded-lg">
                   <div>
                     <p className="font-medium text-white">Enable Auto Backup</p>
                     <p className="text-sm text-white/40">Automatically backup database daily</p>

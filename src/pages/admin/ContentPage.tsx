@@ -236,7 +236,7 @@ const ContentPage: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowSettingsModal(true)}
-              className="p-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/40 hover:text-white transition"
+              className="p-2 bg-white/[0.08] border border-white/[0.06] rounded-lg text-white/40 hover:text-white transition"
               title="Settings"
             >
               <Settings size={20} />
@@ -244,7 +244,7 @@ const ContentPage: React.FC = () => {
             <button
               onClick={fetchData}
               disabled={refreshing}
-              className="p-2 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white/40 hover:text-white transition disabled:opacity-50"
+              className="p-2 bg-white/[0.08] border border-white/[0.06] rounded-lg text-white/40 hover:text-white transition disabled:opacity-50"
               title="Refresh"
             >
               <RefreshCw size={20} className={refreshing ? 'animate-spin' : ''} />
@@ -287,24 +287,24 @@ const ContentPage: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Scheduled</p>
             <p className="text-2xl font-bold text-blue-400 mt-1">{scheduledPosts.length}</p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Published</p>
             <p className="text-2xl font-bold text-green-400 mt-1">
               {historyPosts.filter(p => p.status === 'completed' || p.status === 'published').length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4 flex items-center gap-3">
             <Instagram size={24} className="text-pink-400" />
             <div>
               <p className="text-white/40 text-sm">Instagram</p>
               <p className="text-white font-bold">{profileUsername ? 'Ready' : 'Not configured'}</p>
             </div>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4 flex items-center gap-3">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4 flex items-center gap-3">
             <Youtube size={24} className="text-red-400" />
             <div>
               <p className="text-white/40 text-sm">YouTube</p>
@@ -349,7 +349,7 @@ const ContentPage: React.FC = () => {
 
         {/* Calendar View */}
         {activeTab === 'calendar' && (
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
               <button onClick={prevMonth} className="p-2 hover:bg-white/[0.06] rounded-lg text-white/40 hover:text-white transition">
                 <ChevronLeft size={20} />
@@ -365,7 +365,7 @@ const ContentPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-7 bg-white/[0.03]">
+            <div className="grid grid-cols-7 bg-white/[0.06]">
               {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
                 <div key={day} className="p-2 text-center text-xs font-semibold text-white/40 uppercase">
                   {day}
@@ -428,11 +428,11 @@ const ContentPage: React.FC = () => {
         {activeTab === 'scheduled' && (
           <div className="space-y-3">
             {loading ? (
-              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
+              <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
                 Loading scheduled posts...
               </div>
             ) : scheduledPosts.length === 0 ? (
-              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+              <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
                 <Clock size={48} className="mx-auto mb-4 text-white/20" />
                 <h3 className="text-xl font-bold text-white mb-2">No scheduled posts</h3>
                 <p className="text-white/40 mb-4">Create your first scheduled post to get started</p>
@@ -451,7 +451,7 @@ const ContentPage: React.FC = () => {
               </div>
             ) : (
               scheduledPosts.map(post => (
-                <div key={post.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+                <div key={post.id} className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       <div className="w-10 h-10 rounded-lg bg-white/[0.06] flex items-center justify-center flex-shrink-0">
@@ -497,18 +497,18 @@ const ContentPage: React.FC = () => {
         {activeTab === 'history' && (
           <div className="space-y-3">
             {loading ? (
-              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
+              <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
                 Loading history...
               </div>
             ) : historyPosts.length === 0 ? (
-              <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+              <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
                 <CheckCircle size={48} className="mx-auto mb-4 text-white/20" />
                 <h3 className="text-xl font-bold text-white mb-2">No posts yet</h3>
                 <p className="text-white/40">Your published posts will appear here</p>
               </div>
             ) : (
               historyPosts.map(post => (
-                <div key={post.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+                <div key={post.id} className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       <div className="min-w-0 flex-1">
@@ -594,9 +594,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ currentUsername, onClose,
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-white/[0.04] rounded-xl max-w-md w-full">
-        <div className="p-6 border-b border-white/[0.06] flex items-center justify-between">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+      <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-md w-full">
+        <div className="p-6 border-b border-white/[0.08] flex items-center justify-between">
           <h2 className="text-2xl font-bold text-white">Settings</h2>
           <button onClick={onClose} className="text-white/40 hover:text-white transition">
             <X size={24} />
@@ -812,9 +812,9 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ profileUsername, onCl
     : availablePlatforms;
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white/[0.04] rounded-xl max-w-2xl w-full my-8">
-        <div className="p-6 border-b border-white/[0.06] flex items-center justify-between">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-2xl w-full my-8">
+        <div className="p-6 border-b border-white/[0.08] flex items-center justify-between">
           <h2 className="text-2xl font-bold text-white">
             {isScheduled ? 'Schedule Post' : 'Create Post'}
           </h2>

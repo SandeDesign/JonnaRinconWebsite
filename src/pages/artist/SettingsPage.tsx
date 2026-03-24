@@ -90,7 +90,7 @@ const ArtistSettings: React.FC = () => {
         </div>
 
         {/* Settings Form */}
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
           <form onSubmit={handleSave} className="space-y-6">
             {/* Current User Info */}
             <div className="pb-6 border-b border-white/[0.06]">
@@ -170,7 +170,7 @@ const ArtistSettings: React.FC = () => {
         </div>
 
         {/* Password Change Section */}
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
             <Lock size={20} />
             Change Password

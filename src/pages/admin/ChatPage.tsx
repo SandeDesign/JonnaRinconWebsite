@@ -154,23 +154,23 @@ const AdminChat: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total Messages</p>
             <p className="text-2xl font-bold text-white mt-1">{allMessages.length}</p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Customers</p>
             <p className="text-2xl font-bold text-blue-400 mt-1">
               {allMessages.filter((m) => m.senderRole === 'customer').length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Artists</p>
             <p className="text-2xl font-bold text-purple-400 mt-1">
               {allMessages.filter((m) => m.senderRole === 'artist').length}
             </p>
           </div>
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Managers</p>
             <p className="text-2xl font-bold text-cyan-400 mt-1">
               {allMessages.filter((m) => m.senderRole === 'manager').length}
@@ -187,7 +187,7 @@ const AdminChat: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search conversations..."
-              className="w-full pl-12 pr-4 py-3 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-purple-500"
+              className="w-full pl-12 pr-4 py-3 bg-white/[0.08] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-purple-500"
             />
           </div>
 
@@ -196,7 +196,7 @@ const AdminChat: React.FC = () => {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value as any)}
-              className="w-full pl-12 pr-4 py-3 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-purple-500 appearance-none"
+              className="w-full pl-12 pr-4 py-3 bg-white/[0.08] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-purple-500 appearance-none"
             >
               <option value="all">All Roles</option>
               <option value="customer">Customers</option>
@@ -209,7 +209,7 @@ const AdminChat: React.FC = () => {
         {/* Chat Interface */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Conversations Sidebar */}
-          <div className="lg:col-span-1 bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="lg:col-span-1 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
             <div className="p-4 border-b border-white/[0.06]">
               <h2 className="font-semibold text-white">Conversations ({conversations.length})</h2>
             </div>
@@ -273,7 +273,7 @@ const AdminChat: React.FC = () => {
 
           {/* Chat Window */}
           <div
-            className="lg:col-span-2 bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col"
+            className="lg:col-span-2 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col"
             style={{ height: 'calc(100vh - 450px)' }}
           >
             {selectedUserId ? (

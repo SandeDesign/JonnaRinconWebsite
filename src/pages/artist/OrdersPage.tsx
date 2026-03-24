@@ -52,7 +52,7 @@ const ArtistOrders: React.FC = () => {
           <p className="text-white/40 mt-2">View your beat purchases and licenses</p>
         </div>
 
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
           <div className="flex gap-4">
             {(['all', 'completed', 'processing', 'pending'] as const).map((status) => (
               <button
@@ -74,7 +74,7 @@ const ArtistOrders: React.FC = () => {
         </div>
 
         {filteredOrders.length === 0 ? (
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
             <Package size={64} className="mx-auto mb-4 text-white/20" />
             <p className="text-xl text-white mb-2">No purchases found</p>
             <p className="text-white/40 mb-6">
@@ -90,8 +90,8 @@ const ArtistOrders: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden">
-                <div className="bg-white/[0.03] p-4 flex justify-between items-center">
+              <div key={order.id} className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
+                <div className="bg-white/[0.06] p-4 flex justify-between items-center">
                   <div>
                     <div className="font-semibold text-lg text-white mb-1">{order.orderNumber}</div>
                     <div className="text-sm text-white/40">

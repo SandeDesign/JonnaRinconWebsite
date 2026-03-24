@@ -142,7 +142,7 @@ const CustomerDownloads: React.FC = () => {
         {activeTab === 'orders' ? (
           /* My Orders View */
           orders.length === 0 ? (
-            <div className="text-center py-12 bg-white/[0.04] rounded-lg">
+            <div className="text-center py-12 bg-white/[0.08] rounded-lg">
               <div className="text-4xl mb-4">📦</div>
               <p className="text-xl mb-2">No orders yet</p>
               <p className="text-white/40 mb-6">Start shopping for beats</p>
@@ -156,7 +156,7 @@ const CustomerDownloads: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {orders.map((order) => (
-                <div key={order.id} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-6">
+                <div key={order.id} className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-bold text-white">Order #{order.orderNumber}</h3>
@@ -197,7 +197,7 @@ const CustomerDownloads: React.FC = () => {
         ) : (
           /* Downloads Grid */
           downloads.length === 0 ? (
-            <div className="text-center py-12 bg-white/[0.04] rounded-lg">
+            <div className="text-center py-12 bg-white/[0.08] rounded-lg">
               <div className="text-4xl mb-4">⬇️</div>
               <p className="text-xl mb-2">No downloads available</p>
               <p className="text-white/40 mb-6">Purchase beats to access downloads</p>
@@ -211,7 +211,7 @@ const CustomerDownloads: React.FC = () => {
           ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {downloads.map((item, index) => (
-              <div key={index} className="bg-white/[0.04] rounded-lg overflow-hidden hover:bg-white/[0.05] transition">
+              <div key={index} className="bg-white/[0.08] rounded-lg overflow-hidden hover:bg-white/[0.05] transition">
                 {/* Beat Artwork */}
                 <div className="relative">
                   <img
@@ -270,7 +270,7 @@ const CustomerDownloads: React.FC = () => {
 
         {/* Support Section */}
         {activeTab !== 'orders' && downloads.length > 0 && (
-          <div className="mt-12 bg-white/[0.04] rounded-lg p-6 text-center">
+          <div className="mt-12 bg-white/[0.08] rounded-lg p-6 text-center">
             <h3 className="font-bold mb-2">Need Help?</h3>
             <p className="text-white/40 mb-4">
               Having trouble downloading? Contact support for assistance.

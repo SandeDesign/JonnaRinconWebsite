@@ -80,12 +80,12 @@ const ManagerChat: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search messages..."
-            className="w-full pl-12 pr-4 py-3 bg-white/[0.04] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-blue-500"
+            className="w-full pl-12 pr-4 py-3 bg-white/[0.08] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-blue-500"
           />
         </div>
 
         {/* Chat Container */}
-        <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 400px)' }}>
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 400px)' }}>
           {/* Messages List */}
           <div className="flex-1 p-6 overflow-y-auto space-y-4">
             {filteredMessages.length === 0 ? (

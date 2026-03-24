@@ -99,7 +99,7 @@ const ArtistFreeDownloads: React.FC = () => {
             className={`px-4 py-2 rounded-lg font-medium transition flex-shrink-0 ${
               activeTab === 'all'
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.06]'
+                : 'bg-white/[0.08] text-white/40 hover:bg-white/[0.06]'
             }`}
           >
             All Downloads
@@ -109,7 +109,7 @@ const ArtistFreeDownloads: React.FC = () => {
             className={`px-4 py-2 rounded-lg font-medium transition flex-shrink-0 flex items-center gap-2 ${
               activeTab === 'remix'
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.06]'
+                : 'bg-white/[0.08] text-white/40 hover:bg-white/[0.06]'
             }`}
           >
             <Music size={16} />
@@ -120,7 +120,7 @@ const ArtistFreeDownloads: React.FC = () => {
             className={`px-4 py-2 rounded-lg font-medium transition flex-shrink-0 flex items-center gap-2 ${
               activeTab === 'beat'
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.06]'
+                : 'bg-white/[0.08] text-white/40 hover:bg-white/[0.06]'
             }`}
           >
             <Disc size={16} />
@@ -131,7 +131,7 @@ const ArtistFreeDownloads: React.FC = () => {
             className={`px-4 py-2 rounded-lg font-medium transition flex-shrink-0 flex items-center gap-2 ${
               activeTab === 'wallpaper'
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.06]'
+                : 'bg-white/[0.08] text-white/40 hover:bg-white/[0.06]'
             }`}
           >
             <ImageIcon size={16} />
@@ -141,7 +141,7 @@ const ArtistFreeDownloads: React.FC = () => {
 
         {/* Downloads Grid */}
         {filteredDownloads.length === 0 ? (
-          <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
             <Download size={64} className="mx-auto mb-4 text-white/20" />
             <h2 className="text-2xl font-bold text-white mb-2">No downloads available</h2>
             <p className="text-white/40">Check back soon for new free content</p>
@@ -151,7 +151,7 @@ const ArtistFreeDownloads: React.FC = () => {
             {filteredDownloads.map((item) => (
               <div
                 key={item.id}
-                className="bg-white/[0.04] border border-white/[0.06] rounded-xl overflow-hidden hover:border-purple-500 transition-all"
+                className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden hover:border-purple-500 transition-all"
               >
                 {/* Image */}
                 <div className="relative">
