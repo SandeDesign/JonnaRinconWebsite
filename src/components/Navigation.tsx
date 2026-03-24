@@ -327,15 +327,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
               {/* Panel content */}
               <div className="relative z-10 h-full flex flex-col px-8 md:px-12">
 
-                {/* Top bar — X left, Logo right */}
+                {/* Top bar — Logo left, X right */}
                 <div className="flex items-center justify-between py-5 md:py-6 flex-shrink-0">
-                  <button
-                    onClick={closeMenu}
-                    className="p-2 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 cursor-pointer group"
-                  >
-                    <X className="w-5 h-5 text-white/60 group-hover:text-white group-hover:rotate-90 transition-all duration-300" />
-                  </button>
-
                   <button
                     onClick={() => { closeMenu(); navigate('/'); }}
                     className="block flex-shrink-0 cursor-pointer"
@@ -345,6 +338,13 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       alt="Jonna Rincon"
                       className="h-[80px] md:h-[110px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
                     />
+                  </button>
+
+                  <button
+                    onClick={closeMenu}
+                    className="p-2 rounded-full border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all duration-300 cursor-pointer group"
+                  >
+                    <X className="w-5 h-5 text-white/60 group-hover:text-white group-hover:rotate-90 transition-all duration-300" />
                   </button>
                 </div>
 
@@ -401,19 +401,24 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
                   {/* Bottom row: Cart + Sign Out side by side */}
                   <div className="flex items-center gap-5 pt-2">
-                    {onCartClick && (
-                      <button
-                        onClick={handleCartClick}
-                        className="relative transition-all hover:scale-110 duration-300 cursor-pointer"
-                      >
-                        <ShoppingBag className="w-5 h-5 text-white/30 hover:text-white transition-colors" strokeWidth={1.5} />
-                        {cartItemCount > 0 && (
-                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-600 rounded-full flex items-center justify-center text-[8px] font-bold text-white">
-                            {cartItemCount}
-                          </span>
-                        )}
-                      </button>
-                    )}
+                    <button
+                      onClick={() => {
+                        if (onCartClick) {
+                          handleCartClick();
+                        } else {
+                          closeMenu();
+                          navigate('/shop/beats');
+                        }
+                      }}
+                      className="relative transition-all hover:scale-110 duration-300 cursor-pointer"
+                    >
+                      <ShoppingBag className="w-5 h-5 text-white/30 hover:text-white transition-colors" strokeWidth={1.5} />
+                      {cartItemCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-600 rounded-full flex items-center justify-center text-[8px] font-bold text-white">
+                          {cartItemCount}
+                        </span>
+                      )}
+                    </button>
 
                     {user && (
                       <button
