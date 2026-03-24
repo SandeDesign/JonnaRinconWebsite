@@ -10,7 +10,7 @@ const tabs = [
   { id: 'djsets', label: 'DJ Sets', icon: Radio },
   { id: 'remixes', label: 'Remixes', icon: Disc3 },
   { id: 'productions', label: 'Productions', icon: Headphones },
-  { id: 'playlists', label: 'Playlists', icon: Music },
+  { id: 'spotify', label: 'Spotify', icon: Music },
   { id: 'support', label: 'Support', icon: Award },
 ];
 
@@ -30,17 +30,90 @@ const compilations = [
   { id: 'vlogs', name: 'Vlogs', url: 'https://youtube.com/playlist?list=PLgWPe6V88vwAoxr8xVTv85989fwEe5a10', cover: 'Vlog Foto.png', type: 'Video Series' },
 ];
 
+// Track data structure for future uploads
+interface Track {
+  id: string;
+  title: string;
+  type: 'Album' | 'EP' | 'Single' | 'Exclusive';
+  year: number;
+  collab: 'Solo' | 'Collab';
+  collabArtists?: string[];
+  genre: string;
+  bpm?: number;
+  duration: string;
+  artists: string[];
+}
+
+const demoTracks: Track[] = [
+  // Albums
+  { id: '1', title: 'Sunrise Sessions Vol.1', type: 'Album', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '3:45', artists: ['Jonna Rincon'] },
+  { id: '2', title: 'Urban Beats Collection', type: 'Album', year: 2023, collab: 'Solo', genre: 'Urban', duration: '4:12', artists: ['Jonna Rincon'] },
+  { id: '3', title: 'Lo-Fi Dreams', type: 'Album', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 90, duration: '3:28', artists: ['Jonna Rincon'] },
+  { id: '4', title: 'Rap Essentials', type: 'Album', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:35', artists: ['Jonna Rincon', 'Qlas & Blacka'] },
+  { id: '5', title: 'Electronic Horizons', type: 'Album', year: 2021, collab: 'Solo', genre: 'EDM', bpm: 140, duration: '3:56', artists: ['Jonna Rincon'] },
+
+  // EPs
+  { id: '6', title: 'Urban Nights EP', type: 'EP', year: 2023, collab: 'Solo', genre: 'Urban', duration: '2:54', artists: ['Jonna Rincon'] },
+  { id: '7', title: 'EDM Foundation EP', type: 'EP', year: 2023, collab: 'Collab', genre: 'EDM', bpm: 130, duration: '3:22', artists: ['Jonna Rincon', 'Jared'] },
+  { id: '8', title: 'Lo-Fi Sessions', type: 'EP', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 85, duration: '3:11', artists: ['Jonna Rincon'] },
+  { id: '9', title: 'Rap Cipher Vol.1', type: 'EP', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:03', artists: ['Jonna Rincon', 'MC MC'] },
+  { id: '10', title: 'Urban Groove Pack', type: 'EP', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:35', artists: ['Jonna Rincon'] },
+  { id: '11', title: 'Electronic Waves EP', type: 'EP', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 125, duration: '3:48', artists: ['Jonna Rincon'] },
+  { id: '12', title: 'Lo-Fi Vibes', type: 'EP', year: 2021, collab: 'Solo', genre: 'Lo-Fi', bpm: 92, duration: '3:19', artists: ['Jonna Rincon'] },
+
+  // Singles
+  { id: '13', title: 'Electric Dawn', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '3:42', artists: ['Jonna Rincon'] },
+  { id: '14', title: 'City Lights', type: 'Single', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:28', artists: ['Jonna Rincon'] },
+  { id: '15', title: 'Chill Moments', type: 'Single', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 88, duration: '2:56', artists: ['Jonna Rincon'] },
+  { id: '16', title: 'Rhythm & Flow', type: 'Single', year: 2023, collab: 'Collab', genre: 'Rap', duration: '4:18', artists: ['Jonna Rincon', 'Servinio'] },
+  { id: '17', title: 'Neon Pulse', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '3:55', artists: ['Jonna Rincon'] },
+  { id: '18', title: 'Street Energy', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:34', artists: ['Jonna Rincon'] },
+  { id: '19', title: 'Peaceful Rain', type: 'Single', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 80, duration: '3:12', artists: ['Jonna Rincon'] },
+  { id: '20', title: 'Beat Fusion', type: 'Single', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:25', artists: ['Jonna Rincon', 'Blockparty'] },
+  { id: '21', title: 'Synth Wave', type: 'Single', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 138, duration: '3:48', artists: ['Jonna Rincon'] },
+  { id: '22', title: 'Urban Flow', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:41', artists: ['Jonna Rincon'] },
+  { id: '23', title: 'Ambient Path', type: 'Single', year: 2021, collab: 'Solo', genre: 'Lo-Fi', bpm: 75, duration: '3:05', artists: ['Jonna Rincon'] },
+  { id: '24', title: 'HipHop Vibes', type: 'Single', year: 2021, collab: 'Collab', genre: 'Rap', duration: '4:31', artists: ['Jonna Rincon', 'Johnny Sellah'] },
+
+  // Exclusives
+  { id: '25', title: 'Secret Sessions Vol.1', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 132, duration: '3:39', artists: ['Jonna Rincon'] },
+  { id: '26', title: 'Underground Beats', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:24', artists: ['Jonna Rincon'] },
+  { id: '27', title: 'Unreleased Lo-Fi', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 86, duration: '2:48', artists: ['Jonna Rincon'] },
+  { id: '28', title: 'Collab Special', type: 'Exclusive', year: 2023, collab: 'Collab', genre: 'Rap', duration: '4:14', artists: ['Jonna Rincon', 'Makkie'] },
+  { id: '29', title: 'Private Sessions', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 130, duration: '3:52', artists: ['Jonna Rincon'] },
+  { id: '30', title: 'Hidden Gems', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:37', artists: ['Jonna Rincon'] },
+  { id: '31', title: 'Vault Sessions', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 94, duration: '3:14', artists: ['Jonna Rincon'] },
+  { id: '32', title: 'Premium Collab', type: 'Exclusive', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:21', artists: ['Jonna Rincon', 'Servinio'] },
+  { id: '33', title: 'Secret Track', type: 'Exclusive', year: 2021, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '3:46', artists: ['Jonna Rincon'] },
+  { id: '34', title: 'Members Only', type: 'Exclusive', year: 2021, collab: 'Solo', genre: 'Urban', duration: '3:31', artists: ['Jonna Rincon'] },
+];
+
 const supportMentions = [
   { name: 'MTV', description: 'Featured multiple times on MTV platforms', type: 'Media' },
   { name: 'Qlas & Blacka', description: 'Support from one of the biggest Dutch rap duos', type: 'Artist' },
-  { name: 'Sidney Samson', description: 'Recognized by the world-renowned Dutch DJ & producer', type: 'Artist' },
+  { name: 'Sidney Schmeltz', description: 'Recognized by the renowned DJ & producer', type: 'Artist' },
   { name: 'Servinio', description: 'Support from the Dutch rap & R&B artist', type: 'Artist' },
-  { name: 'Xony', description: 'Greengang Nederland — co-sign from the collective', type: 'Artist' },
-  { name: 'Scarface', description: 'Greengang Nederland — recognized by the crew', type: 'Artist' },
+  { name: 'Xony', description: 'Co-sign from the collective and producer', type: 'Artist' },
+  { name: 'Scarface', description: 'Recognized by the crew', type: 'Artist' },
   { name: 'Jared', description: 'Known for his viral house hit — track support', type: 'Artist' },
   { name: 'Blockparty', description: 'Support from the Dutch collective', type: 'Artist' },
   { name: 'Johnny Sellah', description: 'Recognized by the Dutch rap heavyweight', type: 'Artist' },
   { name: 'Makkie', description: 'Support from the Amsterdam rap legend', type: 'Artist' },
+  { name: 'Justice Toch', description: 'Support from the producer and engineer', type: 'Artist' },
+  { name: 'Jerrih', description: 'Collaboration and track support', type: 'Artist' },
+  { name: 'Dreyh', description: 'Recognized for production collaboration', type: 'Artist' },
+  { name: 'MC MC', description: 'Support from the Dutch rapper', type: 'Artist' },
+  { name: 'Firme Firma', description: 'Co-sign from the collective', type: 'Artist' },
+  { name: 'Broertje', description: 'Collaboration and support', type: 'Artist' },
+  { name: 'Merdan D', description: 'Recognized by the producer and artist', type: 'Artist' },
+  { name: 'De Formule', description: 'Support from the crew', type: 'Artist' },
+  { name: 'LV (Lucas Verse)', description: 'Collaboration on multiple tracks', type: 'Artist' },
+  { name: 'Pearl Ramos', description: 'Feature and vocal support', type: 'Artist' },
+  { name: 'BUR Savants', description: 'Support from the collective', type: 'Artist' },
+  { name: 'Jacq B.', description: 'Collaboration on production', type: 'Artist' },
+  { name: 'Jong Dios (Boozy)', description: 'Track support and collaboration', type: 'Artist' },
+  { name: 'Carli', description: 'Support and collaboration', type: 'Artist' },
+  { name: 'SCHETS', description: 'Recognized by the artist', type: 'Artist' },
 ];
 
 const stats = [
@@ -65,7 +138,21 @@ const skills = [
 export default function TracksPage() {
   const [activeTab, setActiveTab] = useState('tracks');
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
+  const [selectedType, setSelectedType] = useState<'Album' | 'EP' | 'Single' | 'Exclusive' | 'All'>('All');
+  const [selectedYear, setSelectedYear] = useState<number | 'All'>('All');
+  const [selectedCollab, setSelectedCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
+  const [selectedGenre, setSelectedGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
   const heroTitle = useCyberDecodeInView('Music');
+
+  const filteredTracks = demoTracks.filter(track => {
+    const typeMatch = selectedType === 'All' || track.type === selectedType;
+    const yearMatch = selectedYear === 'All' || track.year === selectedYear;
+    const collabMatch = selectedCollab === 'All' || track.collab === selectedCollab;
+    const genreMatch = selectedGenre === 'All' || track.genre === selectedGenre;
+    return typeMatch && yearMatch && collabMatch && genreMatch;
+  });
+
+  const years = Array.from(new Set(demoTracks.map(t => t.year))).sort((a, b) => b - a);
 
   return (
     <div className="min-h-screen text-white">
@@ -102,7 +189,7 @@ export default function TracksPage() {
       </section>
 
       {/* Tab Navigation */}
-      <section className="sticky top-0 z-20 px-6 md:px-12 py-4 backdrop-blur-xl bg-black/40 border-b border-white/[0.06]">
+      <section className="sticky top-[72px] z-10 px-6 md:px-12 py-4 backdrop-blur-xl bg-black/40 border-b border-white/[0.06]">
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-1 overflow-x-auto no-scrollbar">
             {tabs.map((tab) => {
@@ -129,73 +216,138 @@ export default function TracksPage() {
       {/* === TRACKS TAB === */}
       {activeTab === 'tracks' && (
         <>
-          {/* Spotify Player */}
+          {/* Track Filters */}
           <section className="px-6 md:px-12 py-16 md:py-24">
             <div className="max-w-7xl mx-auto">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight">Listen Now</h2>
-                  <p className="text-red-500/40 text-sm mt-2">Stream on Spotify — 100+ original tracks</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setCurrentPlaylist(Math.max(0, currentPlaylist - 1))}
-                    className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.06] transition-all"
-                    disabled={currentPlaylist === 0}
-                  >
-                    <ChevronLeft size={18} className={currentPlaylist === 0 ? 'text-white/10' : 'text-white/40'} />
-                  </button>
-                  <button
-                    onClick={() => setCurrentPlaylist(Math.min(spotifyPlaylists.length - 1, currentPlaylist + 1))}
-                    className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.06] transition-all"
-                    disabled={currentPlaylist === spotifyPlaylists.length - 1}
-                  >
-                    <ChevronRight size={18} className={currentPlaylist === spotifyPlaylists.length - 1 ? 'text-white/10' : 'text-white/40'} />
-                  </button>
+              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">My Tracks</h2>
+              <p className="text-white/25 text-sm mb-12">Browse and filter through 50+ original tracks, remixes, and exclusives</p>
+
+              {/* Primary Filters */}
+              <div className="mb-8">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Type</h3>
+                <div className="flex flex-wrap gap-2">
+                  {['All', 'Album', 'EP', 'Single', 'Exclusive'].map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setSelectedType(type as typeof selectedType)}
+                      className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                        selectedType === type || (type === 'All' && selectedType === 'All')
+                          ? 'bg-red-600 text-white'
+                          : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-5 md:p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <p className="text-lg font-bold text-white">{spotifyPlaylists[currentPlaylist].name}</p>
-                  <div className="flex gap-2">
-                    {spotifyPlaylists.map((_, i) => (
+              {/* Secondary Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Year Filter */}
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Year</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['All', ...years].map((year) => (
                       <button
-                        key={i}
-                        onClick={() => setCurrentPlaylist(i)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          i === currentPlaylist ? 'bg-red-500 w-6' : 'bg-white/10 w-1.5 hover:bg-white/20'
+                        key={year}
+                        onClick={() => setSelectedYear(year as typeof selectedYear)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                          selectedYear === year
+                            ? 'bg-red-600 text-white'
+                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
                         }`}
-                      />
+                      >
+                        {year}
+                      </button>
                     ))}
                   </div>
                 </div>
 
-                <div className="rounded-2xl overflow-hidden relative">
-                  {spotifyPlaylists.map((playlist, i) => (
-                    <div key={i} className={`transition-opacity duration-500 ${i === currentPlaylist ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}>
-                      <iframe
-                        style={{ borderRadius: '16px' }}
-                        src={playlist.embedUrl}
-                        width="100%"
-                        height="400"
-                        frameBorder="0"
-                        allowFullScreen
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy"
-                      />
-                    </div>
-                  ))}
+                {/* Collab Filter */}
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Type</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['All', 'Solo', 'Collab'].map((collab) => (
+                      <button
+                        key={collab}
+                        onClick={() => setSelectedCollab(collab as typeof selectedCollab)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                          selectedCollab === collab
+                            ? 'bg-red-600 text-white'
+                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                        }`}
+                      >
+                        {collab}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                <a
-                  href="https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 w-full inline-block text-center py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02]"
-                >
-                  Open in Spotify
-                </a>
+                {/* Genre Filter */}
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Genre</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'].map((genre) => (
+                      <button
+                        key={genre}
+                        onClick={() => setSelectedGenre(genre as typeof selectedGenre)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                          selectedGenre === genre
+                            ? 'bg-red-600 text-white'
+                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                        }`}
+                      >
+                        {genre}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Tracks List */}
+          <section className="px-6 md:px-12 py-8 md:py-16">
+            <div className="max-w-7xl mx-auto">
+              <p className="text-white/30 text-sm mb-6">Showing {filteredTracks.length} track(s)</p>
+              <div className="space-y-3">
+                {filteredTracks.map((track) => (
+                  <div
+                    key={track.id}
+                    className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-xl p-4 hover:border-white/[0.12] transition-all duration-300 flex items-center justify-between"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="font-bold text-white">{track.title}</h3>
+                        <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider">
+                          {track.type}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-[10px] text-white/40 uppercase tracking-wider">
+                        <span>{track.year}</span>
+                        <span>•</span>
+                        <span>{track.genre}</span>
+                        <span>•</span>
+                        <span>{track.collab}</span>
+                        {track.bpm && (
+                          <>
+                            <span>•</span>
+                            <span>{track.bpm} BPM</span>
+                          </>
+                        )}
+                        <span>•</span>
+                        <span>{track.duration}</span>
+                      </div>
+                      <p className="text-[10px] text-white/25 mt-1">
+                        {track.artists.join(', ')}
+                      </p>
+                    </div>
+                    <button className="ml-4 w-10 h-10 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center transition-all flex-shrink-0">
+                      <Play size={16} className="text-white ml-0.5" fill="white" />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
@@ -396,8 +548,8 @@ export default function TracksPage() {
         </section>
       )}
 
-      {/* === PLAYLISTS TAB === */}
-      {activeTab === 'playlists' && (
+      {/* === SPOTIFY TAB === */}
+      {activeTab === 'spotify' && (
         <section className="px-6 md:px-12 py-16 md:py-24">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">Spotify Playlists</h2>
@@ -426,10 +578,29 @@ export default function TracksPage() {
               ))}
             </div>
 
-            {/* Full Spotify Player */}
+            {/* Full Spotify Player with Arrows */}
             <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-5 md:p-8">
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center justify-between mb-8">
                 <p className="text-lg font-bold text-white">{spotifyPlaylists[currentPlaylist].name}</p>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setCurrentPlaylist(Math.max(0, currentPlaylist - 1))}
+                    className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.06] transition-all"
+                    disabled={currentPlaylist === 0}
+                  >
+                    <ChevronLeft size={18} className={currentPlaylist === 0 ? 'text-white/10' : 'text-white/40'} />
+                  </button>
+                  <button
+                    onClick={() => setCurrentPlaylist(Math.min(spotifyPlaylists.length - 1, currentPlaylist + 1))}
+                    className="w-10 h-10 rounded-full border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.06] transition-all"
+                    disabled={currentPlaylist === spotifyPlaylists.length - 1}
+                  >
+                    <ChevronRight size={18} className={currentPlaylist === spotifyPlaylists.length - 1 ? 'text-white/10' : 'text-white/40'} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 mb-6">
                 <div className="flex gap-2">
                   {spotifyPlaylists.map((_, i) => (
                     <button
