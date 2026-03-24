@@ -141,7 +141,7 @@ export default function ReleasesPage() {
       {/* Fixed JEIGHTENESIS Background */}
       <div className="fixed inset-0 w-full h-screen -z-10">
         <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
-        <div className="absolute inset-0 bg-black/75" />
+        <div className="absolute inset-0 bg-black/80" />
       </div>
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
@@ -150,7 +150,7 @@ export default function ReleasesPage() {
       <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
           <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-4">Discography</p>
-          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter">
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter neon-glow">
             {heroTitle.display}
           </h1>
           <p className="text-white/30 text-sm md:text-base mt-6 max-w-lg">

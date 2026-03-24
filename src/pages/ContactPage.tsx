@@ -26,7 +26,7 @@ export default function ContactPage() {
       {/* Fixed JEIGHTENESIS Background */}
       <div className="fixed inset-0 w-full h-screen -z-10">
         <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{objectPosition: 'center'}} />
-        <div className="absolute inset-0 bg-black/75" />
+        <div className="absolute inset-0 bg-black/80" />
       </div>
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
@@ -35,7 +35,7 @@ export default function ContactPage() {
       <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
           <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-4">Reach Out</p>
-          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap neon-glow">
             {heroTitle.display}
           </h1>
           <p className="text-white/30 text-sm md:text-base mt-6 max-w-md">
@@ -125,7 +125,7 @@ export default function ContactPage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/15 rounded-2xl focus:outline-none focus:border-white/20 transition-all"
+                  className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/15 rounded-2xl focus:outline-none focus:border-red-500/40 transition-all"
                   placeholder="Your name"
                 />
               </div>
@@ -136,7 +136,7 @@ export default function ContactPage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/15 rounded-2xl focus:outline-none focus:border-white/20 transition-all"
+                  className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/15 rounded-2xl focus:outline-none focus:border-red-500/40 transition-all"
                   placeholder="your@email.com"
                 />
               </div>
@@ -145,7 +145,7 @@ export default function ContactPage() {
                 <select
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.08] text-white rounded-2xl focus:outline-none focus:border-white/20 transition-all appearance-none cursor-pointer"
+                  className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.08] text-white rounded-2xl focus:outline-none focus:border-red-500/40 transition-all appearance-none cursor-pointer"
                 >
                   <option value="commission">Beat Commission</option>
                   <option value="collaboration">Collaboration</option>
@@ -160,7 +160,7 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   rows={5}
-                  className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/15 rounded-2xl focus:outline-none focus:border-white/20 transition-all resize-none"
+                  className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/15 rounded-2xl focus:outline-none focus:border-red-500/40 transition-all resize-none"
                   placeholder="Tell me about your project..."
                 />
               </div>
