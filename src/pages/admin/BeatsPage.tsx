@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import LinkInput from '../../components/admin/LinkInput';
 import { useBeats } from '../../hooks/useBeats';
-import { beatService, fileUploadService } from '../../lib/firebase/services';
+import { beatService } from '../../lib/firebase/services';
 import { Beat } from '../../lib/firebase/types';
 import { Plus, Edit, Trash2, Play, Pause } from 'lucide-react';
 
@@ -252,37 +253,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
     premiumPrice: beat?.licenses?.premium?.price || 49,
     exclusivePrice: beat?.licenses?.exclusive?.price || 199,
   });
-  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  // @ts-ignore - Reserved for future file upload UI
-  const handleFileUpload = async (
-    file: File,
-    type: 'audio' | 'image'
-  ) => {
-    setUploading(true);
-    try {
-      const response = await fileUploadService.uploadFile({
-        file,
-        type,
-        folder: 'beats',
-      });
-
-      if (response.success && response.url) {
-        if (type === 'audio') {
-          setFormData({ ...formData, audioUrl: response.url });
-        } else {
-          setFormData({ ...formData, artworkUrl: response.url });
-        }
-      } else {
-        alert(response.error || 'Upload failed');
-      }
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -473,6 +444,26 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
             />
           </div>
 
+          {/* Audio and Artwork URLs */}
+          <div className="grid grid-cols-2 gap-4">
+            <LinkInput
+              label="Audio URL"
+              name="audioUrl"
+              type="audio"
+              onChange={(url) => setFormData({ ...formData, audioUrl: url })}
+              defaultValue={formData.audioUrl}
+              placeholder="https://nextcloud.example.com/index.php/s/abc123"
+            />
+            <LinkInput
+              label="Artwork URL"
+              name="artworkUrl"
+              type="image"
+              onChange={(url) => setFormData({ ...formData, artworkUrl: url })}
+              defaultValue={formData.artworkUrl}
+              placeholder="https://example.com/image.jpg"
+            />
+          </div>
+
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Basic Price (€)</label>
@@ -527,7 +518,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
             </button>
             <button
               type="submit"
-              disabled={saving || uploading}
+              disabled={saving}
               className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
             >
               {saving ? 'Saving...' : beat ? 'Update Beat' : 'Create Beat'}
