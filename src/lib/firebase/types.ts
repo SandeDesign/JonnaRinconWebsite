@@ -31,6 +31,15 @@ export type AdminPermission =
   | 'beats.read'
   | 'beats.write'
   | 'beats.delete'
+  | 'tracks.read'
+  | 'tracks.write'
+  | 'tracks.delete'
+  | 'remixes.read'
+  | 'remixes.write'
+  | 'remixes.delete'
+  | 'edits.read'
+  | 'edits.write'
+  | 'edits.delete'
   | 'orders.read'
   | 'orders.write'
   | 'orders.delete'
@@ -97,6 +106,170 @@ export interface Beat {
   beatType?: BeatType; // Optional beat classification (free, basic, premium, exclusive)
   featured: boolean;
   trending: boolean;
+
+  // Stats
+  plays: number;
+  downloads: number;
+  likes: number;
+
+  // SEO & Meta
+  description?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  slug: string;
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  publishedAt?: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+}
+
+// ============================================
+// TRACK TYPES
+// ============================================
+
+export interface Track {
+  id: string;
+  title: string;
+  artist: string;
+  album?: string;
+  trackNumber?: number;
+  releaseDate?: Timestamp;
+  bpm: number;
+  key: string;
+  genre: string;
+  subGenre?: string;
+  mood?: string[];
+  tags: string[];
+
+  // Media
+  audioUrl: string;
+  artworkUrl: string;
+  waveformUrl?: string;
+
+  // Licensing
+  licenses: {
+    basic?: LicenseDetails;
+    premium?: LicenseDetails;
+    exclusive?: LicenseDetails;
+  };
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+
+  // Stats
+  plays: number;
+  downloads: number;
+  likes: number;
+
+  // SEO & Meta
+  description?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  slug: string;
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  publishedAt?: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+}
+
+// ============================================
+// REMIX TYPES
+// ============================================
+
+export interface Remix {
+  id: string;
+  title: string;
+  remixArtist: string; // Artist who made the remix
+  originalArtist: string; // Original track artist
+  originalTrackTitle?: string;
+  bpm: number;
+  key: string;
+  genre: string;
+  subGenre?: string;
+  mood?: string[];
+  tags: string[];
+
+  // Media
+  audioUrl: string;
+  artworkUrl: string;
+  waveformUrl?: string;
+
+  // Licensing
+  licenses: {
+    basic?: LicenseDetails;
+    premium?: LicenseDetails;
+    exclusive?: LicenseDetails;
+  };
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+
+  // Stats
+  plays: number;
+  downloads: number;
+  likes: number;
+
+  // SEO & Meta
+  description?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  slug: string;
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  publishedAt?: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+}
+
+// ============================================
+// EDIT TYPES
+// ============================================
+
+export interface Edit {
+  id: string;
+  title: string;
+  artist: string;
+  originalTrackId?: string; // Reference to original track if any
+  originalArtist?: string;
+  editType: 'bootleg' | 'mashup' | 'rework' | 'flip' | 'other';
+  bpm: number;
+  key: string;
+  genre: string;
+  subGenre?: string;
+  mood?: string[];
+  tags: string[];
+
+  // Media
+  audioUrl: string;
+  artworkUrl: string;
+  waveformUrl?: string;
+
+  // Licensing
+  licenses: {
+    basic?: LicenseDetails;
+    premium?: LicenseDetails;
+    exclusive?: LicenseDetails;
+  };
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
 
   // Stats
   plays: number;

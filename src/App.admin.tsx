@@ -7,6 +7,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoginPage from './pages/admin/LoginPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import BeatsPage from './pages/admin/BeatsPage';
+import TracksPage from './pages/admin/TracksPage';
+import RemixesPage from './pages/admin/RemixesPage';
+import EditsPage from './pages/admin/EditsPage';
 import OrdersPage from './pages/admin/OrdersPage';
 import CollaborationsPage from './pages/admin/CollaborationsPage';
 
@@ -32,6 +35,30 @@ const AdminApp: React.FC = () => {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <BeatsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/tracks"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <TracksPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/remixes"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <RemixesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/edits"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <EditsPage />
               </ProtectedRoute>
             }
           />
