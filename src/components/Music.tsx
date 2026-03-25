@@ -68,7 +68,7 @@ export default function Music() {
   return (
     <>
       {/* MUSIC */}
-      <section ref={revealRef as React.RefObject<HTMLElement>} id="music" className={`py-16 md:py-32 px-4 md:min-h-0 min-h-screen flex items-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+      <section ref={revealRef as React.RefObject<HTMLElement>} id="music" className={`py-16 md:py-32 px-4 sm:min-h-0 min-h-auto flex items-center transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-10 md:mb-16">
             <h2 ref={musicTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-4xl md:text-7xl font-black uppercase tracking-wider text-white">
@@ -135,7 +135,7 @@ export default function Music() {
       </section>
 
       {/* COMPILATIONS */}
-      <section id="compilations" className="py-12 md:py-0 px-4 md:min-h-0 min-h-screen flex items-center">
+      <section id="compilations" className="py-12 md:py-0 px-4 sm:min-h-0 min-h-auto flex items-center">
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-8 md:hidden">
             <h2 className="text-3xl font-black uppercase tracking-wider text-white">Playlists</h2>
@@ -171,7 +171,7 @@ export default function Music() {
       </section>
 
       {/* YOUTUBE */}
-      <section id="youtube" className="py-16 md:py-32 px-4 md:min-h-0 min-h-screen flex items-center">
+      <section id="youtube" className="py-16 md:py-32 px-4 sm:min-h-0 min-h-auto flex items-center">
         <div className="max-w-6xl mx-auto w-full scale-[0.70] md:scale-100 origin-center">
           <div className="text-center mb-10 md:mb-16">
             <h2 ref={youtubeTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-4xl md:text-7xl font-black mb-3 uppercase tracking-wider text-white">{youtubeTitle.display}</h2>

@@ -108,7 +108,7 @@ export default function Hero() {
   }, [handleScroll]);
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center -mt-24">
+    <section className="relative w-full min-h-screen flex items-center justify-center">
       {/* Fullscreen Background Image - FIXED */}
       <div className="fixed inset-0 w-full h-screen -z-10">
         <img
