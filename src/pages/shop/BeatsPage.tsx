@@ -5,17 +5,9 @@ import { Beat } from '../../lib/firebase/types';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
+import { toDirectUrl } from '../../lib/utils/urlUtils';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase/config';
-
-/** Convert Nextcloud/ownCloud share URLs to direct download URLs */
-function toDirectUrl(url: string): string {
-  if (!url) return url;
-  if (url.includes('/index.php/s/') && !url.endsWith('/download')) {
-    return url.replace(/\/?$/, '/download');
-  }
-  return url;
-}
 
 const BeatsShop: React.FC = () => {
   const [beats, setBeats] = useState<Beat[]>([]);

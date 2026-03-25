@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import FileUploadInput from '../../components/admin/FileUploadInput';
+import LinkInput from '../../components/admin/LinkInput';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 // Demo remixes
@@ -33,20 +33,20 @@ const RemixesAdminPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingRemix, setEditingRemix] = useState<any | null>(null);
   const [remixes, setRemixes] = useState(demoRemixes);
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [coverArtFile, setCoverArtFile] = useState<File | null>(null);
+  const [audioUrl, setAudioUrl] = useState('');
+  const [coverArtUrl, setCoverArtUrl] = useState('');
 
   const handleCreate = () => {
     setEditingRemix(null);
-    setAudioFile(null);
-    setCoverArtFile(null);
+    setAudioUrl('');
+    setCoverArtUrl('');
     setShowModal(true);
   };
 
   const handleEdit = (remix: any) => {
     setEditingRemix(remix);
-    setAudioFile(null);
-    setCoverArtFile(null);
+    setAudioUrl(remix.audioUrl || '');
+    setCoverArtUrl(remix.coverArtUrl || '');
     setShowModal(true);
   };
 
@@ -56,20 +56,6 @@ const RemixesAdminPage: React.FC = () => {
   };
 
   const handleSave = (remix: any) => {
-    // Create file URLs for audio and cover art
-    let audioUrl = remix.audioUrl || '';
-    let coverArtUrl = remix.coverArtUrl || '';
-
-    // If new audio file selected, create blob URL
-    if (audioFile) {
-      audioUrl = URL.createObjectURL(audioFile);
-    }
-
-    // If new cover art selected, create blob URL
-    if (coverArtFile) {
-      coverArtUrl = URL.createObjectURL(coverArtFile);
-    }
-
     const remixData = {
       ...remix,
       audioUrl,
@@ -82,9 +68,9 @@ const RemixesAdminPage: React.FC = () => {
       setRemixes([...remixes, { ...remixData, id: 'r' + Date.now() }]);
     }
 
-    // Reset file states
-    setAudioFile(null);
-    setCoverArtFile(null);
+    // Reset states
+    setAudioUrl('');
+    setCoverArtUrl('');
     setShowModal(false);
   };
 
@@ -199,8 +185,6 @@ const RemixesAdminPage: React.FC = () => {
                   year: parseInt(formData.get('year') as string),
                   genre: formData.get('genre') as string,
                   duration: formData.get('duration') as string,
-                  audioUrl: editingRemix?.audioUrl || '',
-                  coverArtUrl: editingRemix?.coverArtUrl || '',
                 });
               }}>
                 <input
@@ -251,24 +235,23 @@ const RemixesAdminPage: React.FC = () => {
                   className="w-full bg-white/[0.05] border border-white/[0.1] rounded px-4 py-2 text-white placeholder-white/40 mb-6"
                 />
 
-                {/* File Uploads */}
-                <FileUploadInput
-                  label="Audio File"
-                  name="audioFile"
-                  accept="audio/*"
-                  onChange={setAudioFile}
+                {/* URL Inputs */}
+                <LinkInput
+                  label="Audio URL"
+                  name="audioUrl"
+                  type="audio"
+                  onChange={setAudioUrl}
                   defaultValue={editingRemix?.audioUrl}
-                  maxSize={50 * 1024 * 1024}
+                  placeholder="https://nextcloud.example.com/index.php/s/abc123"
                 />
 
-                <FileUploadInput
-                  label="Cover Art"
-                  name="coverArtFile"
-                  accept="image/*"
-                  onChange={setCoverArtFile}
+                <LinkInput
+                  label="Cover Art URL"
+                  name="coverArtUrl"
+                  type="image"
+                  onChange={setCoverArtUrl}
                   defaultValue={editingRemix?.coverArtUrl}
-                  maxSize={10 * 1024 * 1024}
-                  preview
+                  placeholder="https://nextcloud.example.com/index.php/s/xyz789"
                 />
 
                 <div className="flex gap-2 mt-6">
