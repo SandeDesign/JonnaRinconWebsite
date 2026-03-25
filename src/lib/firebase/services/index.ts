@@ -1,5 +1,8 @@
 export { authService } from './authService';
 export { beatService } from './beatService';
+export { trackService } from './trackService';
+export { remixService } from './remixService';
+export { editService } from './editService';
 export { orderService } from './orderService';
 export { contentService } from './contentService';
 export { collaborationService } from './collaborationService';
