@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { AudioPlayerProvider } from './context/AudioPlayerContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 
 // Public pages
 import HomePage from './App';
@@ -62,8 +64,10 @@ import ManagerChat from './pages/manager/ChatPage';
 const MainApp: React.FC = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <AudioPlayerProvider>
+        <BrowserRouter>
+          <GlobalAudioPlayer />
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -360,7 +364,8 @@ const MainApp: React.FC = () => {
           {/* 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </AudioPlayerProvider>
     </AuthProvider>
   );
 };

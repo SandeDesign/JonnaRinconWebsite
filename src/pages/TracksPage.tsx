@@ -4,6 +4,8 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3, Radio, Award, Mic2, ChevronDown } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
+import { useAudioPlayer, Track as AudioTrack } from '../context/AudioPlayerContext';
+import TrackListItem from '../components/TrackListItem';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -31,186 +33,71 @@ const compilations = [
 ];
 
 // Track data structure for future uploads
-interface Track {
-  id: string;
-  artist: string;        // "Jonna Rincon" or "Jonna Rincon ft. Artist"
-  title: string;         // Album/Release name
-  type: 'Album' | 'EP' | 'Single' | 'Exclusive';
-  year: number;
-  collab: 'Solo' | 'Collab';
-  collabArtists?: string[];
-  genre: string;
-  bpm?: number;
-  duration: string;
-  coverArt?: string;     // Track-specific cover art URL
-  spotifyUrl?: string;   // Spotify URL for cover art fallback
+interface Track extends AudioTrack {
+  createdAt: number;     // Timestamp for sorting
 }
 
-interface Album {
-  id: string;
-  title: string;
-  type: 'album' | 'ep';
-  year: number;
-  coverArt?: string;
-  tracks: Track[];
-  totalDuration: string;
-}
-
+const baseDate = new Date('2023-12-31').getTime();
 const demoTracks: Track[] = [
-  // Albums
-  { id: '1', artist: 'Jonna Rincon', title: 'Sunrise Sessions Vol.1', type: 'Album', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '3:45' },
-  { id: '2', artist: 'Jonna Rincon', title: 'Urban Beats Collection', type: 'Album', year: 2023, collab: 'Solo', genre: 'Urban', duration: '4:12' },
-  { id: '3', artist: 'Jonna Rincon', title: 'Lo-Fi Dreams', type: 'Album', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 90, duration: '3:28' },
-  { id: '4', artist: 'Jonna Rincon ft. Qlas & Blacka', title: 'Rap Essentials', type: 'Album', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:35' },
-  { id: '5', artist: 'Jonna Rincon', title: 'Electronic Horizons', type: 'Album', year: 2021, collab: 'Solo', genre: 'EDM', bpm: 140, duration: '3:56' },
+  // Albums - newest to oldest
+  { id: '1', artist: 'Jonna Rincon', title: 'Sunrise Sessions Vol.1', type: 'Album', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '3:45', createdAt: baseDate },
+  { id: '2', artist: 'Jonna Rincon', title: 'Urban Beats Collection', type: 'Album', year: 2023, collab: 'Solo', genre: 'Urban', duration: '4:12', createdAt: baseDate - 86400000 },
+  { id: '3', artist: 'Jonna Rincon', title: 'Lo-Fi Dreams', type: 'Album', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 90, duration: '3:28', createdAt: baseDate - 172800000 },
+  { id: '4', artist: 'Jonna Rincon ft. Qlas & Blacka', title: 'Rap Essentials', type: 'Album', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:35', createdAt: baseDate - 259200000 },
+  { id: '5', artist: 'Jonna Rincon', title: 'Electronic Horizons', type: 'Album', year: 2021, collab: 'Solo', genre: 'EDM', bpm: 140, duration: '3:56', createdAt: baseDate - 345600000 },
 
   // EPs
-  { id: '6', artist: 'Jonna Rincon', title: 'Urban Nights EP', type: 'EP', year: 2023, collab: 'Solo', genre: 'Urban', duration: '2:54' },
-  { id: '7', artist: 'Jonna Rincon ft. Jared', title: 'EDM Foundation EP', type: 'EP', year: 2023, collab: 'Collab', genre: 'EDM', bpm: 130, duration: '3:22' },
-  { id: '8', artist: 'Jonna Rincon', title: 'Lo-Fi Sessions', type: 'EP', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 85, duration: '3:11' },
-  { id: '9', artist: 'Jonna Rincon ft. MC MC', title: 'Rap Cipher Vol.1', type: 'EP', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:03' },
-  { id: '10', artist: 'Jonna Rincon', title: 'Urban Groove Pack', type: 'EP', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:35' },
-  { id: '11', artist: 'Jonna Rincon', title: 'Electronic Waves EP', type: 'EP', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 125, duration: '3:48' },
-  { id: '12', artist: 'Jonna Rincon', title: 'Lo-Fi Vibes', type: 'EP', year: 2021, collab: 'Solo', genre: 'Lo-Fi', bpm: 92, duration: '3:19' },
+  { id: '6', artist: 'Jonna Rincon', title: 'Urban Nights EP', type: 'EP', year: 2023, collab: 'Solo', genre: 'Urban', duration: '2:54', createdAt: baseDate - 432000000 },
+  { id: '7', artist: 'Jonna Rincon ft. Jared', title: 'EDM Foundation EP', type: 'EP', year: 2023, collab: 'Collab', genre: 'EDM', bpm: 130, duration: '3:22', createdAt: baseDate - 518400000 },
+  { id: '8', artist: 'Jonna Rincon', title: 'Lo-Fi Sessions', type: 'EP', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 85, duration: '3:11', createdAt: baseDate - 604800000 },
+  { id: '9', artist: 'Jonna Rincon ft. MC MC', title: 'Rap Cipher Vol.1', type: 'EP', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:03', createdAt: baseDate - 691200000 },
+  { id: '10', artist: 'Jonna Rincon', title: 'Urban Groove Pack', type: 'EP', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:35', createdAt: baseDate - 777600000 },
+  { id: '11', artist: 'Jonna Rincon', title: 'Electronic Waves EP', type: 'EP', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 125, duration: '3:48', createdAt: baseDate - 864000000 },
+  { id: '12', artist: 'Jonna Rincon', title: 'Lo-Fi Vibes', type: 'EP', year: 2021, collab: 'Solo', genre: 'Lo-Fi', bpm: 92, duration: '3:19', createdAt: baseDate - 950400000 },
 
   // Singles
-  { id: '13', artist: 'Jonna Rincon', title: 'Electric Dawn', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '3:42' },
-  { id: '14', artist: 'Jonna Rincon', title: 'City Lights', type: 'Single', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:28' },
-  { id: '15', artist: 'Jonna Rincon', title: 'Chill Moments', type: 'Single', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 88, duration: '2:56' },
-  { id: '16', artist: 'Jonna Rincon ft. Servinio', title: 'Rhythm & Flow', type: 'Single', year: 2023, collab: 'Collab', genre: 'Rap', duration: '4:18' },
-  { id: '17', artist: 'Jonna Rincon', title: 'Neon Pulse', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '3:55' },
-  { id: '18', artist: 'Jonna Rincon', title: 'Street Energy', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:34' },
-  { id: '19', artist: 'Jonna Rincon', title: 'Peaceful Rain', type: 'Single', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 80, duration: '3:12' },
-  { id: '20', artist: 'Jonna Rincon ft. Blockparty', title: 'Beat Fusion', type: 'Single', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:25' },
-  { id: '21', artist: 'Jonna Rincon', title: 'Synth Wave', type: 'Single', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 138, duration: '3:48' },
-  { id: '22', artist: 'Jonna Rincon', title: 'Urban Flow', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:41' },
-  { id: '23', artist: 'Jonna Rincon', title: 'Ambient Path', type: 'Single', year: 2021, collab: 'Solo', genre: 'Lo-Fi', bpm: 75, duration: '3:05' },
-  { id: '24', artist: 'Jonna Rincon ft. Johnny Sellah', title: 'HipHop Vibes', type: 'Single', year: 2021, collab: 'Collab', genre: 'Rap', duration: '4:31' },
+  { id: '13', artist: 'Jonna Rincon', title: 'Electric Dawn', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '3:42', createdAt: baseDate - 1036800000 },
+  { id: '14', artist: 'Jonna Rincon', title: 'City Lights', type: 'Single', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:28', createdAt: baseDate - 1123200000 },
+  { id: '15', artist: 'Jonna Rincon', title: 'Chill Moments', type: 'Single', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 88, duration: '2:56', createdAt: baseDate - 1209600000 },
+  { id: '16', artist: 'Jonna Rincon ft. Servinio', title: 'Rhythm & Flow', type: 'Single', year: 2023, collab: 'Collab', genre: 'Rap', duration: '4:18', createdAt: baseDate - 1296000000 },
+  { id: '17', artist: 'Jonna Rincon', title: 'Neon Pulse', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '3:55', createdAt: baseDate - 1382400000 },
+  { id: '18', artist: 'Jonna Rincon', title: 'Street Energy', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:34', createdAt: baseDate - 1468800000 },
+  { id: '19', artist: 'Jonna Rincon', title: 'Peaceful Rain', type: 'Single', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 80, duration: '3:12', createdAt: baseDate - 1555200000 },
+  { id: '20', artist: 'Jonna Rincon ft. Blockparty', title: 'Beat Fusion', type: 'Single', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:25', createdAt: baseDate - 1641600000 },
+  { id: '21', artist: 'Jonna Rincon', title: 'Synth Wave', type: 'Single', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 138, duration: '3:48', createdAt: baseDate - 1728000000 },
+  { id: '22', artist: 'Jonna Rincon', title: 'Urban Flow', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:41', createdAt: baseDate - 1814400000 },
+  { id: '23', artist: 'Jonna Rincon', title: 'Ambient Path', type: 'Single', year: 2021, collab: 'Solo', genre: 'Lo-Fi', bpm: 75, duration: '3:05', createdAt: baseDate - 1900800000 },
+  { id: '24', artist: 'Jonna Rincon ft. Johnny Sellah', title: 'HipHop Vibes', type: 'Single', year: 2021, collab: 'Collab', genre: 'Rap', duration: '4:31', createdAt: baseDate - 1987200000 },
 
   // Exclusives
-  { id: '25', artist: 'Jonna Rincon', title: 'Secret Sessions Vol.1', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 132, duration: '3:39' },
-  { id: '26', artist: 'Jonna Rincon', title: 'Underground Beats', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:24' },
-  { id: '27', artist: 'Jonna Rincon', title: 'Unreleased Lo-Fi', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 86, duration: '2:48' },
-  { id: '28', artist: 'Jonna Rincon ft. Makkie', title: 'Collab Special', type: 'Exclusive', year: 2023, collab: 'Collab', genre: 'Rap', duration: '4:14' },
-  { id: '29', artist: 'Jonna Rincon', title: 'Private Sessions', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 130, duration: '3:52' },
-  { id: '30', artist: 'Jonna Rincon', title: 'Hidden Gems', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:37' },
-  { id: '31', artist: 'Jonna Rincon', title: 'Vault Sessions', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 94, duration: '3:14' },
-  { id: '32', artist: 'Jonna Rincon ft. Servinio', title: 'Premium Collab', type: 'Exclusive', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:21' },
-  { id: '33', artist: 'Jonna Rincon', title: 'Secret Track', type: 'Exclusive', year: 2021, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '3:46' },
-  { id: '34', artist: 'Jonna Rincon', title: 'Members Only', type: 'Exclusive', year: 2021, collab: 'Solo', genre: 'Urban', duration: '3:31' },
+  { id: '25', artist: 'Jonna Rincon', title: 'Secret Sessions Vol.1', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 132, duration: '3:39', createdAt: baseDate - 2073600000 },
+  { id: '26', artist: 'Jonna Rincon', title: 'Underground Beats', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:24', createdAt: baseDate - 2160000000 },
+  { id: '27', artist: 'Jonna Rincon', title: 'Unreleased Lo-Fi', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 86, duration: '2:48', createdAt: baseDate - 2246400000 },
+  { id: '28', artist: 'Jonna Rincon ft. Makkie', title: 'Collab Special', type: 'Exclusive', year: 2023, collab: 'Collab', genre: 'Rap', duration: '4:14', createdAt: baseDate - 2332800000 },
+  { id: '29', artist: 'Jonna Rincon', title: 'Private Sessions', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 130, duration: '3:52', createdAt: baseDate - 2419200000 },
+  { id: '30', artist: 'Jonna Rincon', title: 'Hidden Gems', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:37', createdAt: baseDate - 2505600000 },
+  { id: '31', artist: 'Jonna Rincon', title: 'Vault Sessions', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 94, duration: '3:14', createdAt: baseDate - 2592000000 },
+  { id: '32', artist: 'Jonna Rincon ft. Servinio', title: 'Premium Collab', type: 'Exclusive', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:21', createdAt: baseDate - 2678400000 },
+  { id: '33', artist: 'Jonna Rincon', title: 'Secret Track', type: 'Exclusive', year: 2021, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '3:46', createdAt: baseDate - 2764800000 },
+  { id: '34', artist: 'Jonna Rincon', title: 'Members Only', type: 'Exclusive', year: 2021, collab: 'Solo', genre: 'Urban', duration: '3:31', createdAt: baseDate - 2851200000 },
 ];
 
-// Helper function to parse duration from "MM:SS" format to total seconds
-const parseDuration = (durationStr: string): number => {
-  const [minutes, seconds] = durationStr.split(':').map(Number);
-  return (minutes || 0) * 60 + (seconds || 0);
-};
 
-// Helper function to format duration from seconds to "MM:SS"
-const formatDuration = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-};
+// Remix Track Interface
+interface RemixTrack extends Track {
+  remixType: 'Remix' | 'Edit' | 'Bootleg';
+}
 
-// Group tracks into albums
-const demoAlbums: Album[] = [
-  {
-    id: 'album-1',
-    title: 'Sunrise Sessions Vol.1',
-    type: 'album',
-    year: 2023,
-    tracks: [demoTracks[0]],
-    totalDuration: '3:45',
-  },
-  {
-    id: 'album-2',
-    title: 'Urban Beats Collection',
-    type: 'album',
-    year: 2023,
-    tracks: [demoTracks[1]],
-    totalDuration: '4:12',
-  },
-  {
-    id: 'album-3',
-    title: 'Lo-Fi Dreams',
-    type: 'album',
-    year: 2022,
-    tracks: [demoTracks[2]],
-    totalDuration: '3:28',
-  },
-  {
-    id: 'album-4',
-    title: 'Rap Essentials',
-    type: 'album',
-    year: 2022,
-    tracks: [demoTracks[3]],
-    totalDuration: '4:35',
-  },
-  {
-    id: 'album-5',
-    title: 'Electronic Horizons',
-    type: 'album',
-    year: 2021,
-    tracks: [demoTracks[4]],
-    totalDuration: '3:56',
-  },
-  {
-    id: 'ep-1',
-    title: 'Urban Nights EP',
-    type: 'ep',
-    year: 2023,
-    tracks: [demoTracks[5]],
-    totalDuration: '2:54',
-  },
-  {
-    id: 'ep-2',
-    title: 'EDM Foundation EP',
-    type: 'ep',
-    year: 2023,
-    tracks: [demoTracks[6]],
-    totalDuration: '3:22',
-  },
-  {
-    id: 'ep-3',
-    title: 'Lo-Fi Sessions',
-    type: 'ep',
-    year: 2023,
-    tracks: [demoTracks[7]],
-    totalDuration: '3:11',
-  },
-  {
-    id: 'ep-4',
-    title: 'Rap Cipher Vol.1',
-    type: 'ep',
-    year: 2022,
-    tracks: [demoTracks[8]],
-    totalDuration: '4:03',
-  },
-  {
-    id: 'ep-5',
-    title: 'Urban Groove Pack',
-    type: 'ep',
-    year: 2022,
-    tracks: [demoTracks[9]],
-    totalDuration: '3:35',
-  },
-  {
-    id: 'ep-6',
-    title: 'Electronic Waves EP',
-    type: 'ep',
-    year: 2022,
-    tracks: [demoTracks[10]],
-    totalDuration: '3:48',
-  },
-  {
-    id: 'ep-7',
-    title: 'Lo-Fi Vibes',
-    type: 'ep',
-    year: 2021,
-    tracks: [demoTracks[11]],
-    totalDuration: '3:19',
-  },
+// Demo remix tracks
+const remixTracks: RemixTrack[] = [
+  { id: 'r1', artist: 'Jonna Rincon', title: 'Original Track', remixType: 'Remix', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '4:12', createdAt: baseDate },
+  { id: 'r2', artist: 'Jonna Rincon', title: 'Popular Hit', remixType: 'Edit', type: 'Single', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:45', createdAt: baseDate - 86400000 },
+  { id: 'r3', artist: 'Jonna Rincon', title: 'Classic Track', remixType: 'Bootleg', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '5:20', createdAt: baseDate - 172800000 },
+  { id: 'r4', artist: 'Jonna Rincon', title: 'Summer Vibes', remixType: 'Remix', type: 'Single', year: 2023, collab: 'Solo', genre: 'Lo-Fi', duration: '3:28', createdAt: baseDate - 259200000 },
+  { id: 'r5', artist: 'Jonna Rincon', title: 'Night Drive', remixType: 'Edit', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '4:05', createdAt: baseDate - 345600000 },
+  { id: 'r6', artist: 'Jonna Rincon', title: 'Electric Feel', remixType: 'Bootleg', type: 'Single', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 130, duration: '3:55', createdAt: baseDate - 432000000 },
+  { id: 'r7', artist: 'Jonna Rincon', title: 'Beats Drop', remixType: 'Remix', type: 'Single', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:30', createdAt: baseDate - 518400000 },
+  { id: 'r8', artist: 'Jonna Rincon', title: 'Flow State', remixType: 'Edit', type: 'Single', year: 2022, collab: 'Solo', genre: 'Lo-Fi', duration: '3:12', createdAt: baseDate - 604800000 },
 ];
 
 const supportMentions = [
@@ -261,23 +148,32 @@ const skills = [
 ];
 
 export default function TracksPage() {
+  const { play } = useAudioPlayer();
   const [activeTab, setActiveTab] = useState('tracks');
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
   const [selectedType, setSelectedType] = useState<'Album' | 'EP' | 'Single' | 'Exclusive' | 'All'>('All');
   const [selectedYear, setSelectedYear] = useState<number | 'All'>('All');
   const [selectedCollab, setSelectedCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
   const [selectedGenre, setSelectedGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
-  const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
+  const [selectedRemixType, setSelectedRemixType] = useState<'Remix' | 'Edit' | 'Bootleg' | 'All'>('All');
+  const [selectedRemixYear, setSelectedRemixYear] = useState<number | 'All'>('All');
+  const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
+  const [selectedRemixGenre, setSelectedRemixGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
   const heroTitle = useCyberDecodeInView('Music');
 
-  const toggleAlbumExpanded = (albumId: string) => {
-    const newSet = new Set(expandedAlbums);
-    if (newSet.has(albumId)) {
-      newSet.delete(albumId);
-    } else {
-      newSet.add(albumId);
-    }
-    setExpandedAlbums(newSet);
+  const handlePlayTrack = (track: Track) => {
+    // Filter tracks matching current filters and create queue
+    const queue = demoTracks
+      .filter((t) => {
+        const typeMatch = selectedType === 'All' || t.type === selectedType;
+        const yearMatch = selectedYear === 'All' || t.year === selectedYear;
+        const collabMatch = selectedCollab === 'All' || t.collab === selectedCollab;
+        const genreMatch = selectedGenre === 'All' || t.genre === selectedGenre;
+        return typeMatch && yearMatch && collabMatch && genreMatch;
+      })
+      .sort((a, b) => b.createdAt - a.createdAt);
+
+    play(track, queue);
   };
 
   const filteredTracks = demoTracks.filter(track => {
@@ -445,155 +341,24 @@ export default function TracksPage() {
             </div>
           </section>
 
-          {/* Albums & Tracks List */}
+          {/* Mixed Track List */}
           <section className="px-6 md:px-12 py-8 md:py-16">
             <div className="max-w-7xl mx-auto">
               <p className="text-white/30 text-sm mb-6">
-                Showing {demoAlbums.filter(a => a.type === 'album' || a.type === 'ep').length} releases
+                Showing {filteredTracks.length} track{filteredTracks.length !== 1 ? 's' : ''} (newest first)
               </p>
-              <div className="space-y-4">
-                {demoAlbums.map((album) => (
-                  <div
-                    key={album.id}
-                    className="rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/[0.06] overflow-hidden"
-                  >
-                    {/* Album Header */}
-                    <button
-                      onClick={() => toggleAlbumExpanded(album.id)}
-                      className="w-full px-6 py-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all duration-300 group"
-                    >
-                      {/* Cover Art Placeholder */}
-                      <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center">
-                        <Music size={28} className="text-white/40" />
-                      </div>
-
-                      {/* Album Info */}
-                      <div className="flex-1 text-left">
-                        <h3 className="font-bold text-white text-sm md:text-base">{album.title}</h3>
-                        <div className="flex flex-wrap gap-2 text-[10px] text-white/40 uppercase tracking-wider mt-1">
-                          <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-red-400">
-                            {album.type === 'album' ? 'Album' : 'EP'}
-                          </span>
-                          <span>{album.year}</span>
-                          <span>•</span>
-                          <span>{album.tracks.length} track{album.tracks.length !== 1 ? 's' : ''}</span>
-                          <span>•</span>
-                          <span>{album.totalDuration}</span>
-                        </div>
-                      </div>
-
-                      {/* Expand Icon */}
-                      <ChevronDown
-                        size={20}
-                        className={`text-white/40 group-hover:text-white/60 transition-all duration-300 flex-shrink-0 ${
-                          expandedAlbums.has(album.id) ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </button>
-
-                    {/* Expanded Tracks */}
-                    {expandedAlbums.has(album.id) && (
-                      <div className="border-t border-white/[0.06] px-6 py-4 space-y-3 bg-white/[0.02]">
-                        {album.tracks.map((track) => (
-                          <div
-                            key={track.id}
-                            className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/[0.06] transition-all duration-300 group"
-                          >
-                            {/* Track Cover Art */}
-                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.06] flex-shrink-0 flex items-center justify-center">
-                              {track.coverArt ? (
-                                <img
-                                  src={track.coverArt}
-                                  alt={track.title}
-                                  className="w-full h-full object-cover rounded-lg"
-                                />
-                              ) : (
-                                <Music size={20} className="text-white/30" />
-                              )}
-                            </div>
-
-                            {/* Track Info */}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-bold text-white text-sm">{track.artist}</span>
-                                <span className="text-white/40 text-sm">{track.title}</span>
-                              </div>
-                              <div className="flex flex-wrap gap-2 text-[10px] text-white/30 uppercase tracking-wider mt-1">
-                                {track.bpm && <span>{track.bpm} BPM</span>}
-                                {track.bpm && <span>•</span>}
-                                <span>{track.genre}</span>
-                                <span>•</span>
-                                <span>{track.duration}</span>
-                              </div>
-                            </div>
-
-                            {/* Play Button */}
-                            <button className="w-10 h-10 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center transition-all flex-shrink-0 group-hover:scale-110">
-                              <Play size={16} className="text-white ml-0.5" fill="white" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Singles & Exclusives Section */}
-              <div className="mt-12">
-                <h3 className="text-2xl font-black uppercase tracking-tight mb-6 text-white">Singles & Exclusives</h3>
-                <div className="space-y-3">
-                  {filteredTracks
-                    .filter((t) => t.type === 'Single' || t.type === 'Exclusive')
-                    .map((track) => (
-                      <div
-                        key={track.id}
-                        className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-xl p-4 hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-300 flex items-center gap-4"
-                      >
-                        {/* Track Cover Art */}
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.06] flex-shrink-0 flex items-center justify-center">
-                          {track.coverArt ? (
-                            <img
-                              src={track.coverArt}
-                              alt={track.title}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
-                          ) : (
-                            <Music size={20} className="text-white/30" />
-                          )}
-                        </div>
-
-                        {/* Track Info */}
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-bold text-white text-sm">{track.artist}</span>
-                            <span className="text-white/40 text-sm">{track.title}</span>
-                            <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider">
-                              {track.type}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-2 text-[10px] text-white/30 uppercase tracking-wider mt-1">
-                            <span>{track.year}</span>
-                            <span>•</span>
-                            <span>{track.genre}</span>
-                            {track.bpm && (
-                              <>
-                                <span>•</span>
-                                <span>{track.bpm} BPM</span>
-                              </>
-                            )}
-                            <span>•</span>
-                            <span>{track.duration}</span>
-                          </div>
-                        </div>
-
-                        {/* Play Button */}
-                        <button className="w-10 h-10 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center transition-all flex-shrink-0 hover:scale-110">
-                          <Play size={16} className="text-white ml-0.5" fill="white" />
-                        </button>
-                      </div>
-                    ))}
-                </div>
+              <div className="space-y-3">
+                {filteredTracks
+                  .sort((a, b) => b.createdAt - a.createdAt)
+                  .map((track) => (
+                    <TrackListItem
+                      key={track.id}
+                      track={track}
+                      onPlay={handlePlayTrack}
+                      showType={true}
+                      showMetadata={true}
+                    />
+                  ))}
               </div>
             </div>
           </section>
@@ -695,55 +460,152 @@ export default function TracksPage() {
 
       {/* === REMIXES TAB === */}
       {activeTab === 'remixes' && (
-        <section className="px-6 md:px-12 py-16 md:py-24">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">Remixes</h2>
-            <p className="text-white/25 text-sm mb-2">Bootlegs, Remixes & Edits</p>
-            <p className="text-white/20 text-sm mb-10 max-w-2xl">
-              Over 100+ remixes, bootlegs, and edits. Jonna's raw take on popular tracks — flipping them into his signature moombahton, hip hop, and EDM style.
-            </p>
+        <>
+          {/* Remix Filters */}
+          <section className="px-6 md:px-12 py-16 md:py-24">
+            <div className="max-w-7xl mx-auto">
+              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">Remixes</h2>
+              <p className="text-white/25 text-sm mb-12">Bootlegs, Remixes & Edits — Over 100+ remixes exploring all genres</p>
 
-            {/* SoundCloud embed for remixes */}
-            <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-5 md:p-8 mb-8">
-              <div className="rounded-2xl overflow-hidden">
-                <iframe
-                  width="100%"
-                  height="450"
-                  scrolling="no"
-                  frameBorder="no"
-                  allow="autoplay"
-                  src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/jonnarincon&color=%23dc2626&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
-                  style={{ borderRadius: '16px' }}
-                />
+              {/* Primary Filters */}
+              <div className="mb-8">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Type</h3>
+                <div className="flex flex-wrap gap-2">
+                  {['All', 'Remix', 'Edit', 'Bootleg'].map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setSelectedRemixType(type as typeof selectedRemixType)}
+                      className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                        selectedRemixType === type || (type === 'All' && selectedRemixType === 'All')
+                          ? 'bg-red-600 text-white'
+                          : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <a
-                href="https://soundcloud.com/jonnarincon"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 w-full inline-block text-center py-3.5 bg-orange-500 hover:bg-orange-400 text-white rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02]"
-              >
-                Explore All on SoundCloud
-              </a>
+              {/* Secondary Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Year Filter */}
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Year</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['All', ...Array.from(new Set(remixTracks.map(t => t.year))).sort((a, b) => b - a)].map((year) => (
+                      <button
+                        key={year}
+                        onClick={() => setSelectedRemixYear(year as typeof selectedRemixYear)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                          selectedRemixYear === year
+                            ? 'bg-red-600 text-white'
+                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                        }`}
+                      >
+                        {year}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Collab Filter */}
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Type</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['All', 'Solo', 'Collab'].map((collab) => (
+                      <button
+                        key={collab}
+                        onClick={() => setSelectedRemixCollab(collab as typeof selectedRemixCollab)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                          selectedRemixCollab === collab
+                            ? 'bg-red-600 text-white'
+                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                        }`}
+                      >
+                        {collab}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Genre Filter */}
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Genre</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'].map((genre) => (
+                      <button
+                        key={genre}
+                        onClick={() => setSelectedRemixGenre(genre as typeof selectedRemixGenre)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                          selectedRemixGenre === genre
+                            ? 'bg-red-600 text-white'
+                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                        }`}
+                      >
+                        {genre}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
+          </section>
 
-            {/* Remix Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-6 text-center">
-                <p className="text-3xl md:text-4xl font-black text-white">100+</p>
-                <p className="text-white/30 text-xs uppercase tracking-wider mt-2">Remixes & Bootlegs</p>
-              </div>
-              <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-6 text-center">
-                <p className="text-3xl md:text-4xl font-black text-white">10+</p>
-                <p className="text-white/30 text-xs uppercase tracking-wider mt-2">Years of Remixing</p>
-              </div>
-              <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-6 text-center">
-                <p className="text-3xl md:text-4xl font-black text-white">All</p>
-                <p className="text-white/30 text-xs uppercase tracking-wider mt-2">Genres Covered</p>
+          {/* Remix Tracks List */}
+          <section className="px-6 md:px-12 py-8 md:py-16">
+            <div className="max-w-7xl mx-auto">
+              <p className="text-white/30 text-sm mb-6">
+                Showing {remixTracks
+                  .filter((t) => {
+                    const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
+                    const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
+                    const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
+                    const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
+                    return typeMatch && yearMatch && collabMatch && genreMatch;
+                  }).length
+                } remix{remixTracks.filter((t) => {
+                  const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
+                  const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
+                  const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
+                  const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
+                  return typeMatch && yearMatch && collabMatch && genreMatch;
+                }).length !== 1 ? 's' : ''}
+              </p>
+              <div className="space-y-3">
+                {remixTracks
+                  .filter((t) => {
+                    const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
+                    const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
+                    const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
+                    const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
+                    return typeMatch && yearMatch && collabMatch && genreMatch;
+                  })
+                  .sort((a, b) => b.createdAt - a.createdAt)
+                  .map((remix) => (
+                    <TrackListItem
+                      key={remix.id}
+                      track={remix}
+                      onPlay={(t) => {
+                        const queue = remixTracks
+                          .filter((r) => {
+                            const typeMatch = selectedRemixType === 'All' || r.remixType === selectedRemixType;
+                            const yearMatch = selectedRemixYear === 'All' || r.year === selectedRemixYear;
+                            const collabMatch = selectedRemixCollab === 'All' || r.collab === selectedRemixCollab;
+                            const genreMatch = selectedRemixGenre === 'All' || r.genre === selectedRemixGenre;
+                            return typeMatch && yearMatch && collabMatch && genreMatch;
+                          })
+                          .sort((a, b) => b.createdAt - a.createdAt);
+                        play(t, queue);
+                      }}
+                      showType={false}
+                      showMetadata={true}
+                    />
+                  ))}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </>
       )}
 
       {/* === PRODUCTIONS TAB === */}
