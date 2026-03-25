@@ -36,6 +36,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Beats', href: '/admin/beats', icon: Music },
+    { name: 'Tracks', href: '/admin/tracks', icon: Music },
+    { name: 'Remixes', href: '/admin/remixes', icon: Music },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Social Media', href: '/admin/content', icon: CalendarDays },
     { name: 'Collaborations', href: '/admin/collaborations', icon: Handshake },
