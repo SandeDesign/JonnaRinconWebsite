@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import FileUploadInput from '../../components/admin/FileUploadInput';
+import LinkInput from '../../components/admin/LinkInput';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 // This is a placeholder for demo purposes
@@ -34,20 +34,20 @@ const TracksAdminPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingTrack, setEditingTrack] = useState<any | null>(null);
   const [tracks, setTracks] = useState(demoTracks);
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [coverArtFile, setCoverArtFile] = useState<File | null>(null);
+  const [audioUrl, setAudioUrl] = useState('');
+  const [coverArtUrl, setCoverArtUrl] = useState('');
 
   const handleCreate = () => {
     setEditingTrack(null);
-    setAudioFile(null);
-    setCoverArtFile(null);
+    setAudioUrl('');
+    setCoverArtUrl('');
     setShowModal(true);
   };
 
   const handleEdit = (track: any) => {
     setEditingTrack(track);
-    setAudioFile(null);
-    setCoverArtFile(null);
+    setAudioUrl(track.audioUrl || '');
+    setCoverArtUrl(track.coverArtUrl || '');
     setShowModal(true);
   };
 
@@ -57,20 +57,6 @@ const TracksAdminPage: React.FC = () => {
   };
 
   const handleSave = (track: any) => {
-    // Create file URLs for audio and cover art
-    let audioUrl = track.audioUrl || '';
-    let coverArtUrl = track.coverArtUrl || '';
-
-    // If new audio file selected, create blob URL
-    if (audioFile) {
-      audioUrl = URL.createObjectURL(audioFile);
-    }
-
-    // If new cover art selected, create blob URL
-    if (coverArtFile) {
-      coverArtUrl = URL.createObjectURL(coverArtFile);
-    }
-
     const trackData = {
       ...track,
       audioUrl,
@@ -83,9 +69,9 @@ const TracksAdminPage: React.FC = () => {
       setTracks([...tracks, { ...trackData, id: Date.now().toString() }]);
     }
 
-    // Reset file states
-    setAudioFile(null);
-    setCoverArtFile(null);
+    // Reset states
+    setAudioUrl('');
+    setCoverArtUrl('');
     setShowModal(false);
   };
 
@@ -194,8 +180,6 @@ const TracksAdminPage: React.FC = () => {
                   year: parseInt(formData.get('year') as string),
                   genre: formData.get('genre') as string,
                   duration: formData.get('duration') as string,
-                  audioUrl: editingTrack?.audioUrl || '',
-                  coverArtUrl: editingTrack?.coverArtUrl || '',
                 });
               }}>
                 <input
@@ -247,24 +231,23 @@ const TracksAdminPage: React.FC = () => {
                   className="w-full bg-white/[0.05] border border-white/[0.1] rounded px-4 py-2 text-white placeholder-white/40 mb-6"
                 />
 
-                {/* File Uploads */}
-                <FileUploadInput
-                  label="Audio File"
-                  name="audioFile"
-                  accept="audio/*"
-                  onChange={setAudioFile}
+                {/* URL Inputs */}
+                <LinkInput
+                  label="Audio URL"
+                  name="audioUrl"
+                  type="audio"
+                  onChange={setAudioUrl}
                   defaultValue={editingTrack?.audioUrl}
-                  maxSize={50 * 1024 * 1024}
+                  placeholder="https://nextcloud.example.com/index.php/s/abc123"
                 />
 
-                <FileUploadInput
-                  label="Cover Art"
-                  name="coverArtFile"
-                  accept="image/*"
-                  onChange={setCoverArtFile}
+                <LinkInput
+                  label="Cover Art URL"
+                  name="coverArtUrl"
+                  type="image"
+                  onChange={setCoverArtUrl}
                   defaultValue={editingTrack?.coverArtUrl}
-                  maxSize={10 * 1024 * 1024}
-                  preview
+                  placeholder="https://nextcloud.example.com/index.php/s/xyz789"
                 />
 
                 <div className="flex gap-2 mt-6">
