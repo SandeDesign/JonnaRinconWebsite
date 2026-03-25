@@ -7,7 +7,8 @@ export interface Track {
   type: 'Album' | 'EP' | 'Single' | 'Exclusive' | 'Remix';
   year: number;
   coverArt?: string;
-  audioUrl?: string;
+  coverArtUrl?: string; // URL to uploaded cover art
+  audioUrl?: string; // URL to uploaded audio file
   spotifyUrl?: string;
   genre: string;
   bpm?: number;

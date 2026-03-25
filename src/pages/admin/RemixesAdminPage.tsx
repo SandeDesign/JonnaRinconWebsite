@@ -1,25 +1,52 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import FileUploadInput from '../../components/admin/FileUploadInput';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 // Demo remixes
 const demoRemixes = [
-  { id: 'r1', artist: 'Jonna Rincon', title: 'Original Track', remixType: 'Remix', year: 2023 },
-  { id: 'r2', artist: 'Jonna Rincon', title: 'Popular Hit', remixType: 'Edit', year: 2023 },
+  {
+    id: 'r1',
+    artist: 'Jonna Rincon',
+    title: 'Original Track',
+    remixType: 'Remix',
+    year: 2023,
+    genre: 'Electronic',
+    duration: '5:32',
+    audioUrl: '',
+    coverArtUrl: '',
+  },
+  {
+    id: 'r2',
+    artist: 'Jonna Rincon',
+    title: 'Popular Hit',
+    remixType: 'Edit',
+    year: 2023,
+    genre: 'Hip-Hop',
+    duration: '4:15',
+    audioUrl: '',
+    coverArtUrl: '',
+  },
 ];
 
 const RemixesAdminPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingRemix, setEditingRemix] = useState<any | null>(null);
   const [remixes, setRemixes] = useState(demoRemixes);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [coverArtFile, setCoverArtFile] = useState<File | null>(null);
 
   const handleCreate = () => {
     setEditingRemix(null);
+    setAudioFile(null);
+    setCoverArtFile(null);
     setShowModal(true);
   };
 
   const handleEdit = (remix: any) => {
     setEditingRemix(remix);
+    setAudioFile(null);
+    setCoverArtFile(null);
     setShowModal(true);
   };
 
@@ -29,11 +56,35 @@ const RemixesAdminPage: React.FC = () => {
   };
 
   const handleSave = (remix: any) => {
-    if (editingRemix) {
-      setRemixes(remixes.map(r => r.id === remix.id ? remix : r));
-    } else {
-      setRemixes([...remixes, { ...remix, id: 'r' + Date.now() }]);
+    // Create file URLs for audio and cover art
+    let audioUrl = remix.audioUrl || '';
+    let coverArtUrl = remix.coverArtUrl || '';
+
+    // If new audio file selected, create blob URL
+    if (audioFile) {
+      audioUrl = URL.createObjectURL(audioFile);
     }
+
+    // If new cover art selected, create blob URL
+    if (coverArtFile) {
+      coverArtUrl = URL.createObjectURL(coverArtFile);
+    }
+
+    const remixData = {
+      ...remix,
+      audioUrl,
+      coverArtUrl,
+    };
+
+    if (editingRemix) {
+      setRemixes(remixes.map(r => r.id === remix.id ? remixData : r));
+    } else {
+      setRemixes([...remixes, { ...remixData, id: 'r' + Date.now() }]);
+    }
+
+    // Reset file states
+    setAudioFile(null);
+    setCoverArtFile(null);
     setShowModal(false);
   };
 
@@ -90,6 +141,8 @@ const RemixesAdminPage: React.FC = () => {
                 <th className="px-6 py-4 text-left text-white text-sm font-semibold">Title</th>
                 <th className="px-6 py-4 text-left text-white text-sm font-semibold">Type</th>
                 <th className="px-6 py-4 text-left text-white text-sm font-semibold">Year</th>
+                <th className="px-6 py-4 text-left text-white text-sm font-semibold">Audio</th>
+                <th className="px-6 py-4 text-left text-white text-sm font-semibold">Cover</th>
                 <th className="px-6 py-4 text-left text-white text-sm font-semibold">Actions</th>
               </tr>
             </thead>
@@ -100,6 +153,12 @@ const RemixesAdminPage: React.FC = () => {
                   <td className="px-6 py-4 text-white">{remix.title}</td>
                   <td className="px-6 py-4 text-white/60">{remix.remixType}</td>
                   <td className="px-6 py-4 text-white/60">{remix.year}</td>
+                  <td className="px-6 py-4 text-white/60">
+                    {remix.audioUrl ? <span className="text-emerald-400">✓</span> : <span className="text-white/30">-</span>}
+                  </td>
+                  <td className="px-6 py-4 text-white/60">
+                    {remix.coverArtUrl ? <span className="text-emerald-400">✓</span> : <span className="text-white/30">-</span>}
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
                       <button
@@ -124,8 +183,8 @@ const RemixesAdminPage: React.FC = () => {
 
         {/* Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full border border-white/[0.1]">
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <div className="bg-gray-900 rounded-lg p-8 max-w-md w-full border border-white/[0.1] my-8">
               <h2 className="text-2xl font-bold text-white mb-6">
                 {editingRemix ? 'Edit Remix' : 'Add Remix'}
               </h2>
@@ -138,6 +197,10 @@ const RemixesAdminPage: React.FC = () => {
                   title: formData.get('title') as string,
                   remixType: formData.get('remixType') as string,
                   year: parseInt(formData.get('year') as string),
+                  genre: formData.get('genre') as string,
+                  duration: formData.get('duration') as string,
+                  audioUrl: editingRemix?.audioUrl || '',
+                  coverArtUrl: editingRemix?.coverArtUrl || '',
                 });
               }}>
                 <input
@@ -170,10 +233,45 @@ const RemixesAdminPage: React.FC = () => {
                   name="year"
                   placeholder="Year"
                   defaultValue={editingRemix?.year || new Date().getFullYear()}
-                  className="w-full bg-white/[0.05] border border-white/[0.1] rounded px-4 py-2 text-white placeholder-white/40 mb-6"
+                  className="w-full bg-white/[0.05] border border-white/[0.1] rounded px-4 py-2 text-white placeholder-white/40 mb-4"
                   required
                 />
-                <div className="flex gap-2">
+                <input
+                  type="text"
+                  name="genre"
+                  placeholder="Genre (e.g., Electronic, Hip-Hop)"
+                  defaultValue={editingRemix?.genre || ''}
+                  className="w-full bg-white/[0.05] border border-white/[0.1] rounded px-4 py-2 text-white placeholder-white/40 mb-4"
+                />
+                <input
+                  type="text"
+                  name="duration"
+                  placeholder="Duration (e.g., 5:32)"
+                  defaultValue={editingRemix?.duration || ''}
+                  className="w-full bg-white/[0.05] border border-white/[0.1] rounded px-4 py-2 text-white placeholder-white/40 mb-6"
+                />
+
+                {/* File Uploads */}
+                <FileUploadInput
+                  label="Audio File"
+                  name="audioFile"
+                  accept="audio/*"
+                  onChange={setAudioFile}
+                  defaultValue={editingRemix?.audioUrl}
+                  maxSize={50 * 1024 * 1024}
+                />
+
+                <FileUploadInput
+                  label="Cover Art"
+                  name="coverArtFile"
+                  accept="image/*"
+                  onChange={setCoverArtFile}
+                  defaultValue={editingRemix?.coverArtUrl}
+                  maxSize={10 * 1024 * 1024}
+                  preview
+                />
+
+                <div className="flex gap-2 mt-6">
                   <button
                     type="submit"
                     className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 rounded font-semibold transition"
