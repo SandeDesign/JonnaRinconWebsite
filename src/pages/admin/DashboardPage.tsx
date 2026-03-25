@@ -3,8 +3,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import { useOrderStatistics } from '../../hooks/useOrders';
 import { useCollaborationStats } from '../../hooks/useCollaborations';
 import { beatService, orderService } from '../../lib/firebase/services';
-import { TrendingUp, DollarSign, ShoppingBag, Music, Handshake, Users, Home } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { TrendingUp, DollarSign, ShoppingBag, Music, Handshake, Users } from 'lucide-react';
 
 const DashboardPage: React.FC = () => {
   const { stats: orderStats } = useOrderStatistics();
@@ -35,18 +34,9 @@ const DashboardPage: React.FC = () => {
     <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Dashboard</h1>
-            <p className="text-sm text-white/30 mt-1">Welcome back! Here's what's happening today.</p>
-          </div>
-          <Link
-            to="/"
-            className="bg-white/[0.08] hover:bg-white/[0.08] border border-white/[0.06] px-4 py-2 rounded-2xl text-white/80 font-medium transition-all flex items-center gap-2 text-sm flex-shrink-0"
-          >
-            <Home size={16} />
-            <span className="hidden sm:inline">Home</span>
-          </Link>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Dashboard</h1>
+          <p className="text-sm text-white/30 mt-1">Welcome back! Here's what's happening today.</p>
         </div>
 
         {/* Stats Grid */}

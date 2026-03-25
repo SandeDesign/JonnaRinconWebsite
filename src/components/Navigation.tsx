@@ -25,15 +25,28 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // Lock scroll when menu is open
+  // Lock scroll when menu is open - improved state management
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else if (!isMenuClosing) {
-      document.body.style.overflow = '';
-    }
+    const updateBodyScroll = () => {
+      if (isMenuOpen && !isMenuClosing) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+      } else {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+      }
+    };
+
+    updateBodyScroll();
     onMenuToggle?.(isMenuOpen);
-    return () => { document.body.style.overflow = ''; };
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
   }, [isMenuOpen, isMenuClosing, onMenuToggle]);
 
   // Cleanup timeout on unmount
