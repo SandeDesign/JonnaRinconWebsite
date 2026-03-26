@@ -1,5 +1,10 @@
 export default function MarqueeRed() {
   const items = [
+    'BINNE BEN',
+    'BINNE BEN 2',
+    'IF YOU',
+    'LAST',
+    'LIQA IN MY CUP',
     'PRODUCER',
     'LIVE STREAMER',
     'BEATMAKER',
@@ -12,7 +17,7 @@ export default function MarqueeRed() {
     'ARTIST',
   ];
 
-  const highlighted = new Set(['PRODUCER', 'DJ', 'BEATMAKER', 'JONNA RINCON']);
+  const highlighted = new Set(['JONNA RINCON']);
 
   const renderItems = () =>
     items.map((item, i) => (
@@ -35,7 +40,7 @@ export default function MarqueeRed() {
     </>
   );
 
-  const strokeColor = 'rgba(220, 38, 38, 0.6)';
+  const strokeColor = 'rgba(255, 255, 255, 0.6)';
 
   return (
     <div className="overflow-hidden py-6 md:py-10 select-none flex flex-col gap-2 md:gap-3">
@@ -75,13 +80,13 @@ export default function MarqueeRed() {
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: transparent;
-          -webkit-text-stroke: 1.5px rgba(220, 38, 38, 0.6);
+          color: white;
+          -webkit-text-stroke: 0;
           white-space: nowrap;
           flex-shrink: 0;
         }
         .marquee-red-filled {
-          color: #dc2626;
+          color: white;
           -webkit-text-stroke: 0;
           font-weight: 900;
         }
