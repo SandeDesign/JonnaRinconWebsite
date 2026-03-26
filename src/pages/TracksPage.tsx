@@ -121,6 +121,9 @@ export default function TracksPage() {
     year: t.year,
     type: t.type,
     collab: t.collab,
+    audioUrl: t.audioUrl,
+    coverArt: t.artworkUrl,
+    coverArtUrl: t.artworkUrl,
     createdAt: t.createdAt.toMillis?.() || Date.now(),
   }));
 
@@ -135,6 +138,9 @@ export default function TracksPage() {
     year: r.year,
     collab: r.collab,
     remixType: r.remixType,
+    audioUrl: r.audioUrl,
+    coverArt: r.artworkUrl,
+    coverArtUrl: r.artworkUrl,
     createdAt: r.createdAt.toMillis?.() || Date.now(),
   }));
 
