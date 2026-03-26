@@ -219,23 +219,12 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
 
   const seek = (time: number) => {
     if (!audioRef.current) return;
-
     const audio = audioRef.current;
 
-    // Ensure audio is seekable before setting currentTime
-    if (audio.readyState >= 1) {
-      // HAVE_METADATA or higher - safe to seek
-      audio.currentTime = time;
-      setState((prev) => ({ ...prev, currentTime: time }));
-    } else {
-      // Audio not ready - wait for loadedmetadata event
-      const handleLoadedMetadata = () => {
-        audio.currentTime = time;
-        setState((prev) => ({ ...prev, currentTime: time }));
-        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      };
-      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    }
+    // Simple approach - just set currentTime, browser handles timing
+    const validTime = Math.max(0, Math.min(time, audio.duration || time));
+    audio.currentTime = validTime;
+    setState((prev) => ({ ...prev, currentTime: validTime }));
   };
 
   const setVolume = (volume: number) => {
