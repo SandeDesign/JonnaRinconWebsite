@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useRef, useEffect, useCallback, ReactNode } from 'react';
 
 export interface Track {
   id: string;
@@ -47,10 +47,16 @@ export interface AudioPlayerContextType {
 
 const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(undefined);
 
-export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const stateRef = useRef<AudioPlayerState | null>(null);
+// Singleton audio element - lives outside React to avoid lifecycle issues
+let globalAudio: HTMLAudioElement | null = null;
+function getAudio(): HTMLAudioElement {
+  if (!globalAudio) {
+    globalAudio = new Audio();
+  }
+  return globalAudio;
+}
 
+export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const [state, setState] = useState<AudioPlayerState>({
     currentTrack: null,
     isPlaying: false,
@@ -63,41 +69,67 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     shuffle: false,
   });
 
-  // Keep ref in sync with state
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
+  // Refs to avoid stale closures in callbacks
+  const stateRef = useRef(state);
+  stateRef.current = state; // Always up to date, no useEffect needed
 
-  // Create or get audio element
-  useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
+  const timeUpdateInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Start/stop a polling interval for currentTime instead of using timeupdate event
+  // This batches updates to ~4/sec instead of ~60/sec, preventing React error #310
+  const startTimePolling = useCallback(() => {
+    if (timeUpdateInterval.current) return;
+    timeUpdateInterval.current = setInterval(() => {
+      const audio = getAudio();
+      if (!audio.paused && !isNaN(audio.currentTime)) {
+        setState((prev) => {
+          if (Math.abs(prev.currentTime - audio.currentTime) < 0.15) return prev;
+          return { ...prev, currentTime: audio.currentTime };
+        });
+      }
+    }, 250);
+  }, []);
+
+  const stopTimePolling = useCallback(() => {
+    if (timeUpdateInterval.current) {
+      clearInterval(timeUpdateInterval.current);
+      timeUpdateInterval.current = null;
     }
+  }, []);
 
-    const audio = audioRef.current;
-
-    const handleTimeUpdate = () => {
-      setState((prev) => ({ ...prev, currentTime: audio.currentTime }));
-    };
+  // Set up audio event listeners (only metadata and ended - NOT timeupdate)
+  useEffect(() => {
+    const audio = getAudio();
 
     const handleLoadedMetadata = () => {
-      setState((prev) => ({ ...prev, duration: audio.duration }));
+      const dur = audio.duration;
+      setState((prev) => ({ ...prev, duration: dur }));
     };
 
     const handleEnded = () => {
-      const currentState = stateRef.current;
-      if (!currentState) return;
-
-      if (currentState.repeat === 'one') {
+      const s = stateRef.current;
+      if (s.repeat === 'one') {
         audio.currentTime = 0;
-        audio.play().catch((err) => console.error('Error replaying:', err));
-      } else if (currentState.repeat === 'all' && currentState.queue.length > 0) {
-        // Move to next track in queue
-        const nextIndex = (currentState.currentQueueIndex + 1) % currentState.queue.length;
-        const nextTrack = currentState.queue[nextIndex];
+        audio.play().catch(() => {});
+      } else {
+        // Move to next track
+        let nextIndex = s.currentQueueIndex + 1;
+        if (s.shuffle) {
+          nextIndex = Math.floor(Math.random() * s.queue.length);
+        } else if (nextIndex >= s.queue.length) {
+          if (s.repeat === 'all') {
+            nextIndex = 0;
+          } else {
+            // Stop playback
+            stopTimePolling();
+            setState((prev) => ({ ...prev, isPlaying: false }));
+            return;
+          }
+        }
+        const nextTrack = s.queue[nextIndex];
         if (nextTrack) {
           audio.src = nextTrack.audioUrl || '';
-          audio.play().catch((err) => console.error('Error playing next:', err));
+          audio.play().catch(() => {});
           setState((prev) => ({
             ...prev,
             currentTrack: nextTrack,
@@ -109,30 +141,24 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     audio.addEventListener('ended', handleEnded);
 
     return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('ended', handleEnded);
+      stopTimePolling();
     };
-  }, []);
+  }, [stopTimePolling]);
 
-  // Update audio volume when state volume changes
+  // Sync volume to audio element
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = state.volume;
-    }
+    getAudio().volume = state.volume;
   }, [state.volume]);
 
-  const play = (track: Track, queue: Track[] = []) => {
-    if (!audioRef.current) return;
-
-    const audio = audioRef.current;
+  const play = useCallback((track: Track, queue: Track[] = []) => {
+    const audio = getAudio();
     audio.src = track.audioUrl || '';
-    audio.volume = state.volume;
 
     setState((prev) => ({
       ...prev,
@@ -141,130 +167,127 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       queue: queue.length > 0 ? queue : [track],
       currentQueueIndex: queue.length > 0 ? queue.findIndex((t) => t.id === track.id) : 0,
       currentTime: 0,
+      duration: 0,
     }));
 
     audio.play().catch((err) => console.error('Error playing audio:', err));
-  };
+    startTimePolling();
+  }, [startTimePolling]);
 
-  const pause = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setState((prev) => ({ ...prev, isPlaying: false }));
-    }
-  };
+  const pause = useCallback(() => {
+    getAudio().pause();
+    stopTimePolling();
+    setState((prev) => ({ ...prev, isPlaying: false }));
+  }, [stopTimePolling]);
 
-  const resume = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch((err) => console.error('Error resuming audio:', err));
-      setState((prev) => ({ ...prev, isPlaying: true }));
-    }
-  };
+  const resume = useCallback(() => {
+    getAudio().play().catch((err) => console.error('Error resuming audio:', err));
+    setState((prev) => ({ ...prev, isPlaying: true }));
+    startTimePolling();
+  }, [startTimePolling]);
 
-  const togglePlayPause = () => {
-    if (state.isPlaying) {
+  const togglePlayPause = useCallback(() => {
+    if (stateRef.current.isPlaying) {
       pause();
     } else {
       resume();
     }
-  };
+  }, [pause, resume]);
 
-  const handleNext = () => {
-    setState((prev) => {
-      let nextIndex = prev.currentQueueIndex + 1;
+  const next = useCallback(() => {
+    const s = stateRef.current;
+    let nextIndex = s.currentQueueIndex + 1;
 
-      if (prev.shuffle) {
-        nextIndex = Math.floor(Math.random() * prev.queue.length);
-      } else if (nextIndex >= prev.queue.length) {
-        if (prev.repeat === 'all') {
-          nextIndex = 0;
-        } else {
-          return prev;
-        }
+    if (s.shuffle) {
+      nextIndex = Math.floor(Math.random() * s.queue.length);
+    } else if (nextIndex >= s.queue.length) {
+      if (s.repeat === 'all') {
+        nextIndex = 0;
+      } else {
+        return;
       }
+    }
 
-      const nextTrack = prev.queue[nextIndex];
-      if (!nextTrack || !audioRef.current) return prev;
+    const nextTrack = s.queue[nextIndex];
+    if (!nextTrack) return;
 
-      audioRef.current.src = nextTrack.audioUrl || '';
-      audioRef.current.play().catch((err) => console.error('Error playing next track:', err));
+    const audio = getAudio();
+    audio.src = nextTrack.audioUrl || '';
+    audio.play().catch((err) => console.error('Error playing next track:', err));
+    startTimePolling();
 
-      return {
-        ...prev,
-        currentTrack: nextTrack,
-        currentQueueIndex: nextIndex,
-        isPlaying: true,
-        currentTime: 0,
-      };
-    });
-  };
+    setState((prev) => ({
+      ...prev,
+      currentTrack: nextTrack,
+      currentQueueIndex: nextIndex,
+      isPlaying: true,
+      currentTime: 0,
+    }));
+  }, [startTimePolling]);
 
-  const next = handleNext;
+  const previous = useCallback(() => {
+    const s = stateRef.current;
+    let prevIndex = s.currentQueueIndex - 1;
+    if (prevIndex < 0) {
+      prevIndex = s.queue.length - 1;
+    }
 
-  const previous = () => {
-    setState((prev) => {
-      let prevIndex = prev.currentQueueIndex - 1;
-      if (prevIndex < 0) {
-        prevIndex = prev.queue.length - 1;
-      }
+    const prevTrack = s.queue[prevIndex];
+    if (!prevTrack) return;
 
-      const prevTrack = prev.queue[prevIndex];
-      if (!prevTrack || !audioRef.current) return prev;
+    const audio = getAudio();
+    audio.src = prevTrack.audioUrl || '';
+    audio.play().catch((err) => console.error('Error playing previous track:', err));
+    startTimePolling();
 
-      audioRef.current.src = prevTrack.audioUrl || '';
-      audioRef.current.play().catch((err) => console.error('Error playing previous track:', err));
+    setState((prev) => ({
+      ...prev,
+      currentTrack: prevTrack,
+      currentQueueIndex: prevIndex,
+      isPlaying: true,
+      currentTime: 0,
+    }));
+  }, [startTimePolling]);
 
-      return {
-        ...prev,
-        currentTrack: prevTrack,
-        currentQueueIndex: prevIndex,
-        isPlaying: true,
-        currentTime: 0,
-      };
-    });
-  };
-
-  const seek = (time: number) => {
-    if (!audioRef.current) return;
-    const audio = audioRef.current;
-
-    // Simple approach - just set currentTime, browser handles timing
+  const seek = useCallback((time: number) => {
+    const audio = getAudio();
     const validTime = Math.max(0, Math.min(time, audio.duration || time));
     audio.currentTime = validTime;
     setState((prev) => ({ ...prev, currentTime: validTime }));
-  };
+  }, []);
 
-  const setVolume = (volume: number) => {
+  const setVolume = useCallback((volume: number) => {
     const clampedVolume = Math.max(0, Math.min(1, volume));
-    if (audioRef.current) {
-      audioRef.current.volume = clampedVolume;
-    }
+    getAudio().volume = clampedVolume;
     setState((prev) => ({ ...prev, volume: clampedVolume }));
-  };
+  }, []);
 
-  const setRepeat = (mode: 'off' | 'one' | 'all') => {
+  const setRepeat = useCallback((mode: 'off' | 'one' | 'all') => {
     setState((prev) => ({ ...prev, repeat: mode }));
-  };
+  }, []);
 
-  const toggleShuffle = () => {
+  const toggleShuffle = useCallback(() => {
     setState((prev) => ({ ...prev, shuffle: !prev.shuffle }));
-  };
+  }, []);
 
-  const addToQueue = (track: Track) => {
+  const addToQueue = useCallback((track: Track) => {
     setState((prev) => ({
       ...prev,
       queue: [...prev.queue, track],
     }));
-  };
+  }, []);
 
-  const clearQueue = () => {
-    pause();
+  const clearQueue = useCallback(() => {
+    getAudio().pause();
+    stopTimePolling();
     setState((prev) => ({
       ...prev,
       queue: [],
       currentQueueIndex: -1,
       currentTrack: null,
+      isPlaying: false,
     }));
-  };
+  }, [stopTimePolling]);
 
   const value: AudioPlayerContextType = {
     state,
