@@ -95,7 +95,7 @@ const skills = [
 ];
 
 export default function TracksPage() {
-  const { play } = useAudioPlayer();
+  const { state, play } = useAudioPlayer();
   const { tracks: firebaseTracks, loading: tracksLoading } = useTracks({ status: 'published' });
   const { remixes: firebaseRemixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const [activeTab, setActiveTab] = useState('tracks');
