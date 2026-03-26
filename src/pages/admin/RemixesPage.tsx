@@ -244,9 +244,11 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('📝 [RemixesPage] handleSubmit called');
     setSaving(true);
 
     try {
+      console.log('📝 [RemixesPage] Building remixData...');
       const remixData: any = {
         title: formData.title,
         remixArtist: formData.remixArtist,
@@ -293,13 +295,17 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
       };
 
       if (remix) {
+        console.log('📝 [RemixesPage] Updating existing remix...');
         await remixService.updateRemix(remix.id, remixData);
         alert('Remix updated successfully');
       } else {
-        await remixService.createRemix(remixData);
+        console.log('📝 [RemixesPage] Creating NEW remix, calling remixService.createRemix()...');
+        const result = await remixService.createRemix(remixData);
+        console.log('✅ [RemixesPage] remixService.createRemix succeeded:', result);
         alert('Remix created successfully');
       }
 
+      console.log('📝 [RemixesPage] Calling onSave()');
       onSave();
     } catch (error: any) {
       alert(error.message);
