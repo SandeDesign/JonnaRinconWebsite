@@ -201,21 +201,20 @@ interface TrackFormModalProps {
 }
 
 const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave }) => {
+  const currentYear = new Date().getFullYear();
   const [formData, setFormData] = useState({
     title: track?.title || '',
     artist: track?.artist || 'Jonna Rincon',
-    bpm: track?.bpm || 120,
-    key: track?.key || '',
     genre: track?.genre || '',
+    type: track?.type || 'Single',
+    year: track?.year || currentYear,
+    collab: track?.collab || 'Solo',
     tags: track?.tags?.join(', ') || '',
     audioUrl: track?.audioUrl || '',
     artworkUrl: track?.artworkUrl || '',
     slug: track?.slug || '',
     status: track?.status || 'draft',
     featured: track?.featured || false,
-    basicPrice: track?.licenses?.basic?.price || 9,
-    premiumPrice: track?.licenses?.premium?.price || 19,
-    exclusivePrice: track?.licenses?.exclusive?.price || 99,
   });
   const [saving, setSaving] = useState(false);
 
@@ -227,9 +226,10 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
       const trackData: any = {
         title: formData.title,
         artist: formData.artist,
-        bpm: formData.bpm,
-        key: formData.key,
         genre: formData.genre,
+        type: formData.type,
+        year: formData.year,
+        collab: formData.collab,
         tags: formData.tags.split(',').map((t) => t.trim()),
         audioUrl: formData.audioUrl,
         artworkUrl: formData.artworkUrl,
@@ -239,7 +239,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         licenses: {
           basic: {
             type: 'basic' as const,
-            price: formData.basicPrice,
+            price: 9,
             features: ['MP3 Download', 'Non-exclusive rights', 'Personal use'],
             downloads: 1,
             streams: 10000,
@@ -248,7 +248,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
           },
           premium: {
             type: 'premium' as const,
-            price: formData.premiumPrice,
+            price: 19,
             features: ['WAV + MP3', 'Non-exclusive rights', 'Commercial use', 'Unlimited streams'],
             downloads: 5,
             streams: 1000000,
@@ -257,7 +257,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
           },
           exclusive: {
             type: 'exclusive' as const,
-            price: formData.exclusivePrice,
+            price: 99,
             features: ['All files', 'Exclusive rights', 'Full ownership', 'Unlimited use'],
             downloads: -1,
             streams: -1,
@@ -315,24 +315,40 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">BPM</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Type</label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as 'Album' | 'EP' | 'Single' | 'Exclusive' })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                required
+              >
+                <option value="Single">Single</option>
+                <option value="EP">EP</option>
+                <option value="Album">Album</option>
+                <option value="Exclusive">Exclusive</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Year</label>
               <input
                 type="number"
-                value={formData.bpm}
-                onChange={(e) => setFormData({ ...formData, bpm: parseInt(e.target.value) })}
+                value={formData.year}
+                onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Key</label>
-              <input
-                type="text"
-                value={formData.key}
-                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
+              <label className="block text-sm font-medium text-white/60 mb-2">Collab</label>
+              <select
+                value={formData.collab}
+                onChange={(e) => setFormData({ ...formData, collab: e.target.value as 'Solo' | 'Collab' })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
-              />
+              >
+                <option value="Solo">Solo</option>
+                <option value="Collab">Collab</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Genre</label>
@@ -397,36 +413,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
               defaultValue={formData.artworkUrl}
               placeholder="https://example.com/image.jpg"
             />
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Basic Price (€)</label>
-              <input
-                type="number"
-                value={formData.basicPrice}
-                onChange={(e) => setFormData({ ...formData, basicPrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Premium Price (€)</label>
-              <input
-                type="number"
-                value={formData.premiumPrice}
-                onChange={(e) => setFormData({ ...formData, premiumPrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Exclusive Price (€)</label>
-              <input
-                type="number"
-                value={formData.exclusivePrice}
-                onChange={(e) => setFormData({ ...formData, exclusivePrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
           </div>
 
           <div>

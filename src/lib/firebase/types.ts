@@ -139,12 +139,17 @@ export interface Track {
   album?: string;
   trackNumber?: number;
   releaseDate?: Timestamp;
-  bpm: number;
-  key: string;
+  bpm?: number;
+  key?: string;
   genre: string;
   subGenre?: string;
   mood?: string[];
   tags: string[];
+
+  // Categorization
+  type: 'Album' | 'EP' | 'Single' | 'Exclusive';
+  year: number;
+  collab: 'Solo' | 'Collab';
 
   // Media
   audioUrl: string;
@@ -193,12 +198,17 @@ export interface Remix {
   remixArtist: string; // Artist who made the remix
   originalArtist: string; // Original track artist
   originalTrackTitle?: string;
-  bpm: number;
-  key: string;
+  bpm?: number;
+  key?: string;
   genre: string;
   subGenre?: string;
   mood?: string[];
   tags: string[];
+
+  // Categorization
+  remixType: 'Remix' | 'Edit' | 'Bootleg';
+  year: number;
+  collab: 'Solo' | 'Collab';
 
   // Media
   audioUrl: string;
@@ -248,12 +258,16 @@ export interface Edit {
   originalTrackId?: string; // Reference to original track if any
   originalArtist?: string;
   editType: 'bootleg' | 'mashup' | 'rework' | 'flip' | 'other';
-  bpm: number;
-  key: string;
+  bpm?: number;
+  key?: string;
   genre: string;
   subGenre?: string;
   mood?: string[];
   tags: string[];
+
+  // Categorization
+  year: number;
+  collab: 'Solo' | 'Collab';
 
   // Media
   audioUrl: string;
