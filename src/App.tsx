@@ -6,7 +6,6 @@ import BeatStore from './components/BeatStore';
 import Music from './components/Music';
 import Socials from './components/Socials';
 import LiveStudio from './components/LiveStudio';
-import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
 import Marquee from './components/Marquee';
@@ -253,7 +252,6 @@ function App() {
           <Socials />
           <MarqueeRed />
           <div id="live-studio"><LiveStudio /></div>
-          <Contact />
           <Footer />
         </div>
       </main>

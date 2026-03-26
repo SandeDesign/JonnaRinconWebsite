@@ -10,18 +10,36 @@
 
 /* Progress bar */
 .jonna-audio-player .rhap_progress-container {
-  padding: 8px 0 !important;
+  padding: 12px 0 8px !important;
+  width: 100% !important;
+  order: -1 !important;
 }
 
 .jonna-audio-player .rhap_progress-bar {
   background: rgba(255, 255, 255, 0.08) !important;
   border-radius: 4px !important;
-  height: 4px !important;
+  height: 6px !important;
+  cursor: pointer !important;
 }
 
 .jonna-audio-player .rhap_progress-filled {
   background: linear-gradient(to right, rgb(220, 38, 38), rgb(239, 68, 68)) !important;
   border-radius: 4px !important;
+  position: relative !important;
+}
+
+/* Progress bar circle indicator */
+.jonna-audio-player .rhap_progress-filled::after {
+  content: '' !important;
+  position: absolute !important;
+  width: 14px !important;
+  height: 14px !important;
+  background: rgb(220, 38, 38) !important;
+  border-radius: 50% !important;
+  right: -7px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.6) !important;
 }
 
 .jonna-audio-player .rhap_progress-bar:hover .rhap_progress-filled {
@@ -116,7 +134,21 @@
 @media (max-width: 768px) {
   .jonna-audio-player .rhap_container {
     padding: 10px 12px !important;
-    gap: 8px !important;
+    gap: 6px !important;
+  }
+
+  .jonna-audio-player .rhap_progress-container {
+    padding: 10px 0 6px !important;
+  }
+
+  .jonna-audio-player .rhap_progress-bar {
+    height: 5px !important;
+  }
+
+  .jonna-audio-player .rhap_progress-filled::after {
+    width: 12px !important;
+    height: 12px !important;
+    right: -6px !important;
   }
 
   .jonna-audio-player .rhap_play-pause-button {
@@ -126,5 +158,14 @@
 
   .jonna-audio-player .rhap_controls-section button {
     padding: 6px !important;
+  }
+
+  .jonna-audio-player .rhap_time {
+    font-size: 11px !important;
+    min-width: 40px !important;
+  }
+
+  .jonna-audio-player .rhap_volume-container {
+    gap: 6px !important;
   }
 }
