@@ -6,6 +6,7 @@ import { UserRole } from '../lib/firebase/types';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: UserRole[];
+  requireAdmin?: boolean;
 }
 
 function getDashboardForRole(role: UserRole): string {
@@ -32,6 +33,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to={getDashboardForRole(user.role)} replace />;
+  }
+
+  if (requireAdmin && user.role !== 'admin') {
     return <Navigate to={getDashboardForRole(user.role)} replace />;
   }
 
