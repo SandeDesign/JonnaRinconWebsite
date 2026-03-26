@@ -37,7 +37,7 @@ export default function TrackListItem({
 
   return (
     <div
-      className={`rounded-xl p-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all duration-300 border ${
+      className={`rounded-xl p-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all duration-300 border backdrop-blur-md ${
         isCurrentTrack ? 'border-red-500/50 bg-white/[0.08]' : 'bg-white/[0.04] border-white/[0.06]'
       }`}
     >
