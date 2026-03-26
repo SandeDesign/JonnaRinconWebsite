@@ -46,11 +46,17 @@ class RemixService {
 
   async createRemix(remixData: Omit<Remix, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'lastUpdatedBy'>): Promise<Remix> {
     const user = authService.getCurrentUser();
+    console.log('🔍 createRemix called - Current user:', user);
+
     if (!user || user.role !== 'admin') {
+      console.error('❌ Unauthorized: user is null or not admin. Role:', user?.role);
       throw new Error('Unauthorized: Only admins can create remixes');
     }
 
     try {
+      console.log('✅ User is admin, proceeding with remix creation');
+      console.log('📝 Remix data:', remixData);
+
       const newRemix = {
         ...remixData,
         plays: 0,
@@ -62,16 +68,22 @@ class RemixService {
         updatedAt: serverTimestamp(),
       };
 
+      console.log('🚀 Writing to Firestore collection:', this.collectionName);
       const docRef = await addDoc(collection(db, this.collectionName), newRemix);
+      console.log('✨ Remix created with ID:', docRef.id);
+
       const createdRemix = await this.getRemixById(docRef.id);
 
       if (!createdRemix) {
         throw new Error('Failed to retrieve created remix');
       }
 
+      console.log('📦 Remix retrieved successfully:', createdRemix);
       return createdRemix;
     } catch (error: any) {
-      console.error('Create remix error:', error);
+      console.error('❌ CREATE REMIX ERROR - Code:', error.code);
+      console.error('❌ CREATE REMIX ERROR - Message:', error.message);
+      console.error('❌ CREATE REMIX ERROR - Full error:', error);
       throw new Error(error.message || 'Failed to create remix');
     }
   }
