@@ -18,10 +18,10 @@ export default function GlobalAudioPlayer() {
           autoPlay={state.isPlaying}
           src={state.currentTrack.audioUrl || ''}
           onSeek={(e: any) => seek(e)}
-          onVolumeChange={(e: any) => setVolume(e / 100)}
+          onVolumeChange={(e: any) => setVolume(e)}
           onClickNext={next}
           onClickPrevious={previous}
-          volume={Math.round(state.volume * 100)}
+          volume={state.volume}
           currentTime={state.currentTime}
           duration={state.duration}
           showFilledVolume
