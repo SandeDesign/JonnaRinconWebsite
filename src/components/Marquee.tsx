@@ -1,6 +1,10 @@
 export default function Marquee() {
   const items = [
     'JONNA RINCON',
+    'EXCLUSIVE',
+    'LIVE',
+    'CREATIVE',
+    'ARTISTIC',
     'MUSIC PRODUCER',
     'BEATS',
     'ART',
@@ -77,8 +81,8 @@ export default function Marquee() {
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: transparent;
-          -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.6);
+          color: white;
+          -webkit-text-stroke: 0;
           white-space: nowrap;
           flex-shrink: 0;
         }
