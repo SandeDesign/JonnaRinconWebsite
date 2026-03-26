@@ -4,7 +4,7 @@ import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function Socials() {
-  const socialTitle = useCyberDecodeInView('Connect & Get In Touch');
+  const socialTitle = useCyberDecodeInView('Socials & Contact');
   const { ref: revealRef, isVisible } = useScrollReveal();
   const [formData, setFormData] = useState({
     name: '',
