@@ -12,7 +12,17 @@
 .jonna-audio-player .rhap_progress-container {
   padding: 12px 0 8px !important;
   width: 100% !important;
-  order: -1 !important;
+}
+
+@media (max-width: 768px) {
+  .jonna-audio-player .rhap_progress-container {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 10px 0 6px 0 !important;
+  }
 }
 
 .jonna-audio-player .rhap_progress-bar {
@@ -133,18 +143,14 @@
 /* Responsive */
 @media (max-width: 768px) {
   .jonna-audio-player .rhap_container {
-    flex-direction: column !important;
-    padding: 0 12px 32px 12px !important;
+    position: relative !important;
+    padding: 48px 12px 32px 12px !important;
     padding-bottom: max(32px, calc(32px + env(safe-area-inset-bottom))) !important;
     gap: 10px !important;
   }
 
   .jonna-audio-player .rhap_progress-container {
-    padding: 12px 0 8px !important;
-    margin: 0 -12px 0 -12px !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    order: -1 !important;
+    padding: 14px 0 10px !important;
   }
 
   .jonna-audio-player .rhap_progress-bar {
