@@ -63,7 +63,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     shuffle: false,
   });
 
-  // Handle audio time updates
+  // Handle audio time updates and events
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -105,17 +105,35 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     };
   }, []);
 
-  const play = useCallback((track: Track, queue?: Track[]) => {
+  // Handle audio playback when track or isPlaying changes
+  useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !track.audioUrl) return;
+    if (!audio) return;
 
-    audio.src = track.audioUrl;
-    audio.volume = state.volume;
-    audio.play().catch((err) => console.error('Play error:', err));
+    if (state.currentTrack?.audioUrl && state.isPlaying) {
+      // Set audio src and apply volume
+      audio.src = state.currentTrack.audioUrl;
+      audio.volume = state.volume;
+
+      // Play audio with error handling
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          if (err.name !== 'NotAllowedError' && err.name !== 'AbortError') {
+            console.error('Play error:', err);
+          }
+        });
+      }
+    }
+  }, [state.currentTrack?.id, state.isPlaying, state.volume]);
+
+  const play = useCallback((track: Track, queue?: Track[]) => {
+    if (!track.audioUrl) return;
 
     const newQueue = queue || [track];
     const queueIndex = newQueue.findIndex((t) => t.id === track.id);
 
+    // Update state - the useEffect will handle loading and playing the audio
     setState((prev) => ({
       ...prev,
       currentTrack: track,
@@ -125,7 +143,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       duration: 0,
       currentTime: 0,
     }));
-  }, [state.volume]);
+  }, []);
 
   const pause = useCallback(() => {
     const audio = audioRef.current;
@@ -136,11 +154,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
   }, []);
 
   const resume = useCallback(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.play().catch((err) => console.error('Resume error:', err));
-      setState((prev) => ({ ...prev, isPlaying: true }));
-    }
+    setState((prev) => ({ ...prev, isPlaying: true }));
   }, []);
 
   const togglePlayPause = useCallback(() => {
