@@ -46,11 +46,17 @@ class EditService {
 
   async createEdit(editData: Omit<Edit, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'lastUpdatedBy'>): Promise<Edit> {
     const user = authService.getCurrentUser();
+    console.log('🔍 createEdit called - Current user:', user);
+
     if (!user || user.role !== 'admin') {
+      console.error('❌ Unauthorized: user is null or not admin. Role:', user?.role);
       throw new Error('Unauthorized: Only admins can create edits');
     }
 
     try {
+      console.log('✅ User is admin, proceeding with edit creation');
+      console.log('📝 Edit data:', editData);
+
       const newEdit = {
         ...editData,
         plays: 0,
@@ -62,16 +68,22 @@ class EditService {
         updatedAt: serverTimestamp(),
       };
 
+      console.log('🚀 Writing to Firestore collection:', this.collectionName);
       const docRef = await addDoc(collection(db, this.collectionName), newEdit);
+      console.log('✨ Edit created with ID:', docRef.id);
+
       const createdEdit = await this.getEditById(docRef.id);
 
       if (!createdEdit) {
         throw new Error('Failed to retrieve created edit');
       }
 
+      console.log('📦 Edit retrieved successfully:', createdEdit);
       return createdEdit;
     } catch (error: any) {
-      console.error('Create edit error:', error);
+      console.error('❌ CREATE EDIT ERROR - Code:', error.code);
+      console.error('❌ CREATE EDIT ERROR - Message:', error.message);
+      console.error('❌ CREATE EDIT ERROR - Full error:', error);
       throw new Error(error.message || 'Failed to create edit');
     }
   }

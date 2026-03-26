@@ -46,11 +46,17 @@ class TrackService {
 
   async createTrack(trackData: Omit<Track, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'lastUpdatedBy'>): Promise<Track> {
     const user = authService.getCurrentUser();
+    console.log('🔍 createTrack called - Current user:', user);
+
     if (!user || user.role !== 'admin') {
+      console.error('❌ Unauthorized: user is null or not admin. Role:', user?.role);
       throw new Error('Unauthorized: Only admins can create tracks');
     }
 
     try {
+      console.log('✅ User is admin, proceeding with track creation');
+      console.log('📝 Track data:', trackData);
+
       const newTrack = {
         ...trackData,
         plays: 0,
@@ -62,16 +68,22 @@ class TrackService {
         updatedAt: serverTimestamp(),
       };
 
+      console.log('🚀 Writing to Firestore collection:', this.collectionName);
       const docRef = await addDoc(collection(db, this.collectionName), newTrack);
+      console.log('✨ Track created with ID:', docRef.id);
+
       const createdTrack = await this.getTrackById(docRef.id);
 
       if (!createdTrack) {
         throw new Error('Failed to retrieve created track');
       }
 
+      console.log('📦 Track retrieved successfully:', createdTrack);
       return createdTrack;
     } catch (error: any) {
-      console.error('Create track error:', error);
+      console.error('❌ CREATE TRACK ERROR - Code:', error.code);
+      console.error('❌ CREATE TRACK ERROR - Message:', error.message);
+      console.error('❌ CREATE TRACK ERROR - Full error:', error);
       throw new Error(error.message || 'Failed to create track');
     }
   }
