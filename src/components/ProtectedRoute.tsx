@@ -17,7 +17,7 @@ function getDashboardForRole(role: UserRole): string {
   }
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles, requireAdmin }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
