@@ -43,9 +43,10 @@ export default function GlobalAudioPlayer() {
   };
 
   useEffect(() => {
-    document.addEventListener('mouseup', handleMouseUp);
+    const handleMouseUpEvent = () => setIsDragging(false);
+    document.addEventListener('mouseup', handleMouseUpEvent);
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleMouseUpEvent);
     };
   }, []);
 
