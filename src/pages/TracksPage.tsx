@@ -4,7 +4,7 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3, Radio, Award, Mic2, ChevronDown } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
-import { useAudioPlayer, Track as AudioTrack } from '../context/AudioPlayerContext';
+import { setCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
 import { useRemixes } from '../hooks/useRemixes';
@@ -35,11 +35,19 @@ const compilations = [
 ];
 
 // Track data structure
-interface Track extends AudioTrack {
+interface Track {
+  id: string;
+  artist: string;
+  title: string;
+  audioUrl?: string;
+  coverArt?: string;
   createdAt: number;     // Timestamp for sorting
   type?: 'Album' | 'EP' | 'Single' | 'Exclusive';
   year?: number;
   collab?: 'Solo' | 'Collab';
+  genre?: string;
+  bpm?: number;
+  duration?: string;
 }
 
 // Remix Track Interface
@@ -95,7 +103,6 @@ const skills = [
 ];
 
 export default function TracksPage() {
-  const { state, play } = useAudioPlayer();
   const { tracks: firebaseTracks, loading: tracksLoading } = useTracks({ status: 'published' });
   const { remixes: firebaseRemixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const [activeTab, setActiveTab] = useState('tracks');
@@ -156,7 +163,7 @@ export default function TracksPage() {
       })
       .sort((a, b) => b.createdAt - a.createdAt);
 
-    play(track, queue);
+    setCurrentTrack(track, queue);
   };
 
   const filteredTracks = demoTracks.filter(track => {
@@ -579,7 +586,7 @@ export default function TracksPage() {
                             return typeMatch && yearMatch && collabMatch && genreMatch;
                           })
                           .sort((a, b) => b.createdAt - a.createdAt);
-                        play(t, queue);
+                        setCurrentTrack(t, queue);
                       }}
                       showType={false}
                       showMetadata={true}
