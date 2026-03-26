@@ -70,6 +70,19 @@ export default function GlobalAudioPlayer() {
     };
   }, [isVisible]);
 
+  // When track changes, reset audio element to play new src
+  React.useEffect(() => {
+    if (audioRef.current && store.currentTrack?.audioUrl) {
+      // Force audio to load and play new source
+      const audio = audioRef.current.audio;
+      if (audio) {
+        audio.src = store.currentTrack.audioUrl;
+        audio.load();
+        audio.play().catch(() => {});
+      }
+    }
+  }, [store.currentTrack?.id, store.currentTrack?.audioUrl]);
+
   if (!store.currentTrack || !isVisible) {
     return null;
   }

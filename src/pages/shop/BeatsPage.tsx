@@ -288,7 +288,7 @@ const BeatsShop: React.FC = () => {
                       onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                       className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
                     >
-                      {playingId === beat.id ? (
+                      {isCurrentBeatPlaying(beat.id) ? (
                         <Pause className="w-5 h-5 text-white" fill="currentColor" />
                       ) : (
                         <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
@@ -384,11 +384,11 @@ const BeatsShop: React.FC = () => {
 
                   {/* Play Button Overlay */}
                   <button
-                    onClick={(e) => { e.preventDefault(); setPlayingId(playingId === beat.id ? null : beat.id); }}
+                    onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
                   >
                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-600/90 backdrop-blur-sm flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-                      {playingId === beat.id ? (
+                      {isCurrentBeatPlaying(beat.id) ? (
                         <Pause className="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" />
                       ) : (
                         <Play className="w-5 h-5 md:w-6 md:h-6 text-white ml-0.5" fill="currentColor" />
@@ -397,7 +397,7 @@ const BeatsShop: React.FC = () => {
                   </button>
 
                   {/* Playing indicator */}
-                  {playingId === beat.id && (
+                  {isCurrentBeatPlaying(beat.id) && (
                     <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 bg-red-600/80 backdrop-blur-sm rounded-full">
                       <div className="flex gap-0.5 items-end h-3">
                         <div className="w-0.5 bg-white rounded-full animate-pulse" style={{height: '40%', animationDelay: '0ms'}} />
@@ -451,7 +451,7 @@ const BeatsShop: React.FC = () => {
                 <div className="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0 rounded-lg overflow-hidden">
                   <img src={beat.artworkUrl || '/JEIGHTENESIS.jpg'} alt={beat.title} className="w-full h-full object-cover" />
                   <button
-                    onClick={(e) => { e.preventDefault(); setPlayingId(playingId === beat.id ? null : beat.id); }}
+                    onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                     className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
                   >
                     {playingId === beat.id ? (
