@@ -46,8 +46,6 @@ import ArtistSettings from './pages/artist/SettingsPage';
 // Admin pages (protected - admin role)
 import AdminDashboard from './pages/admin/DashboardPage';
 import AdminBeats from './pages/admin/BeatsPage';
-import AdminTracks from './pages/admin/TracksAdminPage';
-import AdminRemixes from './pages/admin/RemixesAdminPage';
 import AdminOrders from './pages/admin/OrdersPage';
 import AdminContent from './pages/admin/ContentPage';
 import AdminAnalytics from './pages/admin/AnalyticsPage';
@@ -255,22 +253,6 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminBeats />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/tracks"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminTracks />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/remixes"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminRemixes />
               </ProtectedRoute>
             }
           />
