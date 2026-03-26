@@ -121,7 +121,12 @@ export default function GlobalAudioPlayer() {
       </div>
       <style>{`
         body {
-          padding-bottom: ${store.currentTrack ? '140px' : '0'};
+          padding-bottom: ${store.currentTrack ? '160px' : '0'};
+        }
+        @media (max-width: 768px) {
+          body {
+            padding-bottom: ${store.currentTrack ? '200px' : '0'} !important;
+          }
         }
       `}</style>
     </>
