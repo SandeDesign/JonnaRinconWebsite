@@ -195,9 +195,23 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const seek = (time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+
+    // Ensure audio is seekable before setting currentTime
+    if (audio.readyState >= 1) {
+      // HAVE_METADATA or higher - safe to seek
+      audio.currentTime = time;
       setState((prev) => ({ ...prev, currentTime: time }));
+    } else {
+      // Audio not ready - wait for loadedmetadata event
+      const handleLoadedMetadata = () => {
+        audio.currentTime = time;
+        setState((prev) => ({ ...prev, currentTime: time }));
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      };
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     }
   };
 
