@@ -208,23 +208,22 @@ interface RemixFormModalProps {
 }
 
 const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave }) => {
+  const currentYear = new Date().getFullYear();
   const [formData, setFormData] = useState({
     title: remix?.title || '',
     remixArtist: remix?.remixArtist || 'Jonna Rincon',
     originalArtist: remix?.originalArtist || '',
     originalTrackTitle: remix?.originalTrackTitle || '',
-    bpm: remix?.bpm || 120,
-    key: remix?.key || '',
     genre: remix?.genre || '',
+    remixType: remix?.remixType || 'Remix',
+    year: remix?.year || currentYear,
+    collab: remix?.collab || 'Solo',
     tags: remix?.tags?.join(', ') || '',
     audioUrl: remix?.audioUrl || '',
     artworkUrl: remix?.artworkUrl || '',
     slug: remix?.slug || '',
     status: remix?.status || 'draft',
     featured: remix?.featured || false,
-    basicPrice: remix?.licenses?.basic?.price || 9,
-    premiumPrice: remix?.licenses?.premium?.price || 19,
-    exclusivePrice: remix?.licenses?.exclusive?.price || 99,
   });
   const [saving, setSaving] = useState(false);
 
@@ -238,9 +237,10 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
         remixArtist: formData.remixArtist,
         originalArtist: formData.originalArtist,
         originalTrackTitle: formData.originalTrackTitle,
-        bpm: formData.bpm,
-        key: formData.key,
         genre: formData.genre,
+        remixType: formData.remixType,
+        year: formData.year,
+        collab: formData.collab,
         tags: formData.tags.split(',').map((t) => t.trim()),
         audioUrl: formData.audioUrl,
         artworkUrl: formData.artworkUrl,
@@ -250,7 +250,7 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
         licenses: {
           basic: {
             type: 'basic' as const,
-            price: formData.basicPrice,
+            price: 9,
             features: ['MP3 Download', 'Non-exclusive rights', 'Personal use'],
             downloads: 1,
             streams: 10000,
@@ -259,7 +259,7 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
           },
           premium: {
             type: 'premium' as const,
-            price: formData.premiumPrice,
+            price: 19,
             features: ['WAV + MP3', 'Non-exclusive rights', 'Commercial use', 'Unlimited streams'],
             downloads: 5,
             streams: 1000000,
@@ -268,7 +268,7 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
           },
           exclusive: {
             type: 'exclusive' as const,
-            price: formData.exclusivePrice,
+            price: 99,
             features: ['All files', 'Exclusive rights', 'Full ownership', 'Unlimited use'],
             downloads: -1,
             streams: -1,
@@ -345,24 +345,39 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">BPM</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Type</label>
+              <select
+                value={formData.remixType}
+                onChange={(e) => setFormData({ ...formData, remixType: e.target.value as 'Remix' | 'Edit' | 'Bootleg' })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                required
+              >
+                <option value="Remix">Remix</option>
+                <option value="Edit">Edit</option>
+                <option value="Bootleg">Bootleg</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Year</label>
               <input
                 type="number"
-                value={formData.bpm}
-                onChange={(e) => setFormData({ ...formData, bpm: parseInt(e.target.value) })}
+                value={formData.year}
+                onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Key</label>
-              <input
-                type="text"
-                value={formData.key}
-                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
+              <label className="block text-sm font-medium text-white/60 mb-2">Collab</label>
+              <select
+                value={formData.collab}
+                onChange={(e) => setFormData({ ...formData, collab: e.target.value as 'Solo' | 'Collab' })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
-              />
+              >
+                <option value="Solo">Solo</option>
+                <option value="Collab">Collab</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Genre</label>
@@ -427,36 +442,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
               defaultValue={formData.artworkUrl}
               placeholder="https://example.com/image.jpg"
             />
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Basic Price (€)</label>
-              <input
-                type="number"
-                value={formData.basicPrice}
-                onChange={(e) => setFormData({ ...formData, basicPrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Premium Price (€)</label>
-              <input
-                type="number"
-                value={formData.premiumPrice}
-                onChange={(e) => setFormData({ ...formData, premiumPrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Exclusive Price (€)</label>
-              <input
-                type="number"
-                value={formData.exclusivePrice}
-                onChange={(e) => setFormData({ ...formData, exclusivePrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
           </div>
 
           <div>

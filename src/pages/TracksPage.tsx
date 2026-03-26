@@ -6,6 +6,8 @@ import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAudioPlayer, Track as AudioTrack } from '../context/AudioPlayerContext';
 import TrackListItem from '../components/TrackListItem';
+import { useTracks } from '../hooks/useTracks';
+import { useRemixes } from '../hooks/useRemixes';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -32,73 +34,18 @@ const compilations = [
   { id: 'vlogs', name: 'Vlogs', url: 'https://youtube.com/playlist?list=PLgWPe6V88vwAoxr8xVTv85989fwEe5a10', cover: 'Vlog Foto.png', type: 'Video Series' },
 ];
 
-// Track data structure for future uploads
+// Track data structure
 interface Track extends AudioTrack {
   createdAt: number;     // Timestamp for sorting
+  type?: 'Album' | 'EP' | 'Single' | 'Exclusive';
+  year?: number;
+  collab?: 'Solo' | 'Collab';
 }
-
-const baseDate = new Date('2023-12-31').getTime();
-const demoTracks: Track[] = [
-  // Albums - newest to oldest
-  { id: '1', artist: 'Jonna Rincon', title: 'Sunrise Sessions Vol.1', type: 'Album', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '3:45', createdAt: baseDate },
-  { id: '2', artist: 'Jonna Rincon', title: 'Urban Beats Collection', type: 'Album', year: 2023, collab: 'Solo', genre: 'Urban', duration: '4:12', createdAt: baseDate - 86400000 },
-  { id: '3', artist: 'Jonna Rincon', title: 'Lo-Fi Dreams', type: 'Album', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 90, duration: '3:28', createdAt: baseDate - 172800000 },
-  { id: '4', artist: 'Jonna Rincon ft. Qlas & Blacka', title: 'Rap Essentials', type: 'Album', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:35', createdAt: baseDate - 259200000 },
-  { id: '5', artist: 'Jonna Rincon', title: 'Electronic Horizons', type: 'Album', year: 2021, collab: 'Solo', genre: 'EDM', bpm: 140, duration: '3:56', createdAt: baseDate - 345600000 },
-
-  // EPs
-  { id: '6', artist: 'Jonna Rincon', title: 'Urban Nights EP', type: 'EP', year: 2023, collab: 'Solo', genre: 'Urban', duration: '2:54', createdAt: baseDate - 432000000 },
-  { id: '7', artist: 'Jonna Rincon ft. Jared', title: 'EDM Foundation EP', type: 'EP', year: 2023, collab: 'Collab', genre: 'EDM', bpm: 130, duration: '3:22', createdAt: baseDate - 518400000 },
-  { id: '8', artist: 'Jonna Rincon', title: 'Lo-Fi Sessions', type: 'EP', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 85, duration: '3:11', createdAt: baseDate - 604800000 },
-  { id: '9', artist: 'Jonna Rincon ft. MC MC', title: 'Rap Cipher Vol.1', type: 'EP', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:03', createdAt: baseDate - 691200000 },
-  { id: '10', artist: 'Jonna Rincon', title: 'Urban Groove Pack', type: 'EP', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:35', createdAt: baseDate - 777600000 },
-  { id: '11', artist: 'Jonna Rincon', title: 'Electronic Waves EP', type: 'EP', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 125, duration: '3:48', createdAt: baseDate - 864000000 },
-  { id: '12', artist: 'Jonna Rincon', title: 'Lo-Fi Vibes', type: 'EP', year: 2021, collab: 'Solo', genre: 'Lo-Fi', bpm: 92, duration: '3:19', createdAt: baseDate - 950400000 },
-
-  // Singles
-  { id: '13', artist: 'Jonna Rincon', title: 'Electric Dawn', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '3:42', createdAt: baseDate - 1036800000 },
-  { id: '14', artist: 'Jonna Rincon', title: 'City Lights', type: 'Single', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:28', createdAt: baseDate - 1123200000 },
-  { id: '15', artist: 'Jonna Rincon', title: 'Chill Moments', type: 'Single', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 88, duration: '2:56', createdAt: baseDate - 1209600000 },
-  { id: '16', artist: 'Jonna Rincon ft. Servinio', title: 'Rhythm & Flow', type: 'Single', year: 2023, collab: 'Collab', genre: 'Rap', duration: '4:18', createdAt: baseDate - 1296000000 },
-  { id: '17', artist: 'Jonna Rincon', title: 'Neon Pulse', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '3:55', createdAt: baseDate - 1382400000 },
-  { id: '18', artist: 'Jonna Rincon', title: 'Street Energy', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:34', createdAt: baseDate - 1468800000 },
-  { id: '19', artist: 'Jonna Rincon', title: 'Peaceful Rain', type: 'Single', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 80, duration: '3:12', createdAt: baseDate - 1555200000 },
-  { id: '20', artist: 'Jonna Rincon ft. Blockparty', title: 'Beat Fusion', type: 'Single', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:25', createdAt: baseDate - 1641600000 },
-  { id: '21', artist: 'Jonna Rincon', title: 'Synth Wave', type: 'Single', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 138, duration: '3:48', createdAt: baseDate - 1728000000 },
-  { id: '22', artist: 'Jonna Rincon', title: 'Urban Flow', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:41', createdAt: baseDate - 1814400000 },
-  { id: '23', artist: 'Jonna Rincon', title: 'Ambient Path', type: 'Single', year: 2021, collab: 'Solo', genre: 'Lo-Fi', bpm: 75, duration: '3:05', createdAt: baseDate - 1900800000 },
-  { id: '24', artist: 'Jonna Rincon ft. Johnny Sellah', title: 'HipHop Vibes', type: 'Single', year: 2021, collab: 'Collab', genre: 'Rap', duration: '4:31', createdAt: baseDate - 1987200000 },
-
-  // Exclusives
-  { id: '25', artist: 'Jonna Rincon', title: 'Secret Sessions Vol.1', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 132, duration: '3:39', createdAt: baseDate - 2073600000 },
-  { id: '26', artist: 'Jonna Rincon', title: 'Underground Beats', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:24', createdAt: baseDate - 2160000000 },
-  { id: '27', artist: 'Jonna Rincon', title: 'Unreleased Lo-Fi', type: 'Exclusive', year: 2023, collab: 'Solo', genre: 'Lo-Fi', bpm: 86, duration: '2:48', createdAt: baseDate - 2246400000 },
-  { id: '28', artist: 'Jonna Rincon ft. Makkie', title: 'Collab Special', type: 'Exclusive', year: 2023, collab: 'Collab', genre: 'Rap', duration: '4:14', createdAt: baseDate - 2332800000 },
-  { id: '29', artist: 'Jonna Rincon', title: 'Private Sessions', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 130, duration: '3:52', createdAt: baseDate - 2419200000 },
-  { id: '30', artist: 'Jonna Rincon', title: 'Hidden Gems', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'Urban', duration: '3:37', createdAt: baseDate - 2505600000 },
-  { id: '31', artist: 'Jonna Rincon', title: 'Vault Sessions', type: 'Exclusive', year: 2022, collab: 'Solo', genre: 'Lo-Fi', bpm: 94, duration: '3:14', createdAt: baseDate - 2592000000 },
-  { id: '32', artist: 'Jonna Rincon ft. Servinio', title: 'Premium Collab', type: 'Exclusive', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:21', createdAt: baseDate - 2678400000 },
-  { id: '33', artist: 'Jonna Rincon', title: 'Secret Track', type: 'Exclusive', year: 2021, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '3:46', createdAt: baseDate - 2764800000 },
-  { id: '34', artist: 'Jonna Rincon', title: 'Members Only', type: 'Exclusive', year: 2021, collab: 'Solo', genre: 'Urban', duration: '3:31', createdAt: baseDate - 2851200000 },
-];
-
 
 // Remix Track Interface
 interface RemixTrack extends Track {
-  remixType: 'Remix' | 'Edit' | 'Bootleg';
+  remixType?: 'Remix' | 'Edit' | 'Bootleg';
 }
-
-// Demo remix tracks
-const remixTracks: RemixTrack[] = [
-  { id: 'r1', artist: 'Jonna Rincon', title: 'Original Track', remixType: 'Remix', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 128, duration: '4:12', createdAt: baseDate },
-  { id: 'r2', artist: 'Jonna Rincon', title: 'Popular Hit', remixType: 'Edit', type: 'Single', year: 2023, collab: 'Solo', genre: 'Urban', duration: '3:45', createdAt: baseDate - 86400000 },
-  { id: 'r3', artist: 'Jonna Rincon', title: 'Classic Track', remixType: 'Bootleg', type: 'Single', year: 2023, collab: 'Solo', genre: 'EDM', bpm: 135, duration: '5:20', createdAt: baseDate - 172800000 },
-  { id: 'r4', artist: 'Jonna Rincon', title: 'Summer Vibes', remixType: 'Remix', type: 'Single', year: 2023, collab: 'Solo', genre: 'Lo-Fi', duration: '3:28', createdAt: baseDate - 259200000 },
-  { id: 'r5', artist: 'Jonna Rincon', title: 'Night Drive', remixType: 'Edit', type: 'Single', year: 2022, collab: 'Solo', genre: 'Urban', duration: '4:05', createdAt: baseDate - 345600000 },
-  { id: 'r6', artist: 'Jonna Rincon', title: 'Electric Feel', remixType: 'Bootleg', type: 'Single', year: 2022, collab: 'Solo', genre: 'EDM', bpm: 130, duration: '3:55', createdAt: baseDate - 432000000 },
-  { id: 'r7', artist: 'Jonna Rincon', title: 'Beats Drop', remixType: 'Remix', type: 'Single', year: 2022, collab: 'Collab', genre: 'Rap', duration: '4:30', createdAt: baseDate - 518400000 },
-  { id: 'r8', artist: 'Jonna Rincon', title: 'Flow State', remixType: 'Edit', type: 'Single', year: 2022, collab: 'Solo', genre: 'Lo-Fi', duration: '3:12', createdAt: baseDate - 604800000 },
-];
 
 const supportMentions = [
   { name: 'MTV', description: 'Featured multiple times on MTV platforms', type: 'Media' },
@@ -149,6 +96,8 @@ const skills = [
 
 export default function TracksPage() {
   const { play } = useAudioPlayer();
+  const { tracks: firebaseTracks, loading: tracksLoading } = useTracks({ status: 'published' });
+  const { remixes: firebaseRemixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const [activeTab, setActiveTab] = useState('tracks');
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
   const [selectedType, setSelectedType] = useState<'Album' | 'EP' | 'Single' | 'Exclusive' | 'All'>('All');
@@ -160,6 +109,34 @@ export default function TracksPage() {
   const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
   const [selectedRemixGenre, setSelectedRemixGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
   const heroTitle = useCyberDecodeInView('Music');
+
+  // Convert Firebase tracks to local Track interface
+  const demoTracks: Track[] = firebaseTracks.map(t => ({
+    id: t.id,
+    title: t.title,
+    artist: t.artist,
+    duration: '0:00',
+    genre: t.genre,
+    bpm: t.bpm,
+    year: t.year,
+    type: t.type,
+    collab: t.collab,
+    createdAt: t.createdAt.toMillis?.() || Date.now(),
+  }));
+
+  // Convert Firebase remixes to local RemixTrack interface
+  const remixTracks: RemixTrack[] = firebaseRemixes.map(r => ({
+    id: r.id,
+    title: r.title,
+    artist: r.remixArtist,
+    duration: '0:00',
+    genre: r.genre,
+    bpm: r.bpm,
+    year: r.year,
+    collab: r.collab,
+    remixType: r.remixType,
+    createdAt: r.createdAt.toMillis?.() || Date.now(),
+  }));
 
   const handlePlayTrack = (track: Track) => {
     // Filter tracks matching current filters and create queue
@@ -184,7 +161,7 @@ export default function TracksPage() {
     return typeMatch && yearMatch && collabMatch && genreMatch;
   });
 
-  const years = Array.from(new Set(demoTracks.map(t => t.year))).sort((a, b) => b - a);
+  const years = Array.from(new Set(demoTracks.map(t => t.year).filter(Boolean))).sort((a, b) => b - a) as number[];
 
   return (
     <div className="min-h-screen text-white">
