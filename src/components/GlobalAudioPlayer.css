@@ -1,0 +1,130 @@
+/* Jonna Rincon Audio Player Styling */
+
+.jonna-audio-player .rhap_container {
+  background: rgba(255, 255, 255, 0.04) !important;
+  backdrop-filter: blur(12px) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  padding: 12px 16px !important;
+  gap: 12px !important;
+}
+
+/* Progress bar */
+.jonna-audio-player .rhap_progress-container {
+  padding: 8px 0 !important;
+}
+
+.jonna-audio-player .rhap_progress-bar {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 4px !important;
+  height: 4px !important;
+}
+
+.jonna-audio-player .rhap_progress-filled {
+  background: linear-gradient(to right, rgb(220, 38, 38), rgb(239, 68, 68)) !important;
+  border-radius: 4px !important;
+}
+
+.jonna-audio-player .rhap_progress-bar:hover .rhap_progress-filled {
+  height: 6px !important;
+}
+
+/* Controls */
+.jonna-audio-player .rhap_controls-section {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.jonna-audio-player .rhap_controls-section button {
+  color: rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s ease !important;
+  padding: 8px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.jonna-audio-player .rhap_controls-section button:hover {
+  color: rgba(255, 255, 255, 0.7) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Play/Pause button */
+.jonna-audio-player .rhap_play-pause-button {
+  width: 40px !important;
+  height: 40px !important;
+  background: linear-gradient(135deg, rgb(220, 38, 38), rgb(239, 68, 68)) !important;
+  color: white !important;
+  border-radius: 50% !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.jonna-audio-player .rhap_play-pause-button:hover {
+  background: linear-gradient(135deg, rgb(239, 68, 68), rgb(248, 113, 113)) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Volume control */
+.jonna-audio-player .rhap_volume-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.jonna-audio-player .rhap_volume-button {
+  color: rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+.jonna-audio-player .rhap_volume-button:hover {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.jonna-audio-player input[type='range'] {
+  accent-color: rgb(220, 38, 38) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 4px !important;
+  height: 4px !important;
+}
+
+/* Track info */
+.jonna-audio-player .rhap_additional-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.jonna-audio-player .rhap_time {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  min-width: 45px !important;
+}
+
+/* Hide default footer if present */
+.jonna-audio-player .rhap_footer {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .jonna-audio-player .rhap_container {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+
+  .jonna-audio-player .rhap_play-pause-button {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .jonna-audio-player .rhap_controls-section button {
+    padding: 6px !important;
+  }
+}
