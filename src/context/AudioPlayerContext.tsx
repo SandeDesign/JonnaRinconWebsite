@@ -105,33 +105,56 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     };
   }, []);
 
-  // Handle audio playback when track or isPlaying changes
+  // Handle audio playback state changes
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio) {
+      console.warn('⚠️ Audio element not found');
+      return;
+    }
 
-    if (state.currentTrack?.audioUrl && state.isPlaying) {
-      // Set audio src and apply volume
-      audio.src = state.currentTrack.audioUrl;
+    console.log('🎵 useEffect triggered - isPlaying:', state.isPlaying, 'track:', state.currentTrack?.title);
+
+    if (state.isPlaying && state.currentTrack?.audioUrl) {
+      console.log('🎵 Loading audio:', state.currentTrack.audioUrl);
+
+      // Update audio properties
+      if (audio.src !== state.currentTrack.audioUrl) {
+        audio.src = state.currentTrack.audioUrl;
+      }
       audio.volume = state.volume;
 
-      // Play audio with error handling
+      // Try to play
+      console.log('🎵 Calling audio.play()');
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          if (err.name !== 'NotAllowedError' && err.name !== 'AbortError') {
-            console.error('Play error:', err);
-          }
-        });
+        playPromise
+          .then(() => console.log('✅ Audio playing successfully'))
+          .catch((err) => {
+            console.error('❌ Audio play error:', err.name, err.message);
+            if (err.name !== 'NotAllowedError' && err.name !== 'AbortError') {
+              console.error('Detailed error:', err);
+            }
+          });
       }
+    } else if (!state.isPlaying) {
+      console.log('⏸️ Pausing audio');
+      audio.pause();
     }
-  }, [state.currentTrack?.id, state.isPlaying, state.volume]);
+  }, [state.currentTrack?.id, state.isPlaying]);
 
   const play = useCallback((track: Track, queue?: Track[]) => {
-    if (!track.audioUrl) return;
+    console.log('🎵 play() called with track:', track.title, 'audioUrl:', track.audioUrl);
+
+    if (!track.audioUrl) {
+      console.warn('⚠️ Track has no audioUrl:', track);
+      return;
+    }
 
     const newQueue = queue || [track];
     const queueIndex = newQueue.findIndex((t) => t.id === track.id);
+
+    console.log('🎵 Setting state for track:', track.id);
 
     // Update state - the useEffect will handle loading and playing the audio
     setState((prev) => ({
