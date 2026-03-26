@@ -51,6 +51,7 @@ const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(und
 
 export function AudioPlayerProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const lastUpdateTimeRef = useRef<number>(0);
   const [state, setState] = useState<AudioPlayerState>({
     currentTrack: null,
     isPlaying: false,
@@ -69,7 +70,12 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      setState((prev) => ({ ...prev, currentTime: audio.currentTime }));
+      // Throttle updates to once every 250ms to prevent cascading re-renders
+      const now = performance.now();
+      if (now - lastUpdateTimeRef.current > 250) {
+        lastUpdateTimeRef.current = now;
+        setState((prev) => ({ ...prev, currentTime: audio.currentTime }));
+      }
     };
 
     const handleLoadedMetadata = () => {
@@ -104,39 +110,39 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
   }, []);
 
   const play = useCallback((track: Track, queue?: Track[]) => {
-    const audio = audioRef.current;
-    if (!audio || !track.audioUrl) {
-      console.warn('Cannot play: audio ref missing or no audioUrl');
-      return;
-    }
-
-    const newQueue = queue || [track];
-    const queueIndex = newQueue.findIndex((t) => t.id === track.id);
-
-    // Set audio src and volume directly
-    audio.src = track.audioUrl;
-    audio.volume = state.volume;
-
-    // Update state to reflect current track
-    setState({
-      currentTrack: track,
-      isPlaying: true,
-      queue: newQueue,
-      currentQueueIndex: queueIndex >= 0 ? queueIndex : 0,
-      duration: 0,
-      currentTime: 0,
-      volume: state.volume,
-      repeat: state.repeat,
-      shuffle: state.shuffle,
-    });
-
-    // Play audio immediately after setting src
-    audio.play().catch((err) => {
-      if (err.name !== 'NotAllowedError') {
-        console.error('Play error:', err);
+    setState((prev) => {
+      const audio = audioRef.current;
+      if (!audio || !track.audioUrl) {
+        console.warn('Cannot play: audio ref missing or no audioUrl');
+        return prev;
       }
+
+      const newQueue = queue || [track];
+      const queueIndex = newQueue.findIndex((t) => t.id === track.id);
+
+      // Set audio src and volume
+      audio.src = track.audioUrl;
+      audio.volume = prev.volume;
+
+      // Play audio immediately
+      audio.play().catch((err) => {
+        if (err.name !== 'NotAllowedError') {
+          console.error('Play error:', err);
+        }
+      });
+
+      // Update state to reflect current track
+      return {
+        ...prev,
+        currentTrack: track,
+        isPlaying: true,
+        queue: newQueue,
+        currentQueueIndex: queueIndex >= 0 ? queueIndex : 0,
+        duration: 0,
+        currentTime: 0,
+      };
     });
-  }, [state.volume, state.repeat, state.shuffle]);
+  }, []);
 
   const pause = useCallback(() => {
     const audio = audioRef.current;
@@ -148,7 +154,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
 
   const resume = useCallback(() => {
     const audio = audioRef.current;
-    if (audio && state.currentTrack?.audioUrl) {
+    if (audio) {
       audio.play().catch((err) => {
         if (err.name !== 'NotAllowedError') {
           console.error('Resume error:', err);
@@ -156,7 +162,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       });
     }
     setState((prev) => ({ ...prev, isPlaying: true }));
-  }, [state.currentTrack, state.volume]);
+  }, []);
 
   const togglePlayPause = useCallback(() => {
     if (state.isPlaying) {
