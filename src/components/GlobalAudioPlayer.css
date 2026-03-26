@@ -133,17 +133,17 @@
 /* Responsive */
 @media (max-width: 768px) {
   .jonna-audio-player .rhap_container {
-    padding: 14px 12px 20px 12px !important;
-    padding-bottom: max(20px, env(safe-area-inset-bottom)) !important;
-    gap: 8px !important;
+    padding: 16px 12px 32px 12px !important;
+    padding-bottom: max(32px, calc(32px + env(safe-area-inset-bottom))) !important;
+    gap: 10px !important;
   }
 
   .jonna-audio-player .rhap_progress-container {
-    padding: 10px 0 6px !important;
+    padding: 14px 0 10px !important;
   }
 
   .jonna-audio-player .rhap_progress-bar {
-    height: 5px !important;
+    height: 6px !important;
   }
 
   .jonna-audio-player .rhap_progress-filled::after {
@@ -153,12 +153,12 @@
   }
 
   .jonna-audio-player .rhap_play-pause-button {
-    width: 36px !important;
-    height: 36px !important;
+    width: 40px !important;
+    height: 40px !important;
   }
 
   .jonna-audio-player .rhap_controls-section button {
-    padding: 6px !important;
+    padding: 8px !important;
   }
 
   .jonna-audio-player .rhap_time {
