@@ -1,16 +1,16 @@
 import React from 'react';
 import { Play, Music } from 'lucide-react';
-import { useAudioPlayer } from '../context/AudioPlayerContext';
+import { setCurrentTrack, getCurrentTrack } from './GlobalAudioPlayer';
 
 interface TrackListItemProps {
-  track: any; // Track type from AudioPlayerContext
-  onPlay?: (track: any) => void; // Callback for play action
-  allTracks?: any[]; // For queue context
+  track: any;
+  onPlay?: (track: any) => void;
+  allTracks?: any[];
   showType?: boolean;
   showYear?: boolean;
   showGenre?: boolean;
   showBPM?: boolean;
-  showMetadata?: boolean; // Show all metadata together
+  showMetadata?: boolean;
 }
 
 export default function TrackListItem({
@@ -23,15 +23,15 @@ export default function TrackListItem({
   showBPM = true,
   showMetadata = false,
 }: TrackListItemProps) {
-  const { play, state } = useAudioPlayer();
-  const isCurrentTrack = state.currentTrack?.id === track.id;
+  const currentTrack = getCurrentTrack();
+  const isCurrentTrack = currentTrack?.id === track.id;
 
   const handlePlay = () => {
     if (onPlay) {
       onPlay(track);
     } else {
       const queue = allTracks.length > 0 ? allTracks : [track];
-      play(track, queue);
+      setCurrentTrack(track, queue);
     }
   };
 
