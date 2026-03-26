@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { X, ShoppingBag, ArrowUpRight } from 'lucide-react';
+import { X, ShoppingBag, ArrowUpRight, Music, LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { getCurrentTrack, togglePlayerOpen } from './GlobalAudioPlayer';
 
 interface NavigationProps {
   cartItemCount?: number;
@@ -412,31 +413,89 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                     </div>
                   </button>
 
-                  {/* Bottom row: Cart + Sign Out side by side */}
-                  <div className="flex items-center gap-5 pt-2">
-                    <button
-                      onClick={() => {
-                        if (onCartClick) {
-                          handleCartClick();
-                        } else {
-                          closeMenu();
-                          navigate('/shop/beats');
-                        }
-                      }}
-                      className="relative transition-all hover:scale-110 duration-300 cursor-pointer"
-                    >
-                      <ShoppingBag className="w-5 h-5 text-white/30 hover:text-white transition-colors" strokeWidth={1.5} />
-                      {cartItemCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-600 rounded-full flex items-center justify-center text-[8px] font-bold text-white">
-                          {cartItemCount}
-                        </span>
-                      )}
-                    </button>
+                  {/* Now Playing Widget */}
+                  {getCurrentTrack() && (
+                    <div className="mt-6 p-4 rounded-lg bg-white/[0.04] border border-white/[0.06] backdrop-blur-md">
+                      <div className="flex items-center gap-3">
+                        <Music className="w-4 h-4 text-red-500 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs text-white/40 uppercase tracking-wider">Now Playing</p>
+                          <p className="text-sm font-semibold text-white truncate">
+                            {getCurrentTrack()?.title}
+                          </p>
+                          <p className="text-xs text-white/50 truncate">
+                            {getCurrentTrack()?.artist}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
+                  {/* Bottom row: Cart + Player + Login/Logout buttons */}
+                  <div className="flex flex-col gap-4 pt-6">
+                    {/* Button row */}
+                    <div className="flex items-center gap-5">
+                      {/* Cart Button */}
+                      <button
+                        onClick={() => {
+                          if (onCartClick) {
+                            handleCartClick();
+                          } else {
+                            closeMenu();
+                            navigate('/shop/beats');
+                          }
+                        }}
+                        className="relative transition-all hover:scale-110 duration-300 cursor-pointer"
+                      >
+                        <ShoppingBag className="w-5 h-5 text-white/30 hover:text-white transition-colors" strokeWidth={1.5} />
+                        {cartItemCount > 0 && (
+                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-600 rounded-full flex items-center justify-center text-[8px] font-bold text-white">
+                            {cartItemCount}
+                          </span>
+                        )}
+                      </button>
+
+                      {/* Player Button */}
+                      <button
+                        onClick={() => { closeMenu(); togglePlayerOpen(); }}
+                        className="transition-all hover:scale-110 duration-300 cursor-pointer"
+                        title="Toggle player"
+                      >
+                        <Music className="w-5 h-5 text-white/30 hover:text-white transition-colors" strokeWidth={1.5} />
+                      </button>
+
+                      {/* Login/Logout Button */}
+                      {user ? (
+                        <button
+                          onClick={() => { closeMenu(); handleSignOut(); }}
+                          className="transition-all hover:scale-110 duration-300 cursor-pointer"
+                          title="Logout"
+                        >
+                          <LogOut className="w-5 h-5 text-white/30 hover:text-white transition-colors" strokeWidth={1.5} />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => { closeMenu(); setIsAuthModalOpen(true); setAuthMode('login'); }}
+                          className="transition-all hover:scale-110 duration-300 cursor-pointer"
+                          title="Login"
+                        >
+                          <LogIn className="w-5 h-5 text-white/30 hover:text-white transition-colors" strokeWidth={1.5} />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Text labels under buttons */}
+                    <div className="flex gap-5 text-xs uppercase tracking-widest text-white/20">
+                      <span>Cart</span>
+                      <span>Player</span>
+                      <span>{user ? 'Logout' : 'Login'}</span>
+                    </div>
+
+                    {/* Logout text button (alternative if user prefers) */}
                     {user && (
                       <button
                         onClick={() => { closeMenu(); handleSignOut(); }}
-                        className="cursor-pointer"
+                        className="text-left cursor-pointer w-full"
                       >
                         <span className="text-sm uppercase tracking-widest text-white/20 hover:text-red-400 transition-colors duration-300 font-medium">
                           Sign Out

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
+import { X } from 'lucide-react';
 import 'react-h5-audio-player/lib/styles.css';
 import './GlobalAudioPlayer.css';
 
@@ -17,7 +18,7 @@ interface PlayerStore {
   currentIndex: number;
 }
 
-// Global player state - simple, no React
+// Global player state
 const playerStore: PlayerStore = {
   currentTrack: null,
   queue: [],
@@ -25,11 +26,14 @@ const playerStore: PlayerStore = {
 };
 
 let setPlayerUI: ((store: PlayerStore) => void) | null = null;
+let togglePlayerVisibility: (() => void) | null = null;
+let isPlayerVisible = true;
 
 export function setCurrentTrack(track: Track, queue: Track[] = []) {
   playerStore.currentTrack = track;
   playerStore.queue = queue.length > 0 ? queue : [track];
   playerStore.currentIndex = playerStore.queue.findIndex((t) => t.id === track.id);
+  isPlayerVisible = true;
   if (setPlayerUI) setPlayerUI({ ...playerStore });
 }
 
@@ -37,18 +41,36 @@ export function getCurrentTrack() {
   return playerStore.currentTrack;
 }
 
+export function getIsPlayerVisible() {
+  return isPlayerVisible;
+}
+
+export function togglePlayerOpen() {
+  isPlayerVisible = !isPlayerVisible;
+  if (togglePlayerVisibility) togglePlayerVisibility();
+}
+
+export function openPlayer() {
+  isPlayerVisible = true;
+  if (togglePlayerVisibility) togglePlayerVisibility();
+}
+
 export default function GlobalAudioPlayer() {
   const audioRef = useRef<any>(null);
   const [store, setStore] = useState<PlayerStore>(playerStore);
+  const [isVisible, setIsVisible] = useState(isPlayerVisible);
 
-  // Register UI updater
+  // Register UI updaters
   React.useEffect(() => {
     setPlayerUI = (newStore) => {
       setStore({ ...newStore });
     };
-  }, []);
+    togglePlayerVisibility = () => {
+      setIsVisible(!isVisible);
+    };
+  }, [isVisible]);
 
-  if (!store.currentTrack) {
+  if (!store.currentTrack || !isVisible) {
     return null;
   }
 
@@ -71,18 +93,31 @@ export default function GlobalAudioPlayer() {
     }
   };
 
+  const handleClose = () => {
+    togglePlayerOpen();
+  };
+
   return (
     <>
       <div className="fixed bottom-0 left-0 right-0 z-40 jonna-audio-player">
-        <AudioPlayer
-          ref={audioRef}
-          autoPlay
-          src={store.currentTrack.audioUrl || ''}
-          onClickNext={handleNext}
-          onClickPrevious={handlePrevious}
-          showFilledVolume
-          layout="horizontal-reverse"
-        />
+        <div className="relative">
+          <button
+            onClick={handleClose}
+            className="absolute top-2 right-4 z-50 text-white/40 hover:text-white/70 transition-colors"
+            title="Close player"
+          >
+            <X size={20} />
+          </button>
+          <AudioPlayer
+            ref={audioRef}
+            autoPlay
+            src={store.currentTrack.audioUrl || ''}
+            onClickNext={handleNext}
+            onClickPrevious={handlePrevious}
+            showFilledVolume
+            layout="horizontal-reverse"
+          />
+        </div>
       </div>
       <style>{`
         body {
