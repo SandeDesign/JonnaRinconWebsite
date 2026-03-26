@@ -72,7 +72,6 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio();
-      audioRef.current.volume = state.volume;
     }
 
     const audio = audioRef.current;
@@ -120,6 +119,13 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
       audio.removeEventListener('ended', handleEnded);
     };
   }, []);
+
+  // Update audio volume when state volume changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = state.volume;
+    }
+  }, [state.volume]);
 
   const play = (track: Track, queue: Track[] = []) => {
     if (!audioRef.current) return;
