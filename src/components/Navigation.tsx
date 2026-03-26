@@ -484,12 +484,6 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       )}
                     </div>
 
-                    {/* Text labels under buttons */}
-                    <div className="flex gap-5 text-xs uppercase tracking-widest text-white/20">
-                      <span>Cart</span>
-                      <span>Player</span>
-                      <span>{user ? 'Logout' : 'Login'}</span>
-                    </div>
 
                     {/* Logout text button (alternative if user prefers) */}
                     {user && (
