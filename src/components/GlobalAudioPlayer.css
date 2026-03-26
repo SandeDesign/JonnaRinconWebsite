@@ -12,7 +12,7 @@
 /* X button positioning for mobile */
 @media (max-width: 768px) {
   .jonna-audio-player > div > button {
-    top: 16px !important;
+    top: 46px !important;
     right: 12px !important;
     z-index: 60 !important;
   }
