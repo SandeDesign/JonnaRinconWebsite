@@ -6,6 +6,7 @@ import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
 import { toDirectUrl } from '../../lib/utils/urlUtils';
+import { setCurrentTrack, getCurrentTrack } from '../../components/GlobalAudioPlayer';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase/config';
 
@@ -13,8 +14,6 @@ const BeatsShop: React.FC = () => {
   const [beats, setBeats] = useState<Beat[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [playingId, setPlayingId] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const [filter, setFilter] = useState<{
     genre?: string;
     search?: string;
@@ -59,20 +58,30 @@ const BeatsShop: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!audioRef.current) return;
-    if (playingId) {
-      const beat = beats.find(b => b.id === playingId);
-      const url = beat?.audioUrl || '';
-      if (url && audioRef.current.src !== url) {
-        audioRef.current.src = url;
-      }
-      if (url) audioRef.current.play().catch(() => {});
-    } else {
-      audioRef.current.pause();
-      audioRef.current.src = '';
-    }
-  }, [playingId, beats]);
+  const isCurrentBeatPlaying = (beatId: string) => {
+    const currentTrack = getCurrentTrack();
+    return currentTrack?.id === beatId;
+  };
+
+  const handlePlayBeat = (beat: Beat) => {
+    // Convert beat to track format
+    const trackBeat = {
+      id: beat.id,
+      title: beat.title,
+      artist: beat.producer || 'Unknown',
+      audioUrl: beat.audioUrl,
+      coverArt: beat.artworkUrl,
+      duration: '0:00',
+      genre: beat.genre || '',
+      type: 'Single' as const,
+      year: new Date().getFullYear(),
+      collab: 'Solo' as const,
+      createdAt: beat.createdAt?.seconds ? beat.createdAt.seconds * 1000 : Date.now(),
+    };
+
+    // Use global player
+    setCurrentTrack(trackBeat, [trackBeat]);
+  };
 
   const genres = ['Trap', 'Hip Hop', 'Drill', 'R&B', 'Pop', 'Electronic', 'Afrobeat'];
   const hasActiveFilters = !!(filter.genre || filter.search);
@@ -125,7 +134,6 @@ const BeatsShop: React.FC = () => {
       </div>
 
       <Navigation isDarkOverlay={true} />
-      <audio ref={audioRef} onEnded={() => setPlayingId(null)} />
 
       {/* Hero - same layout as Releases, Contact, Socials */}
       <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
@@ -228,11 +236,11 @@ const BeatsShop: React.FC = () => {
                     <img src={beat.artworkUrl || '/JEIGHTENESIS.jpg'} alt={beat.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                     <button
-                      onClick={(e) => { e.preventDefault(); setPlayingId(playingId === beat.id ? null : beat.id); }}
+                      onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                       className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
                     >
                       <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-                        {playingId === beat.id ? (
+                        {isCurrentBeatPlaying(beat.id) ? (
                           <Pause className="w-6 h-6 text-white" fill="currentColor" />
                         ) : (
                           <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
@@ -277,7 +285,7 @@ const BeatsShop: React.FC = () => {
                   <div className="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0 rounded-lg overflow-hidden">
                     <img src={beat.artworkUrl || '/JEIGHTENESIS.jpg'} alt={beat.title} className="w-full h-full object-cover" />
                     <button
-                      onClick={(e) => { e.preventDefault(); setPlayingId(playingId === beat.id ? null : beat.id); }}
+                      onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                       className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
                     >
                       {playingId === beat.id ? (
