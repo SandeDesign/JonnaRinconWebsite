@@ -110,38 +110,34 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
   }, []);
 
   const play = useCallback((track: Track, queue?: Track[]) => {
-    setState((prev) => {
-      const audio = audioRef.current;
-      if (!audio || !track.audioUrl) {
-        console.warn('Cannot play: audio ref missing or no audioUrl');
-        return prev;
-      }
+    const audio = audioRef.current;
+    if (!audio || !track.audioUrl) return;
 
-      const newQueue = queue || [track];
-      const queueIndex = newQueue.findIndex((t) => t.id === track.id);
+    const newQueue = queue || [track];
+    const queueIndex = newQueue.findIndex((t) => t.id === track.id);
 
-      // Set audio src and volume
-      audio.src = track.audioUrl;
-      audio.volume = prev.volume;
+    // Set audio BEFORE setState
+    audio.src = track.audioUrl;
 
-      // Play audio immediately
+    // Update state
+    setState((prev) => ({
+      ...prev,
+      currentTrack: track,
+      isPlaying: true,
+      queue: newQueue,
+      currentQueueIndex: queueIndex >= 0 ? queueIndex : 0,
+      duration: 0,
+      currentTime: 0,
+    }));
+
+    // Play AFTER setState (next tick)
+    setTimeout(() => {
       audio.play().catch((err) => {
         if (err.name !== 'NotAllowedError') {
           console.error('Play error:', err);
         }
       });
-
-      // Update state to reflect current track
-      return {
-        ...prev,
-        currentTrack: track,
-        isPlaying: true,
-        queue: newQueue,
-        currentQueueIndex: queueIndex >= 0 ? queueIndex : 0,
-        duration: 0,
-        currentTime: 0,
-      };
-    });
+    }, 0);
   }, []);
 
   const pause = useCallback(() => {
