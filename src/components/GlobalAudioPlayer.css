@@ -1,28 +1,32 @@
 /* Jonna Rincon Audio Player Styling */
 
 .jonna-audio-player .rhap_container {
+  position: relative !important;
   background: rgba(255, 255, 255, 0.04) !important;
   backdrop-filter: blur(12px) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-  padding: 16px 16px 24px 16px !important;
+  padding: 48px 16px 24px 16px !important;
   gap: 14px !important;
+}
+
+/* X button positioning for mobile */
+@media (max-width: 768px) {
+  .jonna-audio-player > div > button {
+    top: 46px !important;
+    right: 12px !important;
+    z-index: 60 !important;
+  }
 }
 
 /* Progress bar */
 .jonna-audio-player .rhap_progress-container {
-  padding: 12px 0 8px !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 !important;
+  padding: 12px 0 8px 0 !important;
   width: 100% !important;
-}
-
-@media (max-width: 768px) {
-  .jonna-audio-player .rhap_progress-container {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    margin: 0 !important;
-    padding: 10px 0 6px 0 !important;
-  }
 }
 
 .jonna-audio-player .rhap_progress-bar {
@@ -54,6 +58,11 @@
 
 .jonna-audio-player .rhap_progress-bar:hover .rhap_progress-filled {
   height: 6px !important;
+}
+
+/* Hide buffering bar */
+.jonna-audio-player .rhap_buffered-progress {
+  display: none !important;
 }
 
 /* Controls */
