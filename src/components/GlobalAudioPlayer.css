@@ -167,6 +167,6 @@
   }
 
   .jonna-audio-player .rhap_volume-container {
-    gap: 6px !important;
+    display: none !important;
   }
 }
