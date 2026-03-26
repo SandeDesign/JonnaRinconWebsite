@@ -169,6 +169,18 @@ export default function TracksPage() {
 
   const years = Array.from(new Set(demoTracks.map(t => t.year).filter(Boolean))).sort((a, b) => b - a) as number[];
 
+  // Debug: disable rendering to isolate error
+  return (
+    <div className="min-h-screen text-white flex items-center justify-center">
+      <div className="text-center">
+        <p className="text-2xl mb-4">Audio playing: {state.isPlaying ? 'YES' : 'NO'}</p>
+        <p className="text-xl mb-4">{state.currentTrack?.title || 'No track'}</p>
+        {/* Render error: {(() => { throw new Error('#310'); })()}} */}
+      </div>
+    </div>
+  );
+
+  // Original code below:
   return (
     <div className="min-h-screen text-white">
       {/* Fixed JEIGHTENESIS Background */}
