@@ -116,6 +116,7 @@ export default function GlobalAudioPlayer() {
             onClickPrevious={handlePrevious}
             showFilledVolume
             layout="horizontal-reverse"
+            volume={1.0}
           />
         </div>
       </div>
