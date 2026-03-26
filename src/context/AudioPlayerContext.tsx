@@ -49,6 +49,8 @@ const AudioPlayerContext = createContext<AudioPlayerContextType | undefined>(und
 
 export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const stateRef = useRef<AudioPlayerState | null>(null);
+
   const [state, setState] = useState<AudioPlayerState>({
     currentTrack: null,
     isPlaying: false,
@@ -60,6 +62,11 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     repeat: 'off',
     shuffle: false,
   });
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   // Create or get audio element
   useEffect(() => {
@@ -79,11 +86,27 @@ export const AudioPlayerProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleEnded = () => {
-      if (state.repeat === 'one') {
+      const currentState = stateRef.current;
+      if (!currentState) return;
+
+      if (currentState.repeat === 'one') {
         audio.currentTime = 0;
-        audio.play();
-      } else {
-        handleNext();
+        audio.play().catch((err) => console.error('Error replaying:', err));
+      } else if (currentState.repeat === 'all' && currentState.queue.length > 0) {
+        // Move to next track in queue
+        const nextIndex = (currentState.currentQueueIndex + 1) % currentState.queue.length;
+        const nextTrack = currentState.queue[nextIndex];
+        if (nextTrack) {
+          audio.src = nextTrack.audioUrl || '';
+          audio.play().catch((err) => console.error('Error playing next:', err));
+          setState((prev) => ({
+            ...prev,
+            currentTrack: nextTrack,
+            currentQueueIndex: nextIndex,
+            isPlaying: true,
+            currentTime: 0,
+          }));
+        }
       }
     };
 
