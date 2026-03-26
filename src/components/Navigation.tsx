@@ -147,8 +147,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const menuItems: { label: string; subtitle: string; href?: string; action?: () => void }[] = [
     { label: 'BEAT SHOP', subtitle: 'Browse instrumentals', action: () => { closeMenu(); navigate('/shop/beats'); } },
     { label: 'MY TRACKS', subtitle: 'Full discography', action: () => { closeMenu(); navigate('/tracks'); } },
-    { label: 'SOCIALS', subtitle: 'Follow the journey', action: () => { closeMenu(); navigate('/socials'); } },
-    { label: 'CONTACT', subtitle: 'Get in touch', action: () => { closeMenu(); navigate('/contact'); } },
+    { label: 'CONNECT & CONTACT', subtitle: 'Follow & Get in touch', action: () => { closeMenu(); navigate('/socials'); } },
   ];
 
   const socialLinks = [
