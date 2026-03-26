@@ -103,7 +103,7 @@ export default function GlobalAudioPlayer() {
         <div className="relative">
           <button
             onClick={handleClose}
-            className="absolute top-2 right-4 z-50 text-white/40 hover:text-white/70 transition-colors"
+            className="absolute top-3 right-4 z-50 text-white/40 hover:text-white/70 transition-colors"
             title="Close player"
           >
             <X size={20} />
@@ -121,7 +121,7 @@ export default function GlobalAudioPlayer() {
       </div>
       <style>{`
         body {
-          padding-bottom: ${store.currentTrack ? '90px' : '0'};
+          padding-bottom: ${store.currentTrack ? '140px' : '0'};
         }
       `}</style>
     </>
