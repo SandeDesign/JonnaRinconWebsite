@@ -24,7 +24,6 @@ const TracksPage: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this track?')) return;
-
     try {
       await trackService.deleteTrack(id);
       alert('Track deleted successfully');
@@ -44,7 +43,6 @@ const TracksPage: React.FC = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">Tracks Management</h1>
@@ -59,7 +57,6 @@ const TracksPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total Tracks</p>
@@ -85,45 +82,29 @@ const TracksPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Tracks Table */}
         <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/[0.06]">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Track
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Album
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Genre
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    BPM / Key
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Plays
-                  </th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-white/60">
-                    Actions
-                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Track</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Genre</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">BPM / Key</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Plays</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-white/60">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.06]">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-white/40">
+                    <td colSpan={6} className="px-6 py-12 text-center text-white/40">
                       Loading tracks...
                     </td>
                   </tr>
                 ) : tracks.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-white/40">
+                    <td colSpan={6} className="px-6 py-12 text-center text-white/40">
                       No tracks yet. Create your first track!
                     </td>
                   </tr>
@@ -143,7 +124,6 @@ const TracksPage: React.FC = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-white/60">{track.album || '-'}</td>
                       <td className="px-6 py-4">
                         <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm">
                           {track.genre}
@@ -200,7 +180,6 @@ const TracksPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Track Form Modal */}
       {showModal && (
         <TrackFormModal
           track={editingTrack}
@@ -225,8 +204,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
   const [formData, setFormData] = useState({
     title: track?.title || '',
     artist: track?.artist || 'Jonna Rincon',
-    album: track?.album || '',
-    trackNumber: track?.trackNumber || 1,
     bpm: track?.bpm || 120,
     key: track?.key || '',
     genre: track?.genre || '',
@@ -250,8 +227,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
       const trackData: any = {
         title: formData.title,
         artist: formData.artist,
-        album: formData.album,
-        trackNumber: formData.trackNumber,
         bpm: formData.bpm,
         key: formData.key,
         genre: formData.genre,
@@ -329,7 +304,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Artist</label>
               <input
@@ -340,27 +314,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 required
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Album</label>
-              <input
-                type="text"
-                value={formData.album}
-                onChange={(e) => setFormData({ ...formData, album: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Track Number</label>
-              <input
-                type="number"
-                value={formData.trackNumber}
-                onChange={(e) => setFormData({ ...formData, trackNumber: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">BPM</label>
               <input
@@ -371,7 +324,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Key</label>
               <input
@@ -382,7 +334,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Genre</label>
               <input
@@ -393,7 +344,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Status</label>
               <select
@@ -409,15 +359,13 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">
-              Tags (comma separated)
-            </label>
+            <label className="block text-sm font-medium text-white/60 mb-2">Tags (comma separated)</label>
             <input
               type="text"
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
               className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              placeholder="pop, melodic, upbeat"
+              placeholder="electronic, remix, bootleg"
             />
           </div>
 
@@ -432,7 +380,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
             />
           </div>
 
-          {/* Audio and Artwork URLs */}
           <div className="grid grid-cols-2 gap-4">
             <LinkInput
               label="Audio URL"
@@ -462,7 +409,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Premium Price (€)</label>
               <input
@@ -472,7 +418,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Exclusive Price (€)</label>
               <input

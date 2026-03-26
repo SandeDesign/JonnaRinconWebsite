@@ -24,7 +24,6 @@ const RemixesPage: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this remix?')) return;
-
     try {
       await remixService.deleteRemix(id);
       alert('Remix deleted successfully');
@@ -44,7 +43,6 @@ const RemixesPage: React.FC = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">Remixes Management</h1>
@@ -59,7 +57,6 @@ const RemixesPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Total Remixes</p>
@@ -85,33 +82,18 @@ const RemixesPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Remixes Table */}
         <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/[0.06]">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Remix
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Original Artist
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Genre
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    BPM / Key
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Plays
-                  </th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-white/60">
-                    Actions
-                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Remix</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Original Artist</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Genre</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">BPM / Key</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Plays</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-white/60">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.06]">
@@ -200,7 +182,6 @@ const RemixesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Remix Form Modal */}
       {showModal && (
         <RemixFormModal
           remix={editingRemix}
@@ -244,11 +225,9 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('📝 [RemixesPage] handleSubmit called');
     setSaving(true);
 
     try {
-      console.log('📝 [RemixesPage] Building remixData...');
       const remixData: any = {
         title: formData.title,
         remixArtist: formData.remixArtist,
@@ -295,17 +274,13 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
       };
 
       if (remix) {
-        console.log('📝 [RemixesPage] Updating existing remix...');
         await remixService.updateRemix(remix.id, remixData);
         alert('Remix updated successfully');
       } else {
-        console.log('📝 [RemixesPage] Creating NEW remix, calling remixService.createRemix()...');
-        const result = await remixService.createRemix(remixData);
-        console.log('✅ [RemixesPage] remixService.createRemix succeeded:', result);
+        await remixService.createRemix(remixData);
         alert('Remix created successfully');
       }
 
-      console.log('📝 [RemixesPage] Calling onSave()');
       onSave();
     } catch (error: any) {
       alert(error.message);
@@ -335,7 +310,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Remix Artist</label>
               <input
@@ -346,7 +320,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Original Artist</label>
               <input
@@ -357,7 +330,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Original Track Title</label>
               <input
@@ -367,7 +339,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">BPM</label>
               <input
@@ -378,7 +349,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Key</label>
               <input
@@ -389,7 +359,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Genre</label>
               <input
@@ -400,7 +369,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Status</label>
               <select
@@ -416,9 +384,7 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">
-              Tags (comma separated)
-            </label>
+            <label className="block text-sm font-medium text-white/60 mb-2">Tags (comma separated)</label>
             <input
               type="text"
               value={formData.tags}
@@ -439,7 +405,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
             />
           </div>
 
-          {/* Audio and Artwork URLs */}
           <div className="grid grid-cols-2 gap-4">
             <LinkInput
               label="Audio URL"
@@ -469,7 +434,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Premium Price (€)</label>
               <input
@@ -479,7 +443,6 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Exclusive Price (€)</label>
               <input
