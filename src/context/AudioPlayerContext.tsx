@@ -77,20 +77,21 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     };
 
     const handleEnded = () => {
-      if (state.repeat === 'one') {
-        audio.currentTime = 0;
-        audio.play();
-      } else {
-        // Play next track
-        const nextIndex = (state.currentQueueIndex + 1) % state.queue.length;
-        if (nextIndex === 0 && state.repeat === 'off') {
-          setState((prev) => ({ ...prev, isPlaying: false, currentTrack: null }));
+      setState((prev) => {
+        if (prev.repeat === 'one') {
+          audio.currentTime = 0;
+          audio.play().catch(() => {});
+          return prev;
         } else {
-          const nextTrack = state.queue[nextIndex];
-          play(nextTrack, state.queue);
-          setState((prev) => ({ ...prev, currentQueueIndex: nextIndex }));
+          // Play next track
+          const nextIndex = (prev.currentQueueIndex + 1) % prev.queue.length;
+          if (nextIndex === 0 && prev.repeat === 'off') {
+            return { ...prev, isPlaying: false, currentTrack: null };
+          } else {
+            return prev;
+          }
         }
-      }
+      });
     };
 
     audio.addEventListener('timeupdate', handleTimeUpdate);
@@ -102,7 +103,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [state]);
+  }, []);
 
   const play = useCallback((track: Track, queue?: Track[]) => {
     const audio = audioRef.current;
