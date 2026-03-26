@@ -60,10 +60,11 @@
   height: 6px !important;
 }
 
-/* Hide buffering bar */
+/* Hide buffering bar - all variants */
 .jonna-audio-player .rhap_buffered-progress,
 .jonna-audio-player .rhap_buffering,
-.jonna-audio-player .rhap_buffered {
+.jonna-audio-player .rhap_buffered,
+.jonna-audio-player .rhap_progress-bar > *:not(.rhap_progress-filled) {
   display: none !important;
 }
 
