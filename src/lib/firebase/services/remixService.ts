@@ -46,16 +46,19 @@ class RemixService {
 
   async createRemix(remixData: Omit<Remix, 'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'lastUpdatedBy'>): Promise<Remix> {
     const user = authService.getCurrentUser();
-    console.log('🔍 createRemix called - Current user:', user);
+    console.log('🔍 [remixService.createRemix] Called. User:', user);
+    alert('🔍 DEBUG: createRemix called. User: ' + (user ? user.uid : 'null'));
 
     if (!user || user.role !== 'admin') {
-      console.error('❌ Unauthorized: user is null or not admin. Role:', user?.role);
+      console.error('❌ [remixService.createRemix] Unauthorized. Role:', user?.role);
+      const errMsg = user ? `Not admin (role: ${user.role})` : 'Not logged in';
+      alert('❌ ERROR: ' + errMsg);
       throw new Error('Unauthorized: Only admins can create remixes');
     }
 
     try {
-      console.log('✅ User is admin, proceeding with remix creation');
-      console.log('📝 Remix data:', remixData);
+      console.log('✅ [remixService.createRemix] User is admin. Proceeding...');
+      alert('✅ User authenticated as admin. Creating...');
 
       const newRemix = {
         ...remixData,
@@ -68,9 +71,12 @@ class RemixService {
         updatedAt: serverTimestamp(),
       };
 
-      console.log('🚀 Writing to Firestore collection:', this.collectionName);
+      console.log('🚀 [remixService.createRemix] Writing to Firestore...');
+      alert('🚀 Writing to Firestore "remixes" collection...');
+
       const docRef = await addDoc(collection(db, this.collectionName), newRemix);
-      console.log('✨ Remix created with ID:', docRef.id);
+      console.log('✨ [remixService.createRemix] Success! ID:', docRef.id);
+      alert('✨ SUCCESS! Created remix with ID: ' + docRef.id);
 
       const createdRemix = await this.getRemixById(docRef.id);
 
@@ -78,12 +84,11 @@ class RemixService {
         throw new Error('Failed to retrieve created remix');
       }
 
-      console.log('📦 Remix retrieved successfully:', createdRemix);
+      console.log('📦 [remixService.createRemix] Remix retrieved:', createdRemix);
       return createdRemix;
     } catch (error: any) {
-      console.error('❌ CREATE REMIX ERROR - Code:', error.code);
-      console.error('❌ CREATE REMIX ERROR - Message:', error.message);
-      console.error('❌ CREATE REMIX ERROR - Full error:', error);
+      console.error('❌ [remixService.createRemix] ERROR:', error);
+      alert('❌ ERROR: ' + (error.message || JSON.stringify(error)));
       throw new Error(error.message || 'Failed to create remix');
     }
   }
