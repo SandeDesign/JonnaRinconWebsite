@@ -8,7 +8,7 @@ export default function MarqueeRed() {
     'PRODUCER',
     'LIVE STREAMER',
     'BEATMAKER',
-    'DJ',
+    'JEIGHTENESIS',
     'SOCIALS',
     'CONTENT CREATOR',
     'MIXING',
@@ -17,7 +17,7 @@ export default function MarqueeRed() {
     'ARTIST',
   ];
 
-  const highlighted = new Set(['JONNA RINCON']);
+  const highlighted = new Set(['JEIGHTENESIS']);
 
   const renderItems = () =>
     items.map((item, i) => (
@@ -86,9 +86,12 @@ export default function MarqueeRed() {
           flex-shrink: 0;
         }
         .marquee-red-filled {
-          color: white;
-          -webkit-text-stroke: 0;
+          color: black;
+          -webkit-text-stroke: 2px white;
           font-weight: 900;
+          background: white;
+          padding: 0 0.15em;
+          border-radius: 0.1em;
         }
         .marquee-red-ltr .marquee-red-inner {
           animation: marquee-red-scroll-ltr 160s linear infinite;

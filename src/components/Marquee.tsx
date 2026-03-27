@@ -17,11 +17,14 @@ export default function Marquee() {
     'DJ',
   ];
 
-  // Render each item with ARTIST getting special bold/filled styling
+  // Only highlight JONNA RINCON once
+  const highlighted = new Set(['JONNA RINCON']);
+
+  // Render each item
   const renderItems = () =>
     items.map((item, i) => (
       <span key={i}>
-        {item === 'ARTIST' ? (
+        {highlighted.has(item) && items.indexOf(item) === items.indexOf('JONNA RINCON') ? (
           <span className="marquee-filled">{item}</span>
         ) : (
           item
@@ -88,8 +91,12 @@ export default function Marquee() {
         }
         .marquee-filled {
           color: white;
-          -webkit-text-stroke: 0;
+          -webkit-text-stroke: 2px white;
           font-weight: 900;
+          background: white;
+          color: black;
+          padding: 0 0.15em;
+          border-radius: 0.1em;
         }
         .marquee-ltr .marquee-inner {
           animation: marquee-scroll-ltr 160s linear infinite;
