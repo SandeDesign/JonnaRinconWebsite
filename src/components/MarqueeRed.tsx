@@ -40,28 +40,26 @@ export default function MarqueeRed() {
     </>
   );
 
-  const strokeColor = 'rgba(255, 255, 255, 0.6)';
-
   return (
     <div className="overflow-hidden py-6 md:py-10 select-none flex flex-col gap-2 md:gap-3">
       <div className="marquee-red-row marquee-red-ltr">
         <div className="marquee-red-inner">
-          <span className="marquee-red-text" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
-          <span className="marquee-red-text" aria-hidden="true" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
+          <span className="marquee-red-text">{renderRow()}</span>
+          <span className="marquee-red-text" aria-hidden="true">{renderRow()}</span>
         </div>
       </div>
 
       <div className="marquee-red-row marquee-red-rtl">
         <div className="marquee-red-inner">
-          <span className="marquee-red-text" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
-          <span className="marquee-red-text" aria-hidden="true" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
+          <span className="marquee-red-text">{renderRow()}</span>
+          <span className="marquee-red-text" aria-hidden="true">{renderRow()}</span>
         </div>
       </div>
 
       <div className="marquee-red-row marquee-red-ltr-slow">
         <div className="marquee-red-inner">
-          <span className="marquee-red-text" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
-          <span className="marquee-red-text" aria-hidden="true" style={{ WebkitTextStroke: `1.5px ${strokeColor}` }}>{renderRow()}</span>
+          <span className="marquee-red-text">{renderRow()}</span>
+          <span className="marquee-red-text" aria-hidden="true">{renderRow()}</span>
         </div>
       </div>
 
@@ -84,6 +82,7 @@ export default function MarqueeRed() {
           -webkit-text-stroke: 0;
           white-space: nowrap;
           flex-shrink: 0;
+          font-family: 'Arial', 'Helvetica', sans-serif;
         }
         .marquee-red-filled {
           color: black;
