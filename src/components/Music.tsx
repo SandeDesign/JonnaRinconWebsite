@@ -1,35 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function Music() {
-  const [currentPlaylist, setCurrentPlaylist] = useState(0);
+  const navigate = useNavigate();
   const musicTitle = useCyberDecodeInView('My Tracks');
   const { ref: revealRef, isVisible } = useScrollReveal();
   const youtubeTitle = useCyberDecodeInView('YouTube');
-
-  const spotifyPlaylists = [
-    {
-      name: 'Top Tracks',
-      embedUrl: 'https://open.spotify.com/embed/artist/6o3BlWTeK4EKUyByo35y6F?utm_source=generator'
-    },
-    {
-      name: 'Playlist 2',
-      embedUrl: 'https://open.spotify.com/embed/playlist/5SaEeqVSV9vyLUvqsrrfJ7?utm_source=generator&theme=0'
-    },
-    {
-      name: 'Playlist 3',
-      embedUrl: 'https://open.spotify.com/embed/playlist/7mIjrYgNeQxVw2lBBsEDjE?utm_source=generator&theme=0'
-    },
-    {
-      name: 'Playlist 4',
-      embedUrl: 'https://open.spotify.com/embed/playlist/5smfHiU4egb6uyHYzgmqdC?utm_source=generator'
-    },
-    {
-      name: 'This is Jonna Rincon',
-      embedUrl: 'https://open.spotify.com/embed/playlist/37i9dQZF1DZ06evO3LPWh3?utm_source=generator'
-    }
-  ];
 
   const compilations = [
     {
@@ -72,64 +50,43 @@ export default function Music() {
         <div className="max-w-6xl mx-auto w-full">
           <div className="text-center mb-10 md:mb-16">
             <h2 ref={musicTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-4xl md:text-7xl font-black uppercase tracking-wider text-white">
-              <span className="md:hidden">{spotifyPlaylists[currentPlaylist].name}</span>
-              <span className="hidden md:block">{musicTitle.display}</span>
+              {musicTitle.display}
             </h2>
           </div>
 
           <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 md:p-8">
-            <div className="flex items-center justify-center gap-6 mb-6">
-              <p className="hidden md:block text-xl font-semibold text-white/80">
-                {spotifyPlaylists[currentPlaylist].name}
-              </p>
-              <div className="flex gap-2.5">
-                {spotifyPlaylists.map((playlist, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentPlaylist(index)}
-                    className={`h-2.5 rounded-full transition-all duration-300 ${
-                      currentPlaylist === index
-                        ? 'bg-white w-8'
-                        : 'bg-white/20 hover:bg-white/30 w-2.5'
-                    }`}
-                    title={playlist.name}
-                    aria-label={`Switch to ${playlist.name}`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl overflow-hidden relative">
-              {spotifyPlaylists.map((playlist, index) => (
-                <div
-                  key={index}
-                  className={`transition-opacity duration-500 ${
-                    index === currentPlaylist ? 'opacity-100 relative z-10' : 'opacity-0 absolute inset-0 z-0 pointer-events-none'
-                  }`}
+            {/* Navigation Tabs */}
+            <div className="flex flex-col items-center gap-6">
+              {/* Main Tabs */}
+              <div className="flex flex-wrap justify-center gap-3">
+                <button
+                  onClick={() => navigate('/tracks?tab=tracks')}
+                  className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-[1.05]"
                 >
-                  <iframe
-                    style={{ borderRadius: '16px' }}
-                    src={index === currentPlaylist ? playlist.embedUrl : undefined}
-                    width="100%"
-                    height="400"
-                    frameBorder="0"
-                    allowFullScreen
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                    tabIndex={index === currentPlaylist ? 0 : -1}
-                  ></iframe>
-                </div>
-              ))}
-            </div>
+                  My Tracks
+                </button>
+                <button
+                  onClick={() => navigate('/tracks?tab=remixes')}
+                  className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-[1.05]"
+                >
+                  Remixes & Edits
+                </button>
+                <button
+                  onClick={() => navigate('/tracks?tab=spotify')}
+                  className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-[1.05]"
+                >
+                  Spotify Playlists
+                </button>
+              </div>
 
-            <a
-              href="https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 w-full inline-block text-center py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all duration-300 hover:scale-[1.02]"
-            >
-              Open in Spotify
-            </a>
+              {/* Beat Store Tab (Smaller) */}
+              <button
+                onClick={() => navigate('/shop/beats')}
+                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white/80 hover:text-white font-semibold rounded-xl transition-all duration-300 hover:scale-[1.05] text-sm"
+              >
+                Beat Store
+              </button>
+            </div>
           </div>
         </div>
       </section>
