@@ -115,6 +115,7 @@ export default function TracksPage() {
   const [selectedRemixYear, setSelectedRemixYear] = useState<number | 'All'>('All');
   const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
   const [selectedRemixGenre, setSelectedRemixGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
+  const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
   const heroTitle = useCyberDecodeInView('Music');
 
   // Convert Firebase tracks to local Track interface
@@ -175,6 +176,43 @@ export default function TracksPage() {
   });
 
   const years = Array.from(new Set(demoTracks.map(t => t.year).filter(Boolean))).sort((a, b) => b - a) as number[];
+
+  // Group tracks by album for Album/EP types
+  const groupedTracks = filteredTracks.reduce((acc, track) => {
+    if ((track.type === 'Album' || track.type === 'EP') && track.album) {
+      const albumKey = `${track.type}:${track.album}`;
+      if (!acc[albumKey]) {
+        acc[albumKey] = {
+          albumName: track.album || track.title,
+          type: track.type,
+          artwork: track.coverArt,
+          tracks: [],
+          displayTrack: track,
+        };
+      }
+      acc[albumKey].tracks.push(track);
+    } else {
+      const singleKey = `single:${track.id}`;
+      acc[singleKey] = {
+        albumName: null,
+        type: track.type,
+        artwork: track.coverArt,
+        tracks: [track],
+        displayTrack: track,
+      };
+    }
+    return acc;
+  }, {} as Record<string, any>);
+
+  const toggleAlbumExpand = (albumKey: string) => {
+    const newExpanded = new Set(expandedAlbums);
+    if (newExpanded.has(albumKey)) {
+      newExpanded.delete(albumKey);
+    } else {
+      newExpanded.add(albumKey);
+    }
+    setExpandedAlbums(newExpanded);
+  };
 
   return (
     <div className="min-h-screen text-white">
@@ -331,24 +369,97 @@ export default function TracksPage() {
             </div>
           </section>
 
-          {/* Mixed Track List */}
+          {/* Mixed Track List / Album Groups */}
           <section className="px-6 md:px-12 py-8 md:py-16">
             <div className="max-w-7xl mx-auto">
               <p className="text-white/30 text-sm mb-6">
                 Showing {filteredTracks.length} track{filteredTracks.length !== 1 ? 's' : ''} (newest first)
               </p>
               <div className="space-y-3">
-                {filteredTracks
-                  .sort((a, b) => b.createdAt - a.createdAt)
-                  .map((track) => (
-                    <TrackListItem
-                      key={track.id}
-                      track={track}
-                      onPlay={handlePlayTrack}
-                      showType={true}
-                      showMetadata={true}
-                    />
-                  ))}
+                {Object.entries(groupedTracks)
+                  .sort(([, a], [, b]) => b.displayTrack.createdAt - a.displayTrack.createdAt)
+                  .map(([albumKey, group]) => {
+                    const isAlbum = group.albumName && (group.type === 'Album' || group.type === 'EP');
+                    const isExpanded = expandedAlbums.has(albumKey);
+
+                    return isAlbum ? (
+                      <div key={albumKey}>
+                        {/* Album Header - Expandible */}
+                        <button
+                          onClick={() => toggleAlbumExpand(albumKey)}
+                          className="w-full rounded-xl p-4 flex items-center gap-4 hover:bg-white/[0.08] transition-all duration-300 border border-white/[0.06] bg-white/[0.04] backdrop-blur-md group"
+                        >
+                          {/* Album Artwork */}
+                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden">
+                            {group.artwork ? (
+                              <img
+                                src={group.artwork}
+                                alt={group.albumName}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Music size={20} className="text-white/30" />
+                            )}
+                          </div>
+
+                          {/* Album Info */}
+                          <div className="flex-1 min-w-0 text-left">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-bold text-white text-sm md:text-base truncate">
+                                {group.albumName}
+                              </span>
+                              <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
+                                {group.type}
+                              </span>
+                            </div>
+                            <div className="text-white/40 text-sm mt-1">
+                              {group.tracks.length} track{group.tracks.length !== 1 ? 's' : ''}
+                            </div>
+                          </div>
+
+                          {/* Expand Icon */}
+                          <ChevronDown
+                            size={20}
+                            className={`flex-shrink-0 text-white/40 transition-transform duration-300 ${
+                              isExpanded ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </button>
+
+                        {/* Album Tracks - Expandible Content */}
+                        {isExpanded && (
+                          <div className="space-y-2 mt-2 ml-4 pl-4 border-l border-white/[0.06]">
+                            {group.tracks
+                              .sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0))
+                              .map((track, index) => (
+                                <div key={track.id} className="flex items-center gap-3 group/track">
+                                  <span className="text-white/40 text-sm font-mono w-6 text-right flex-shrink-0">
+                                    {index + 1}
+                                  </span>
+                                  <div className="flex-1">
+                                    <TrackListItem
+                                      track={track}
+                                      onPlay={handlePlayTrack}
+                                      showType={false}
+                                      showMetadata={false}
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      // Single Tracks
+                      <TrackListItem
+                        key={albumKey}
+                        track={group.displayTrack}
+                        onPlay={handlePlayTrack}
+                        showType={true}
+                        showMetadata={true}
+                      />
+                    );
+                  })}
               </div>
             </div>
           </section>
