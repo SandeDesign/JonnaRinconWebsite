@@ -34,6 +34,32 @@ const TracksPage: React.FC = () => {
     }
   };
 
+  const handleEditAlbum = (track: Track) => {
+    // For album editing, set the track as the album reference
+    setEditingTrack(track);
+    setShowModal(true);
+  };
+
+  const handleDeleteAlbum = async (track: Track) => {
+    const albumName = track.album || track.title;
+    if (!confirm(`Are you sure you want to delete the entire album "${albumName}" with all its tracks?`)) return;
+    try {
+      // Get all tracks in this album and delete them
+      // Filter by album name (use both album field and title as fallback)
+      const albumTracks = tracks.filter(t => {
+        const trackAlbumName = t.album || t.title;
+        return trackAlbumName === albumName && (t.type === 'Album' || t.type === 'EP');
+      });
+
+      for (const t of albumTracks) {
+        await trackService.deleteTrack(t.id);
+      }
+      alert(`Album "${albumName}" and all ${albumTracks.length} tracks deleted successfully`);
+    } catch (error: any) {
+      alert(error.message);
+    }
+  };
+
   const togglePlay = (trackId: string) => {
     if (currentlyPlaying === trackId) {
       setCurrentlyPlaying(null);
@@ -168,14 +194,14 @@ const TracksPage: React.FC = () => {
                     {/* Action Buttons - Album Level */}
                     <div className="flex items-center space-x-2 flex-shrink-0">
                       <button
-                        onClick={() => handleEdit(group.displayTrack)}
+                        onClick={() => handleEditAlbum(group.displayTrack)}
                         className="p-2 text-white/40 hover:text-blue-400 transition-colors"
                         title="Edit Album"
                       >
                         <Edit size={18} />
                       </button>
                       <button
-                        onClick={() => handleDelete(group.displayTrack.id)}
+                        onClick={() => handleDeleteAlbum(group.displayTrack)}
                         className="p-2 text-white/40 hover:text-red-400 transition-colors"
                         title="Delete Album"
                       >
@@ -338,9 +364,8 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
   const currentYear = new Date().getFullYear();
   const isEditing = !!track;
 
-  // Determine if this is editing an album/EP by checking if it has an album field
-  const isEditingAlbum = isEditing && track?.album;
-  const isCreatingAlbum = !isEditing && (track?.type === 'Album' || track?.type === 'EP');
+  // Determine if this is editing an album/EP (check type first, then album field)
+  const isEditingAlbum = isEditing && (track?.type === 'Album' || track?.type === 'EP');
 
   const [formData, setFormData] = useState({
     title: track?.title || '',
@@ -359,22 +384,24 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
 
   const [tracklist, setTracklist] = useState<TracklistItem[]>([]);
   const [saving, setSaving] = useState(false);
-  const { tracks: allTracks } = useTracks({ status: 'draft' });
+  const { tracks: allTracks } = useTracks();
 
   // Load album tracks when editing an album
   React.useEffect(() => {
-    if (isEditingAlbum && track?.album) {
+    if (isEditingAlbum && track) {
+      // Use album field if available, fallback to title
+      const albumName = track.album || track.title;
       const albumTracks = allTracks
-        .filter(t => t.album === track.album)
+        .filter(t => (t.album === albumName || t.title === albumName) && (t.type === 'Album' || t.type === 'EP'))
         .sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0))
-        .map((t, index) => ({
+        .map((t) => ({
           id: t.id,
           title: t.title,
           audioUrl: t.audioUrl,
         }));
       setTracklist(albumTracks);
     }
-  }, [isEditingAlbum, track?.album, allTracks]);
+  }, [isEditingAlbum, track?.album, track?.title, allTracks]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
