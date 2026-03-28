@@ -92,12 +92,14 @@ export default function Marquee() {
         }
         .marquee-filled {
           color: white;
-          -webkit-text-stroke: 2px white;
+          -webkit-text-stroke: 0;
           font-weight: 900;
-          background: white;
-          color: black;
-          padding: 0 0.15em;
+          background: none;
+          padding: 0;
           border-radius: 0;
+          display: inline-block;
+          margin: 0 0.1em;
+          font-style: italic;
         }
         .marquee-ltr .marquee-inner {
           animation: marquee-scroll-ltr 160s linear infinite;
