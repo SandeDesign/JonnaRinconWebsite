@@ -368,7 +368,8 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
   const isEditingAlbum = isEditing && (track?.type === 'Album' || track?.type === 'EP');
 
   const [formData, setFormData] = useState({
-    title: track?.title || '',
+    // For albums/EPs: use album name. For single tracks: use track title
+    title: isEditingAlbum ? (track?.album || track?.title || '') : (track?.title || ''),
     artist: track?.artist || 'Jonna Rincon',
     genre: track?.genre || '',
     type: track?.type || 'Single',
@@ -389,10 +390,10 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
   // Load album tracks when editing an album
   React.useEffect(() => {
     if (isEditingAlbum && track) {
-      // Use album field if available, fallback to title
+      // Use album field to find all tracks of this album
       const albumName = track.album || track.title;
       const albumTracks = allTracks
-        .filter(t => (t.album === albumName || t.title === albumName) && (t.type === 'Album' || t.type === 'EP'))
+        .filter(t => t.album === albumName && (t.type === 'Album' || t.type === 'EP'))
         .sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0))
         .map((t) => ({
           id: t.id,
