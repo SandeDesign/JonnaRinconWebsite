@@ -701,15 +701,18 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
           {/* Tracklist section for Album/EP */}
           {(formData.type === 'Album' || formData.type === 'EP') && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium text-white/60">Tracks</label>
-                <button
-                  type="button"
-                  onClick={addTrackToList}
-                  className="px-3 py-1 bg-white/[0.10] hover:bg-white/[0.15] text-white/70 text-sm rounded transition-all"
-                >
-                  + Add Track
-                </button>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-white/60">Tracks</label>
+                  <button
+                    type="button"
+                    onClick={addTrackToList}
+                    className="px-3 py-1 bg-white/[0.10] hover:bg-white/[0.15] text-white/70 text-sm rounded transition-all"
+                  >
+                    + Add Track
+                  </button>
+                </div>
+                <p className="text-xs text-red-400/60">Album/EP requires at least one track with title and audio URL</p>
               </div>
 
               <div className="space-y-3 bg-white/[0.03] rounded-lg p-3 border border-white/[0.06]">
@@ -779,7 +782,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
               disabled={
                 saving ||
                 ((formData.type === 'Album' || formData.type === 'EP') &&
-                  !isEditing &&
                   (tracklist.length === 0 || tracklist.some((t) => !t.title || !t.audioUrl)))
               }
               className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
