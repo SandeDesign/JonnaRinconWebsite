@@ -142,27 +142,47 @@ const TracksPage: React.FC = () => {
               return isAlbum ? (
                 <div key={albumKey} className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
                   {/* Album Header */}
-                  <button
-                    onClick={() => toggleAlbumExpand(albumKey)}
-                    className="w-full px-6 py-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all text-left"
-                  >
-                    <img
-                      src={group.artwork}
-                      alt={group.albumName}
-                      className="w-12 h-12 rounded object-cover flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-white">{group.albumName}</p>
-                      <p className="text-sm text-white/40">{group.tracks.length} tracks</p>
+                  <div className="px-6 py-4 flex items-center gap-4 border-b border-white/[0.06] hover:bg-white/[0.06] transition-all">
+                    <button
+                      onClick={() => toggleAlbumExpand(albumKey)}
+                      className="flex-1 flex items-center gap-4 text-left"
+                    >
+                      <img
+                        src={group.artwork}
+                        alt={group.albumName}
+                        className="w-12 h-12 rounded object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-white">{group.albumName}</p>
+                        <p className="text-sm text-white/40">{group.tracks.length} tracks</p>
+                      </div>
+                      <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm flex-shrink-0">
+                        {group.type}
+                      </span>
+                      <ChevronDown
+                        size={20}
+                        className={`flex-shrink-0 text-white/40 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+
+                    {/* Action Buttons - Album Level */}
+                    <div className="flex items-center space-x-2 flex-shrink-0">
+                      <button
+                        onClick={() => handleEdit(group.displayTrack)}
+                        className="p-2 text-white/40 hover:text-blue-400 transition-colors"
+                        title="Edit Album"
+                      >
+                        <Edit size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(group.displayTrack.id)}
+                        className="p-2 text-white/40 hover:text-red-400 transition-colors"
+                        title="Delete Album"
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </div>
-                    <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm flex-shrink-0">
-                      {group.type}
-                    </span>
-                    <ChevronDown
-                      size={20}
-                      className={`flex-shrink-0 text-white/40 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                    />
-                  </button>
+                  </div>
 
                   {/* Album Tracks - Expandible */}
                   {isExpanded && (
@@ -202,31 +222,6 @@ const TracksPage: React.FC = () => {
                                 </span>
                               </td>
                               <td className="px-6 py-4 text-white/60">{track.plays}</td>
-                              <td className="px-6 py-4">
-                                <div className="flex items-center justify-end space-x-2">
-                                  <button
-                                    onClick={() => togglePlay(track.id)}
-                                    className="p-2 text-white/40 hover:text-purple-400 transition-colors"
-                                    title="Play preview"
-                                  >
-                                    {currentlyPlaying === track.id ? <Pause size={18} /> : <Play size={18} />}
-                                  </button>
-                                  <button
-                                    onClick={() => handleEdit(track)}
-                                    className="p-2 text-white/40 hover:text-blue-400 transition-colors"
-                                    title="Edit"
-                                  >
-                                    <Edit size={18} />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(track.id)}
-                                    className="p-2 text-white/40 hover:text-red-400 transition-colors"
-                                    title="Delete"
-                                  >
-                                    <Trash2 size={18} />
-                                  </button>
-                                </div>
-                              </td>
                             </tr>
                           ))}
                         </tbody>
