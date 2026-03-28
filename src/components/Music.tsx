@@ -91,42 +91,6 @@ export default function Music() {
         </div>
       </section>
 
-      {/* COMPILATIONS */}
-      <section id="compilations" className="py-12 md:py-0 px-4 sm:min-h-0 min-h-auto flex items-center">
-        <div className="max-w-6xl mx-auto w-full">
-          <div className="text-center mb-8 md:hidden">
-            <h2 className="text-3xl font-black uppercase tracking-wider text-white">Playlists</h2>
-          </div>
-
-          <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 md:p-8">
-            <div className="flex justify-center">
-              <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-4 max-w-5xl">
-                {compilations.map((compilation) => (
-                  <a
-                    key={compilation.id}
-                    href={compilation.url.replace('/embed/', '/')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group text-center"
-                  >
-                    <h4 className="text-xs font-semibold mb-2 text-white/40 truncate uppercase tracking-wider">
-                      {compilation.name}
-                    </h4>
-                    <div className="aspect-square rounded-2xl overflow-hidden hover:scale-105 transition-all duration-300 border border-white/[0.06]">
-                      <img
-                        src={compilation.cover}
-                        alt={compilation.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* YOUTUBE */}
       <section id="youtube" className="py-16 md:py-32 px-4 sm:min-h-0 min-h-auto flex items-center">
         <div className="max-w-6xl mx-auto w-full scale-[0.70] md:scale-100 origin-center">

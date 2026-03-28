@@ -81,13 +81,14 @@ export default function Marquee() {
         .marquee-text {
           display: inline-block;
           font-size: clamp(1.5rem, 4vw, 3.5rem);
-          font-weight: 800;
+          font-weight: 900;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: white;
-          -webkit-text-stroke: 0;
+          color: transparent;
+          -webkit-text-stroke: 2px white;
           white-space: nowrap;
           flex-shrink: 0;
+          font-family: 'Arial', 'Helvetica', sans-serif;
         }
         .marquee-filled {
           color: white;
@@ -96,7 +97,7 @@ export default function Marquee() {
           background: white;
           color: black;
           padding: 0 0.15em;
-          border-radius: 0.1em;
+          border-radius: 0;
         }
         .marquee-ltr .marquee-inner {
           animation: marquee-scroll-ltr 160s linear infinite;
