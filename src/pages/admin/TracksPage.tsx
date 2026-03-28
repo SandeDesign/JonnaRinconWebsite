@@ -4,7 +4,7 @@ import LinkInput from '../../components/admin/LinkInput';
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
 import { Track } from '../../lib/firebase/types';
-import { Plus, Edit, Trash2, Play, Pause } from 'lucide-react';
+import { Plus, Edit, Trash2, Play, Pause, ChevronDown } from 'lucide-react';
 import { toDirectUrl } from '../../lib/utils/urlUtils';
 
 const TracksPage: React.FC = () => {
@@ -12,6 +12,7 @@ const TracksPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingTrack, setEditingTrack] = useState<Track | null>(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
 
   const handleCreate = () => {
     setEditingTrack(null);
@@ -40,6 +41,47 @@ const TracksPage: React.FC = () => {
       setCurrentlyPlaying(trackId);
     }
   };
+
+  const toggleAlbumExpand = (albumKey: string) => {
+    const newExpanded = new Set(expandedAlbums);
+    if (newExpanded.has(albumKey)) {
+      newExpanded.delete(albumKey);
+    } else {
+      newExpanded.add(albumKey);
+    }
+    setExpandedAlbums(newExpanded);
+  };
+
+  // Group tracks by album for Album/EP types
+  const groupedTracks = tracks.reduce((acc, track) => {
+    if (track.type === 'Album' || track.type === 'EP') {
+      // Use album field, fallback to title if empty
+      const albumName = track.album || track.title;
+      const albumKey = `${track.type}:${albumName}`;
+
+      if (!acc[albumKey]) {
+        acc[albumKey] = {
+          albumName: albumName,
+          type: track.type,
+          artwork: track.artworkUrl,
+          tracks: [],
+          displayTrack: track,
+        };
+      }
+      acc[albumKey].tracks.push(track);
+    } else {
+      // Single tracks
+      const singleKey = `single:${track.id}`;
+      acc[singleKey] = {
+        albumName: null,
+        type: track.type,
+        artwork: track.artworkUrl,
+        tracks: [track],
+        displayTrack: track,
+      };
+    }
+    return acc;
+  }, {} as Record<string, any>);
 
   return (
     <AdminLayout>
@@ -83,101 +125,190 @@ const TracksPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-white/[0.06]">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Track</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Genre</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">BPM / Key</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Status</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">Plays</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-white/60">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06]">
-                {loading ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-white/40">
-                      Loading tracks...
-                    </td>
-                  </tr>
-                ) : tracks.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-white/40">
-                      No tracks yet. Create your first track!
-                    </td>
-                  </tr>
-                ) : (
-                  tracks.map((track) => (
-                    <tr key={track.id} className="hover:bg-white/[0.06]">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-3">
-                          <img
-                            src={track.artworkUrl}
-                            alt={track.title}
-                            className="w-12 h-12 rounded object-cover"
-                          />
-                          <div>
-                            <p className="font-medium text-white">{track.title}</p>
-                            <p className="text-sm text-white/40">{track.artist}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm">
-                          {track.genre}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-white/60">
-                        {track.bpm} BPM / {track.key}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-2 py-1 rounded text-sm ${
-                            track.status === 'published'
-                              ? 'bg-green-500/20 text-green-400'
-                              : track.status === 'draft'
-                              ? 'bg-yellow-500/20 text-yellow-400'
-                              : 'bg-white/[0.06] text-white/40'
-                          }`}
-                        >
-                          {track.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-white/60">{track.plays}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end space-x-2">
-                          <button
-                            onClick={() => togglePlay(track.id)}
-                            className="p-2 text-white/40 hover:text-purple-400 transition-colors"
-                            title="Play preview"
-                          >
-                            {currentlyPlaying === track.id ? <Pause size={18} /> : <Play size={18} />}
-                          </button>
-                          <button
-                            onClick={() => handleEdit(track)}
-                            className="p-2 text-white/40 hover:text-blue-400 transition-colors"
-                            title="Edit"
-                          >
-                            <Edit size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(track.id)}
-                            className="p-2 text-white/40 hover:text-red-400 transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+        <div className="space-y-3">
+          {loading ? (
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
+              Loading tracks...
+            </div>
+          ) : tracks.length === 0 ? (
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
+              No tracks yet. Create your first track!
+            </div>
+          ) : (
+            Object.entries(groupedTracks).map(([albumKey, group]) => {
+              const isAlbum = group.albumName && (group.type === 'Album' || group.type === 'EP');
+              const isExpanded = expandedAlbums.has(albumKey);
+
+              return isAlbum ? (
+                <div key={albumKey} className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
+                  {/* Album Header */}
+                  <button
+                    onClick={() => toggleAlbumExpand(albumKey)}
+                    className="w-full px-6 py-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all text-left"
+                  >
+                    <img
+                      src={group.artwork}
+                      alt={group.albumName}
+                      className="w-12 h-12 rounded object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-white">{group.albumName}</p>
+                      <p className="text-sm text-white/40">{group.tracks.length} tracks</p>
+                    </div>
+                    <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm flex-shrink-0">
+                      {group.type}
+                    </span>
+                    <ChevronDown
+                      size={20}
+                      className={`flex-shrink-0 text-white/40 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+
+                  {/* Album Tracks - Expandible */}
+                  {isExpanded && (
+                    <div className="border-t border-white/[0.06]">
+                      <table className="w-full">
+                        <tbody className="divide-y divide-white/[0.06]">
+                          {group.tracks.map((track, index) => (
+                            <tr key={track.id} className="hover:bg-white/[0.06]">
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-white/40 font-mono w-6 text-right">{index + 1}</span>
+                                  <div>
+                                    <p className="font-medium text-white">{track.title}</p>
+                                    <p className="text-sm text-white/40">{track.artist}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm">
+                                  {track.genre}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-white/60">
+                                {track.bpm} BPM / {track.key}
+                              </td>
+                              <td className="px-6 py-4">
+                                <span
+                                  className={`px-2 py-1 rounded text-sm ${
+                                    track.status === 'published'
+                                      ? 'bg-green-500/20 text-green-400'
+                                      : track.status === 'draft'
+                                      ? 'bg-yellow-500/20 text-yellow-400'
+                                      : 'bg-white/[0.06] text-white/40'
+                                  }`}
+                                >
+                                  {track.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-white/60">{track.plays}</td>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center justify-end space-x-2">
+                                  <button
+                                    onClick={() => togglePlay(track.id)}
+                                    className="p-2 text-white/40 hover:text-purple-400 transition-colors"
+                                    title="Play preview"
+                                  >
+                                    {currentlyPlaying === track.id ? <Pause size={18} /> : <Play size={18} />}
+                                  </button>
+                                  <button
+                                    onClick={() => handleEdit(track)}
+                                    className="p-2 text-white/40 hover:text-blue-400 transition-colors"
+                                    title="Edit"
+                                  >
+                                    <Edit size={18} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(track.id)}
+                                    className="p-2 text-white/40 hover:text-red-400 transition-colors"
+                                    title="Delete"
+                                  >
+                                    <Trash2 size={18} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Single Track
+                <div key={albumKey} className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <tbody>
+                        <tr className="hover:bg-white/[0.06]">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-3">
+                              <img
+                                src={group.displayTrack.artworkUrl}
+                                alt={group.displayTrack.title}
+                                className="w-12 h-12 rounded object-cover"
+                              />
+                              <div>
+                                <p className="font-medium text-white">{group.displayTrack.title}</p>
+                                <p className="text-sm text-white/40">{group.displayTrack.artist}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm">
+                              {group.displayTrack.genre}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-white/60">
+                            {group.displayTrack.bpm} BPM / {group.displayTrack.key}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`px-2 py-1 rounded text-sm ${
+                                group.displayTrack.status === 'published'
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : group.displayTrack.status === 'draft'
+                                  ? 'bg-yellow-500/20 text-yellow-400'
+                                  : 'bg-white/[0.06] text-white/40'
+                              }`}
+                            >
+                              {group.displayTrack.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-white/60">{group.displayTrack.plays}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center justify-end space-x-2">
+                              <button
+                                onClick={() => togglePlay(group.displayTrack.id)}
+                                className="p-2 text-white/40 hover:text-purple-400 transition-colors"
+                                title="Play preview"
+                              >
+                                {currentlyPlaying === group.displayTrack.id ? <Pause size={18} /> : <Play size={18} />}
+                              </button>
+                              <button
+                                onClick={() => handleEdit(group.displayTrack)}
+                                className="p-2 text-white/40 hover:text-blue-400 transition-colors"
+                                title="Edit"
+                              >
+                                <Edit size={18} />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(group.displayTrack.id)}
+                                className="p-2 text-white/40 hover:text-red-400 transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 

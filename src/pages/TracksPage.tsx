@@ -179,11 +179,14 @@ export default function TracksPage() {
 
   // Group tracks by album for Album/EP types
   const groupedTracks = filteredTracks.reduce((acc, track) => {
-    if ((track.type === 'Album' || track.type === 'EP') && track.album) {
-      const albumKey = `${track.type}:${track.album}`;
+    if (track.type === 'Album' || track.type === 'EP') {
+      // Use album field, fallback to title if empty
+      const albumName = track.album || track.title;
+      const albumKey = `${track.type}:${albumName}`;
+
       if (!acc[albumKey]) {
         acc[albumKey] = {
-          albumName: track.album || track.title,
+          albumName: albumName,
           type: track.type,
           artwork: track.coverArt,
           tracks: [],
@@ -192,6 +195,7 @@ export default function TracksPage() {
       }
       acc[albumKey].tracks.push(track);
     } else {
+      // Single tracks
       const singleKey = `single:${track.id}`;
       acc[singleKey] = {
         albumName: null,
