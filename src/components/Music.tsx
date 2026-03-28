@@ -56,54 +56,31 @@ export default function Music() {
 
           <div className="bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-3xl p-5 md:p-8">
             {/* Navigation Tabs */}
-            <div className="flex flex-col items-center gap-6">
-              {/* Main Tabs */}
-              <div className="flex flex-wrap justify-center gap-3">
-                <button
-                  onClick={() => navigate('/tracks?tab=tracks')}
-                  className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-[1.05]"
-                >
-                  My Tracks
-                </button>
-                <button
-                  onClick={() => navigate('/tracks?tab=remixes')}
-                  className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-[1.05]"
-                >
-                  Remixes & Edits
-                </button>
-                <button
-                  onClick={() => navigate('/tracks?tab=spotify')}
-                  className="px-8 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-2xl transition-all duration-300 hover:scale-[1.05]"
-                >
-                  Spotify Playlists
-                </button>
-              </div>
-
-              {/* Beat Store Tab (Smaller) */}
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => navigate('/tracks?tab=tracks')}
+                className="group px-8 py-3 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06] text-white font-bold"
+              >
+                My Tracks
+              </button>
+              <button
+                onClick={() => navigate('/tracks?tab=remixes')}
+                className="group px-8 py-3 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06] text-white font-bold"
+              >
+                Remixes & Edits
+              </button>
               <button
                 onClick={() => navigate('/shop/beats')}
-                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white/80 hover:text-white font-semibold rounded-xl transition-all duration-300 hover:scale-[1.05] text-sm"
+                className="group px-8 py-3 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06] text-white font-bold"
               >
                 Beat Store
               </button>
-            </div>
-          </div>
-
-          {/* Featured Skills Cards */}
-          <div className="mt-10 md:mt-16">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06]">
-                <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Producer</h3>
-                <p className="text-white/30 text-xs leading-relaxed">Creating and arranging full tracks from concept to completion</p>
-              </div>
-              <div className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06]">
-                <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Beatmaker</h3>
-                <p className="text-white/30 text-xs leading-relaxed">Crafting instrumentals and beats across all genres</p>
-              </div>
-              <div className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06]">
-                <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">DJ</h3>
-                <p className="text-white/30 text-xs leading-relaxed">Live mixing and performing sets across multiple genres</p>
-              </div>
+              <button
+                onClick={() => navigate('/tracks?tab=spotify')}
+                className="group px-8 py-3 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06] text-white font-bold"
+              >
+                Spotify Playlists
+              </button>
             </div>
           </div>
         </div>
