@@ -200,8 +200,18 @@ interface TrackFormModalProps {
   onSave: () => void;
 }
 
+interface TracklistItem {
+  id: string;
+  title: string;
+  audioUrl: string;
+  duration?: string;
+}
+
 const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave }) => {
   const currentYear = new Date().getFullYear();
+  const isEditing = !!track;
+  const isAlbumOrEP = track?.type === 'Album' || track?.type === 'EP';
+
   const [formData, setFormData] = useState({
     title: track?.title || '',
     artist: track?.artist || 'Jonna Rincon',
@@ -216,6 +226,8 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
     status: track?.status || 'draft',
     featured: track?.featured || false,
   });
+
+  const [tracklist, setTracklist] = useState<TracklistItem[]>([]);
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -223,7 +235,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
     setSaving(true);
 
     try {
-      const trackData: any = {
+      const baseTrackData: any = {
         title: formData.title,
         artist: formData.artist,
         genre: formData.genre,
@@ -231,7 +243,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         year: formData.year,
         collab: formData.collab,
         tags: formData.tags.split(',').map((t) => t.trim()),
-        audioUrl: formData.audioUrl,
         artworkUrl: formData.artworkUrl,
         slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, '-'),
         status: formData.status,
@@ -267,10 +278,34 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         },
       };
 
-      if (track) {
+      // For Album/EP with tracklist, create multiple track records
+      if ((formData.type === 'Album' || formData.type === 'EP') && tracklist.length > 0) {
+        for (let i = 0; i < tracklist.length; i++) {
+          const item = tracklist[i];
+          const trackData = {
+            ...baseTrackData,
+            title: item.title,
+            audioUrl: item.audioUrl,
+            album: formData.title,
+            trackNumber: i + 1,
+          };
+          await trackService.createTrack(trackData);
+        }
+        alert(`Created ${tracklist.length} tracks in ${formData.type.toLowerCase()}`);
+      } else if (track) {
+        // Update single track
+        const trackData = {
+          ...baseTrackData,
+          audioUrl: formData.audioUrl,
+        };
         await trackService.updateTrack(track.id, trackData);
         alert('Track updated successfully');
       } else {
+        // Create single track
+        const trackData = {
+          ...baseTrackData,
+          audioUrl: formData.audioUrl,
+        };
         await trackService.createTrack(trackData);
         alert('Track created successfully');
       }
@@ -281,6 +316,25 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
     } finally {
       setSaving(false);
     }
+  };
+
+  const addTrackToList = () => {
+    setTracklist([
+      ...tracklist,
+      {
+        id: Date.now().toString(),
+        title: '',
+        audioUrl: '',
+      },
+    ]);
+  };
+
+  const removeTrackFromList = (id: string) => {
+    setTracklist(tracklist.filter((t) => t.id !== id));
+  };
+
+  const updateTrackInList = (id: string, field: string, value: string) => {
+    setTracklist(tracklist.map((t) => (t.id === id ? { ...t, [field]: value } : t)));
   };
 
   return (
@@ -396,24 +450,92 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <LinkInput
-              label="Audio URL"
-              name="audioUrl"
-              type="audio"
-              onChange={(url) => setFormData({ ...formData, audioUrl: url })}
-              defaultValue={formData.audioUrl}
-              placeholder="https://nextcloud.example.com/index.php/s/abc123"
-            />
-            <LinkInput
-              label="Artwork URL"
-              name="artworkUrl"
-              type="image"
-              onChange={(url) => setFormData({ ...formData, artworkUrl: url })}
-              defaultValue={formData.artworkUrl}
-              placeholder="https://example.com/image.jpg"
-            />
-          </div>
+          {/* Show audio URL only for single tracks or when editing */}
+          {!((formData.type === 'Album' || formData.type === 'EP') && !isEditing) && (
+            <div className="grid grid-cols-2 gap-4">
+              <LinkInput
+                label="Audio URL"
+                name="audioUrl"
+                type="audio"
+                onChange={(url) => setFormData({ ...formData, audioUrl: url })}
+                defaultValue={formData.audioUrl}
+                placeholder="https://nextcloud.example.com/index.php/s/abc123"
+              />
+              <LinkInput
+                label="Artwork URL"
+                name="artworkUrl"
+                type="image"
+                onChange={(url) => setFormData({ ...formData, artworkUrl: url })}
+                defaultValue={formData.artworkUrl}
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+          )}
+
+          {/* Show artwork URL only for album/EP */}
+          {(formData.type === 'Album' || formData.type === 'EP') && !isEditing && (
+            <div>
+              <LinkInput
+                label="Artwork URL (Album/EP Cover)"
+                name="artworkUrl"
+                type="image"
+                onChange={(url) => setFormData({ ...formData, artworkUrl: url })}
+                defaultValue={formData.artworkUrl}
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+          )}
+
+          {/* Tracklist section for Album/EP creation */}
+          {(formData.type === 'Album' || formData.type === 'EP') && !isEditing && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-medium text-white/60">Tracks</label>
+                <button
+                  type="button"
+                  onClick={addTrackToList}
+                  className="px-3 py-1 bg-white/[0.10] hover:bg-white/[0.15] text-white/70 text-sm rounded transition-all"
+                >
+                  + Add Track
+                </button>
+              </div>
+
+              <div className="space-y-3 bg-white/[0.03] rounded-lg p-3 border border-white/[0.06]">
+                {tracklist.length === 0 ? (
+                  <p className="text-white/40 text-sm">No tracks added yet</p>
+                ) : (
+                  tracklist.map((item, index) => (
+                    <div key={item.id} className="space-y-2 p-3 bg-white/[0.05] rounded border border-white/[0.06]">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm text-white/40">Track {index + 1}</label>
+                        <button
+                          type="button"
+                          onClick={() => removeTrackFromList(item.id)}
+                          className="text-red-400 hover:text-red-300 text-sm transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Track Title"
+                        value={item.title}
+                        onChange={(e) => updateTrackInList(item.id, 'title', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Audio URL"
+                        value={item.audioUrl}
+                        onChange={(e) => updateTrackInList(item.id, 'audioUrl', e.target.value)}
+                        className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="flex items-center space-x-2">
@@ -437,10 +559,21 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={
+                saving ||
+                ((formData.type === 'Album' || formData.type === 'EP') &&
+                  !isEditing &&
+                  (tracklist.length === 0 || tracklist.some((t) => !t.title || !t.audioUrl)))
+              }
               className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
             >
-              {saving ? 'Saving...' : track ? 'Update Track' : 'Create Track'}
+              {saving
+                ? 'Saving...'
+                : isEditing
+                ? 'Update Track'
+                : (formData.type === 'Album' || formData.type === 'EP')
+                ? `Create ${formData.type}`
+                : 'Create Track'}
             </button>
           </div>
         </form>
