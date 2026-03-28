@@ -456,6 +456,11 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
       if ((formData.type === 'Album' || formData.type === 'EP') && tracklist.length > 0) {
         if (isEditingAlbum) {
           // Update existing album tracks
+          const albumName = formData.title.trim();
+          if (!albumName) {
+            throw new Error('Album name cannot be empty');
+          }
+
           const existingTrackIds = allTracks
             .filter(t => t.album === track?.album)
             .map(t => t.id);
@@ -466,7 +471,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
               ...baseTrackData,
               title: item.title,
               audioUrl: item.audioUrl,
-              album: formData.title,
+              album: albumName,  // Use album name directly
               trackNumber: i + 1,
             };
 
@@ -476,6 +481,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
               existingTrackIds.splice(existingTrackIds.indexOf(item.id), 1);
             } else {
               // Create new track
+              console.log('📝 Creating track with data:', { album: trackData.album, title: trackData.title });
               await trackService.createTrack(trackData);
             }
           }
@@ -487,18 +493,25 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
           alert(`Updated ${formData.type.toLowerCase()} with ${tracklist.length} tracks`);
         } else {
           // Create new album with tracks
+          // DEBUG: Ensure album name is set
+          const albumName = formData.title.trim();
+          if (!albumName) {
+            throw new Error('Album name cannot be empty');
+          }
+
           for (let i = 0; i < tracklist.length; i++) {
             const item = tracklist[i];
             const trackData = {
               ...baseTrackData,
               title: item.title,
               audioUrl: item.audioUrl,
-              album: formData.title,
+              album: albumName,  // Use album name directly
               trackNumber: i + 1,
             };
+            console.log('📝 Creating track with data:', { album: trackData.album, title: trackData.title });
             await trackService.createTrack(trackData);
           }
-          alert(`Created ${tracklist.length} tracks in ${formData.type.toLowerCase()}`);
+          alert(`Created ${tracklist.length} tracks in "${albumName}" ${formData.type.toLowerCase()}`);
         }
       } else if (track) {
         // Update single track
