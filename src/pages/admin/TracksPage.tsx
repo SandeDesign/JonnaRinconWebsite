@@ -710,12 +710,18 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                   <button
                     type="button"
                     onClick={addTrackToList}
-                    className="px-3 py-1 bg-white/[0.10] hover:bg-white/[0.15] text-white/70 text-sm rounded transition-all"
+                    disabled={!formData.title.trim()}
+                    className="px-3 py-1 bg-white/[0.10] hover:bg-white/[0.15] disabled:opacity-50 disabled:cursor-not-allowed text-white/70 text-sm rounded transition-all"
+                    title={!formData.title.trim() ? 'Enter album name first' : 'Add track'}
                   >
                     + Add Track
                   </button>
                 </div>
-                <p className="text-xs text-red-400/60">Album/EP requires at least one track with title and audio URL</p>
+                <p className="text-xs text-red-400/60">
+                  {!formData.title.trim()
+                    ? 'Enter Album Name first, then add tracks'
+                    : 'Album/EP requires at least one track with title and audio URL'}
+                </p>
               </div>
 
               <div className="space-y-3 bg-white/[0.03] rounded-lg p-3 border border-white/[0.06]">
