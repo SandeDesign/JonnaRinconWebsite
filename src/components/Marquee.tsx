@@ -99,7 +99,7 @@ export default function Marquee() {
           border-radius: 0;
           display: inline-block;
           margin: 0 0.1em;
-          font-style: italic;
+          font-style: normal;
         }
         .marquee-ltr .marquee-inner {
           animation: marquee-scroll-ltr 160s linear infinite;

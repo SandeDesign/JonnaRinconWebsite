@@ -75,11 +75,11 @@ export default function MarqueeRed() {
         .marquee-red-text {
           display: inline-block;
           font-size: clamp(1.5rem, 4vw, 3.5rem);
-          font-weight: 900;
+          font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: transparent;
-          -webkit-text-stroke: 2px white;
+          color: transparent !important;
+          -webkit-text-stroke: 2px white !important;
           white-space: nowrap;
           flex-shrink: 0;
           font-family: 'Arial', 'Helvetica', sans-serif;
@@ -93,7 +93,7 @@ export default function MarqueeRed() {
           border-radius: 0;
           display: inline-block;
           margin: 0 0.1em;
-          font-style: italic;
+          font-style: normal;
         }
         .marquee-red-ltr .marquee-red-inner {
           animation: marquee-red-scroll-ltr 160s linear infinite;
