@@ -88,6 +88,24 @@ export default function Music() {
               </button>
             </div>
           </div>
+
+          {/* Featured Skills Cards */}
+          <div className="mt-10 md:mt-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06]">
+                <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Producer</h3>
+                <p className="text-white/30 text-xs leading-relaxed">Creating and arranging full tracks from concept to completion</p>
+              </div>
+              <div className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06]">
+                <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">Beatmaker</h3>
+                <p className="text-white/30 text-xs leading-relaxed">Crafting instrumentals and beats across all genres</p>
+              </div>
+              <div className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06]">
+                <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">DJ</h3>
+                <p className="text-white/30 text-xs leading-relaxed">Live mixing and performing sets across multiple genres</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

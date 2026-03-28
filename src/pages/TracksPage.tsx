@@ -363,10 +363,10 @@ export default function TracksPage() {
                 {skills.map((skill) => (
                   <div
                     key={skill.title}
-                    className="group bg-black/60 border-l-4 border-l-red-600 rounded-sm p-6 hover:bg-black/80 transition-all duration-300 backdrop-blur-sm"
+                    className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.06]"
                   >
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-3">{skill.title}</h3>
-                    <p className="text-white/50 text-xs leading-relaxed">{skill.desc}</p>
+                    <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">{skill.title}</h3>
+                    <p className="text-white/30 text-xs leading-relaxed">{skill.desc}</p>
                   </div>
                 ))}
               </div>
