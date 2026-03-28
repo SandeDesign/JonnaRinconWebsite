@@ -388,45 +388,33 @@ export default function TracksPage() {
 
                     return isAlbum ? (
                       <div key={albumKey}>
-                        {/* Album Header - Compact Style */}
+                        {/* Album Header - Compact Tab Style */}
                         <button
                           onClick={() => toggleAlbumExpand(albumKey)}
-                          className={`w-full rounded-xl p-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all duration-300 border backdrop-blur-md group ${
-                            isExpanded ? 'border-red-500/50 bg-white/[0.08]' : 'bg-white/[0.04] border-white/[0.06]'
-                          }`}
+                          className="w-full px-6 py-4 flex items-center gap-4 border border-white/[0.06] rounded-xl hover:bg-white/[0.06] transition-all bg-white/[0.04] backdrop-blur-md group"
                         >
                           {/* Album Cover - Small */}
-                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden">
-                            {group.artwork ? (
-                              <img
-                                src={group.artwork}
-                                alt={group.albumName}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <Music size={20} className="text-white/30" />
-                            )}
-                          </div>
+                          <img
+                            src={group.artwork}
+                            alt={group.albumName}
+                            className="w-12 h-12 rounded object-cover flex-shrink-0"
+                          />
 
                           {/* Album Info */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-bold text-white text-sm md:text-base truncate">
-                                {group.albumName}
-                              </span>
-                              <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
-                                {group.type}
-                              </span>
-                            </div>
-                            <p className="text-white/40 text-xs md:text-sm mt-0.5">
-                              {group.tracks.length} track{group.tracks.length !== 1 ? 's' : ''}
-                            </p>
+                            <p className="font-bold text-white truncate">{group.albumName}</p>
+                            <p className="text-sm text-white/40">{group.tracks.length} track{group.tracks.length !== 1 ? 's' : ''}</p>
                           </div>
+
+                          {/* Type Badge */}
+                          <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
+                            {group.type}
+                          </span>
 
                           {/* Expand Icon */}
                           <ChevronDown
                             size={18}
-                            className={`text-white/40 group-hover:text-white/60 transition-transform duration-300 flex-shrink-0 ${
+                            className={`text-white/40 group-hover:text-white/60 transition-transform flex-shrink-0 ${
                               isExpanded ? 'rotate-180' : ''
                             }`}
                           />
