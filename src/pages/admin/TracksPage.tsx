@@ -549,8 +549,8 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-2xl w-full my-8">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-start justify-center pt-8 pb-8 overflow-y-auto p-4">
+      <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-white/[0.08]">
           <h2 className="text-2xl font-bold text-white">
             {track ? 'Edit Track' : 'Add New Track'}
