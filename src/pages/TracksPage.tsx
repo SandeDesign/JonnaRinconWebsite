@@ -388,13 +388,15 @@ export default function TracksPage() {
 
                     return isAlbum ? (
                       <div key={albumKey}>
-                        {/* Album Header - Compact Style like "Jonna Rincon TE 2" */}
+                        {/* Album Header - Compact Style */}
                         <button
                           onClick={() => toggleAlbumExpand(albumKey)}
-                          className="w-full rounded-xl p-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all duration-300 border border-white/[0.06] bg-white/[0.04] backdrop-blur-md"
+                          className={`w-full rounded-xl p-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all duration-300 border backdrop-blur-md group ${
+                            isExpanded ? 'border-red-500/50 bg-white/[0.08]' : 'bg-white/[0.04] border-white/[0.06]'
+                          }`}
                         >
-                          {/* Album Cover */}
-                          <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden">
+                          {/* Album Cover - Small */}
+                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden">
                             {group.artwork ? (
                               <img
                                 src={group.artwork}
@@ -409,33 +411,25 @@ export default function TracksPage() {
                           {/* Album Info */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-bold text-white text-sm md:text-base">
-                                Jonna Rincon
-                              </span>
-                              <span className="text-white/40 text-sm md:text-base">
+                              <span className="font-bold text-white text-sm md:text-base truncate">
                                 {group.albumName}
                               </span>
-                              <span className="px-2 py-0.5 bg-red-600/20 border border-red-500/30 rounded text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
+                              <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
                                 {group.type}
                               </span>
                             </div>
-                            <p className="text-white/40 text-xs mt-1">
+                            <p className="text-white/40 text-xs md:text-sm mt-0.5">
                               {group.tracks.length} track{group.tracks.length !== 1 ? 's' : ''}
                             </p>
                           </div>
 
-                          {/* Expand Control */}
-                          <div className="flex items-center gap-2 text-white/40 flex-shrink-0">
-                            <span className="text-xs uppercase tracking-wider hidden md:inline">
-                              {isExpanded ? 'Hide' : 'Show'}
-                            </span>
-                            <ChevronDown
-                              size={18}
-                              className={`transition-transform duration-300 ${
-                                isExpanded ? 'rotate-180' : ''
-                              }`}
-                            />
-                          </div>
+                          {/* Expand Icon */}
+                          <ChevronDown
+                            size={18}
+                            className={`text-white/40 group-hover:text-white/60 transition-transform duration-300 flex-shrink-0 ${
+                              isExpanded ? 'rotate-180' : ''
+                            }`}
+                          />
                         </button>
 
                         {/* Album Tracks - Expandible Content */}
