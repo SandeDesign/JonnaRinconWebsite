@@ -561,12 +561,15 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Title</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">
+                {(formData.type === 'Album' || formData.type === 'EP') ? 'Album Name' : 'Title'}
+              </label>
               <input
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder={(formData.type === 'Album' || formData.type === 'EP') ? 'e.g. "IF Album"' : 'Track title'}
                 required
               />
             </div>
