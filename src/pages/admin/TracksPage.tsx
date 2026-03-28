@@ -5,6 +5,7 @@ import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
 import { Track } from '../../lib/firebase/types';
 import { Plus, Edit, Trash2, Play, Pause } from 'lucide-react';
+import { toDirectUrl } from '../../lib/utils/urlUtils';
 
 const TracksPage: React.FC = () => {
   const { tracks, loading } = useTracks();
@@ -210,7 +211,10 @@ interface TracklistItem {
 const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave }) => {
   const currentYear = new Date().getFullYear();
   const isEditing = !!track;
-  const isAlbumOrEP = track?.type === 'Album' || track?.type === 'EP';
+
+  // Determine if this is editing an album/EP by checking if it has an album field
+  const isEditingAlbum = isEditing && track?.album;
+  const isCreatingAlbum = !isEditing && (track?.type === 'Album' || track?.type === 'EP');
 
   const [formData, setFormData] = useState({
     title: track?.title || '',
@@ -229,6 +233,22 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
 
   const [tracklist, setTracklist] = useState<TracklistItem[]>([]);
   const [saving, setSaving] = useState(false);
+  const { tracks: allTracks } = useTracks({ status: 'draft' });
+
+  // Load album tracks when editing an album
+  React.useEffect(() => {
+    if (isEditingAlbum && track?.album) {
+      const albumTracks = allTracks
+        .filter(t => t.album === track.album)
+        .sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0))
+        .map((t, index) => ({
+          id: t.id,
+          title: t.title,
+          audioUrl: t.audioUrl,
+        }));
+      setTracklist(albumTracks);
+    }
+  }, [isEditingAlbum, track?.album, allTracks]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,20 +298,54 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         },
       };
 
-      // For Album/EP with tracklist, create multiple track records
+      // For Album/EP with tracklist
       if ((formData.type === 'Album' || formData.type === 'EP') && tracklist.length > 0) {
-        for (let i = 0; i < tracklist.length; i++) {
-          const item = tracklist[i];
-          const trackData = {
-            ...baseTrackData,
-            title: item.title,
-            audioUrl: item.audioUrl,
-            album: formData.title,
-            trackNumber: i + 1,
-          };
-          await trackService.createTrack(trackData);
+        if (isEditingAlbum) {
+          // Update existing album tracks
+          const existingTrackIds = allTracks
+            .filter(t => t.album === track?.album)
+            .map(t => t.id);
+
+          for (let i = 0; i < tracklist.length; i++) {
+            const item = tracklist[i];
+            const trackData = {
+              ...baseTrackData,
+              title: item.title,
+              audioUrl: item.audioUrl,
+              album: formData.title,
+              trackNumber: i + 1,
+            };
+
+            if (item.id && existingTrackIds.includes(item.id)) {
+              // Update existing track
+              await trackService.updateTrack(item.id, trackData);
+              existingTrackIds.splice(existingTrackIds.indexOf(item.id), 1);
+            } else {
+              // Create new track
+              await trackService.createTrack(trackData);
+            }
+          }
+
+          // Delete tracks that were removed
+          for (const deletedId of existingTrackIds) {
+            await trackService.deleteTrack(deletedId);
+          }
+          alert(`Updated ${formData.type.toLowerCase()} with ${tracklist.length} tracks`);
+        } else {
+          // Create new album with tracks
+          for (let i = 0; i < tracklist.length; i++) {
+            const item = tracklist[i];
+            const trackData = {
+              ...baseTrackData,
+              title: item.title,
+              audioUrl: item.audioUrl,
+              album: formData.title,
+              trackNumber: i + 1,
+            };
+            await trackService.createTrack(trackData);
+          }
+          alert(`Created ${tracklist.length} tracks in ${formData.type.toLowerCase()}`);
         }
-        alert(`Created ${tracklist.length} tracks in ${formData.type.toLowerCase()}`);
       } else if (track) {
         // Update single track
         const trackData = {
@@ -334,6 +388,10 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
   };
 
   const updateTrackInList = (id: string, field: string, value: string) => {
+    if (field === 'audioUrl') {
+      // Apply URL transformation for audio files (adds /download if needed)
+      value = toDirectUrl(value);
+    }
     setTracklist(tracklist.map((t) => (t.id === id ? { ...t, [field]: value } : t)));
   };
 
@@ -450,8 +508,8 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
             />
           </div>
 
-          {/* Show audio URL only for single tracks or when editing */}
-          {!((formData.type === 'Album' || formData.type === 'EP') && !isEditing) && (
+          {/* Show audio URL only for single tracks */}
+          {!(formData.type === 'Album' || formData.type === 'EP') && (
             <div className="grid grid-cols-2 gap-4">
               <LinkInput
                 label="Audio URL"
@@ -472,8 +530,8 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
             </div>
           )}
 
-          {/* Show artwork URL only for album/EP */}
-          {(formData.type === 'Album' || formData.type === 'EP') && !isEditing && (
+          {/* Show artwork URL for album/EP */}
+          {(formData.type === 'Album' || formData.type === 'EP') && (
             <div>
               <LinkInput
                 label="Artwork URL (Album/EP Cover)"
@@ -486,8 +544,8 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
             </div>
           )}
 
-          {/* Tracklist section for Album/EP creation */}
-          {(formData.type === 'Album' || formData.type === 'EP') && !isEditing && (
+          {/* Tracklist section for Album/EP */}
+          {(formData.type === 'Album' || formData.type === 'EP') && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-white/60">Tracks</label>
@@ -523,13 +581,18 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                         onChange={(e) => updateTrackInList(item.id, 'title', e.target.value)}
                         className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
                       />
-                      <input
-                        type="text"
-                        placeholder="Audio URL"
-                        value={item.audioUrl}
-                        onChange={(e) => updateTrackInList(item.id, 'audioUrl', e.target.value)}
-                        className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Audio URL"
+                          value={item.audioUrl}
+                          onChange={(e) => {
+                            const url = e.target.value;
+                            updateTrackInList(item.id, 'audioUrl', url);
+                          }}
+                          className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
+                        />
+                      </div>
                     </div>
                   ))
                 )}
