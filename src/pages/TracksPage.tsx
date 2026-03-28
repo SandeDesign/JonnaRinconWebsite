@@ -123,6 +123,7 @@ export default function TracksPage() {
     id: t.id,
     title: t.title,
     artist: t.artist,
+    album: t.album,
     duration: '0:00',
     genre: t.genre,
     bpm: t.bpm,
