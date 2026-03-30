@@ -118,7 +118,7 @@ export default function TracksPage() {
   const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
   const heroTitle = useCyberDecodeInView('Music');
 
-  // Convert Firebase tracks to local Track interface
+  // Convert Firebase tracks to local Track interface - Maps all track data including album field
   const demoTracks: Track[] = firebaseTracks.map(t => ({
     id: t.id,
     title: t.title,
