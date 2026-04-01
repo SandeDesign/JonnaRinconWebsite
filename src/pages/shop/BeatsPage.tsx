@@ -162,7 +162,7 @@ const BeatsShop: React.FC = () => {
       </section>
 
       {/* Search Bar */}
-      <section className="px-6 md:px-12 py-6 backdrop-blur-xl bg-black/40 border-b border-white/[0.06]">
+      <section className="px-6 md:px-12 py-6 border-b border-white/[0.06]">
         <div className="max-w-7xl mx-auto">
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
