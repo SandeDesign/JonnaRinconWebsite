@@ -4,7 +4,7 @@ import LinkInput from '../../components/admin/LinkInput';
 import { useRemixes } from '../../hooks/useRemixes';
 import { remixService } from '../../lib/firebase/services';
 import { Remix } from '../../lib/firebase/types';
-import { Plus, Edit, Trash2, Play, Pause } from 'lucide-react';
+import { Plus, Edit, Trash2, Play, Pause, ArrowUp, ArrowDown } from 'lucide-react';
 
 const RemixesPage: React.FC = () => {
   const { remixes, loading } = useRemixes();
@@ -37,6 +37,32 @@ const RemixesPage: React.FC = () => {
       setCurrentlyPlaying(null);
     } else {
       setCurrentlyPlaying(remixId);
+    }
+  };
+
+  const moveRemixUp = async (remixId: string) => {
+    const index = remixes.findIndex(r => r.id === remixId);
+    if (index > 0) {
+      const remix = remixes[index];
+      const prevRemix = remixes[index - 1];
+
+      // Swap sortOrder values
+      const tempSort = remix.sortOrder ?? index;
+      await remixService.updateRemix(remix.id, { sortOrder: prevRemix.sortOrder ?? (index - 1) });
+      await remixService.updateRemix(prevRemix.id, { sortOrder: tempSort });
+    }
+  };
+
+  const moveRemixDown = async (remixId: string) => {
+    const index = remixes.findIndex(r => r.id === remixId);
+    if (index < remixes.length - 1) {
+      const remix = remixes[index];
+      const nextRemix = remixes[index + 1];
+
+      // Swap sortOrder values
+      const tempSort = remix.sortOrder ?? index;
+      await remixService.updateRemix(remix.id, { sortOrder: nextRemix.sortOrder ?? (index + 1) });
+      await remixService.updateRemix(nextRemix.id, { sortOrder: tempSort });
     }
   };
 
@@ -155,6 +181,22 @@ const RemixesPage: React.FC = () => {
                       <td className="px-6 py-4 text-white/60">{remix.plays}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end space-x-2">
+                          <button
+                            onClick={() => moveRemixUp(remix.id)}
+                            disabled={remixes.findIndex(r => r.id === remix.id) === 0}
+                            className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
+                            title="Move up"
+                          >
+                            <ArrowUp size={18} />
+                          </button>
+                          <button
+                            onClick={() => moveRemixDown(remix.id)}
+                            disabled={remixes.findIndex(r => r.id === remix.id) === remixes.length - 1}
+                            className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
+                            title="Move down"
+                          >
+                            <ArrowDown size={18} />
+                          </button>
                           <button
                             onClick={() => togglePlay(remix.id)}
                             className="p-2 text-white/40 hover:text-purple-400 transition-colors"

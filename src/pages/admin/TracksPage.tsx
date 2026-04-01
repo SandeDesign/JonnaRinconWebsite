@@ -78,6 +78,37 @@ const TracksPage: React.FC = () => {
     setExpandedAlbums(newExpanded);
   };
 
+  // Get list of single tracks with their positions
+  const singleTracksArray = Object.entries(groupedTracks)
+    .filter(([, group]) => !group.albumName)
+    .map(([key, group]) => ({ key, ...group }));
+
+  const moveSingleTrackUp = async (trackId: string) => {
+    const index = singleTracksArray.findIndex(t => t.displayTrack.id === trackId);
+    if (index > 0) {
+      const track = singleTracksArray[index].displayTrack;
+      const prevTrack = singleTracksArray[index - 1].displayTrack;
+
+      // Swap sortOrder values
+      const tempSort = track.sortOrder || index;
+      await trackService.updateTrack(track.id, { sortOrder: prevTrack.sortOrder || (index - 1) });
+      await trackService.updateTrack(prevTrack.id, { sortOrder: tempSort });
+    }
+  };
+
+  const moveSingleTrackDown = async (trackId: string) => {
+    const index = singleTracksArray.findIndex(t => t.displayTrack.id === trackId);
+    if (index < singleTracksArray.length - 1) {
+      const track = singleTracksArray[index].displayTrack;
+      const nextTrack = singleTracksArray[index + 1].displayTrack;
+
+      // Swap sortOrder values
+      const tempSort = track.sortOrder || index;
+      await trackService.updateTrack(track.id, { sortOrder: nextTrack.sortOrder || (index + 1) });
+      await trackService.updateTrack(nextTrack.id, { sortOrder: tempSort });
+    }
+  };
+
   // Group tracks by album for Album/EP types
   const groupedTracks = tracks.reduce((acc, track) => {
     if (track.type === 'Album' || track.type === 'EP') {
@@ -299,6 +330,22 @@ const TracksPage: React.FC = () => {
                           <td className="px-6 py-4 text-white/60">{group.displayTrack.plays}</td>
                           <td className="px-6 py-4">
                             <div className="flex items-center justify-end space-x-2">
+                              <button
+                                onClick={() => moveSingleTrackUp(group.displayTrack.id)}
+                                disabled={singleTracksArray.findIndex(t => t.displayTrack.id === group.displayTrack.id) === 0}
+                                className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
+                                title="Move up"
+                              >
+                                <ArrowUp size={18} />
+                              </button>
+                              <button
+                                onClick={() => moveSingleTrackDown(group.displayTrack.id)}
+                                disabled={singleTracksArray.findIndex(t => t.displayTrack.id === group.displayTrack.id) === singleTracksArray.length - 1}
+                                className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
+                                title="Move down"
+                              >
+                                <ArrowDown size={18} />
+                              </button>
                               <button
                                 onClick={() => togglePlay(group.displayTrack.id)}
                                 className="p-2 text-white/40 hover:text-purple-400 transition-colors"
