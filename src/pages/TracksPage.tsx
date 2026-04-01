@@ -48,6 +48,8 @@ interface Track {
   genre?: string;
   bpm?: number;
   duration?: string;
+  album?: string;        // Album name for grouping
+  trackNumber?: number;  // Track position in album
 }
 
 // Remix Track Interface
@@ -124,6 +126,7 @@ export default function TracksPage() {
     title: t.title,
     artist: t.artist,
     album: t.album,
+    trackNumber: t.trackNumber,
     duration: '0:00',
     genre: t.genre,
     bpm: t.bpm,
