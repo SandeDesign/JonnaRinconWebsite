@@ -1,7 +1,6 @@
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import SocialCardCarousel from './SocialCard';
 import { useInView } from '../hooks/useInView';
-import { useCyberDecodeOnChange } from '../hooks/useCyberDecode';
 
 // Soft hyphen in filename — matches actual file on disk
 const SCHERM_PREFIX = 'Scherm\u00ADafbeelding';
@@ -99,84 +98,31 @@ const SLIDES: SlideContent[] = [
 
 export default function About() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [textRef, textInView] = useInView();
-  const current = SLIDES[activeIndex];
-  const decodedTitle = useCyberDecodeOnChange(current.title);
+  const [ref] = useInView();
 
   return (
-    <section id="about" className={`py-12 md:py-20 px-4 bg-transparent transition-all duration-700 ${textInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+    <section
+      ref={ref}
+      id="about"
+      className="py-12 md:py-20 px-4 bg-transparent"
+    >
       <div className="max-w-[1100px] mx-auto">
 
-        {/* Main layout: text left, carousel right */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-
-          {/* Left side — text content */}
-          <div
-            ref={textRef}
-            className={`transition-all duration-700 ease-out ${
-              textInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            {/* Slide counter */}
-            <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 font-medium">
-              {String(activeIndex + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
-            </p>
-
-            {/* Title with transition */}
-            <div className="overflow-hidden mb-3 md:mb-4">
-              <h2
-                key={current.title}
-                className="text-3xl md:text-5xl font-black uppercase tracking-wider"
-              >
-                {decodedTitle}
-              </h2>
-            </div>
-            <div className="w-12 h-0.5 bg-white/30 mb-4 md:mb-6" />
-
-            {/* Body text with transition */}
-            <div
-              key={activeIndex}
-              className="animate-fade-in"
-            >
-              <p className="text-base md:text-lg text-gray-400 leading-relaxed">
-                {current.text}
-              </p>
-            </div>
-
-            {/* Slide nav pills (desktop) */}
-            <div className="hidden md:flex gap-2 mt-8">
-              {SLIDES.map((slide, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveIndex(i)}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider font-medium rounded-full border transition-all duration-300 ${
-                    i === activeIndex
-                      ? 'bg-white text-black border-white'
-                      : 'bg-transparent text-gray-500 border-white/10 hover:border-white/30 hover:text-gray-300'
-                  }`}
-                >
-                  {slide.title}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Right side — social card carousel */}
-          <div className="flex justify-center md:justify-end">
-            <SocialCardCarousel
-              slides={SLIDES.map((s) => ({
-                imageSrc: s.imageSrc,
-                imageAlt: s.imageAlt,
-                location: s.location,
-                caption: s.caption,
-                likes: s.likes,
-              }))}
-              activeIndex={activeIndex}
-              onIndexChange={setActiveIndex}
-            />
-          </div>
-
+        {/* Centered carousel only */}
+        <div className="flex justify-center">
+          <SocialCardCarousel
+            slides={SLIDES.map((s) => ({
+              imageSrc: s.imageSrc,
+              imageAlt: s.imageAlt,
+              location: s.caption,
+              caption: s.text,
+              likes: s.likes,
+            }))}
+            activeIndex={activeIndex}
+            onIndexChange={setActiveIndex}
+          />
         </div>
+
       </div>
     </section>
   );
