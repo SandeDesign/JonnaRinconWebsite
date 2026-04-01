@@ -6,6 +6,7 @@ import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
 import { toDirectUrl } from '../../lib/utils/urlUtils';
+import { getPlayButtonContainerClass, getPlayButtonSymbolClass, getRowHighlightClass } from '../../lib/utils/buttonStyles';
 import { setCurrentTrack, getCurrentTrack } from '../../components/GlobalAudioPlayer';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase/config';
@@ -277,11 +278,11 @@ const BeatsShop: React.FC = () => {
                       onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                       className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
                     >
-                      <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+                      <div className={`w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-2xl hover:scale-110 transition-transform ${getPlayButtonContainerClass(isCurrentBeatPlaying(beat.id))}`}>
                         {isCurrentBeatPlaying(beat.id) ? (
-                          <Pause className="w-6 h-6 text-white" fill="currentColor" />
+                          <Pause className="w-6 h-6 text-red-500" fill="currentColor" />
                         ) : (
-                          <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
+                          <Play className="w-6 h-6 text-gray-400 ml-1" fill="currentColor" />
                         )}
                       </div>
                     </button>
@@ -324,12 +325,12 @@ const BeatsShop: React.FC = () => {
                     <img src={beat.artworkUrl || '/JEIGHTENESIS.jpg'} alt={beat.title} className="w-full h-full object-cover" />
                     <button
                       onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
-                      className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                      className={`absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg ${getPlayButtonContainerClass(isCurrentBeatPlaying(beat.id))}`}
                     >
                       {isCurrentBeatPlaying(beat.id) ? (
-                        <Pause className="w-5 h-5 text-white" fill="currentColor" />
+                        <Pause className="w-5 h-5 text-red-500" fill="currentColor" />
                       ) : (
-                        <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
+                        <Play className="w-5 h-5 text-gray-400 ml-0.5" fill="currentColor" />
                       )}
                     </button>
                   </div>
@@ -425,11 +426,11 @@ const BeatsShop: React.FC = () => {
                     onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
                   >
-                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-600/90 backdrop-blur-sm flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-600/90 backdrop-blur-sm flex items-center justify-center shadow-2xl hover:scale-110 transition-transform ${getPlayButtonContainerClass(isCurrentBeatPlaying(beat.id))}`}>
                       {isCurrentBeatPlaying(beat.id) ? (
-                        <Pause className="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" />
+                        <Pause className="w-5 h-5 md:w-6 md:h-6 text-red-500" fill="currentColor" />
                       ) : (
-                        <Play className="w-5 h-5 md:w-6 md:h-6 text-white ml-0.5" fill="currentColor" />
+                        <Play className="w-5 h-5 md:w-6 md:h-6 text-gray-400 ml-0.5" fill="currentColor" />
                       )}
                     </div>
                   </button>
@@ -480,7 +481,7 @@ const BeatsShop: React.FC = () => {
               <Link
                 key={beat.id}
                 to={`/shop/beats/${beat.id}`}
-                className="flex items-center gap-3 md:gap-5 p-3 md:p-4 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl group hover:bg-white/[0.06] transition-all"
+                className={`flex items-center gap-3 md:gap-5 p-3 md:p-4 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl group hover:bg-white/[0.06] transition-all ${getRowHighlightClass(isCurrentBeatPlaying(beat.id))}`}
               >
                 <span className="text-lg md:text-xl font-black text-white/15 w-6 md:w-10 text-center flex-shrink-0">
                   {index + 1}
@@ -490,12 +491,12 @@ const BeatsShop: React.FC = () => {
                   <img src={beat.artworkUrl || '/JEIGHTENESIS.jpg'} alt={beat.title} className="w-full h-full object-cover" />
                   <button
                     onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                    className={`absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg ${getPlayButtonContainerClass(isCurrentBeatPlaying(beat.id))}`}
                   >
-                    {playingId === beat.id ? (
-                      <Pause className="w-5 h-5 text-white" fill="currentColor" />
+                    {isCurrentBeatPlaying(beat.id) ? (
+                      <Pause className="w-5 h-5 text-red-500" fill="currentColor" />
                     ) : (
-                      <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
+                      <Play className="w-5 h-5 text-gray-400 ml-0.5" fill="currentColor" />
                     )}
                   </button>
                 </div>
