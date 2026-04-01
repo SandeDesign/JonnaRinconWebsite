@@ -152,6 +152,7 @@ export default function TracksPage() {
     year: r.year,
     collab: r.collab,
     remixType: r.remixType,
+    sortOrder: r.sortOrder,
     audioUrl: r.audioUrl,
     coverArt: r.artworkUrl,
     coverArtUrl: r.artworkUrl,
