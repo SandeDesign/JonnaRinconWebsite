@@ -50,6 +50,7 @@ interface Track {
   duration?: string;
   album?: string;        // Album name for grouping
   trackNumber?: number;  // Track position in album
+  sortOrder?: number;    // Sort order for single tracks/beats/remixes
 }
 
 // Remix Track Interface
@@ -127,6 +128,7 @@ export default function TracksPage() {
     artist: t.artist,
     album: t.album,
     trackNumber: t.trackNumber,
+    sortOrder: t.sortOrder,
     duration: '0:00',
     genre: t.genre,
     bpm: t.bpm,
@@ -385,7 +387,14 @@ export default function TracksPage() {
               </p>
               <div className="space-y-3">
                 {Object.entries(groupedTracks)
-                  .sort(([, a], [, b]) => b.displayTrack.createdAt - a.displayTrack.createdAt)
+                  .sort(([, a], [, b]) => {
+                    // Albums sorted by createdAt (newest first)
+                    if ((a.albumName && b.albumName) || (!a.albumName && !b.albumName)) {
+                      return (b.displayTrack.sortOrder ?? b.displayTrack.createdAt) - (a.displayTrack.sortOrder ?? a.displayTrack.createdAt);
+                    }
+                    // Albums appear before single tracks
+                    return a.albumName ? -1 : 1;
+                  })
                   .map(([albumKey, group]) => {
                     const isAlbum = group.albumName && (group.type === 'Album' || group.type === 'EP');
                     const isExpanded = expandedAlbums.has(albumKey);
