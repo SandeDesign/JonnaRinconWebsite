@@ -80,35 +80,53 @@ const TracksPage: React.FC = () => {
 
   const moveSingleTrackUp = async (trackId: string) => {
     try {
-      const singleTracks = tracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
+      // Use sorted tracks to get the correct order
+      const singleTracks = sortedTracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
       const index = singleTracks.findIndex(t => t.id === trackId);
+      console.log('Move up - index:', index, 'total:', singleTracks.length);
+
       if (index > 0) {
         const track = singleTracks[index];
         const prevTrack = singleTracks[index - 1];
 
-        const tempSort = track.sortOrder ?? index;
-        await trackService.updateTrack(track.id, { sortOrder: prevTrack.sortOrder ?? (index - 1) });
-        await trackService.updateTrack(prevTrack.id, { sortOrder: tempSort });
+        // Assign explicit sortOrder based on position
+        const newPrevSort = index * 10;
+        const newTrackSort = (index - 1) * 10;
+
+        console.log('Swapping:', prevTrack.id, 'with', track.id);
+        await trackService.updateTrack(prevTrack.id, { sortOrder: newPrevSort });
+        await trackService.updateTrack(track.id, { sortOrder: newTrackSort });
+        alert('Track moved up!');
       }
     } catch (error) {
       console.error('Error moving track up:', error);
+      alert('Error moving track: ' + error);
     }
   };
 
   const moveSingleTrackDown = async (trackId: string) => {
     try {
-      const singleTracks = tracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
+      // Use sorted tracks to get the correct order
+      const singleTracks = sortedTracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
       const index = singleTracks.findIndex(t => t.id === trackId);
+      console.log('Move down - index:', index, 'total:', singleTracks.length);
+
       if (index < singleTracks.length - 1) {
         const track = singleTracks[index];
         const nextTrack = singleTracks[index + 1];
 
-        const tempSort = track.sortOrder ?? index;
-        await trackService.updateTrack(track.id, { sortOrder: nextTrack.sortOrder ?? (index + 1) });
-        await trackService.updateTrack(nextTrack.id, { sortOrder: tempSort });
+        // Assign explicit sortOrder based on position
+        const newNextSort = index * 10;
+        const newTrackSort = (index + 1) * 10;
+
+        console.log('Swapping:', track.id, 'with', nextTrack.id);
+        await trackService.updateTrack(track.id, { sortOrder: newNextSort });
+        await trackService.updateTrack(nextTrack.id, { sortOrder: newTrackSort });
+        alert('Track moved down!');
       }
     } catch (error) {
       console.error('Error moving track down:', error);
+      alert('Error moving track: ' + error);
     }
   };
 
@@ -117,22 +135,29 @@ const TracksPage: React.FC = () => {
       const albumTracks = tracks.filter(t => (t.album || t.title) === albumName);
       if (albumTracks.length === 0) return;
 
-      const allAlbums = Array.from(new Set(tracks.filter(t => t.type === 'Album' || t.type === 'EP').map(t => t.album || t.title)));
+      // Get albums in sorted order (same as displayed)
+      const allAlbums = Array.from(new Set(sortedTracks.filter(t => t.type === 'Album' || t.type === 'EP').map(t => t.album || t.title)));
       const index = allAlbums.indexOf(albumName);
+      console.log('Album move up - index:', index, 'total albums:', allAlbums.length);
+
       if (index > 0) {
         const prevAlbumName = allAlbums[index - 1];
         const prevAlbumTracks = tracks.filter(t => (t.album || t.title) === prevAlbumName);
 
-        const tempSort = albumTracks[0].sortOrder ?? index;
+        const newPrevSort = index * 10;
+        const newAlbumSort = (index - 1) * 10;
+
         for (const track of albumTracks) {
-          await trackService.updateTrack(track.id, { sortOrder: prevAlbumTracks[0].sortOrder ?? (index - 1) });
+          await trackService.updateTrack(track.id, { sortOrder: newAlbumSort });
         }
         for (const track of prevAlbumTracks) {
-          await trackService.updateTrack(track.id, { sortOrder: tempSort });
+          await trackService.updateTrack(track.id, { sortOrder: newPrevSort });
         }
+        alert('Album moved up!');
       }
     } catch (error) {
       console.error('Error moving album up:', error);
+      alert('Error moving album: ' + error);
     }
   };
 
@@ -141,27 +166,42 @@ const TracksPage: React.FC = () => {
       const albumTracks = tracks.filter(t => (t.album || t.title) === albumName);
       if (albumTracks.length === 0) return;
 
-      const allAlbums = Array.from(new Set(tracks.filter(t => t.type === 'Album' || t.type === 'EP').map(t => t.album || t.title)));
+      // Get albums in sorted order (same as displayed)
+      const allAlbums = Array.from(new Set(sortedTracks.filter(t => t.type === 'Album' || t.type === 'EP').map(t => t.album || t.title)));
       const index = allAlbums.indexOf(albumName);
+      console.log('Album move down - index:', index, 'total albums:', allAlbums.length);
+
       if (index < allAlbums.length - 1) {
         const nextAlbumName = allAlbums[index + 1];
         const nextAlbumTracks = tracks.filter(t => (t.album || t.title) === nextAlbumName);
 
-        const tempSort = albumTracks[0].sortOrder ?? index;
+        const newNextSort = index * 10;
+        const newAlbumSort = (index + 1) * 10;
+
         for (const track of albumTracks) {
-          await trackService.updateTrack(track.id, { sortOrder: nextAlbumTracks[0].sortOrder ?? (index + 1) });
+          await trackService.updateTrack(track.id, { sortOrder: newAlbumSort });
         }
         for (const track of nextAlbumTracks) {
-          await trackService.updateTrack(track.id, { sortOrder: tempSort });
+          await trackService.updateTrack(track.id, { sortOrder: newNextSort });
         }
+        alert('Album moved down!');
       }
     } catch (error) {
       console.error('Error moving album down:', error);
+      alert('Error moving album: ' + error);
     }
   };
 
+  // Sort tracks by sortOrder (for albums and singles) before grouping
+  const sortedTracks = [...tracks].sort((a, b) => {
+    // Albums/EPs and singles should be sorted by sortOrder
+    const aSort = a.sortOrder ?? Number.MAX_VALUE;
+    const bSort = b.sortOrder ?? Number.MAX_VALUE;
+    return aSort - bSort;
+  });
+
   // Group tracks by album for Album/EP types
-  const groupedTracks = tracks.reduce((acc, track) => {
+  const groupedTracks = sortedTracks.reduce((acc, track) => {
     if (track.type === 'Album' || track.type === 'EP') {
       // Use album field, fallback to title for backward compatibility
       const albumName = track.album || track.title;
@@ -277,14 +317,22 @@ const TracksPage: React.FC = () => {
                     <div className="flex items-center space-x-2 flex-shrink-0">
                       <button
                         onClick={() => moveAlbumUp(group.albumName)}
-                        className="p-2 text-white/40 hover:text-white transition-colors"
+                        disabled={(() => {
+                          const allAlbums = Array.from(new Set(sortedTracks.filter(t => t.type === 'Album' || t.type === 'EP').map(t => t.album || t.title)));
+                          return allAlbums.indexOf(group.albumName) === 0;
+                        })()}
+                        className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
                         title="Move album up"
                       >
                         <ArrowUp size={18} />
                       </button>
                       <button
                         onClick={() => moveAlbumDown(group.albumName)}
-                        className="p-2 text-white/40 hover:text-white transition-colors"
+                        disabled={(() => {
+                          const allAlbums = Array.from(new Set(sortedTracks.filter(t => t.type === 'Album' || t.type === 'EP').map(t => t.album || t.title)));
+                          return allAlbums.indexOf(group.albumName) === allAlbums.length - 1;
+                        })()}
+                        className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
                         title="Move album down"
                       >
                         <ArrowDown size={18} />
@@ -398,7 +446,7 @@ const TracksPage: React.FC = () => {
                               <button
                                 onClick={() => moveSingleTrackUp(group.displayTrack.id)}
                                 disabled={(() => {
-                                  const singleTracks = tracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
+                                  const singleTracks = sortedTracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
                                   return singleTracks.findIndex(t => t.id === group.displayTrack.id) === 0;
                                 })()}
                                 className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
@@ -409,7 +457,7 @@ const TracksPage: React.FC = () => {
                               <button
                                 onClick={() => moveSingleTrackDown(group.displayTrack.id)}
                                 disabled={(() => {
-                                  const singleTracks = tracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
+                                  const singleTracks = sortedTracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
                                   return singleTracks.findIndex(t => t.id === group.displayTrack.id) === singleTracks.length - 1;
                                 })()}
                                 className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
