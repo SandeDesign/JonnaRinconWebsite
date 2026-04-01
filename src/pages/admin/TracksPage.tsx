@@ -84,18 +84,28 @@ const TracksPage: React.FC = () => {
       const singleTracks = sortedTracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
       const index = singleTracks.findIndex(t => t.id === trackId);
       console.log('Move up - index:', index, 'total:', singleTracks.length);
+      console.log('Current singleTracks order:', singleTracks.map((t, i) => `${i}: ${t.title} (id:${t.id.slice(0,8)}, sort:${t.sortOrder})`));
 
       if (index > 0) {
         const track = singleTracks[index];
         const prevTrack = singleTracks[index - 1];
 
+        console.log('Before update - track:', track.title, 'sortOrder:', track.sortOrder);
+        console.log('Before update - prevTrack:', prevTrack.title, 'sortOrder:', prevTrack.sortOrder);
+
         // Assign explicit sortOrder based on position
         const newPrevSort = index * 10;
         const newTrackSort = (index - 1) * 10;
 
+        console.log('After update - newPrevSort:', newPrevSort, 'newTrackSort:', newTrackSort);
+
         console.log('Swapping:', prevTrack.id, 'with', track.id);
         await trackService.updateTrack(prevTrack.id, { sortOrder: newPrevSort });
+        console.log('Updated prevTrack with sortOrder:', newPrevSort);
+
         await trackService.updateTrack(track.id, { sortOrder: newTrackSort });
+        console.log('Updated track with sortOrder:', newTrackSort);
+
         alert('Track moved up!');
       }
     } catch (error) {
@@ -199,6 +209,9 @@ const TracksPage: React.FC = () => {
     const bSort = b.sortOrder ?? Number.MAX_VALUE;
     return aSort - bSort;
   });
+
+  console.log('📊 TracksPage rendered - sortedTracks count:', sortedTracks.length);
+  console.log('📊 Sorted order:', sortedTracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive')).map((t, i) => `${i}: ${t.title} (sort:${t.sortOrder})`));
 
   // Group tracks by album for Album/EP types
   const groupedTracks = sortedTracks.reduce((acc, track) => {
