@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useInView } from '../hooks/useInView';
+import TypingCaption from './TypingCaption';
 
 interface Slide {
   imageSrc: string;
   imageAlt: string;
   location: string;
-  caption: string;
+  caption: ReactNode;
   likes: number;
 }
 
@@ -28,8 +29,22 @@ export default function SocialCardCarousel({
   const touchStartX = useRef(0);
   const touchDeltaX = useRef(0);
   const isDragging = useRef(false);
+  const [completedSlides, setCompletedSlides] = useState<Set<number>>(new Set());
+  const [typingKey, setTypingKey] = useState(0);
+  const prevIndexRef = useRef(activeIndex);
 
   const current = slides[activeIndex];
+
+  // When activeIndex changes, check if we need to reset typing
+  useEffect(() => {
+    if (activeIndex !== prevIndexRef.current) {
+      // Only reset typing if this is a new slide we haven't seen before
+      if (!completedSlides.has(activeIndex)) {
+        setTypingKey((prev) => prev + 1);
+      }
+      prevIndexRef.current = activeIndex;
+    }
+  }, [activeIndex, completedSlides]);
 
   const handleLike = () => {
     setLikedSlides((prev) => {
@@ -203,12 +218,22 @@ export default function SocialCardCarousel({
         {displayLikes.toLocaleString()} likes
       </p>
 
-      {/* Caption */}
+      {/* Caption with typing animation */}
       <div className="px-3 pb-3 pt-1">
-        <p className="text-sm text-gray-300">
-          <span className="font-semibold text-white">jonnarincon</span>{' '}
-          {current.caption}
-        </p>
+        <TypingCaption
+          key={typingKey}
+          content={
+            <>
+              <span className="font-semibold text-white">jonnarincon</span>{' '}
+              {current.caption}
+            </>
+          }
+          speed={30}
+          className="text-sm text-gray-300 leading-relaxed"
+          onComplete={() => {
+            setCompletedSlides((prev) => new Set([...prev, activeIndex]));
+          }}
+        />
       </div>
     </div>
   );
