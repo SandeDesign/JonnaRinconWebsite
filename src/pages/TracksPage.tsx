@@ -689,7 +689,13 @@ export default function TracksPage() {
                     const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
                     return typeMatch && yearMatch && collabMatch && genreMatch;
                   })
-                  .sort((a, b) => b.createdAt - a.createdAt)
+                  .sort((a, b) => {
+                    // Sort by sortOrder first (if set in admin), then by createdAt
+                    const aSort = a.sortOrder ?? Number.MAX_VALUE;
+                    const bSort = b.sortOrder ?? Number.MAX_VALUE;
+                    if (aSort !== bSort) return bSort - aSort;
+                    return b.createdAt - a.createdAt;
+                  })
                   .map((remix) => (
                     <TrackListItem
                       key={remix.id}
