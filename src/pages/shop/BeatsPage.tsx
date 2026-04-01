@@ -6,6 +6,7 @@ import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
 import { toDirectUrl } from '../../lib/utils/urlUtils';
+import { getPlayButtonContainerClass, getPlayButtonSymbolClass, getRowHighlightClass } from '../../lib/utils/buttonStyles';
 import { setCurrentTrack, getCurrentTrack } from '../../components/GlobalAudioPlayer';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase/config';
@@ -21,6 +22,7 @@ const BeatsShop: React.FC = () => {
   }>({
     sortBy: 'newest',
   });
+  const [dynamicGenres, setDynamicGenres] = useState<string[]>([]);
 
   const heroTitle = useCyberDecodeInView('BEATSTORE');
 
@@ -47,6 +49,15 @@ const BeatsShop: React.FC = () => {
           } as Beat;
         });
         setBeats(beatsData);
+
+        // Extract unique genres dynamically
+        const uniqueGenres = Array.from(new Set(
+          beatsData
+            .map(b => b.genre)
+            .filter((g): g is string => !!g)
+        )).sort();
+        setDynamicGenres(uniqueGenres);
+
         setLoading(false);
       },
       (err) => {
@@ -83,7 +94,6 @@ const BeatsShop: React.FC = () => {
     setCurrentTrack(trackBeat, [trackBeat]);
   };
 
-  const genres = ['Trap', 'Hip Hop', 'Drill', 'R&B', 'Pop', 'Electronic', 'Afrobeat'];
   const hasActiveFilters = !!(filter.genre || filter.search);
 
   // Apply client-side filtering and sorting
@@ -151,65 +161,94 @@ const BeatsShop: React.FC = () => {
         </div>
       </section>
 
-      {/* Sticky filter bar */}
-      <section className="sticky top-0 z-20 px-6 md:px-12 py-4 backdrop-blur-xl bg-black/40 border-b border-white/[0.06]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-3 md:gap-4 items-stretch md:items-center">
-          {/* Search */}
-          <div className="flex-1 relative">
+      {/* Search Bar */}
+      <section className="sticky top-0 z-20 px-6 md:px-12 py-6 backdrop-blur-xl bg-black/40 border-b border-white/[0.06]">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
             <input
               type="text"
               placeholder="Search beats..."
               value={filter.search || ''}
               onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-              className="w-full pl-11 pr-4 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-full text-white placeholder-white/25 focus:outline-none focus:border-red-500/40 transition-all text-sm"
+              className="w-full pl-11 pr-4 py-3 bg-white/[0.05] border border-white/[0.08] rounded-full text-white placeholder-white/25 focus:outline-none focus:border-red-500/40 transition-all text-sm"
             />
           </div>
 
-          {/* Genre Filter */}
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
-            <select
-              value={filter.genre || ''}
-              onChange={(e) => setFilter({ ...filter, genre: e.target.value || undefined })}
-              className="w-full md:w-40 pl-9 pr-3 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-full text-white text-sm focus:outline-none focus:border-red-500/40 transition-all appearance-none cursor-pointer"
-            >
-              <option value="" className="bg-black">All Genres</option>
-              {genres.map((genre) => (
-                <option key={genre} value={genre} className="bg-black">{genre}</option>
+          {/* Genre Buttons */}
+          <div className="mb-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Genre</h3>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setFilter({ ...filter, genre: undefined })}
+                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                  !filter.genre
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                }`}
+              >
+                All Genres
+              </button>
+              {dynamicGenres.map((genre) => (
+                <button
+                  key={genre}
+                  onClick={() => setFilter({ ...filter, genre })}
+                  className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                    filter.genre === genre
+                      ? 'bg-red-600 text-white'
+                      : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                  }`}
+                >
+                  {genre}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
-          {/* Sort */}
-          <select
-            value={filter.sortBy}
-            onChange={(e) => setFilter({ ...filter, sortBy: e.target.value as typeof filter.sortBy })}
-            className="w-full md:w-44 px-4 py-2.5 bg-white/[0.05] border border-white/[0.08] rounded-full text-white text-sm focus:outline-none focus:border-red-500/40 transition-all appearance-none cursor-pointer"
-          >
-            <option value="newest" className="bg-black">Newest First</option>
-            <option value="popular" className="bg-black">Most Popular</option>
-            <option value="price_low" className="bg-black">Price: Low to High</option>
-            <option value="price_high" className="bg-black">Price: High to Low</option>
-          </select>
+          {/* Sort Buttons */}
+          <div className="flex items-center gap-4 flex-wrap">
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Sort</h3>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { value: 'newest', label: 'Newest First' },
+                  { value: 'popular', label: 'Most Popular' },
+                  { value: 'price_low', label: 'Price: Low to High' },
+                  { value: 'price_high', label: 'Price: High to Low' }
+                ].map((sort) => (
+                  <button
+                    key={sort.value}
+                    onClick={() => setFilter({ ...filter, sortBy: sort.value as typeof filter.sortBy })}
+                    className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                      filter.sortBy === sort.value
+                        ? 'bg-red-600 text-white'
+                        : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
+                    }`}
+                  >
+                    {sort.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-          {/* View Mode Toggle */}
-          <button
-            onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            className="p-2.5 bg-white/[0.06] border border-white/[0.08] rounded-full text-white/40 hover:text-white/70 hover:bg-white/[0.10] transition-all flex-shrink-0"
-          >
-            {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid3x3 className="w-4 h-4" />}
-          </button>
-
-          {/* Clear Filters */}
-          {hasActiveFilters && (
-            <button
-              onClick={() => setFilter({ sortBy: 'newest' })}
-              className="p-2.5 bg-red-600/20 border border-red-500/30 rounded-full text-red-400 hover:bg-red-600/30 transition-all flex-shrink-0"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+            {/* View Mode & Clear */}
+            <div className="flex gap-2 ml-auto">
+              <button
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                className="p-2 bg-white/[0.06] border border-white/[0.08] rounded-full text-white/40 hover:text-white/70 hover:bg-white/[0.10] transition-all"
+              >
+                {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid3x3 className="w-4 h-4" />}
+              </button>
+              {hasActiveFilters && (
+                <button
+                  onClick={() => setFilter({ sortBy: 'newest' })}
+                  className="p-2 bg-red-600/20 border border-red-500/30 rounded-full text-red-400 hover:bg-red-600/30 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -239,11 +278,11 @@ const BeatsShop: React.FC = () => {
                       onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                       className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
                     >
-                      <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+                      <div className={`w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-2xl hover:scale-110 transition-transform ${getPlayButtonContainerClass(isCurrentBeatPlaying(beat.id))}`}>
                         {isCurrentBeatPlaying(beat.id) ? (
-                          <Pause className="w-6 h-6 text-white" fill="currentColor" />
+                          <Pause className="w-6 h-6 text-red-500" fill="currentColor" />
                         ) : (
-                          <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
+                          <Play className="w-6 h-6 text-gray-400 ml-1" fill="currentColor" />
                         )}
                       </div>
                     </button>
@@ -286,12 +325,12 @@ const BeatsShop: React.FC = () => {
                     <img src={beat.artworkUrl || '/JEIGHTENESIS.jpg'} alt={beat.title} className="w-full h-full object-cover" />
                     <button
                       onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
-                      className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                      className={`absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg ${getPlayButtonContainerClass(isCurrentBeatPlaying(beat.id))}`}
                     >
                       {isCurrentBeatPlaying(beat.id) ? (
-                        <Pause className="w-5 h-5 text-white" fill="currentColor" />
+                        <Pause className="w-5 h-5 text-red-500" fill="currentColor" />
                       ) : (
-                        <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
+                        <Play className="w-5 h-5 text-gray-400 ml-0.5" fill="currentColor" />
                       )}
                     </button>
                   </div>
@@ -387,11 +426,11 @@ const BeatsShop: React.FC = () => {
                     onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
                     className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
                   >
-                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-600/90 backdrop-blur-sm flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full bg-red-600/90 backdrop-blur-sm flex items-center justify-center shadow-2xl hover:scale-110 transition-transform ${getPlayButtonContainerClass(isCurrentBeatPlaying(beat.id))}`}>
                       {isCurrentBeatPlaying(beat.id) ? (
-                        <Pause className="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" />
+                        <Pause className="w-5 h-5 md:w-6 md:h-6 text-red-500" fill="currentColor" />
                       ) : (
-                        <Play className="w-5 h-5 md:w-6 md:h-6 text-white ml-0.5" fill="currentColor" />
+                        <Play className="w-5 h-5 md:w-6 md:h-6 text-gray-400 ml-0.5" fill="currentColor" />
                       )}
                     </div>
                   </button>
@@ -442,7 +481,7 @@ const BeatsShop: React.FC = () => {
               <Link
                 key={beat.id}
                 to={`/shop/beats/${beat.id}`}
-                className="flex items-center gap-3 md:gap-5 p-3 md:p-4 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl group hover:bg-white/[0.06] transition-all"
+                className={`flex items-center gap-3 md:gap-5 p-3 md:p-4 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl group hover:bg-white/[0.06] transition-all ${getRowHighlightClass(isCurrentBeatPlaying(beat.id))}`}
               >
                 <span className="text-lg md:text-xl font-black text-white/15 w-6 md:w-10 text-center flex-shrink-0">
                   {index + 1}
@@ -452,12 +491,12 @@ const BeatsShop: React.FC = () => {
                   <img src={beat.artworkUrl || '/JEIGHTENESIS.jpg'} alt={beat.title} className="w-full h-full object-cover" />
                   <button
                     onClick={(e) => { e.preventDefault(); handlePlayBeat(beat); }}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                    className={`absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg ${getPlayButtonContainerClass(isCurrentBeatPlaying(beat.id))}`}
                   >
-                    {playingId === beat.id ? (
-                      <Pause className="w-5 h-5 text-white" fill="currentColor" />
+                    {isCurrentBeatPlaying(beat.id) ? (
+                      <Pause className="w-5 h-5 text-red-500" fill="currentColor" />
                     ) : (
-                      <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
+                      <Play className="w-5 h-5 text-gray-400 ml-0.5" fill="currentColor" />
                     )}
                   </button>
                 </div>
