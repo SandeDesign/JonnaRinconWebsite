@@ -4,7 +4,7 @@ import LinkInput from '../../components/admin/LinkInput';
 import { useBeats } from '../../hooks/useBeats';
 import { beatService } from '../../lib/firebase/services';
 import { Beat } from '../../lib/firebase/types';
-import { Plus, Edit, Trash2, Play, Pause } from 'lucide-react';
+import { Plus, Edit, Trash2, Play, Pause, ArrowUp, ArrowDown } from 'lucide-react';
 
 const BeatsPage: React.FC = () => {
   const { beats, loading } = useBeats();
@@ -38,6 +38,32 @@ const BeatsPage: React.FC = () => {
       setCurrentlyPlaying(null);
     } else {
       setCurrentlyPlaying(beatId);
+    }
+  };
+
+  const moveBeatUp = async (beatId: string) => {
+    const index = beats.findIndex(b => b.id === beatId);
+    if (index > 0) {
+      const beat = beats[index];
+      const prevBeat = beats[index - 1];
+
+      // Swap sortOrder values
+      const tempSort = beat.sortOrder ?? index;
+      await beatService.updateBeat(beat.id, { sortOrder: prevBeat.sortOrder ?? (index - 1) });
+      await beatService.updateBeat(prevBeat.id, { sortOrder: tempSort });
+    }
+  };
+
+  const moveBeatDown = async (beatId: string) => {
+    const index = beats.findIndex(b => b.id === beatId);
+    if (index < beats.length - 1) {
+      const beat = beats[index];
+      const nextBeat = beats[index + 1];
+
+      // Swap sortOrder values
+      const tempSort = beat.sortOrder ?? index;
+      await beatService.updateBeat(beat.id, { sortOrder: nextBeat.sortOrder ?? (index + 1) });
+      await beatService.updateBeat(nextBeat.id, { sortOrder: tempSort });
     }
   };
 
@@ -182,6 +208,22 @@ const BeatsPage: React.FC = () => {
                       <td className="px-6 py-4 text-white/60">{beat.plays}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end space-x-2">
+                          <button
+                            onClick={() => moveBeatUp(beat.id)}
+                            disabled={beats.findIndex(b => b.id === beat.id) === 0}
+                            className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
+                            title="Move up"
+                          >
+                            <ArrowUp size={18} />
+                          </button>
+                          <button
+                            onClick={() => moveBeatDown(beat.id)}
+                            disabled={beats.findIndex(b => b.id === beat.id) === beats.length - 1}
+                            className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
+                            title="Move down"
+                          >
+                            <ArrowDown size={18} />
+                          </button>
                           <button
                             onClick={() => togglePlay(beat.id)}
                             className="p-2 text-white/40 hover:text-purple-400 transition-colors"
