@@ -78,33 +78,28 @@ const TracksPage: React.FC = () => {
     setExpandedAlbums(newExpanded);
   };
 
-  // Get list of single tracks with their positions
-  const singleTracksArray = Object.entries(groupedTracks)
-    .filter(([, group]) => !group.albumName)
-    .map(([key, group]) => ({ key, ...group }));
-
   const moveSingleTrackUp = async (trackId: string) => {
-    const index = singleTracksArray.findIndex(t => t.displayTrack.id === trackId);
+    const singleTracks = tracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
+    const index = singleTracks.findIndex(t => t.id === trackId);
     if (index > 0) {
-      const track = singleTracksArray[index].displayTrack;
-      const prevTrack = singleTracksArray[index - 1].displayTrack;
+      const track = singleTracks[index];
+      const prevTrack = singleTracks[index - 1];
 
-      // Swap sortOrder values
-      const tempSort = track.sortOrder || index;
-      await trackService.updateTrack(track.id, { sortOrder: prevTrack.sortOrder || (index - 1) });
+      const tempSort = track.sortOrder ?? index;
+      await trackService.updateTrack(track.id, { sortOrder: prevTrack.sortOrder ?? (index - 1) });
       await trackService.updateTrack(prevTrack.id, { sortOrder: tempSort });
     }
   };
 
   const moveSingleTrackDown = async (trackId: string) => {
-    const index = singleTracksArray.findIndex(t => t.displayTrack.id === trackId);
-    if (index < singleTracksArray.length - 1) {
-      const track = singleTracksArray[index].displayTrack;
-      const nextTrack = singleTracksArray[index + 1].displayTrack;
+    const singleTracks = tracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
+    const index = singleTracks.findIndex(t => t.id === trackId);
+    if (index < singleTracks.length - 1) {
+      const track = singleTracks[index];
+      const nextTrack = singleTracks[index + 1];
 
-      // Swap sortOrder values
-      const tempSort = track.sortOrder || index;
-      await trackService.updateTrack(track.id, { sortOrder: nextTrack.sortOrder || (index + 1) });
+      const tempSort = track.sortOrder ?? index;
+      await trackService.updateTrack(track.id, { sortOrder: nextTrack.sortOrder ?? (index + 1) });
       await trackService.updateTrack(nextTrack.id, { sortOrder: tempSort });
     }
   };
@@ -332,7 +327,10 @@ const TracksPage: React.FC = () => {
                             <div className="flex items-center justify-end space-x-2">
                               <button
                                 onClick={() => moveSingleTrackUp(group.displayTrack.id)}
-                                disabled={singleTracksArray.findIndex(t => t.displayTrack.id === group.displayTrack.id) === 0}
+                                disabled={(() => {
+                                  const singleTracks = tracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
+                                  return singleTracks.findIndex(t => t.id === group.displayTrack.id) === 0;
+                                })()}
                                 className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
                                 title="Move up"
                               >
@@ -340,7 +338,10 @@ const TracksPage: React.FC = () => {
                               </button>
                               <button
                                 onClick={() => moveSingleTrackDown(group.displayTrack.id)}
-                                disabled={singleTracksArray.findIndex(t => t.displayTrack.id === group.displayTrack.id) === singleTracksArray.length - 1}
+                                disabled={(() => {
+                                  const singleTracks = tracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive'));
+                                  return singleTracks.findIndex(t => t.id === group.displayTrack.id) === singleTracks.length - 1;
+                                })()}
                                 className="p-2 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
                                 title="Move down"
                               >
