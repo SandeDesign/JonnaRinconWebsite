@@ -4,7 +4,7 @@ import LinkInput from '../../components/admin/LinkInput';
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
 import { Track } from '../../lib/firebase/types';
-import { Plus, Edit, Trash2, Play, Pause, ChevronDown } from 'lucide-react';
+import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
 import { toDirectUrl } from '../../lib/utils/urlUtils';
 
 const TracksPage: React.FC = () => {
@@ -215,7 +215,7 @@ const TracksPage: React.FC = () => {
                     <div className="border-t border-white/[0.06]">
                       <table className="w-full">
                         <tbody className="divide-y divide-white/[0.06]">
-                          {group.tracks.map((track, index) => (
+                          {group.tracks.sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0)).map((track, index) => (
                             <tr key={track.id} className="hover:bg-white/[0.06]">
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-3">
@@ -562,6 +562,24 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
     setTracklist(tracklist.map((t) => (t.id === id ? { ...t, [field]: value } : t)));
   };
 
+  const moveTrackUp = (id: string) => {
+    const index = tracklist.findIndex((t) => t.id === id);
+    if (index > 0) {
+      const newList = [...tracklist];
+      [newList[index], newList[index - 1]] = [newList[index - 1], newList[index]];
+      setTracklist(newList);
+    }
+  };
+
+  const moveTrackDown = (id: string) => {
+    const index = tracklist.findIndex((t) => t.id === id);
+    if (index < tracklist.length - 1) {
+      const newList = [...tracklist];
+      [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
+      setTracklist(newList);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-start justify-center pt-8 pb-8 overflow-y-auto p-4">
       <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -743,15 +761,39 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 ) : (
                   tracklist.map((item, index) => (
                     <div key={item.id} className="space-y-2 p-3 bg-white/[0.05] rounded border border-white/[0.06]">
-                      <div className="flex items-center justify-between">
-                        <label className="text-sm text-white/40">Track {index + 1}</label>
-                        <button
-                          type="button"
-                          onClick={() => removeTrackFromList(item.id)}
-                          className="text-red-400 hover:text-red-300 text-sm transition-colors"
-                        >
-                          Remove
-                        </button>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <GripVertical size={16} className="text-white/30 flex-shrink-0" />
+                          <label className="text-sm text-white/40">Track {index + 1}</label>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveTrackUp(item.id)}
+                            disabled={index === 0}
+                            className="p-1 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
+                            title="Move up"
+                          >
+                            <ArrowUp size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveTrackDown(item.id)}
+                            disabled={index === tracklist.length - 1}
+                            className="p-1 text-white/40 hover:text-white disabled:opacity-30 transition-colors"
+                            title="Move down"
+                          >
+                            <ArrowDown size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeTrackFromList(item.id)}
+                            className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                            title="Remove"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
                       <input
                         type="text"
