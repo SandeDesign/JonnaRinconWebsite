@@ -1,6 +1,7 @@
 import React from 'react';
-import { Play, Music } from 'lucide-react';
+import { Play, Pause, Music } from 'lucide-react';
 import { setCurrentTrack, getCurrentTrack } from './GlobalAudioPlayer';
+import { getPlayButtonContainerClass, getRowHighlightClass } from '../lib/utils/buttonStyles';
 
 interface TrackListItemProps {
   track: any;
@@ -39,7 +40,7 @@ export default function TrackListItem({
     <div
       className={`rounded-xl p-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all duration-300 border backdrop-blur-md ${
         isCurrentTrack ? 'border-red-500/50 bg-white/[0.08]' : 'bg-white/[0.04] border-white/[0.06]'
-      }`}
+      } ${getRowHighlightClass(isCurrentTrack)}`}
     >
       {/* Cover Art */}
       <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden">
@@ -105,14 +106,16 @@ export default function TrackListItem({
       {/* Play Button */}
       <button
         onClick={handlePlay}
-        className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
-          isCurrentTrack
-            ? 'bg-red-600 hover:bg-red-500 scale-110'
-            : 'bg-red-600 hover:bg-red-500 hover:scale-110'
-        }`}
-        title="Play track"
+        className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all bg-red-600 hover:bg-red-500 hover:scale-110 ${
+          isCurrentTrack ? 'scale-110' : ''
+        } ${getPlayButtonContainerClass(isCurrentTrack)}`}
+        title={isCurrentTrack ? "Pause track" : "Play track"}
       >
-        <Play size={16} className="text-white ml-0.5" fill="white" />
+        {isCurrentTrack ? (
+          <Pause size={16} className="text-red-500" fill="currentColor" />
+        ) : (
+          <Play size={16} className="text-gray-400 ml-0.5" fill="currentColor" />
+        )}
       </button>
     </div>
   );
