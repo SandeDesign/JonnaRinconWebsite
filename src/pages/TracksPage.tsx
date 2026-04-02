@@ -469,6 +469,7 @@ export default function TracksPage() {
                                     <TrackListItem
                                       track={track}
                                       onPlay={handlePlayTrack}
+                                      onClickTrack={setSelectedTrack}
                                       showType={false}
                                       showMetadata={false}
                                     />
@@ -484,6 +485,7 @@ export default function TracksPage() {
                         key={albumKey}
                         track={group.displayTrack}
                         onPlay={handlePlayTrack}
+                        onClickTrack={setSelectedTrack}
                         showType={true}
                         showMetadata={true}
                       />
@@ -676,6 +678,7 @@ export default function TracksPage() {
                           .sort((a, b) => b.createdAt - a.createdAt);
                         setCurrentTrack(t, queue);
                       }}
+                      onClickTrack={setSelectedTrack}
                       showType={false}
                       showMetadata={true}
                     />

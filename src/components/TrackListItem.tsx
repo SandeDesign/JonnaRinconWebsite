@@ -6,6 +6,7 @@ import { getPlayButtonContainerClass, getRowHighlightClass } from '../lib/utils/
 interface TrackListItemProps {
   track: any;
   onPlay?: (track: any) => void;
+  onClickTrack?: (track: any) => void;
   allTracks?: any[];
   showType?: boolean;
   showYear?: boolean;
@@ -17,6 +18,7 @@ interface TrackListItemProps {
 export default function TrackListItem({
   track,
   onPlay,
+  onClickTrack,
   allTracks = [],
   showType = true,
   showYear = true,
@@ -56,7 +58,10 @@ export default function TrackListItem({
       </div>
 
       {/* Track Info */}
-      <div className="flex-1 min-w-0">
+      <div
+        className="flex-1 min-w-0 cursor-pointer"
+        onClick={() => onClickTrack?.(track)}
+      >
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-bold text-white text-sm md:text-base truncate">
             {track.artist}
