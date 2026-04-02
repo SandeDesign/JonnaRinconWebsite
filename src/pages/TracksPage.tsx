@@ -9,6 +9,7 @@ import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
 import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
+import PageNavigator from '../components/PageNavigator';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
