@@ -13,6 +13,8 @@ interface TrackListItemProps {
   showGenre?: boolean;
   showBPM?: boolean;
   showMetadata?: boolean;
+  isAlbumTrack?: boolean;
+  trackNumber?: number;
 }
 
 export default function TrackListItem({
@@ -25,6 +27,8 @@ export default function TrackListItem({
   showGenre = true,
   showBPM = true,
   showMetadata = false,
+  isAlbumTrack = false,
+  trackNumber,
 }: TrackListItemProps) {
   const currentTrack = getCurrentTrack();
   const isCurrentTrack = currentTrack?.id === track.id;
@@ -62,19 +66,37 @@ export default function TrackListItem({
         className="flex-1 min-w-0 cursor-pointer"
         onClick={() => onClickTrack?.(track)}
       >
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-bold text-white text-sm md:text-base truncate">
-            {track.artist}
-          </span>
-          <span className="text-white/40 text-sm md:text-base truncate">
-            {track.title}
-          </span>
-          {showType && (
-            <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
-              {track.type}
+        {isAlbumTrack ? (
+          // Album Track Layout: Number + Title together, Artist name bold
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-bold text-white text-sm md:text-base truncate">
+              {trackNumber && `${trackNumber}. `}{track.title}
             </span>
-          )}
-        </div>
+            <span className="text-white/40 text-sm md:text-base truncate">
+              {track.artist}
+            </span>
+            {showType && (
+              <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
+                {track.type}
+              </span>
+            )}
+          </div>
+        ) : (
+          // Regular Track Layout: Artist bold, Title normal
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-bold text-white text-sm md:text-base truncate">
+              {track.artist}
+            </span>
+            <span className="text-white/40 text-sm md:text-base truncate">
+              {track.title}
+            </span>
+            {showType && (
+              <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
+                {track.type}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Metadata */}
         {showMetadata && (

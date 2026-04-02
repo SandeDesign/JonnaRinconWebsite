@@ -294,7 +294,7 @@ export default function TracksPage() {
                   if (currentIndex > 0) setActiveTab(buttons[currentIndex - 1].id);
                 }}
                 disabled={buttons.findIndex(b => b.id === activeTab) === 0}
-                className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1 text-2xl"
+                className="text-white/40 hover:text-white hover:scale-125 disabled:opacity-20 disabled:hover:scale-100 transition-all duration-200 p-1 text-2xl"
               >
                 ◄
               </button>
@@ -307,7 +307,7 @@ export default function TracksPage() {
                   if (currentIndex < buttons.length - 1) setActiveTab(buttons[currentIndex + 1].id);
                 }}
                 disabled={buttons.findIndex(b => b.id === activeTab) === buttons.length - 1}
-                className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1 text-2xl"
+                className="text-white/40 hover:text-white hover:scale-125 disabled:opacity-20 disabled:hover:scale-100 transition-all duration-200 p-1 text-2xl"
               >
                 ►
               </button>
@@ -461,19 +461,16 @@ export default function TracksPage() {
                             {group.tracks
                               .sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0))
                               .map((track, index) => (
-                                <div key={track.id} className="flex items-center gap-4 group/track pl-6 md:pl-8">
-                                  <span className="text-white/40 text-sm font-bold w-8 text-right flex-shrink-0 min-w-max">
-                                    {index + 1}.
-                                  </span>
-                                  <div className="flex-1">
-                                    <TrackListItem
-                                      track={track}
-                                      onPlay={handlePlayTrack}
-                                      onClickTrack={setSelectedTrack}
-                                      showType={false}
-                                      showMetadata={false}
-                                    />
-                                  </div>
+                                <div key={track.id} className="pl-6 md:pl-8">
+                                  <TrackListItem
+                                    track={track}
+                                    onPlay={handlePlayTrack}
+                                    onClickTrack={setSelectedTrack}
+                                    showType={false}
+                                    showMetadata={false}
+                                    isAlbumTrack={true}
+                                    trackNumber={index + 1}
+                                  />
                                 </div>
                               ))}
                           </div>
