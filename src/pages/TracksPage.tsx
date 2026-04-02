@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
-import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3, Radio, Award, Mic2, ChevronDown } from 'lucide-react';
+import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3, Radio, Award, Mic2, ChevronDown, Sliders } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { setCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
 import { useRemixes } from '../hooks/useRemixes';
-import FilterDropdown from '../components/FilterDropdown';
+import FilterModal from '../components/FilterModal';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -120,6 +120,7 @@ export default function TracksPage() {
   const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
   const [selectedRemixGenre, setSelectedRemixGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
   const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const heroTitle = useCyberDecodeInView('Music');
 
   // Convert Firebase tracks to local Track interface - Maps all track data including album field
@@ -290,68 +291,52 @@ export default function TracksPage() {
       {/* === TRACKS TAB === */}
       {activeTab === 'tracks' && (
         <>
-          {/* Track Header with Filters */}
+          {/* Track Header with Filters Button */}
           <section className="px-6 md:px-12 py-16 md:py-20">
             <div className="max-w-7xl mx-auto">
               <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">My Tracks</h2>
               <p className="text-white/25 text-sm mb-6">Browse and filter through 50+ original tracks, remixes, and exclusives</p>
 
-              {/* Filter Bar - Non-Sticky */}
-              {/* Desktop: Horizontal layout */}
-              <div className="hidden md:flex gap-2">
-                <FilterDropdown
-                  label="Type"
-                  options={['All', 'Album', 'EP', 'Single', 'Exclusive']}
-                  value={selectedType}
-                  onChange={(value) => setSelectedType(value as typeof selectedType)}
-                />
-                <FilterDropdown
-                  label="Year"
-                  options={['All', ...years]}
-                  value={selectedYear}
-                  onChange={(value) => setSelectedYear(value as typeof selectedYear)}
-                />
-                <FilterDropdown
-                  label="Collab"
-                  options={['All', 'Solo', 'Collab']}
-                  value={selectedCollab}
-                  onChange={(value) => setSelectedCollab(value as typeof selectedCollab)}
-                />
-                <FilterDropdown
-                  label="Genre"
-                  options={['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban']}
-                  value={selectedGenre}
-                  onChange={(value) => setSelectedGenre(value as typeof selectedGenre)}
-                />
-              </div>
+              {/* Filters Button */}
+              <button
+                onClick={() => setIsFilterModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+              >
+                <Sliders size={16} />
+                Filters
+              </button>
 
-              {/* Mobile: Vertical stacked layout */}
-              <div className="md:hidden flex flex-wrap gap-2">
-                <FilterDropdown
-                  label="Type"
-                  options={['All', 'Album', 'EP', 'Single', 'Exclusive']}
-                  value={selectedType}
-                  onChange={(value) => setSelectedType(value as typeof selectedType)}
-                />
-                <FilterDropdown
-                  label="Year"
-                  options={['All', ...years]}
-                  value={selectedYear}
-                  onChange={(value) => setSelectedYear(value as typeof selectedYear)}
-                />
-                <FilterDropdown
-                  label="Collab"
-                  options={['All', 'Solo', 'Collab']}
-                  value={selectedCollab}
-                  onChange={(value) => setSelectedCollab(value as typeof selectedCollab)}
-                />
-                <FilterDropdown
-                  label="Genre"
-                  options={['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban']}
-                  value={selectedGenre}
-                  onChange={(value) => setSelectedGenre(value as typeof selectedGenre)}
-                />
-              </div>
+              {/* Filter Modal */}
+              <FilterModal
+                isOpen={isFilterModalOpen}
+                onClose={() => setIsFilterModalOpen(false)}
+                filters={[
+                  {
+                    label: 'Type',
+                    options: ['All', 'Album', 'EP', 'Single', 'Exclusive'],
+                    value: selectedType,
+                    onChange: (value) => setSelectedType(value as typeof selectedType),
+                  },
+                  {
+                    label: 'Year',
+                    options: ['All', ...years],
+                    value: selectedYear,
+                    onChange: (value) => setSelectedYear(value as typeof selectedYear),
+                  },
+                  {
+                    label: 'Collab',
+                    options: ['All', 'Solo', 'Collab'],
+                    value: selectedCollab,
+                    onChange: (value) => setSelectedCollab(value as typeof selectedCollab),
+                  },
+                  {
+                    label: 'Genre',
+                    options: ['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'],
+                    value: selectedGenre,
+                    onChange: (value) => setSelectedGenre(value as typeof selectedGenre),
+                  },
+                ]}
+              />
             </div>
           </section>
 
