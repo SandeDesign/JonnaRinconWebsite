@@ -354,11 +354,8 @@ export default function TracksPage() {
           </section>
 
           {/* Mixed Track List / Album Groups */}
-          <section className="px-6 md:px-12 py-8 md:py-16">
+          <section className="px-6 md:px-12 py-2 md:py-4">
             <div className="max-w-7xl mx-auto">
-              <p className="text-white/30 text-sm mb-6">
-                Showing {filteredTracks.length} track{filteredTracks.length !== 1 ? 's' : ''} (newest first)
-              </p>
               <div className="space-y-3">
                 {Object.entries(groupedTracks)
                   .sort(([, a], [, b]) => {
@@ -596,25 +593,8 @@ export default function TracksPage() {
           </section>
 
           {/* Remix Tracks List */}
-          <section className="px-6 md:px-12 py-8 md:py-16">
+          <section className="px-6 md:px-12 py-2 md:py-4">
             <div className="max-w-7xl mx-auto">
-              <p className="text-white/30 text-sm mb-6">
-                Showing {remixTracks
-                  .filter((t) => {
-                    const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
-                    const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
-                    const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
-                    const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
-                    return typeMatch && yearMatch && collabMatch && genreMatch;
-                  }).length
-                } remix{remixTracks.filter((t) => {
-                  const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
-                  const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
-                  const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
-                  const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
-                  return typeMatch && yearMatch && collabMatch && genreMatch;
-                }).length !== 1 ? 's' : ''}
-              </p>
               <div className="space-y-3">
                 {remixTracks
                   .filter((t) => {
