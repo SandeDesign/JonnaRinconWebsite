@@ -9,13 +9,19 @@
   gap: 14px !important;
 }
 
-/* X button positioning for mobile */
-@media (max-width: 768px) {
-  .jonna-audio-player > div > button {
-    top: 46px !important;
-    right: 12px !important;
-    z-index: 60 !important;
-  }
+/* X button (close button) */
+.jonna-audio-player .jonna-close-button {
+  width: 40px !important;
+  height: 40px !important;
+  padding: 8px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.jonna-audio-player .jonna-close-button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 /* Progress bar */
@@ -27,6 +33,7 @@
   margin: 0 !important;
   padding: 12px 0 8px 0 !important;
   width: 100% !important;
+  grid-column: 1 / -1 !important;
 }
 
 .jonna-audio-player .rhap_progress-bar {
@@ -66,6 +73,31 @@
 .jonna-audio-player .rhap_buffered,
 .jonna-audio-player .rhap_progress-bar > *:not(.rhap_progress-filled) {
   display: none !important;
+}
+
+/* Controls - Desktop layout with center-aligned play button */
+@media (min-width: 769px) {
+  .jonna-audio-player .rhap_container {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    padding: 48px 24px 24px 24px !important;
+  }
+
+  .jonna-audio-player .rhap_additional-controls {
+    grid-column: 1 !important;
+    justify-self: start !important;
+  }
+
+  .jonna-audio-player .rhap_controls-section {
+    grid-column: 2 !important;
+    justify-self: center !important;
+  }
+
+  .jonna-audio-player .rhap_time {
+    grid-column: 3 !important;
+    justify-self: end !important;
+  }
 }
 
 /* Controls */
@@ -133,11 +165,17 @@
   height: 4px !important;
 }
 
-/* Track info */
+/* Track info & Additional controls */
 .jonna-audio-player .rhap_additional-controls {
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
+  margin-right: 16px !important;
+}
+
+/* Volume container positioning */
+.jonna-audio-player .rhap_volume-container {
+  margin-left: 8px !important;
 }
 
 .jonna-audio-player .rhap_time {
