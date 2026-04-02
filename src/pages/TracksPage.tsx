@@ -237,54 +237,34 @@ export default function TracksPage() {
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
+      {/* Hero Section - Compact */}
+      <section className="relative pt-40 px-6 md:px-12 pb-8">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-4">Discography</p>
-          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
+          <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-2">Discography</p>
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.85] tracking-tighter mb-8">
             {heroTitle.display}
           </h1>
-          <p className="text-white/30 text-sm md:text-base mt-6 max-w-lg">
-            Over 10 years of production in FL Studio. 100+ original tracks, 100+ remixes, millions of streams.
-            From moombahton to hip hop, R&B to EDM — explore the full catalog.
-          </p>
 
-          {/* Stats Bar */}
-          <div className="flex flex-wrap gap-6 md:gap-10 mt-10">
+          {/* Stats - Compact, Single Row */}
+          <div className="flex justify-between gap-4 md:gap-8 mb-12">
             {stats.map((stat) => (
-              <div key={stat.label}>
-                <p className="text-2xl md:text-4xl font-black text-white">{stat.value}</p>
-                <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-wider mt-1">{stat.label}</p>
+              <div key={stat.label} className="flex-1 min-w-0">
+                <p className="text-lg md:text-2xl font-black text-white truncate">{stat.value}</p>
+                <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Button Navigation */}
-      <section className="px-6 md:px-12 py-12 md:py-16">
+      {/* Page Navigation Carousel */}
+      <section className="px-6 md:px-12 py-4">
         <div className="max-w-7xl mx-auto">
-          <div className="rounded-3xl bg-white/[0.04] backdrop-blur-md border border-white/[0.06] p-6 md:p-8">
-            <div className="flex flex-wrap gap-3">
-              {buttons.map((button) => {
-                const Icon = button.icon;
-                return (
-                  <button
-                    key={button.id}
-                    onClick={() => setActiveTab(button.id)}
-                    className={`flex items-center gap-2 px-6 md:px-7 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all duration-300 whitespace-nowrap ${
-                      activeTab === button.id
-                        ? 'bg-white text-black'
-                        : 'bg-white/[0.06] text-white/40 hover:text-white/70 hover:bg-white/[0.10] hover:border-white/[0.12]'
-                    } border border-white/[0.06]`}
-                  >
-                    <Icon size={16} />
-                    {button.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <PageNavigator
+            pages={buttons}
+            activePageId={activeTab}
+            onPageChange={setActiveTab}
+          />
         </div>
       </section>
 
@@ -292,10 +272,9 @@ export default function TracksPage() {
       {activeTab === 'tracks' && (
         <>
           {/* Track Header with Filters Button */}
-          <section className="px-6 md:px-12 py-16 md:py-20">
+          <section className="px-6 md:px-12 py-4">
             <div className="max-w-7xl mx-auto">
-              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">My Tracks</h2>
-              <p className="text-white/25 text-sm mb-6">Browse and filter through 50+ original tracks, remixes, and exclusives</p>
+              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">My Tracks</h2>
 
               {/* Filters Button */}
               <button
@@ -536,94 +515,57 @@ export default function TracksPage() {
       {/* === REMIXES TAB === */}
       {activeTab === 'remixes' && (
         <>
-          {/* Remix Filters */}
-          <section className="px-6 md:px-12 py-16 md:py-24">
+          {/* Remixes Header with Filters */}
+          <section className="px-6 md:px-12 py-4">
             <div className="max-w-7xl mx-auto">
-              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">Remixes</h2>
-              <p className="text-white/25 text-sm mb-12">Bootlegs, Remixes & Edits — Over 100+ remixes exploring all genres</p>
+              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">Remixes</h2>
 
-              {/* Primary Filters */}
-              <div className="mb-8">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Type</h3>
-                <div className="flex flex-wrap gap-2">
-                  {['All', 'Remix', 'Edit', 'Bootleg'].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setSelectedRemixType(type as typeof selectedRemixType)}
-                      className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                        selectedRemixType === type || (type === 'All' && selectedRemixType === 'All')
-                          ? 'bg-red-600 text-white'
-                          : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* Filters Button */}
+              <button
+                onClick={() => setIsFilterModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+              >
+                <Sliders size={16} />
+                Filters
+              </button>
 
-              {/* Secondary Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Year Filter */}
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Year</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {['All', ...Array.from(new Set(remixTracks.map(t => t.year))).sort((a, b) => b - a)].map((year) => (
-                      <button
-                        key={year}
-                        onClick={() => setSelectedRemixYear(year as typeof selectedRemixYear)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                          selectedRemixYear === year
-                            ? 'bg-red-600 text-white'
-                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                        }`}
-                      >
-                        {year}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Collab Filter */}
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Type</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {['All', 'Solo', 'Collab'].map((collab) => (
-                      <button
-                        key={collab}
-                        onClick={() => setSelectedRemixCollab(collab as typeof selectedRemixCollab)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                          selectedRemixCollab === collab
-                            ? 'bg-red-600 text-white'
-                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                        }`}
-                      >
-                        {collab}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Genre Filter */}
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Genre</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'].map((genre) => (
-                      <button
-                        key={genre}
-                        onClick={() => setSelectedRemixGenre(genre as typeof selectedRemixGenre)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                          selectedRemixGenre === genre
-                            ? 'bg-red-600 text-white'
-                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                        }`}
-                      >
-                        {genre}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              {/* Filter Modal */}
+              <FilterModal
+                isOpen={isFilterModalOpen}
+                onClose={() => setIsFilterModalOpen(false)}
+                onReset={() => {
+                  setSelectedRemixType('All');
+                  setSelectedRemixYear('All');
+                  setSelectedRemixCollab('All');
+                  setSelectedRemixGenre('All');
+                }}
+                filters={[
+                  {
+                    label: 'Type',
+                    options: ['All', 'Remix', 'Edit', 'Bootleg'],
+                    value: selectedRemixType,
+                    onChange: (value) => setSelectedRemixType(value as typeof selectedRemixType),
+                  },
+                  {
+                    label: 'Year',
+                    options: ['All', ...Array.from(new Set(remixTracks.map(t => t.year))).sort((a, b) => b - a)],
+                    value: selectedRemixYear,
+                    onChange: (value) => setSelectedRemixYear(value as typeof selectedRemixYear),
+                  },
+                  {
+                    label: 'Collab',
+                    options: ['All', 'Solo', 'Collab'],
+                    value: selectedRemixCollab,
+                    onChange: (value) => setSelectedRemixCollab(value as typeof selectedRemixCollab),
+                  },
+                  {
+                    label: 'Genre',
+                    options: ['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'],
+                    value: selectedRemixGenre,
+                    onChange: (value) => setSelectedRemixGenre(value as typeof selectedRemixGenre),
+                  },
+                ]}
+              />
             </div>
           </section>
 
@@ -739,10 +681,9 @@ export default function TracksPage() {
 
       {/* === SPOTIFY TAB === */}
       {activeTab === 'spotify' && (
-        <section className="px-6 md:px-12 py-16 md:py-24">
+        <section className="px-6 md:px-12 py-4">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">Spotify Playlists</h2>
-            <p className="text-white/25 text-sm mb-10">Curated collections and compilations</p>
+            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-6">Spotify</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-12">
               {compilations.map((comp) => (
@@ -835,12 +776,9 @@ export default function TracksPage() {
 
       {/* === SUPPORT TAB === */}
       {activeTab === 'support' && (
-        <section className="px-6 md:px-12 py-16 md:py-24">
+        <section className="px-6 md:px-12 py-4">
           <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">Support</h2>
-            <p className="text-white/25 text-sm mb-10">
-              Recognized by major platforms and artists. Track mentions, playlist features, and co-signs from the biggest names.
-            </p>
+            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-6">Support</h2>
 
             {/* Featured Support */}
             <div className="bg-gradient-to-br from-red-600/20 to-red-900/10 backdrop-blur-md border border-red-500/20 rounded-3xl p-6 md:p-10 mb-8">
