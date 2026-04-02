@@ -241,51 +241,62 @@ export default function TracksPage() {
       {/* Hero Section - Compact */}
       <section className="relative pt-40 px-6 md:px-12 pb-4">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em]">Discography</p>
-            <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-widest">
-              {filteredTracks.length} Track{filteredTracks.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-
           <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8 text-center">
             {heroTitle.display}
           </h1>
 
-          {/* Page Title + Filters - Centered with inline pijltjes */}
-          <div className="flex items-center justify-center gap-6 mb-8">
-            <button
-              onClick={() => {
-                const currentIndex = buttons.findIndex(b => b.id === activeTab);
-                if (currentIndex > 0) setActiveTab(buttons[currentIndex - 1].id);
-              }}
-              disabled={buttons.findIndex(b => b.id === activeTab) === 0}
-              className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1 text-2xl"
-            >
-              ◄
-            </button>
-            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white whitespace-nowrap">
-              {buttons.find(b => b.id === activeTab)?.label}
-            </h2>
-            <button
-              onClick={() => {
-                const currentIndex = buttons.findIndex(b => b.id === activeTab);
-                if (currentIndex < buttons.length - 1) setActiveTab(buttons[currentIndex + 1].id);
-              }}
-              disabled={buttons.findIndex(b => b.id === activeTab) === buttons.length - 1}
-              className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1 text-2xl"
-            >
-              ►
-            </button>
-            {/* Filter Button */}
-            <button
-              onClick={() => setIsFilterModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all ml-4"
-            >
-              <Sliders size={16} />
-              Filters
-            </button>
+          {/* Page Title with pijltjes */}
+          <div className="flex flex-col items-center gap-6 mb-8">
+            <div className="flex items-center justify-center gap-6">
+              <button
+                onClick={() => {
+                  const currentIndex = buttons.findIndex(b => b.id === activeTab);
+                  if (currentIndex > 0) setActiveTab(buttons[currentIndex - 1].id);
+                }}
+                disabled={buttons.findIndex(b => b.id === activeTab) === 0}
+                className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1 text-2xl"
+              >
+                ◄
+              </button>
+              <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white whitespace-nowrap">
+                {buttons.find(b => b.id === activeTab)?.label}
+              </h2>
+              <button
+                onClick={() => {
+                  const currentIndex = buttons.findIndex(b => b.id === activeTab);
+                  if (currentIndex < buttons.length - 1) setActiveTab(buttons[currentIndex + 1].id);
+                }}
+                disabled={buttons.findIndex(b => b.id === activeTab) === buttons.length - 1}
+                className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1 text-2xl"
+              >
+                ►
+              </button>
+            </div>
+
+            {/* Filter Button - Mobile only, conditional */}
+            {(activeTab === 'tracks' || activeTab === 'remixes') && (
+              <button
+                onClick={() => setIsFilterModalOpen(true)}
+                className="md:hidden flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+              >
+                <Sliders size={16} />
+                Filters
+              </button>
+            )}
           </div>
+
+          {/* Filter Button - Desktop only, conditional */}
+          {(activeTab === 'tracks' || activeTab === 'remixes') && (
+            <div className="hidden md:flex justify-center mb-8">
+              <button
+                onClick={() => setIsFilterModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+              >
+                <Sliders size={16} />
+                Filters
+              </button>
+            </div>
+          )}
 
           {/* Stats - Compact, Single Row */}
           <div className="flex justify-between gap-4 md:gap-8 mb-8">
@@ -354,11 +365,8 @@ export default function TracksPage() {
           </section>
 
           {/* Mixed Track List / Album Groups */}
-          <section className="px-6 md:px-12 py-8 md:py-16">
+          <section className="px-6 md:px-12 py-2 md:py-4">
             <div className="max-w-7xl mx-auto">
-              <p className="text-white/30 text-sm mb-6">
-                Showing {filteredTracks.length} track{filteredTracks.length !== 1 ? 's' : ''} (newest first)
-              </p>
               <div className="space-y-3">
                 {Object.entries(groupedTracks)
                   .sort(([, a], [, b]) => {
@@ -441,6 +449,14 @@ export default function TracksPage() {
                       />
                     );
                   })}
+              </div>
+
+              {/* Discography Footer */}
+              <div className="flex items-center justify-between mt-8 pt-4 border-t border-white/[0.1]">
+                <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em]">Discography</p>
+                <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-widest">
+                  {filteredTracks.length} Track{filteredTracks.length !== 1 ? 's' : ''}
+                </p>
               </div>
             </div>
           </section>
@@ -543,19 +559,9 @@ export default function TracksPage() {
       {/* === REMIXES TAB === */}
       {activeTab === 'remixes' && (
         <>
-          {/* Remixes Header with Filters */}
-          <section className="px-6 md:px-12 py-4">
+          {/* Filter Modal */}
+          <section className="px-6 md:px-12">
             <div className="max-w-7xl mx-auto">
-              {/* Filters Button */}
-              <button
-                onClick={() => setIsFilterModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
-              >
-                <Sliders size={16} />
-                Filters
-              </button>
-
-              {/* Filter Modal */}
               <FilterModal
                 isOpen={isFilterModalOpen}
                 onClose={() => setIsFilterModalOpen(false)}
@@ -596,25 +602,8 @@ export default function TracksPage() {
           </section>
 
           {/* Remix Tracks List */}
-          <section className="px-6 md:px-12 py-8 md:py-16">
+          <section className="px-6 md:px-12 py-2 md:py-4">
             <div className="max-w-7xl mx-auto">
-              <p className="text-white/30 text-sm mb-6">
-                Showing {remixTracks
-                  .filter((t) => {
-                    const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
-                    const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
-                    const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
-                    const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
-                    return typeMatch && yearMatch && collabMatch && genreMatch;
-                  }).length
-                } remix{remixTracks.filter((t) => {
-                  const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
-                  const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
-                  const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
-                  const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
-                  return typeMatch && yearMatch && collabMatch && genreMatch;
-                }).length !== 1 ? 's' : ''}
-              </p>
               <div className="space-y-3">
                 {remixTracks
                   .filter((t) => {
@@ -651,6 +640,26 @@ export default function TracksPage() {
                       showMetadata={true}
                     />
                   ))}
+              </div>
+
+              {/* Discography Footer */}
+              <div className="flex items-center justify-between mt-8 pt-4 border-t border-white/[0.1]">
+                <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em]">Discography</p>
+                <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-widest">
+                  {remixTracks.filter((t) => {
+                    const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
+                    const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
+                    const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
+                    const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
+                    return typeMatch && yearMatch && collabMatch && genreMatch;
+                  }).length} Track{remixTracks.filter((t) => {
+                    const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
+                    const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
+                    const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
+                    const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
+                    return typeMatch && yearMatch && collabMatch && genreMatch;
+                  }).length !== 1 ? 's' : ''}
+                </p>
               </div>
             </div>
           </section>
