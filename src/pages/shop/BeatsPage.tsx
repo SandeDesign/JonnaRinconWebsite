@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, X } from 'lucide-react';
+import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, X, Sliders } from 'lucide-react';
 import { Beat } from '../../lib/firebase/types';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -10,11 +10,13 @@ import { getPlayButtonContainerClass, getPlayButtonSymbolClass, getRowHighlightC
 import { setCurrentTrack, getCurrentTrack } from '../../components/GlobalAudioPlayer';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase/config';
+import FilterModal from '../../components/FilterModal';
 
 const BeatsShop: React.FC = () => {
   const [beats, setBeats] = useState<Beat[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<{
     genre?: string;
     search?: string;
@@ -94,7 +96,7 @@ const BeatsShop: React.FC = () => {
     setCurrentTrack(trackBeat, [trackBeat]);
   };
 
-  const hasActiveFilters = !!(filter.genre || filter.search);
+  const hasActiveFilters = !!(filter.genre || filter.search || filter.sortBy !== 'newest');
 
   // Apply client-side filtering and sorting
   const filteredBeats = (() => {
@@ -149,104 +151,108 @@ const BeatsShop: React.FC = () => {
 
       <Navigation isDarkOverlay={true} />
 
-      {/* Hero - same layout as Releases, Contact, Socials */}
-      <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
+      {/* Hero Section - Centered Layout */}
+      <section className="relative pt-40 px-6 md:px-12 pb-4">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-4">Beat Store</p>
-          <h1
-            ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>}
-            className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter neon-glow"
-          >
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8 text-center">
             {heroTitle.display}
           </h1>
-          <p className="text-white/30 text-sm md:text-base mt-6 max-w-lg">
-            High-quality beats crafted by Jonna Rincon. Find your next hit.
-          </p>
+
+          {/* Filter Button */}
+          <div className="flex justify-center mb-8">
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+            >
+              <Sliders size={16} />
+              Filters
+            </button>
+          </div>
+
+          {/* Stats - Compact, Single Row */}
+          <div className="flex justify-between gap-4 md:gap-8 mb-8">
+            <div className="flex-1 min-w-0">
+              <p className="text-lg md:text-2xl font-black text-white truncate">{beats.length}</p>
+              <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">Beats</p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-lg md:text-2xl font-black text-white truncate">{dynamicGenres.length}</p>
+              <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">Genres</p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-lg md:text-2xl font-black text-white truncate">100%</p>
+              <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">Royalty Free</p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-lg md:text-2xl font-black text-white truncate">24/7</p>
+              <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">Support</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Filter Modal */}
+      <section className="px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
+          <FilterModal
+            isOpen={isFilterModalOpen}
+            onClose={() => setIsFilterModalOpen(false)}
+            onReset={() => {
+              setFilter({ sortBy: 'newest' });
+            }}
+            filters={[
+              {
+                label: 'Genre',
+                options: ['All', ...dynamicGenres],
+                value: filter.genre || 'All',
+                onChange: (value) => setFilter({ ...filter, genre: value === 'All' ? undefined : (value as string) }),
+              },
+              {
+                label: 'Sort',
+                options: ['Newest', 'Popular', 'Price: Low', 'Price: High'],
+                value: filter.sortBy === 'newest' ? 'Newest' : filter.sortBy === 'popular' ? 'Popular' : filter.sortBy === 'price_low' ? 'Price: Low' : 'Price: High',
+                onChange: (value) => {
+                  const sortMap: Record<string, typeof filter.sortBy> = {
+                    'Newest': 'newest',
+                    'Popular': 'popular',
+                    'Price: Low': 'price_low',
+                    'Price: High': 'price_high',
+                  };
+                  setFilter({ ...filter, sortBy: sortMap[value as string] || 'newest' });
+                },
+              },
+            ]}
+          />
         </div>
       </section>
 
       {/* Search Bar */}
       <section className="px-6 md:px-12 py-6 border-b border-white/[0.06]">
         <div className="max-w-7xl mx-auto">
-          <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-            <input
-              type="text"
-              placeholder="Search beats..."
-              value={filter.search || ''}
-              onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-              className="w-full pl-11 pr-4 py-3 bg-white/[0.05] border border-white/[0.08] rounded-full text-white placeholder-white/25 focus:outline-none focus:border-red-500/40 transition-all text-sm"
-            />
-          </div>
-
-          {/* Genre Buttons */}
-          <div className="mb-6">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Genre</h3>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setFilter({ ...filter, genre: undefined })}
-                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                  !filter.genre
-                    ? 'bg-red-600 text-white'
-                    : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                }`}
-              >
-                All Genres
-              </button>
-              {dynamicGenres.map((genre) => (
-                <button
-                  key={genre}
-                  onClick={() => setFilter({ ...filter, genre })}
-                  className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                    filter.genre === genre
-                      ? 'bg-red-600 text-white'
-                      : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                  }`}
-                >
-                  {genre}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Sort Buttons */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <div>
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Sort</h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { value: 'newest', label: 'Newest First' },
-                  { value: 'popular', label: 'Most Popular' },
-                  { value: 'price_low', label: 'Price: Low to High' },
-                  { value: 'price_high', label: 'Price: High to Low' }
-                ].map((sort) => (
-                  <button
-                    key={sort.value}
-                    onClick={() => setFilter({ ...filter, sortBy: sort.value as typeof filter.sortBy })}
-                    className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                      filter.sortBy === sort.value
-                        ? 'bg-red-600 text-white'
-                        : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                    }`}
-                  >
-                    {sort.label}
-                  </button>
-                ))}
-              </div>
+          <div className="relative mb-6 flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+              <input
+                type="text"
+                placeholder="Search beats..."
+                value={filter.search || ''}
+                onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+                className="w-full pl-11 pr-4 py-3 bg-white/[0.05] border border-white/[0.08] rounded-full text-white placeholder-white/25 focus:outline-none focus:border-red-500/40 transition-all text-sm"
+              />
             </div>
 
             {/* View Mode & Clear */}
-            <div className="flex gap-2 ml-auto">
+            <div className="flex gap-2">
               <button
                 onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                className="p-2 bg-white/[0.06] border border-white/[0.08] rounded-full text-white/40 hover:text-white/70 hover:bg-white/[0.10] transition-all"
+                className="p-3 bg-white/[0.06] border border-white/[0.08] rounded-full text-white/40 hover:text-white/70 hover:bg-white/[0.10] transition-all"
               >
                 {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid3x3 className="w-4 h-4" />}
               </button>
               {hasActiveFilters && (
                 <button
                   onClick={() => setFilter({ sortBy: 'newest' })}
-                  className="p-2 bg-red-600/20 border border-red-500/30 rounded-full text-red-400 hover:bg-red-600/30 transition-all"
+                  className="p-3 bg-red-600/20 border border-red-500/30 rounded-full text-red-400 hover:bg-red-600/30 transition-all"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -386,7 +392,7 @@ const BeatsShop: React.FC = () => {
               </p>
               {hasActiveFilters && (
                 <button
-                  onClick={() => setFilter({ sortBy: 'newest' })}
+                  onClick={() => setFilter({ sortBy: 'newest', search: undefined, genre: undefined })}
                   className="mt-6 px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold transition-all"
                 >
                   Clear Filters
