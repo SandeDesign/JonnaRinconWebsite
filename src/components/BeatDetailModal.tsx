@@ -161,8 +161,8 @@ export default function BeatDetailModal({
                 </div>
               )}
 
-              {/* License Info */}
-              {basicLicense && (
+              {/* License Info - Hidden for now, code preserved for future */}
+              {false && basicLicense && (
                 <div className="mb-6 space-y-2">
                   <p className="text-white/40 text-xs uppercase tracking-wider">License Type</p>
                   <p className="text-white text-sm">{basicLicense.type}</p>
@@ -173,15 +173,11 @@ export default function BeatDetailModal({
               )}
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-3 mb-6 pt-6 border-t border-white/[0.1]">
+            {/* Stats - Only show plays */}
+            <div className="grid grid-cols-1 gap-3 mb-6 pt-6 border-t border-white/[0.1]">
               <div>
                 <p className="text-white/40 text-xs uppercase tracking-wider">Plays</p>
                 <p className="text-white text-lg font-bold">{beat.plays?.toLocaleString() || '0'}</p>
-              </div>
-              <div>
-                <p className="text-white/40 text-xs uppercase tracking-wider">Downloads</p>
-                <p className="text-white text-lg font-bold">{beat.downloads?.toLocaleString() || '0'}</p>
               </div>
             </div>
 
