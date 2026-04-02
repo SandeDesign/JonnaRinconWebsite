@@ -8,11 +8,12 @@ import { setCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
 import { useRemixes } from '../hooks/useRemixes';
+import FilterDropdown from '../components/FilterDropdown';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
-  { id: 'djsets', label: 'DJ Sets', icon: Radio },
   { id: 'remixes', label: 'Remixes', icon: Disc3 },
+  { id: 'djsets', label: 'DJ Sets', icon: Radio },
   { id: 'productions', label: 'Productions', icon: Headphones },
   { id: 'spotify', label: 'Spotify', icon: Music },
   { id: 'support', label: 'Support', icon: Award },
@@ -289,93 +290,71 @@ export default function TracksPage() {
       {/* === TRACKS TAB === */}
       {activeTab === 'tracks' && (
         <>
-          {/* Track Filters */}
+          {/* Track Header */}
           <section className="px-6 md:px-12 py-16 md:py-24">
             <div className="max-w-7xl mx-auto">
               <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">My Tracks</h2>
-              <p className="text-white/25 text-sm mb-12">Browse and filter through 50+ original tracks, remixes, and exclusives</p>
+              <p className="text-white/25 text-sm">Browse and filter through 50+ original tracks, remixes, and exclusives</p>
+            </div>
+          </section>
 
-              {/* Primary Filters */}
-              <div className="mb-8">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Type</h3>
-                <div className="flex flex-wrap gap-2">
-                  {['All', 'Album', 'EP', 'Single', 'Exclusive'].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setSelectedType(type as typeof selectedType)}
-                      className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                        selectedType === type || (type === 'All' && selectedType === 'All')
-                          ? 'bg-red-600 text-white'
-                          : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
+          {/* Filter Bar - Fixed, Non-Sticky */}
+          <section className="px-6 md:px-12 py-6 border-b border-white/[0.06] bg-black/40 backdrop-blur-sm">
+            <div className="max-w-7xl mx-auto">
+              {/* Desktop: Horizontal layout */}
+              <div className="hidden md:grid md:grid-cols-4 gap-4">
+                <FilterDropdown
+                  label="Type"
+                  options={['All', 'Album', 'EP', 'Single', 'Exclusive']}
+                  value={selectedType}
+                  onChange={(value) => setSelectedType(value as typeof selectedType)}
+                />
+                <FilterDropdown
+                  label="Year"
+                  options={['All', ...years]}
+                  value={selectedYear}
+                  onChange={(value) => setSelectedYear(value as typeof selectedYear)}
+                />
+                <FilterDropdown
+                  label="Type"
+                  options={['All', 'Solo', 'Collab']}
+                  value={selectedCollab}
+                  onChange={(value) => setSelectedCollab(value as typeof selectedCollab)}
+                />
+                <FilterDropdown
+                  label="Genre"
+                  options={['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban']}
+                  value={selectedGenre}
+                  onChange={(value) => setSelectedGenre(value as typeof selectedGenre)}
+                />
               </div>
 
-              {/* Secondary Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Year Filter */}
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Year</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {['All', ...years].map((year) => (
-                      <button
-                        key={year}
-                        onClick={() => setSelectedYear(year as typeof selectedYear)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                          selectedYear === year
-                            ? 'bg-red-600 text-white'
-                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                        }`}
-                      >
-                        {year}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Collab Filter */}
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Type</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {['All', 'Solo', 'Collab'].map((collab) => (
-                      <button
-                        key={collab}
-                        onClick={() => setSelectedCollab(collab as typeof selectedCollab)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                          selectedCollab === collab
-                            ? 'bg-red-600 text-white'
-                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                        }`}
-                      >
-                        {collab}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Genre Filter */}
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/50 mb-3">Genre</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'].map((genre) => (
-                      <button
-                        key={genre}
-                        onClick={() => setSelectedGenre(genre as typeof selectedGenre)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                          selectedGenre === genre
-                            ? 'bg-red-600 text-white'
-                            : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
-                        }`}
-                      >
-                        {genre}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              {/* Mobile: Vertical stacked layout */}
+              <div className="md:hidden flex flex-col gap-3">
+                <FilterDropdown
+                  label="Type"
+                  options={['All', 'Album', 'EP', 'Single', 'Exclusive']}
+                  value={selectedType}
+                  onChange={(value) => setSelectedType(value as typeof selectedType)}
+                />
+                <FilterDropdown
+                  label="Year"
+                  options={['All', ...years]}
+                  value={selectedYear}
+                  onChange={(value) => setSelectedYear(value as typeof selectedYear)}
+                />
+                <FilterDropdown
+                  label="Type"
+                  options={['All', 'Solo', 'Collab']}
+                  value={selectedCollab}
+                  onChange={(value) => setSelectedCollab(value as typeof selectedCollab)}
+                />
+                <FilterDropdown
+                  label="Genre"
+                  options={['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban']}
+                  value={selectedGenre}
+                  onChange={(value) => setSelectedGenre(value as typeof selectedGenre)}
+                />
               </div>
             </div>
           </section>
