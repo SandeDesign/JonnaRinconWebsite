@@ -100,25 +100,27 @@ export default function GlobalAudioPlayer() {
   return (
     <>
       <div className="fixed bottom-0 left-0 right-0 z-40 jonna-audio-player">
-        <div className="relative">
-          <button
-            onClick={handleClose}
-            className="absolute top-3 right-4 z-50 text-white/40 hover:text-white/70 transition-colors"
-            title="Close player"
-          >
-            <X size={20} />
-          </button>
-          <AudioPlayer
-            ref={audioRef}
-            autoPlay
-            src={store.currentTrack.audioUrl || ''}
-            onClickNext={handleNext}
-            onClickPrevious={handlePrevious}
-            showFilledVolume
-            layout="horizontal-reverse"
-            volume={1.0}
-          />
-        </div>
+        <AudioPlayer
+          ref={audioRef}
+          autoPlay
+          src={store.currentTrack.audioUrl || ''}
+          onClickNext={handleNext}
+          onClickPrevious={handlePrevious}
+          showFilledVolume
+          layout="horizontal-reverse"
+          volume={1.0}
+          customAdditionalControls={[
+            <button
+              key="close-player"
+              onClick={handleClose}
+              className="jonna-close-button text-white/40 hover:text-white/70 transition-colors"
+              title="Close player"
+              aria-label="Close player"
+            >
+              <X size={20} />
+            </button>,
+          ]}
+        />
       </div>
       <style>{`
         body {

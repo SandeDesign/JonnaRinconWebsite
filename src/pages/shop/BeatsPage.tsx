@@ -11,12 +11,15 @@ import { setCurrentTrack, getCurrentTrack } from '../../components/GlobalAudioPl
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase/config';
 import FilterModal from '../../components/FilterModal';
+import BeatDetailModal from '../../components/BeatDetailModal';
 
 const BeatsShop: React.FC = () => {
   const [beats, setBeats] = useState<Beat[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [selectedBeat, setSelectedBeat] = useState<Beat | null>(null);
+  const [cartItems, setCartItems] = useState<Beat[]>([]);
   const [filter, setFilter] = useState<{
     genre?: string;
     search?: string;
@@ -96,6 +99,10 @@ const BeatsShop: React.FC = () => {
     setCurrentTrack(trackBeat, [trackBeat]);
   };
 
+  const handleAddToCart = (beat: Beat) => {
+    setCartItems([...cartItems, beat]);
+  };
+
   const hasActiveFilters = !!(filter.genre || filter.search || filter.sortBy !== 'newest');
 
   // Apply client-side filtering and sorting
@@ -159,7 +166,7 @@ const BeatsShop: React.FC = () => {
           </h1>
 
           {/* Filter Button */}
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center">
             <button
               onClick={() => setIsFilterModalOpen(true)}
               className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
@@ -167,26 +174,6 @@ const BeatsShop: React.FC = () => {
               <Sliders size={16} />
               Filters
             </button>
-          </div>
-
-          {/* Stats - Compact, Single Row */}
-          <div className="flex justify-between gap-4 md:gap-8 mb-8">
-            <div className="flex-1 min-w-0">
-              <p className="text-lg md:text-2xl font-black text-white truncate">{beats.length}</p>
-              <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">Beats</p>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-lg md:text-2xl font-black text-white truncate">{dynamicGenres.length}</p>
-              <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">Genres</p>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-lg md:text-2xl font-black text-white truncate">100%</p>
-              <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">Royalty Free</p>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-lg md:text-2xl font-black text-white truncate">24/7</p>
-              <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">Support</p>
-            </div>
           </div>
         </div>
       </section>
@@ -262,6 +249,17 @@ const BeatsShop: React.FC = () => {
         </div>
       </section>
 
+      {/* Beat Detail Modal */}
+      <BeatDetailModal
+        beat={selectedBeat}
+        isOpen={!!selectedBeat}
+        onClose={() => setSelectedBeat(null)}
+        onAddToCart={handleAddToCart}
+        isPlaying={selectedBeat ? getCurrentTrack()?.id === selectedBeat.id : false}
+        onPlay={handlePlayBeat}
+        cartCount={cartItems.length}
+      />
+
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
 
         {/* Featured Beats */}
@@ -270,10 +268,10 @@ const BeatsShop: React.FC = () => {
             <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-8">Featured</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {featuredBeats.slice(0, 4).map((beat) => (
-                <Link
+                <button
                   key={beat.id}
-                  to={`/shop/beats/${beat.id}`}
-                  className="group relative bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02]"
+                  onClick={() => setSelectedBeat(beat)}
+                  className="group relative bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] text-left"
                 >
                   <div className="absolute top-3 left-3 z-10">
                     <span className="px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg">
@@ -311,7 +309,7 @@ const BeatsShop: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
           </div>
@@ -323,10 +321,10 @@ const BeatsShop: React.FC = () => {
             <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-8">Trending</h2>
             <div className="space-y-2">
               {trendingBeats.slice(0, 5).map((beat, index) => (
-                <Link
+                <button
                   key={beat.id}
-                  to={`/shop/beats/${beat.id}`}
-                  className="flex items-center gap-3 md:gap-5 p-3 md:p-4 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl group hover:bg-white/[0.06] transition-all"
+                  onClick={() => setSelectedBeat(beat)}
+                  className="w-full flex items-center gap-3 md:gap-5 p-3 md:p-4 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl group hover:bg-white/[0.06] transition-all text-left"
                 >
                   <span className="text-2xl md:text-3xl font-black text-white/15 w-8 md:w-12 text-center flex-shrink-0">
                     {index + 1}
@@ -361,7 +359,7 @@ const BeatsShop: React.FC = () => {
                       View
                     </span>
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
           </div>
@@ -404,10 +402,10 @@ const BeatsShop: React.FC = () => {
           /* GRID VIEW */
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {filteredBeats.map((beat) => (
-              <Link
+              <button
                 key={beat.id}
-                to={`/shop/beats/${beat.id}`}
-                className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02]"
+                onClick={() => setSelectedBeat(beat)}
+                className="group text-left bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02]"
               >
                 <div className="relative aspect-square">
                   <img
@@ -481,17 +479,17 @@ const BeatsShop: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         ) : (
           /* LIST VIEW */
           <div className="space-y-2">
             {filteredBeats.map((beat, index) => (
-              <Link
+              <button
                 key={beat.id}
-                to={`/shop/beats/${beat.id}`}
-                className={`flex items-center gap-3 md:gap-5 p-3 md:p-4 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl group hover:bg-white/[0.06] transition-all ${getRowHighlightClass(isCurrentBeatPlaying(beat.id))}`}
+                onClick={() => setSelectedBeat(beat)}
+                className={`w-full text-left flex items-center gap-3 md:gap-5 p-3 md:p-4 bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl group hover:bg-white/[0.06] transition-all ${getRowHighlightClass(isCurrentBeatPlaying(beat.id))}`}
               >
                 <span className="text-lg md:text-xl font-black text-white/15 w-6 md:w-10 text-center flex-shrink-0">
                   {index + 1}
@@ -545,7 +543,7 @@ const BeatsShop: React.FC = () => {
                     View
                   </span>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         )}

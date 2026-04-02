@@ -5,17 +5,27 @@
   background: rgba(255, 255, 255, 0.04) !important;
   backdrop-filter: blur(12px) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-  padding: 48px 16px 24px 16px !important;
+  padding: 48px 24px 24px 24px !important;
   gap: 14px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
 }
 
-/* X button positioning for mobile */
-@media (max-width: 768px) {
-  .jonna-audio-player > div > button {
-    top: 46px !important;
-    right: 12px !important;
-    z-index: 60 !important;
-  }
+/* X button (close button) */
+.jonna-audio-player .jonna-close-button {
+  width: 40px !important;
+  height: 40px !important;
+  padding: 8px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.jonna-audio-player .jonna-close-button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 /* Progress bar */

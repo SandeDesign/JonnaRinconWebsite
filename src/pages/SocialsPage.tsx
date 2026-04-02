@@ -76,14 +76,15 @@ export default function SocialsPage() {
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
-      {/* Hero */}
-      <section className="relative min-h-[60vh] flex items-end pb-16 md:pb-24 pt-40 px-6 md:px-12">
+      {/* Hero Section - Centered Layout */}
+      <section className="relative pt-40 px-6 md:px-12 pb-4">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-4">Connect</p>
-          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-[8rem] lg:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter whitespace-nowrap neon-glow">
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8 text-center">
             {heroTitle.display}
           </h1>
-          <p className="text-white/30 text-sm md:text-base mt-6 max-w-md">
+
+          {/* Description */}
+          <p className="text-white/30 text-sm md:text-base text-center max-w-2xl mx-auto">
             Follow the journey across all platforms. Stay updated on new releases, behind the scenes, and exclusive content.
           </p>
         </div>
