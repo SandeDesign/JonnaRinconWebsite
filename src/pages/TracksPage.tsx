@@ -4,11 +4,14 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3, Radio, Award, Mic2, ChevronDown, Sliders } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
+import { useAuth } from '../hooks/useAuth';
 import { setCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
 import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
+import TrackDetailModal from '../components/TrackDetailModal';
+import LoginModal from '../components/LoginModal';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -107,6 +110,7 @@ const skills = [
 ];
 
 export default function TracksPage() {
+  const { isAuthenticated, isLoading } = useAuth();
   const { tracks: firebaseTracks, loading: tracksLoading } = useTracks({ status: 'published' });
   const { remixes: firebaseRemixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const [activeTab, setActiveTab] = useState('tracks');
@@ -122,6 +126,8 @@ export default function TracksPage() {
   const [selectedRemixGenre, setSelectedRemixGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
   const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const heroTitle = useCyberDecodeInView('Music');
 
   // Convert Firebase tracks to local Track interface - Maps all track data including album field
@@ -163,6 +169,12 @@ export default function TracksPage() {
   }));
 
   const handlePlayTrack = (track: Track) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     // Filter tracks matching current filters and create queue
     const queue = demoTracks
       .filter((t) => {
@@ -228,6 +240,22 @@ export default function TracksPage() {
     setExpandedAlbums(newExpanded);
   };
 
+  // Show login modal if not authenticated
+  if (!isLoading && !isAuthenticated) {
+    return (
+      <div className="min-h-screen text-white">
+        {/* Fixed JEIGHTENESIS Background */}
+        <div className="fixed inset-0 w-full h-screen -z-10">
+          <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{objectPosition: 'center'}} />
+          <div className="absolute inset-0 bg-black/75" />
+        </div>
+
+        <Navigation isDarkOverlay={true} isLightMode={false} />
+        <LoginModal isOpen={true} onClose={() => {}} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen text-white">
       {/* Fixed JEIGHTENESIS Background */}
@@ -237,6 +265,18 @@ export default function TracksPage() {
       </div>
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
+
+      {/* Login Modal for playing tracks */}
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+
+      {/* Track Detail Modal */}
+      <TrackDetailModal
+        track={selectedTrack}
+        isOpen={!!selectedTrack}
+        onClose={() => setSelectedTrack(null)}
+        isPlaying={selectedTrack ? false : false}
+        onPlay={handlePlayTrack}
+      />
 
       {/* Hero Section - Compact */}
       <section className="relative pt-40 px-6 md:px-12 pb-4">
@@ -429,6 +469,7 @@ export default function TracksPage() {
                                     <TrackListItem
                                       track={track}
                                       onPlay={handlePlayTrack}
+                                      onClickTrack={setSelectedTrack}
                                       showType={false}
                                       showMetadata={false}
                                     />
@@ -444,6 +485,7 @@ export default function TracksPage() {
                         key={albumKey}
                         track={group.displayTrack}
                         onPlay={handlePlayTrack}
+                        onClickTrack={setSelectedTrack}
                         showType={true}
                         showMetadata={true}
                       />
@@ -636,6 +678,7 @@ export default function TracksPage() {
                           .sort((a, b) => b.createdAt - a.createdAt);
                         setCurrentTrack(t, queue);
                       }}
+                      onClickTrack={setSelectedTrack}
                       showType={false}
                       showMetadata={true}
                     />
