@@ -9,7 +9,6 @@ import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
 import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
-import PageNavigator from '../components/PageNavigator';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -239,15 +238,42 @@ export default function TracksPage() {
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
       {/* Hero Section - Compact */}
-      <section className="relative pt-40 px-6 md:px-12 pb-8">
+      <section className="relative pt-40 px-6 md:px-12 pb-4">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
           <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-2">Discography</p>
-          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.85] tracking-tighter mb-8">
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.85] tracking-tighter mb-6">
             {heroTitle.display}
           </h1>
 
+          {/* Page Title with inline pijltjes */}
+          <div className="flex items-center gap-3 mb-8">
+            <button
+              onClick={() => {
+                const currentIndex = buttons.findIndex(b => b.id === activeTab);
+                if (currentIndex > 0) setActiveTab(buttons[currentIndex - 1].id);
+              }}
+              disabled={buttons.findIndex(b => b.id === activeTab) === 0}
+              className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1"
+            >
+              ◄
+            </button>
+            <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-white">
+              {buttons.find(b => b.id === activeTab)?.label}
+            </h2>
+            <button
+              onClick={() => {
+                const currentIndex = buttons.findIndex(b => b.id === activeTab);
+                if (currentIndex < buttons.length - 1) setActiveTab(buttons[currentIndex + 1].id);
+              }}
+              disabled={buttons.findIndex(b => b.id === activeTab) === buttons.length - 1}
+              className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1"
+            >
+              ►
+            </button>
+          </div>
+
           {/* Stats - Compact, Single Row */}
-          <div className="flex justify-between gap-4 md:gap-8 mb-12">
+          <div className="flex justify-between gap-4 md:gap-8 mb-8">
             {stats.map((stat) => (
               <div key={stat.label} className="flex-1 min-w-0">
                 <p className="text-lg md:text-2xl font-black text-white truncate">{stat.value}</p>
@@ -258,25 +284,12 @@ export default function TracksPage() {
         </div>
       </section>
 
-      {/* Page Navigation Carousel */}
-      <section className="px-6 md:px-12 py-4">
-        <div className="max-w-7xl mx-auto">
-          <PageNavigator
-            pages={buttons}
-            activePageId={activeTab}
-            onPageChange={setActiveTab}
-          />
-        </div>
-      </section>
-
       {/* === TRACKS TAB === */}
       {activeTab === 'tracks' && (
         <>
           {/* Track Header with Filters Button */}
           <section className="px-6 md:px-12 py-4">
             <div className="max-w-7xl mx-auto">
-              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">My Tracks</h2>
-
               {/* Filters Button */}
               <button
                 onClick={() => setIsFilterModalOpen(true)}
@@ -519,8 +532,6 @@ export default function TracksPage() {
           {/* Remixes Header with Filters */}
           <section className="px-6 md:px-12 py-4">
             <div className="max-w-7xl mx-auto">
-              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight mb-4">Remixes</h2>
-
               {/* Filters Button */}
               <button
                 onClick={() => setIsFilterModalOpen(true)}
