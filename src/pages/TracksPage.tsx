@@ -115,6 +115,7 @@ export default function TracksPage() {
   const [selectedYear, setSelectedYear] = useState<number | 'All'>('All');
   const [selectedCollab, setSelectedCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
   const [selectedGenre, setSelectedGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
+  const [selectedSort, setSelectedSort] = useState<'newest' | 'oldest'>('newest');
   const [selectedRemixType, setSelectedRemixType] = useState<'Remix' | 'Edit' | 'Bootleg' | 'All'>('All');
   const [selectedRemixYear, setSelectedRemixYear] = useState<number | 'All'>('All');
   const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
@@ -240,24 +241,30 @@ export default function TracksPage() {
       {/* Hero Section - Compact */}
       <section className="relative pt-40 px-6 md:px-12 pb-4">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em] mb-2">Discography</p>
-          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.85] tracking-tighter mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] md:text-xs text-red-500/60 uppercase tracking-[0.4em]">Discography</p>
+            <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-widest">
+              {filteredTracks.length} Track{filteredTracks.length !== 1 ? 's' : ''}
+            </p>
+          </div>
+
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8 text-center">
             {heroTitle.display}
           </h1>
 
-          {/* Page Title with inline pijltjes */}
-          <div className="flex items-center gap-3 mb-8">
+          {/* Page Title + Filters - Centered with inline pijltjes */}
+          <div className="flex items-center justify-center gap-6 mb-8">
             <button
               onClick={() => {
                 const currentIndex = buttons.findIndex(b => b.id === activeTab);
                 if (currentIndex > 0) setActiveTab(buttons[currentIndex - 1].id);
               }}
               disabled={buttons.findIndex(b => b.id === activeTab) === 0}
-              className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1"
+              className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1 text-2xl"
             >
               ◄
             </button>
-            <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-white">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white whitespace-nowrap">
               {buttons.find(b => b.id === activeTab)?.label}
             </h2>
             <button
@@ -266,9 +273,17 @@ export default function TracksPage() {
                 if (currentIndex < buttons.length - 1) setActiveTab(buttons[currentIndex + 1].id);
               }}
               disabled={buttons.findIndex(b => b.id === activeTab) === buttons.length - 1}
-              className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1"
+              className="text-white/40 hover:text-white disabled:opacity-20 transition-colors p-1 text-2xl"
             >
               ►
+            </button>
+            {/* Filter Button */}
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all ml-4"
+            >
+              <Sliders size={16} />
+              Filters
             </button>
           </div>
 
@@ -287,17 +302,9 @@ export default function TracksPage() {
       {/* === TRACKS TAB === */}
       {activeTab === 'tracks' && (
         <>
-          {/* Track Header with Filters Button */}
+          {/* Track Content - No separate filter button */}
           <section className="px-6 md:px-12 py-4">
             <div className="max-w-7xl mx-auto">
-              {/* Filters Button */}
-              <button
-                onClick={() => setIsFilterModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
-              >
-                <Sliders size={16} />
-                Filters
-              </button>
 
               {/* Filter Modal */}
               <FilterModal
@@ -308,6 +315,7 @@ export default function TracksPage() {
                   setSelectedYear('All');
                   setSelectedCollab('All');
                   setSelectedGenre('All');
+                  setSelectedSort('newest');
                 }}
                 filters={[
                   {
@@ -333,6 +341,12 @@ export default function TracksPage() {
                     options: ['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'],
                     value: selectedGenre,
                     onChange: (value) => setSelectedGenre(value as typeof selectedGenre),
+                  },
+                  {
+                    label: 'Sort',
+                    options: ['Newest', 'Oldest'],
+                    value: selectedSort === 'newest' ? 'Newest' : 'Oldest',
+                    onChange: (value) => setSelectedSort(value === 'Newest' ? 'newest' : 'oldest'),
                   },
                 ]}
               />
