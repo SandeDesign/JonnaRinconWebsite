@@ -310,6 +310,12 @@ export default function TracksPage() {
               <FilterModal
                 isOpen={isFilterModalOpen}
                 onClose={() => setIsFilterModalOpen(false)}
+                onReset={() => {
+                  setSelectedType('All');
+                  setSelectedYear('All');
+                  setSelectedCollab('All');
+                  setSelectedGenre('All');
+                }}
                 filters={[
                   {
                     label: 'Type',
