@@ -34,18 +34,18 @@ export default function FilterDropdown({
   }, [isOpen]);
 
   return (
-    <div ref={dropdownRef} className={`relative w-full md:w-auto ${className}`}>
+    <div ref={dropdownRef} className={`relative ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full md:w-auto px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-between md:justify-center gap-2 whitespace-nowrap ${
+        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 whitespace-nowrap ${
           value !== 'All'
             ? 'bg-red-600 text-white'
             : 'bg-white/[0.06] text-white/40 hover:bg-white/[0.12]'
         }`}
       >
-        <span className="truncate">{value}</span>
+        <span className="truncate">{label}: {value}</span>
         <ChevronDown
-          size={14}
+          size={12}
           className={`flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>

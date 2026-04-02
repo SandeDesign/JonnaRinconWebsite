@@ -290,19 +290,15 @@ export default function TracksPage() {
       {/* === TRACKS TAB === */}
       {activeTab === 'tracks' && (
         <>
-          {/* Track Header */}
-          <section className="px-6 md:px-12 py-16 md:py-24">
+          {/* Track Header with Filters */}
+          <section className="px-6 md:px-12 py-16 md:py-20">
             <div className="max-w-7xl mx-auto">
               <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">My Tracks</h2>
-              <p className="text-white/25 text-sm">Browse and filter through 50+ original tracks, remixes, and exclusives</p>
-            </div>
-          </section>
+              <p className="text-white/25 text-sm mb-6">Browse and filter through 50+ original tracks, remixes, and exclusives</p>
 
-          {/* Filter Bar - Fixed, Non-Sticky */}
-          <section className="px-6 md:px-12 py-6 border-b border-white/[0.06] bg-black/40 backdrop-blur-sm">
-            <div className="max-w-7xl mx-auto">
+              {/* Filter Bar - Non-Sticky */}
               {/* Desktop: Horizontal layout */}
-              <div className="hidden md:grid md:grid-cols-4 gap-4">
+              <div className="hidden md:flex gap-2">
                 <FilterDropdown
                   label="Type"
                   options={['All', 'Album', 'EP', 'Single', 'Exclusive']}
@@ -316,7 +312,7 @@ export default function TracksPage() {
                   onChange={(value) => setSelectedYear(value as typeof selectedYear)}
                 />
                 <FilterDropdown
-                  label="Type"
+                  label="Collab"
                   options={['All', 'Solo', 'Collab']}
                   value={selectedCollab}
                   onChange={(value) => setSelectedCollab(value as typeof selectedCollab)}
@@ -330,7 +326,7 @@ export default function TracksPage() {
               </div>
 
               {/* Mobile: Vertical stacked layout */}
-              <div className="md:hidden flex flex-col gap-3">
+              <div className="md:hidden flex flex-wrap gap-2">
                 <FilterDropdown
                   label="Type"
                   options={['All', 'Album', 'EP', 'Single', 'Exclusive']}
@@ -344,7 +340,7 @@ export default function TracksPage() {
                   onChange={(value) => setSelectedYear(value as typeof selectedYear)}
                 />
                 <FilterDropdown
-                  label="Type"
+                  label="Collab"
                   options={['All', 'Solo', 'Collab']}
                   value={selectedCollab}
                   onChange={(value) => setSelectedCollab(value as typeof selectedCollab)}
