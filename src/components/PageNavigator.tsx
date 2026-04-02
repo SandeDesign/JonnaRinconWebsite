@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 interface PageNavItem {
   id: string;
@@ -18,9 +18,22 @@ export default function PageNavigator({
   onPageChange,
 }: PageNavigatorProps) {
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Detect mobile on mount and resize
+  useEffect(() => {
+    setIsClient(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Mobile: 2 items, Desktop: 3 items
-  const itemsPerPage = typeof window !== 'undefined' && window.innerWidth < 768 ? 2 : 3;
+  const itemsPerPage = isMobile ? 2 : 3;
 
   // Get current visible pages
   const visiblePages = useMemo(() => {
@@ -36,7 +49,7 @@ export default function PageNavigator({
     setScrollOffset(Math.max(scrollOffset - 1, 0));
   };
 
-  const activeIndex = pages.findIndex(p => p.id === activePageId);
+  if (!isClient) return null;
 
   return (
     <div className="flex items-center justify-between gap-4 mb-8">
