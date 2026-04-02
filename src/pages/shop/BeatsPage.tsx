@@ -5,6 +5,7 @@ import { Beat } from '../../lib/firebase/types';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
+import { useCart } from '../../hooks/useCart';
 import { toDirectUrl } from '../../lib/utils/urlUtils';
 import { getPlayButtonContainerClass, getPlayButtonSymbolClass, getRowHighlightClass } from '../../lib/utils/buttonStyles';
 import { setCurrentTrack, getCurrentTrack } from '../../components/GlobalAudioPlayer';
@@ -19,7 +20,7 @@ const BeatsShop: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedBeat, setSelectedBeat] = useState<Beat | null>(null);
-  const [cartItems, setCartItems] = useState<Beat[]>([]);
+  const { cartItems, addToCart } = useCart();
   const [filter, setFilter] = useState<{
     genre?: string;
     search?: string;
@@ -99,9 +100,6 @@ const BeatsShop: React.FC = () => {
     setCurrentTrack(trackBeat, [trackBeat]);
   };
 
-  const handleAddToCart = (beat: Beat) => {
-    setCartItems([...cartItems, beat]);
-  };
 
   const hasActiveFilters = !!(filter.genre || filter.search || filter.sortBy !== 'newest');
 
@@ -254,7 +252,7 @@ const BeatsShop: React.FC = () => {
         beat={selectedBeat}
         isOpen={!!selectedBeat}
         onClose={() => setSelectedBeat(null)}
-        onAddToCart={handleAddToCart}
+        onAddToCart={addToCart}
         isPlaying={selectedBeat ? getCurrentTrack()?.id === selectedBeat.id : false}
         onPlay={handlePlayBeat}
         cartCount={cartItems.length}
