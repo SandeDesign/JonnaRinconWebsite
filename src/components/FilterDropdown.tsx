@@ -52,7 +52,7 @@ export default function FilterDropdown({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 md:left-auto md:right-0 mt-2 bg-black/95 backdrop-blur-sm border border-white/[0.1] rounded-lg py-1 z-50 shadow-xl min-w-max">
+        <div className="absolute top-full left-0 mt-2 bg-black/95 backdrop-blur-sm border border-white/[0.1] rounded-lg py-1 z-50 shadow-xl min-w-max">
           {options.map((option) => (
             <button
               key={option}
