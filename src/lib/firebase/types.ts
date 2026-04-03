@@ -92,6 +92,7 @@ export interface Beat {
   // Media
   audioUrl: string;
   artworkUrl: string;
+  stemsUrl?: string; // Link to stems zip file
   waveformUrl?: string;
 
   // Licensing

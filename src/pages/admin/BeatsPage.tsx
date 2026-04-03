@@ -287,6 +287,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
     tags: beat?.tags?.join(', ') || '',
     audioUrl: beat?.audioUrl || '',
     artworkUrl: beat?.artworkUrl || '',
+    stemsUrl: beat?.stemsUrl || '',
     slug: beat?.slug || '',
     status: beat?.status || 'draft',
     beatType: beat?.beatType || 'basic',
@@ -311,6 +312,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
         tags: formData.tags.split(',').map((t) => t.trim()),
         audioUrl: formData.audioUrl,
         artworkUrl: formData.artworkUrl,
+        stemsUrl: formData.stemsUrl || undefined,
         slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, '-'),
         status: formData.status,
         beatType: formData.beatType,
@@ -504,6 +506,18 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
               defaultValue={formData.artworkUrl}
               placeholder="https://example.com/image.jpg"
             />
+          </div>
+
+          <div>
+            <LinkInput
+              label="Stems URL (Zip File)"
+              name="stemsUrl"
+              type="audio"
+              onChange={(url) => setFormData({ ...formData, stemsUrl: url })}
+              defaultValue={formData.stemsUrl}
+              placeholder="https://nextcloud.example.com/index.php/s/xyz789"
+            />
+            <p className="text-xs text-white/30 mt-1">Link to a zip file containing the beat stems (optional)</p>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
