@@ -504,7 +504,7 @@ export default function TracksPage() {
                                     onPlay={handlePlayTrack}
                                     onClickTrack={setSelectedTrack}
                                     showType={false}
-                                    showMetadata={false}
+                                    showMetadata={true}
                                     isAlbumTrack={true}
                                     trackNumber={index + 1}
                                   />

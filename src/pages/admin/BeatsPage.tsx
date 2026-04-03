@@ -386,20 +386,31 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
         beatType: formData.beatType,
         featured: formData.featured,
         trending: false,
-        licenses: {
-          exclusive: {
-            type: 'exclusive' as const,
-            price: formData.exclusivePrice,
-            features: ['All files', 'Exclusive rights', 'Full ownership', 'Unlimited use'],
-            downloads: -1,
-            streams: -1,
-            videos: -1,
-            distribution: true,
-          },
+      };
+
+      // Always include the complete licenses object with exclusive license
+      beatData.licenses = {
+        exclusive: {
+          type: 'exclusive' as const,
+          price: formData.exclusivePrice,
+          features: ['All files', 'Exclusive rights', 'Full ownership', 'Unlimited use'],
+          downloads: -1,
+          streams: -1,
+          videos: -1,
+          distribution: true,
         },
       };
 
       if (beat) {
+        // For updates, merge with existing licenses to preserve other license data
+        const existingBeat = beat as any;
+        if (existingBeat.licenses && Object.keys(existingBeat.licenses).length > 0) {
+          beatData.licenses = {
+            ...existingBeat.licenses,
+            exclusive: beatData.licenses.exclusive,
+          };
+        }
+
         await beatService.updateBeat(beat.id, beatData);
         alert('Beat updated successfully');
       } else {
