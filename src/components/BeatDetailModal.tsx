@@ -92,7 +92,7 @@ export default function BeatDetailModal({
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-4xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] backdrop-blur-2xl border border-white/[0.2] rounded-3xl overflow-hidden shadow-2xl my-8"
+        className="relative w-full max-w-2xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] backdrop-blur-2xl border border-white/[0.2] rounded-3xl overflow-hidden shadow-2xl my-4 max-h-[90vh]"
       >
         {/* Close Button */}
         <button
@@ -111,11 +111,11 @@ export default function BeatDetailModal({
         )}
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-0 overflow-y-auto max-h-[calc(90vh-60px)]">
           {/* Left Column - Artwork & Quick Stats */}
-          <div className="md:col-span-2 bg-gradient-to-b from-white/[0.08] to-transparent p-8 border-b md:border-b-0 md:border-r border-white/[0.1]">
+          <div className="md:col-span-2 bg-gradient-to-b from-white/[0.08] to-transparent p-4 md:p-6 border-b md:border-b-0 md:border-r border-white/[0.1]">
             {/* Artwork */}
-            <div className="relative aspect-square rounded-2xl overflow-hidden mb-8 group">
+            <div className="relative aspect-square rounded-2xl overflow-hidden mb-4 group">
               <img
                 src={beat.artworkUrl || '/JEIGHTENESIS.jpg'}
                 alt={beat.title}
@@ -173,15 +173,15 @@ export default function BeatDetailModal({
           </div>
 
           {/* Right Column - Details */}
-          <div className="md:col-span-3 p-8 flex flex-col justify-between">
+          <div className="md:col-span-3 p-4 md:p-6 flex flex-col justify-between">
             {/* Header */}
-            <div className="mb-6">
-              <div className="flex items-start justify-between mb-4">
+            <div className="mb-4">
+              <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h2 className="text-3xl md:text-4xl font-black text-white mb-2 uppercase tracking-tight leading-tight">
+                  <h2 className="text-2xl md:text-3xl font-black text-white mb-1 uppercase tracking-tight leading-tight">
                     {beat.title}
                   </h2>
-                  <p className="text-lg text-white/60 font-semibold">By {beat.artist}</p>
+                  <p className="text-sm md:text-base text-white/60 font-semibold">By {beat.artist}</p>
                 </div>
               </div>
 

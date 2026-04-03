@@ -315,7 +315,7 @@ const BeatsShop: React.FC = () => {
                           <span className="px-2 py-0.5 bg-white/10 rounded text-xs">{beat.key}</span>
                         </div>
                         <span className="text-lg font-black text-red-500">
-                          &euro;{beat.licenses.basic?.price.toFixed(0) || '0'}
+                          &euro;{beat.licenses.exclusive?.price.toFixed(0) || '0'}
                         </span>
                       </div>
                     </div>
@@ -364,7 +364,7 @@ const BeatsShop: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-base md:text-lg font-black text-red-500">
-                      &euro;{beat.licenses.basic?.price.toFixed(0) || '0'}
+                      &euro;{beat.licenses.exclusive?.price.toFixed(0) || '0'}
                     </span>
                     <span className="px-3 py-1.5 md:px-4 md:py-2 bg-red-600 hover:bg-red-700 rounded-lg text-xs md:text-sm font-semibold transition-all">
                       View
@@ -482,7 +482,7 @@ const BeatsShop: React.FC = () => {
                     <div>
                       <div className="text-[10px] text-white/25 uppercase tracking-wider">From</div>
                       <div className="text-base md:text-lg font-black text-red-500">
-                        &euro;{beat.licenses.basic?.price.toFixed(0) || '0'}
+                        &euro;{beat.licenses.exclusive?.price.toFixed(0) || '0'}
                       </div>
                     </div>
                     <div className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg text-xs font-semibold transition-all group-hover:scale-105">
@@ -548,7 +548,7 @@ const BeatsShop: React.FC = () => {
 
                 <div className="flex items-center gap-3 flex-shrink-0">
                   <span className="text-base md:text-lg font-black text-red-500">
-                    &euro;{beat.licenses.basic?.price.toFixed(0) || '0'}
+                    &euro;{beat.licenses.exclusive?.price.toFixed(0) || '0'}
                   </span>
                   <span className="hidden md:block px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-xs font-semibold transition-all group-hover:scale-105">
                     View
