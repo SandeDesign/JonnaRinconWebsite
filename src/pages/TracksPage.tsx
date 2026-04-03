@@ -13,6 +13,7 @@ import FilterModal from '../components/FilterModal';
 import TrackDetailModal from '../components/TrackDetailModal';
 import LoginModal from '../components/LoginModal';
 import { extractUniqueGenres } from '../lib/utils/genreExtractor';
+import { trackService } from '../lib/firebase/services';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -178,11 +179,18 @@ export default function TracksPage() {
     return genres.includes(selectedGenre);
   };
 
-  const handlePlayTrack = (track: Track) => {
+  const handlePlayTrack = async (track: Track) => {
     // Check if user is authenticated
     if (!isAuthenticated) {
       setIsLoginModalOpen(true);
       return;
+    }
+
+    // Increment plays counter for this track
+    if (track.id) {
+      await trackService.incrementPlays(track.id).catch((error) => {
+        console.error('Failed to increment track plays:', error);
+      });
     }
 
     // Filter tracks matching current filters and create queue
