@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Copy, Check, AlertCircle, X } from 'lucide-react';
 import { toDirectUrl, detectUrlType, isValidUrl } from '../../lib/utils/urlUtils';
 
@@ -24,6 +24,11 @@ export default function LinkInput({
   const [value, setValue] = useState(defaultValue);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
+
+  // Update value when defaultValue prop changes (e.g., when editing a beat)
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
