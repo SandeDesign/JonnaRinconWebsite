@@ -371,6 +371,17 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
     setSaving(true);
 
     try {
+      // Ensure exclusive price is a valid number
+      const exclusivePrice = typeof formData.exclusivePrice === 'string'
+        ? parseFloat(formData.exclusivePrice)
+        : formData.exclusivePrice;
+
+      if (isNaN(exclusivePrice) || exclusivePrice < 0) {
+        alert('Please enter a valid exclusive price');
+        setSaving(false);
+        return;
+      }
+
       const beatData: any = {
         title: formData.title,
         artist: formData.artist,
@@ -392,7 +403,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
       beatData.licenses = {
         exclusive: {
           type: 'exclusive' as const,
-          price: formData.exclusivePrice,
+          price: exclusivePrice,
           features: ['All files', 'Exclusive rights', 'Full ownership', 'Unlimited use'],
           downloads: -1,
           streams: -1,

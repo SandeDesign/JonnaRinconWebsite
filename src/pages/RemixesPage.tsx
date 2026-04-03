@@ -26,6 +26,7 @@ interface Track {
   collab?: 'Solo' | 'Collab';
   genre?: string;
   bpm?: number;
+  key?: string;          // Musical key (e.g., C Major, A Minor)
   duration?: string;
   album?: string;        // Album name for grouping
   trackNumber?: number;  // Track position in album
@@ -65,6 +66,7 @@ export default function RemixesPage() {
     duration: '0:00',
     genre: r.genre,
     bpm: r.bpm,
+    key: r.key,
     year: r.year,
     collab: r.collab,
     remixType: r.remixType,

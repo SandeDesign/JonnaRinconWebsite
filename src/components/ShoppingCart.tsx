@@ -16,7 +16,7 @@ export default function ShoppingCart({
   onRemoveItem,
   onCheckout,
 }: ShoppingCartProps) {
-  const total = items.reduce((sum, item) => sum + (item.licenses.basic?.price || 0), 0);
+  const total = items.reduce((sum, item) => sum + (item.licenses.exclusive?.price || 0), 0);
 
   if (!isOpen) return null;
 
@@ -64,7 +64,7 @@ export default function ShoppingCart({
             ) : (
               <div className="space-y-4">
                 {items.map((item, index) => {
-                  const basicPrice = item.licenses.basic?.price || 0;
+                  const exclusivePrice = item.licenses.exclusive?.price || 0;
                   return (
                     <div
                       key={`${item.id}-${index}`}
@@ -85,10 +85,10 @@ export default function ShoppingCart({
                           </p>
                           <div className="flex items-center gap-3">
                             <span className="px-3 py-1 bg-white/10 rounded-lg text-xs font-semibold text-gray-300 uppercase">
-                              Basic License
+                              Exclusive License
                             </span>
                             <span className="text-2xl font-black text-white">
-                              &euro;{basicPrice.toFixed(2)}
+                              &euro;{exclusivePrice.toFixed(2)}
                             </span>
                           </div>
                         </div>
