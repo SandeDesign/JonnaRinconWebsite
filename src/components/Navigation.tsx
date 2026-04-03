@@ -24,6 +24,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const [authName, setAuthName] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [expandedShop, setExpandedShop] = useState(false);
+  const [expandedCatalogue, setExpandedCatalogue] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, signIn, signUp, signOut } = useAuth();
   const { cartItems, removeFromCart, removeItemByIndex, clearCart } = useCart();
@@ -148,9 +150,25 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   const navTextColor = useWhiteNav ? 'text-white' : 'text-black';
 
-  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void }[] = [
-    { label: 'SHOP', subtitle: 'Browse our catalog', action: () => { closeMenu(); navigate('/shop'); } },
-    { label: 'CATALOGUE', subtitle: 'Browse all content', action: () => { closeMenu(); navigate('/catalogue'); } },
+  const shopSubmenu = [
+    { label: 'Beat Shop', subtitle: 'Browse instrumentals', href: '/shop/beats' },
+    { label: 'Services', subtitle: 'Professional audio services', href: '/shop/services' },
+    { label: 'Merchandise', subtitle: 'Official branded products', href: '/shop/merchandise' },
+    { label: 'Art', subtitle: 'Digital & visual art', href: '/shop/art' },
+  ];
+
+  const catalogueSubmenu = [
+    { label: 'Tracks', subtitle: 'Full discography', href: '/tracks' },
+    { label: 'Remixes', subtitle: 'Remixes and edits', href: '/remixes' },
+    { label: 'DJ Sets', subtitle: 'Live DJ performances', href: '/dj-sets' },
+    { label: 'Productions', subtitle: 'Production work & collaborations', href: '/productions' },
+    { label: 'Spotify', subtitle: 'Stream on all platforms', href: '/spotify' },
+    { label: 'Support', subtitle: 'Artist support & features', href: '/support' },
+  ];
+
+  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: Array<{ label: string; subtitle: string; href: string }>; expanded?: boolean }[] = [
+    { label: 'SHOP', subtitle: 'Browse our catalog', action: () => setExpandedShop(!expandedShop), submenu: shopSubmenu, expanded: expandedShop },
+    { label: 'CATALOGUE', subtitle: 'Browse all content', action: () => setExpandedCatalogue(!expandedCatalogue), submenu: catalogueSubmenu, expanded: expandedCatalogue },
     { label: 'SOCIALS & CONTACT', subtitle: 'Follow & Get in touch', action: () => { closeMenu(); navigate('/socials'); } },
   ];
 
@@ -371,26 +389,55 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                 {/* Menu items — clean, modern, spaced */}
                 <div className="flex-1 flex flex-col justify-center -mt-8">
                   {menuItems.map((item, i) => (
-                    <button
-                      key={item.label}
-                      onClick={item.action}
-                      className="group w-full text-left py-4 md:py-5 cursor-pointer border-b border-white/[0.04]"
-                      style={{
-                        animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
-                      }}
-                    >
-                      <div className="flex items-center justify-between group-hover:translate-x-2 transition-transform duration-300">
-                        <div>
-                          <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
-                            {item.label}
-                          </span>
-                          <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-red-400/60 transition-colors duration-300">
-                            {item.subtitle}
-                          </span>
+                    <div key={item.label}>
+                      <button
+                        onClick={item.action}
+                        className="group w-full text-left py-4 md:py-5 cursor-pointer border-b border-white/[0.04]"
+                        style={{
+                          animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
+                        }}
+                      >
+                        <div className="flex items-center justify-between group-hover:translate-x-2 transition-transform duration-300">
+                          <div>
+                            <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
+                              {item.label}
+                            </span>
+                            <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-red-400/60 transition-colors duration-300">
+                              {item.subtitle}
+                            </span>
+                          </div>
+                          <ArrowUpRight className={`w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${item.expanded ? 'rotate-90' : ''}`} />
                         </div>
-                        <ArrowUpRight className="w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      </div>
-                    </button>
+                      </button>
+
+                      {/* Submenu */}
+                      {item.submenu && item.expanded && (
+                        <div className="bg-white/[0.02] border-b border-white/[0.04] overflow-hidden transition-all duration-300 ease-out">
+                          <div className="px-8 md:px-12 py-3">
+                            {item.submenu.map((subitem, subIndex) => (
+                              <button
+                                key={subitem.href}
+                                onClick={() => {
+                                  closeMenu();
+                                  navigate(subitem.href);
+                                }}
+                                className="group w-full text-left py-3 md:py-3.5 cursor-pointer border-b border-white/[0.02] last:border-b-0 hover:translate-x-1.5 transition-transform duration-300"
+                                style={{
+                                  animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
+                                }}
+                              >
+                                <span className="block text-lg md:text-xl font-semibold text-white/70 group-hover:text-white transition-colors duration-300 tracking-tight">
+                                  {subitem.label}
+                                </span>
+                                <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
+                                  {subitem.subtitle}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ))}
 
                   {/* Auth item */}
