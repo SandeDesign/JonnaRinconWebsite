@@ -172,7 +172,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     { label: 'Remixes', subtitle: 'Remixes and edits', href: '/remixes' },
     { label: 'DJ Sets', subtitle: 'Live DJ performances', href: '/dj-sets' },
     { label: 'Productions', subtitle: 'Production work & collaborations', href: '/productions' },
-    { label: 'Spotify | Support', subtitle: 'Stream & support options', href: '/spotify', secondaryHref: '/support', isDouble: true },
+    { label: 'Spotify', subtitle: 'Stream on all platforms', href: '/spotify', isSmall: true },
+    { label: 'Support', subtitle: 'Artist support & features', href: '/support', isSmall: true },
   ];
 
   const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: Array<{ label: string; subtitle: string; href: string }>; expanded?: boolean }[] = [
@@ -408,7 +409,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       >
                         <div className={`flex items-center justify-between transition-transform duration-300 ${!item.expanded ? 'group-hover:translate-x-2' : ''}`}>
                           <div>
-                            <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
+                            <span className="block text-3xl md:text-4xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
                               {item.label}
                             </span>
                             <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-red-400/60 transition-colors duration-300">
@@ -423,66 +424,31 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       {item.submenu && (
                         <div className={`overflow-hidden transition-all duration-300 ease-out ${item.expanded ? 'max-h-96' : 'max-h-0'}`}>
                           {item.submenu.map((subitem: any, subIndex) => (
-                            <div key={subitem.href}>
-                              {subitem.isDouble ? (
-                                // Double item layout (Spotify | Support)
-                                <div
-                                  className="group w-full text-left py-3 md:py-4 cursor-pointer border-b border-white/[0.04]"
-                                  style={{
-                                    animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
-                                    paddingLeft: '2rem',
-                                  }}
-                                >
-                                  <span className="block text-lg md:text-lg font-semibold text-white/60 group-hover:text-white transition-colors duration-300 tracking-tight">
-                                    {subitem.label}
-                                  </span>
-                                  <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
-                                    {subitem.subtitle}
-                                  </span>
-                                  <div className="flex gap-4 mt-2">
-                                    <button
-                                      onClick={() => {
-                                        closeMenu();
-                                        navigate(subitem.href);
-                                      }}
-                                      className="text-xs text-white/40 hover:text-white/80 transition-colors duration-300"
-                                    >
-                                      Spotify
-                                    </button>
-                                    <span className="text-xs text-white/20">|</span>
-                                    <button
-                                      onClick={() => {
-                                        closeMenu();
-                                        navigate(subitem.secondaryHref);
-                                      }}
-                                      className="text-xs text-white/40 hover:text-white/80 transition-colors duration-300"
-                                    >
-                                      Support
-                                    </button>
-                                  </div>
-                                </div>
-                              ) : (
-                                // Regular single item
-                                <button
-                                  onClick={() => {
-                                    closeMenu();
-                                    navigate(subitem.href);
-                                  }}
-                                  className="group w-full text-left py-3 md:py-4 cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300"
-                                  style={{
-                                    animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
-                                    paddingLeft: '2rem',
-                                  }}
-                                >
-                                  <span className="block text-lg md:text-lg font-semibold text-white/60 group-hover:text-white transition-colors duration-300 tracking-tight">
-                                    {subitem.label}
-                                  </span>
-                                  <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
-                                    {subitem.subtitle}
-                                  </span>
-                                </button>
-                              )}
-                            </div>
+                            <button
+                              key={subitem.href}
+                              onClick={() => {
+                                closeMenu();
+                                navigate(subitem.href);
+                              }}
+                              className={`group w-full text-left cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300 ${
+                                subitem.isSmall ? 'py-2 md:py-2.5' : 'py-3 md:py-4'
+                              }`}
+                              style={{
+                                animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
+                                paddingLeft: '2rem',
+                              }}
+                            >
+                              <span className={`block font-semibold text-white/60 group-hover:text-white transition-colors duration-300 tracking-tight ${
+                                subitem.isSmall ? 'text-xs md:text-xs font-normal' : 'text-lg md:text-lg'
+                              }`}>
+                                {subitem.label}
+                              </span>
+                              <span className={`block text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300 ${
+                                subitem.isSmall ? 'text-[10px] md:text-[10px]' : 'text-xs'
+                              }`}>
+                                {subitem.subtitle}
+                              </span>
+                            </button>
                           ))}
                         </div>
                       )}
