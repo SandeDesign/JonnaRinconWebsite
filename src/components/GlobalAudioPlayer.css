@@ -1,10 +1,16 @@
 /* Jonna Rincon Audio Player Styling */
 
-.jonna-audio-player .rhap_container {
-  position: relative !important;
+.jonna-audio-player {
   background: rgba(255, 255, 255, 0.04) !important;
   backdrop-filter: blur(12px) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.jonna-audio-player .rhap_container {
+  position: relative !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border-top: none !important;
   padding: 48px 16px 24px 16px !important;
   gap: 14px !important;
 }

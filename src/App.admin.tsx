@@ -6,10 +6,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 // Admin Pages
 import LoginPage from './pages/admin/LoginPage';
 import DashboardPage from './pages/admin/DashboardPage';
+import ArtAdminPage from './pages/admin/ArtAdminPage';
 import BeatsPage from './pages/admin/BeatsPage';
 import TracksPage from './pages/admin/TracksPage';
 import RemixesPage from './pages/admin/RemixesPage';
 import EditsPage from './pages/admin/EditsPage';
+import ServicesPage from './pages/admin/ServicesPage';
 import OrdersPage from './pages/admin/OrdersPage';
 import CollaborationsPage from './pages/admin/CollaborationsPage';
 
@@ -27,6 +29,14 @@ const AdminApp: React.FC = () => {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/art"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <ArtAdminPage />
               </ProtectedRoute>
             }
           />
@@ -59,6 +69,14 @@ const AdminApp: React.FC = () => {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <EditsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/services"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <ServicesPage />
               </ProtectedRoute>
             }
           />

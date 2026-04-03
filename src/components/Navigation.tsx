@@ -423,33 +423,65 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       {/* Submenu */}
                       {item.submenu && (
                         <div className={`overflow-hidden transition-all duration-300 ease-out ${item.expanded ? 'max-h-96' : 'max-h-0'}`}>
-                          {item.submenu.map((subitem: any, subIndex) => (
-                            <button
-                              key={subitem.href}
-                              onClick={() => {
-                                closeMenu();
-                                navigate(subitem.href);
-                              }}
-                              className={`group w-full text-left cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300 ${
-                                subitem.isSmall ? 'py-2 md:py-2.5' : 'py-3 md:py-4'
-                              }`}
-                              style={{
-                                animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
-                                paddingLeft: '2rem',
-                              }}
-                            >
-                              <span className={`block font-semibold text-white/60 group-hover:text-white transition-colors duration-300 tracking-tight ${
-                                subitem.isSmall ? 'text-xs md:text-xs font-normal' : 'text-lg md:text-lg'
-                              }`}>
-                                {subitem.label}
-                              </span>
-                              <span className={`block text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300 ${
-                                subitem.isSmall ? 'text-[10px] md:text-[10px]' : 'text-xs'
-                              }`}>
-                                {subitem.subtitle}
-                              </span>
-                            </button>
-                          ))}
+                          {/* Group small items together */}
+                          {(() => {
+                            const smallItems = item.submenu.filter((s: any) => s.isSmall);
+                            const regularItems = item.submenu.filter((s: any) => !s.isSmall);
+
+                            return (
+                              <>
+                                {/* Regular items */}
+                                {regularItems.map((subitem: any, subIndex) => (
+                                  <button
+                                    key={subitem.href}
+                                    onClick={() => {
+                                      closeMenu();
+                                      navigate(subitem.href);
+                                    }}
+                                    className="group w-full text-left py-3 md:py-4 cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300"
+                                    style={{
+                                      animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
+                                      paddingLeft: '2rem',
+                                    }}
+                                  >
+                                    <span className="block text-lg md:text-lg font-semibold text-white/60 group-hover:text-white transition-colors duration-300 tracking-tight">
+                                      {subitem.label}
+                                    </span>
+                                    <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
+                                      {subitem.subtitle}
+                                    </span>
+                                  </button>
+                                ))}
+
+                                {/* Small items on same line */}
+                                {smallItems.length > 0 && (
+                                  <div
+                                    className="flex items-center gap-4 py-2 md:py-2.5 px-8 border-b border-white/[0.04] text-center justify-center"
+                                    style={{
+                                      animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + regularItems.length * 0.04}s both` : 'none',
+                                    }}
+                                  >
+                                    {smallItems.map((subitem: any, idx) => (
+                                      <div key={subitem.href} className="flex items-center gap-4">
+                                        <button
+                                          onClick={() => {
+                                            closeMenu();
+                                            navigate(subitem.href);
+                                          }}
+                                          className="text-xs text-white/60 hover:text-white transition-colors duration-300"
+                                        >
+                                          {subitem.label}
+                                        </button>
+                                        {idx < smallItems.length - 1 && (
+                                          <span className="text-xs text-white/20">|</span>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
                         </div>
                       )}
                     </div>
@@ -635,8 +667,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
         onClose={() => setIsCartOpen(false)}
         items={cartItems}
         onRemoveItem={(beatId) => {
-          const index = cartItems.findIndex(item => item.beat.id === beatId);
-          if (index !== -1) removeItemByIndex(index);
+          removeFromCart(beatId);
         }}
         onCheckout={() => {
           alert('Proceeding to checkout...');

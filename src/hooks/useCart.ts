@@ -49,7 +49,7 @@ export function useCart() {
   };
 
   const getTotalPrice = () => {
-    return cartItems.reduce((sum, item) => sum + (item.licenses.basic?.price || 0), 0);
+    return cartItems.reduce((sum, item) => sum + (item.licenses.exclusive?.price || 0), 0);
   };
 
   return {

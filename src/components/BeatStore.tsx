@@ -75,7 +75,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
             ...data,
             audio_url: toDirectUrl(data.audioUrl || data.audio_url || ''),
             artwork_url: toDirectUrl(data.artworkUrl || data.artwork_url || ''),
-            price: data.licenses?.basic?.price || data.price || 29,
+            price: data.licenses?.exclusive?.price || data.price || 29,
             created_at: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
             updated_at: data.updatedAt?.toDate().toISOString() || new Date().toISOString(),
           };

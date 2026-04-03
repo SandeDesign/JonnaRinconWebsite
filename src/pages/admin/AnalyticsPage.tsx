@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useBeats } from '../../hooks/useBeats';
+import { useTracks } from '../../hooks/useTracks';
+import { useRemixes } from '../../hooks/useRemixes';
 import { useOrders } from '../../hooks/useOrders';
 import { useContent } from '../../hooks/useContent';
 import { useCollaborations } from '../../hooks/useCollaborations';
@@ -18,7 +20,9 @@ import {
 } from 'lucide-react';
 
 const AnalyticsPage: React.FC = () => {
-  const { beats } = useBeats();
+  const { beats, loading: beatsLoading } = useBeats();
+  const { tracks, loading: tracksLoading } = useTracks({ status: 'published' });
+  const { remixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const { orders, statistics: orderStats } = useOrders();
   const { content } = useContent();
   const { collaborations, statistics: collabStats } = useCollaborations();
@@ -29,9 +33,72 @@ const AnalyticsPage: React.FC = () => {
   const totalRevenue = orderStats?.totalRevenue || 0;
   const totalOrders = orders.length;
   const totalBeats = beats.length;
+  const totalTracks = tracks.length;
+  const totalRemixes = remixes.length;
   const totalViews = content.reduce((sum, c) => sum + c.views, 0);
-  const totalPlays = beats.reduce((sum, b) => sum + b.plays, 0);
-  const totalDownloads = beats.reduce((sum, b) => sum + b.downloads, 0);
+
+  // Calculate total plays across all content types
+  const beatPlays = beats.reduce((sum, b) => sum + b.plays, 0);
+  const trackPlays = tracks.reduce((sum, t) => sum + t.plays, 0);
+  const remixPlays = remixes.reduce((sum, r) => sum + r.plays, 0);
+  const totalPlays = beatPlays + trackPlays + remixPlays;
+
+  // Calculate total downloads across all content types
+  const beatDownloads = beats.reduce((sum, b) => sum + b.downloads, 0);
+  const trackDownloads = tracks.reduce((sum, t) => sum + t.downloads, 0);
+  const remixDownloads = remixes.reduce((sum, r) => sum + r.downloads, 0);
+  const totalDownloads = beatDownloads + trackDownloads + remixDownloads;
+
+  // Calculate total likes across all content types
+  const beatLikes = beats.reduce((sum, b) => sum + b.likes, 0);
+  const trackLikes = tracks.reduce((sum, t) => sum + t.likes, 0);
+  const remixLikes = remixes.reduce((sum, r) => sum + r.likes, 0);
+  const totalLikes = beatLikes + trackLikes + remixLikes;
+
+  // Top performing content across all types
+  interface ContentItem {
+    id: string;
+    title: string;
+    artist: string;
+    artworkUrl: string;
+    plays: number;
+    downloads: number;
+    type: 'Beat' | 'Track' | 'Remix';
+  }
+
+  const allContent: ContentItem[] = [
+    ...beats.map((b) => ({
+      id: b.id,
+      title: b.title,
+      artist: b.artist,
+      artworkUrl: b.artworkUrl,
+      plays: b.plays,
+      downloads: b.downloads,
+      type: 'Beat' as const,
+    })),
+    ...tracks.map((t) => ({
+      id: t.id,
+      title: t.title,
+      artist: t.artist,
+      artworkUrl: t.artworkUrl,
+      plays: t.plays,
+      downloads: t.downloads,
+      type: 'Track' as const,
+    })),
+    ...remixes.map((r) => ({
+      id: r.id,
+      title: r.title,
+      artist: r.remixArtist,
+      artworkUrl: r.artworkUrl,
+      plays: r.plays,
+      downloads: r.downloads,
+      type: 'Remix' as const,
+    })),
+  ];
+
+  const topPerformingContent = [...allContent]
+    .sort((a, b) => b.plays - a.plays)
+    .slice(0, 5);
 
   // Top performing beats
   const topBeats = [...beats]
@@ -58,8 +125,15 @@ const AnalyticsPage: React.FC = () => {
   // Calculate engagement metrics
   const publishedBeats = beats.filter((b) => b.status === 'published').length;
   const featuredBeats = beats.filter((b) => b.featured).length;
+  const publishedTracks = tracks.filter((t) => t.status === 'published').length;
+  const featuredTracks = tracks.filter((t) => t.featured).length;
+  const publishedRemixes = remixes.filter((r) => r.status === 'published').length;
+  const featuredRemixes = remixes.filter((r) => r.featured).length;
   const publishedContent = content.filter((c) => c.status === 'published').length;
   const activeCollaborations = collaborations.filter((c) => c.status === 'active').length;
+
+  // Loading states
+  const isLoading = beatsLoading || tracksLoading || remixesLoading;
 
   return (
     <AdminLayout>
@@ -138,7 +212,7 @@ const AnalyticsPage: React.FC = () => {
         </div>
 
         {/* Engagement Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Beat Performance</h3>
@@ -146,18 +220,58 @@ const AnalyticsPage: React.FC = () => {
             </div>
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-white/40">Total Plays</p>
-                <p className="text-2xl font-bold text-white">{totalPlays.toLocaleString()}</p>
+                <p className="text-sm text-white/40">Plays</p>
+                <p className="text-2xl font-bold text-white">{beatPlays.toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-white/40">Total Downloads</p>
-                <p className="text-2xl font-bold text-white">{totalDownloads.toLocaleString()}</p>
+                <p className="text-sm text-white/40">Downloads</p>
+                <p className="text-2xl font-bold text-white">{beatDownloads.toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-white/40">Avg Plays per Beat</p>
-                <p className="text-2xl font-bold text-white">
-                  {totalBeats > 0 ? Math.round(totalPlays / totalBeats) : 0}
-                </p>
+                <p className="text-sm text-white/40">Likes</p>
+                <p className="text-2xl font-bold text-white">{beatLikes.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Track Performance</h3>
+              <Music className="text-blue-400" size={20} />
+            </div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-white/40">Plays</p>
+                <p className="text-2xl font-bold text-white">{trackPlays.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Downloads</p>
+                <p className="text-2xl font-bold text-white">{trackDownloads.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Likes</p>
+                <p className="text-2xl font-bold text-white">{trackLikes.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Remix Performance</h3>
+              <Music className="text-pink-400" size={20} />
+            </div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm text-white/40">Plays</p>
+                <p className="text-2xl font-bold text-white">{remixPlays.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Downloads</p>
+                <p className="text-2xl font-bold text-white">{remixDownloads.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-white/40">Likes</p>
+                <p className="text-2xl font-bold text-white">{remixLikes.toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -186,28 +300,52 @@ const AnalyticsPage: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Collaborations</h3>
-              <Handshake className="text-green-400" size={20} />
-            </div>
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm text-white/40">Total Collaborations</p>
-                <p className="text-2xl font-bold text-white">{collaborations.length}</p>
-              </div>
-              <div>
-                <p className="text-sm text-white/40">Active</p>
-                <p className="text-2xl font-bold text-white">{activeCollaborations}</p>
-              </div>
-              <div>
-                <p className="text-sm text-white/40">Total Revenue</p>
-                <p className="text-2xl font-bold text-white">
-                  €{(collabStats?.totalRevenue || 0).toLocaleString()}
-                </p>
-              </div>
-            </div>
+        {/* Top Performing Content Across All Types */}
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Top Performing Content</h3>
+          <div className="space-y-3">
+            {topPerformingContent.length === 0 ? (
+              <p className="text-white/40 text-center py-4">No content available</p>
+            ) : (
+              topPerformingContent.map((item, index) => (
+                <div
+                  key={`${item.type}-${item.id}`}
+                  className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg hover:bg-white/[0.08] transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <span className="text-2xl font-bold text-white/25">#{index + 1}</span>
+                    <img
+                      src={item.artworkUrl}
+                      alt={item.title}
+                      className="w-12 h-12 rounded object-cover"
+                    />
+                    <div>
+                      <p className="font-medium text-white">{item.title}</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span
+                          className={`text-xs px-2 py-1 rounded font-medium ${
+                            item.type === 'Beat'
+                              ? 'bg-purple-500/20 text-purple-300'
+                              : item.type === 'Track'
+                              ? 'bg-blue-500/20 text-blue-300'
+                              : 'bg-pink-500/20 text-pink-300'
+                          }`}
+                        >
+                          {item.type}
+                        </span>
+                        <p className="text-sm text-white/40">{item.artist}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-white">{item.plays.toLocaleString()} plays</p>
+                    <p className="text-sm text-white/40">{item.downloads} downloads</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
