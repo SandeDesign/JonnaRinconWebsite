@@ -40,6 +40,12 @@ export type AdminPermission =
   | 'edits.read'
   | 'edits.write'
   | 'edits.delete'
+  | 'art.read'
+  | 'art.write'
+  | 'art.delete'
+  | 'services.read'
+  | 'services.write'
+  | 'services.delete'
   | 'orders.read'
   | 'orders.write'
   | 'orders.delete'
@@ -58,7 +64,9 @@ export type ManagerPermission =
   | 'beats.read'
   | 'beats.write'
   | 'chat.read'
-  | 'chat.write';
+  | 'chat.write'
+  | 'art.read'
+  | 'art.write';
 
 // ============================================
 // BEAT / PRODUCT TYPES
@@ -121,6 +129,79 @@ export interface Beat {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   publishedAt?: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+}
+
+// ============================================
+// ART TYPES
+// ============================================
+
+export interface Art {
+  id: string;
+  title: string;
+  description: string;
+  artist: string;
+  medium: string; // e.g., "Digital", "Acrylic", "Mixed Media"
+  year: number;
+  category: string; // e.g., "Digital Art", "Cover Design", "Visual Art", "Illustration", "Photography"
+  image: string; // Main image URL
+
+  // Media
+  gallery?: string[]; // Additional gallery images
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+
+  // Stats
+  views: number;
+  likes: number;
+
+  // SEO & Meta
+  slug: string;
+  metaTitle?: string;
+  metaDescription?: string;
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+}
+
+// ============================================
+// SERVICE TYPES
+// ============================================
+
+export interface Service {
+  id: string;
+  name: string;
+  description: string;
+  rate: number; // Price per hour or service rate
+  cta: string; // Call-to-action button text
+  gradient: string; // e.g., "from-purple-600 to-pink-600"
+  icon: string; // Icon name as string (e.g., "Zap", "Music", "Edit")
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+
+  // Stats
+  inquiries: number;
+
+  // SEO & Meta
+  slug: string;
+  metaTitle?: string;
+  metaDescription?: string;
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 
   // Creator info
   createdBy: string;
