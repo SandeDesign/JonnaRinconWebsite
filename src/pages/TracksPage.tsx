@@ -128,6 +128,8 @@ export default function TracksPage() {
   const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
   const [selectedRemixGenre, setSelectedRemixGenre] = useState<string>('All');
   const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
+  const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
+  const [showAllYears, setShowAllYears] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -269,6 +271,28 @@ export default function TracksPage() {
     }
     setExpandedAlbums(newExpanded);
   };
+
+  const toggleYearExpand = (year: number) => {
+    const newExpanded = new Set(expandedYears);
+    if (newExpanded.has(year)) {
+      newExpanded.delete(year);
+    } else {
+      newExpanded.add(year);
+    }
+    setExpandedYears(newExpanded);
+  };
+
+  // Group tracks by year when type is 'All'
+  const tracksByYear = selectedType === 'All'
+    ? filteredTracks.reduce((acc, track) => {
+        const year = track.year || new Date().getFullYear();
+        if (!acc[year]) {
+          acc[year] = [];
+        }
+        acc[year].push(track);
+        return acc;
+      }, {} as Record<number, Track[]>)
+    : {};
 
   // Show login modal if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -443,91 +467,171 @@ export default function TracksPage() {
             </div>
           </section>
 
-          {/* Mixed Track List / Album Groups */}
+          {/* Mixed Track List / Album Groups OR Year Groups */}
           <section className="px-6 md:px-12 py-2 md:py-4">
             <div className="max-w-7xl mx-auto">
-              <div className="space-y-3">
-                {Object.entries(groupedTracks)
-                  .sort(([, a], [, b]) => {
-                    // Albums sorted by createdAt (newest first)
-                    if ((a.albumName && b.albumName) || (!a.albumName && !b.albumName)) {
-                      return (b.displayTrack.sortOrder ?? b.displayTrack.createdAt) - (a.displayTrack.sortOrder ?? a.displayTrack.createdAt);
-                    }
-                    // Albums appear before single tracks
-                    return a.albumName ? -1 : 1;
-                  })
-                  .map(([albumKey, group]) => {
-                    const isAlbum = group.albumName && (group.type === 'Album' || group.type === 'EP');
-                    const isExpanded = expandedAlbums.has(albumKey);
+              {selectedType === 'All' ? (
+                // Year-based grouping for "All" type
+                <div className="space-y-4">
+                  {/* Show All Years Button */}
+                  <button
+                    onClick={() => setShowAllYears(!showAllYears)}
+                    className="w-full px-6 py-3 flex items-center justify-between text-left border-b-2 border-white/[0.2] hover:border-white/[0.4] transition-all group"
+                  >
+                    <span className="text-sm md:text-base font-bold text-white uppercase tracking-wide">All</span>
+                    <span className="text-white/40 text-xs">Show all tracks from all years</span>
+                  </button>
 
-                    return isAlbum ? (
-                      <div key={albumKey}>
-                        {/* Album Header - Compact Tab Style */}
-                        <button
-                          onClick={() => toggleAlbumExpand(albumKey)}
-                          className="w-full px-6 py-4 flex items-center gap-4 border border-white/[0.06] rounded-xl hover:bg-white/[0.06] transition-all bg-white/[0.04] backdrop-blur-md group"
-                        >
-                          {/* Album Cover - Small */}
-                          <img
-                            src={group.artwork}
-                            alt={group.albumName}
-                            className="w-12 h-12 rounded object-cover flex-shrink-0"
+                  {/* All Tracks Display */}
+                  {showAllYears && (
+                    <div className="space-y-3 mb-8">
+                      {filteredTracks
+                        .sort((a, b) => (b.year || 0) - (a.year || 0))
+                        .map((track) => (
+                          <TrackListItem
+                            key={track.id}
+                            track={track}
+                            onPlay={handlePlayTrack}
+                            onClickTrack={setSelectedTrack}
+                            showType={true}
+                            showMetadata={true}
                           />
+                        ))}
+                    </div>
+                  )}
 
-                          {/* Album Info */}
-                          <div className="flex-1 min-w-0">
-                            <p className="font-bold text-white truncate">{group.albumName}</p>
-                            <p className="text-sm text-white/40">{group.tracks.length} track{group.tracks.length !== 1 ? 's' : ''}</p>
-                          </div>
+                  {/* Year Headers with Tracks */}
+                  {Object.entries(tracksByYear)
+                    .sort(([yearA], [yearB]) => parseInt(yearB) - parseInt(yearA))
+                    .map(([yearStr, yearTracks]) => {
+                      const year = parseInt(yearStr);
+                      const isExpanded = expandedYears.has(year);
+                      const lineLength = 30; // Approximate character length for the line
 
-                          {/* Type Badge */}
-                          <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
-                            {group.type}
-                          </span>
+                      return (
+                        <div key={year}>
+                          {/* Year Header with Line */}
+                          <button
+                            onClick={() => toggleYearExpand(year)}
+                            className="w-full flex items-center gap-3 py-3 group transition-all"
+                          >
+                            <span className="text-lg md:text-xl font-bold text-white">{year}</span>
+                            <div className="flex-1 h-px bg-gradient-to-r from-white/40 to-transparent" />
+                            <ChevronDown
+                              size={18}
+                              className={`text-white/40 flex-shrink-0 transition-transform ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </button>
 
-                          {/* Expand Icon */}
-                          <ChevronDown
-                            size={18}
-                            className={`text-white/40 group-hover:text-white/60 transition-transform flex-shrink-0 ${
-                              isExpanded ? 'rotate-180' : ''
-                            }`}
-                          />
-                        </button>
+                          {/* Year Tracks - Expandible */}
+                          {isExpanded && (
+                            <div className="space-y-3 mt-4 pl-4 border-l-2 border-white/[0.1]">
+                              {yearTracks
+                                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                                .map((track) => (
+                                  <div key={track.id}>
+                                    <TrackListItem
+                                      track={track}
+                                      onPlay={handlePlayTrack}
+                                      onClickTrack={setSelectedTrack}
+                                      showType={true}
+                                      showMetadata={true}
+                                    />
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              ) : (
+                // Album/Type-based grouping for other types
+                <div className="space-y-3">
+                  {Object.entries(groupedTracks)
+                    .sort(([, a], [, b]) => {
+                      // Albums sorted by createdAt (newest first)
+                      if ((a.albumName && b.albumName) || (!a.albumName && !b.albumName)) {
+                        return (b.displayTrack.sortOrder ?? b.displayTrack.createdAt) - (a.displayTrack.sortOrder ?? a.displayTrack.createdAt);
+                      }
+                      // Albums appear before single tracks
+                      return a.albumName ? -1 : 1;
+                    })
+                    .map(([albumKey, group]) => {
+                      const isAlbum = group.albumName && (group.type === 'Album' || group.type === 'EP');
+                      const isExpanded = expandedAlbums.has(albumKey);
 
-                        {/* Album Tracks - Expandible Content */}
-                        {isExpanded && (
-                          <div className="mt-4 space-y-2 border-t border-white/[0.06] pt-4">
-                            {group.tracks
-                              .sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0))
-                              .map((track, index) => (
-                                <div key={track.id} className="pl-6 md:pl-8">
-                                  <TrackListItem
-                                    track={track}
-                                    onPlay={handlePlayTrack}
-                                    onClickTrack={setSelectedTrack}
-                                    showType={false}
-                                    showMetadata={true}
-                                    isAlbumTrack={true}
-                                    trackNumber={index + 1}
-                                  />
-                                </div>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      // Single Tracks
-                      <TrackListItem
-                        key={albumKey}
-                        track={group.displayTrack}
-                        onPlay={handlePlayTrack}
-                        onClickTrack={setSelectedTrack}
-                        showType={true}
-                        showMetadata={true}
-                      />
-                    );
-                  })}
-              </div>
+                      return isAlbum ? (
+                        <div key={albumKey}>
+                          {/* Album Header - Compact Tab Style */}
+                          <button
+                            onClick={() => toggleAlbumExpand(albumKey)}
+                            className="w-full px-6 py-4 flex items-center gap-4 border border-white/[0.06] rounded-xl hover:bg-white/[0.06] transition-all bg-white/[0.04] backdrop-blur-md group"
+                          >
+                            {/* Album Cover - Small */}
+                            <img
+                              src={group.artwork}
+                              alt={group.albumName}
+                              className="w-12 h-12 rounded object-cover flex-shrink-0"
+                            />
+
+                            {/* Album Info */}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-white truncate">{group.albumName}</p>
+                              <p className="text-sm text-white/40">{group.tracks.length} track{group.tracks.length !== 1 ? 's' : ''}</p>
+                            </div>
+
+                            {/* Type Badge */}
+                            <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
+                              {group.type}
+                            </span>
+
+                            {/* Expand Icon */}
+                            <ChevronDown
+                              size={18}
+                              className={`text-white/40 group-hover:text-white/60 transition-transform flex-shrink-0 ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </button>
+
+                          {/* Album Tracks - Expandible Content */}
+                          {isExpanded && (
+                            <div className="mt-4 space-y-2 border-t border-white/[0.06] pt-4">
+                              {group.tracks
+                                .sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0))
+                                .map((track, index) => (
+                                  <div key={track.id} className="pl-6 md:pl-8">
+                                    <TrackListItem
+                                      track={track}
+                                      onPlay={handlePlayTrack}
+                                      onClickTrack={setSelectedTrack}
+                                      showType={false}
+                                      showMetadata={true}
+                                      isAlbumTrack={true}
+                                      trackNumber={index + 1}
+                                    />
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        // Single Tracks
+                        <TrackListItem
+                          key={albumKey}
+                          track={group.displayTrack}
+                          onPlay={handlePlayTrack}
+                          onClickTrack={setSelectedTrack}
+                          showType={true}
+                          showMetadata={true}
+                        />
+                      );
+                    })}
+                </div>
+              )}
 
               {/* Discography Footer */}
               <div className="flex items-center justify-between mt-8 pt-4 border-t border-white/[0.1]">
