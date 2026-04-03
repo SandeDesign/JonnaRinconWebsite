@@ -153,7 +153,7 @@ const CataloguePage: React.FC = () => {
       <section className="px-6 md:px-12 py-20">
         <div className="max-w-7xl mx-auto">
           {filteredCategories.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
               {filteredCategories.map((category, index) => {
                 const IconComponent = category.icon;
                 const isHalfWidth = !category.fullWidth;
@@ -163,7 +163,7 @@ const CataloguePage: React.FC = () => {
                   <Link
                     key={category.id}
                     to={category.href}
-                    className={`group relative ${itemHeight} ${isHalfWidth ? 'md:col-span-1' : 'md:col-span-2'}`}
+                    className={`group relative ${itemHeight} ${isHalfWidth ? '' : 'md:col-span-2'}`}
                     style={{
                       animation: `fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.08}s both`,
                     }}
