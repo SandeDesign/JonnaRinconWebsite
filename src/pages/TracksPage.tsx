@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -12,6 +12,7 @@ import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
 import TrackDetailModal from '../components/TrackDetailModal';
 import LoginModal from '../components/LoginModal';
+import { extractUniqueGenres } from '../lib/utils/genreExtractor';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -118,12 +119,12 @@ export default function TracksPage() {
   const [selectedType, setSelectedType] = useState<'Album' | 'EP' | 'Single' | 'Exclusive' | 'All'>('All');
   const [selectedYear, setSelectedYear] = useState<number | 'All'>('All');
   const [selectedCollab, setSelectedCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
-  const [selectedGenre, setSelectedGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
+  const [selectedGenre, setSelectedGenre] = useState<string>('All');
   const [selectedSort, setSelectedSort] = useState<'newest' | 'oldest'>('newest');
   const [selectedRemixType, setSelectedRemixType] = useState<'Remix' | 'Edit' | 'Bootleg' | 'All'>('All');
   const [selectedRemixYear, setSelectedRemixYear] = useState<number | 'All'>('All');
   const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
-  const [selectedRemixGenre, setSelectedRemixGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
+  const [selectedRemixGenre, setSelectedRemixGenre] = useState<string>('All');
   const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
@@ -168,6 +169,15 @@ export default function TracksPage() {
     createdAt: r.createdAt.toMillis?.() || Date.now(),
   }));
 
+  // Helper function to check if a track/remix matches a genre
+  const genreMatches = (genre: string | undefined, selectedGenre: string): boolean => {
+    if (selectedGenre === 'All') return true;
+    if (!genre) return false;
+    // Split comma-separated genres and check if any match
+    const genres = genre.split(',').map(g => g.trim());
+    return genres.includes(selectedGenre);
+  };
+
   const handlePlayTrack = (track: Track) => {
     // Check if user is authenticated
     if (!isAuthenticated) {
@@ -181,7 +191,7 @@ export default function TracksPage() {
         const typeMatch = selectedType === 'All' || t.type === selectedType;
         const yearMatch = selectedYear === 'All' || t.year === selectedYear;
         const collabMatch = selectedCollab === 'All' || t.collab === selectedCollab;
-        const genreMatch = selectedGenre === 'All' || t.genre === selectedGenre;
+        const genreMatch = genreMatches(t.genre, selectedGenre);
         return typeMatch && yearMatch && collabMatch && genreMatch;
       })
       .sort((a, b) => b.createdAt - a.createdAt);
@@ -193,11 +203,21 @@ export default function TracksPage() {
     const typeMatch = selectedType === 'All' || track.type === selectedType;
     const yearMatch = selectedYear === 'All' || track.year === selectedYear;
     const collabMatch = selectedCollab === 'All' || track.collab === selectedCollab;
-    const genreMatch = selectedGenre === 'All' || track.genre === selectedGenre;
+    const genreMatch = genreMatches(track.genre, selectedGenre);
     return typeMatch && yearMatch && collabMatch && genreMatch;
   });
 
   const years = Array.from(new Set(demoTracks.map(t => t.year).filter(Boolean))).sort((a, b) => b - a) as number[];
+
+  // Extract dynamic genres for tracks
+  const trackGenres = useMemo(() => {
+    return extractUniqueGenres(demoTracks, { sort: true });
+  }, [demoTracks]);
+
+  // Extract dynamic genres for remixes
+  const remixGenres = useMemo(() => {
+    return extractUniqueGenres(remixTracks, { sort: true });
+  }, [remixTracks]);
 
   // Group tracks by album for Album/EP types
   const groupedTracks = filteredTracks.reduce((acc, track) => {
@@ -398,9 +418,9 @@ export default function TracksPage() {
                   },
                   {
                     label: 'Genre',
-                    options: ['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'],
+                    options: ['All', ...trackGenres],
                     value: selectedGenre,
-                    onChange: (value) => setSelectedGenre(value as typeof selectedGenre),
+                    onChange: (value) => setSelectedGenre(value),
                   },
                   {
                     label: 'Sort',
@@ -640,7 +660,7 @@ export default function TracksPage() {
                   },
                   {
                     label: 'Genre',
-                    options: ['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'],
+                    options: ['All', ...remixGenres],
                     value: selectedRemixGenre,
                     onChange: (value) => setSelectedRemixGenre(value as typeof selectedRemixGenre),
                   },
@@ -658,7 +678,7 @@ export default function TracksPage() {
                     const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
                     const yearMatch = selectedRemixYear === 'All' || t.year === selectedRemixYear;
                     const collabMatch = selectedRemixCollab === 'All' || t.collab === selectedRemixCollab;
-                    const genreMatch = selectedRemixGenre === 'All' || t.genre === selectedRemixGenre;
+                    const genreMatch = genreMatches(t.genre, selectedRemixGenre);
                     return typeMatch && yearMatch && collabMatch && genreMatch;
                   })
                   .sort((a, b) => {
@@ -678,7 +698,7 @@ export default function TracksPage() {
                             const typeMatch = selectedRemixType === 'All' || r.remixType === selectedRemixType;
                             const yearMatch = selectedRemixYear === 'All' || r.year === selectedRemixYear;
                             const collabMatch = selectedRemixCollab === 'All' || r.collab === selectedRemixCollab;
-                            const genreMatch = selectedRemixGenre === 'All' || r.genre === selectedRemixGenre;
+                            const genreMatch = genreMatches(r.genre, selectedRemixGenre);
                             return typeMatch && yearMatch && collabMatch && genreMatch;
                           })
                           .sort((a, b) => b.createdAt - a.createdAt);

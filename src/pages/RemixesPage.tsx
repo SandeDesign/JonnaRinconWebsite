@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import { Sliders } from 'lucide-react';
@@ -10,6 +10,7 @@ import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
 import TrackDetailModal from '../components/TrackDetailModal';
 import LoginModal from '../components/LoginModal';
+import { extractUniqueGenres } from '../lib/utils/genreExtractor';
 
 // Track data structure
 interface Track {
@@ -47,7 +48,7 @@ export default function RemixesPage() {
   const [selectedRemixType, setSelectedRemixType] = useState<'Remix' | 'Edit' | 'Bootleg' | 'All'>('All');
   const [selectedRemixYear, setSelectedRemixYear] = useState<number | 'All'>('All');
   const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
-  const [selectedRemixGenre, setSelectedRemixGenre] = useState<'EDM' | 'Rap' | 'Lo-Fi' | 'Urban' | 'All'>('All');
+  const [selectedRemixGenre, setSelectedRemixGenre] = useState<string>('All');
   const [selectedRemixSort, setSelectedRemixSort] = useState<'newest' | 'oldest'>('newest');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<RemixTrack | null>(null);
@@ -73,6 +74,15 @@ export default function RemixesPage() {
     createdAt: r.createdAt.toMillis?.() || Date.now(),
   }));
 
+  // Helper function to check if a remix matches a genre (handles comma-separated)
+  const genreMatches = (genre: string | undefined, selectedGenre: string): boolean => {
+    if (selectedGenre === 'All') return true;
+    if (!genre) return false;
+    // Split comma-separated genres and check if any match
+    const genres = genre.split(',').map(g => g.trim());
+    return genres.includes(selectedGenre);
+  };
+
   const handlePlayRemix = (remix: RemixTrack) => {
     // Check if user is authenticated
     if (!isAuthenticated) {
@@ -86,7 +96,7 @@ export default function RemixesPage() {
         const typeMatch = selectedRemixType === 'All' || r.remixType === selectedRemixType;
         const yearMatch = selectedRemixYear === 'All' || r.year === selectedRemixYear;
         const collabMatch = selectedRemixCollab === 'All' || r.collab === selectedRemixCollab;
-        const genreMatch = selectedRemixGenre === 'All' || r.genre === selectedRemixGenre;
+        const genreMatch = genreMatches(r.genre, selectedRemixGenre);
         return typeMatch && yearMatch && collabMatch && genreMatch;
       })
       .sort((a, b) => {
@@ -104,11 +114,16 @@ export default function RemixesPage() {
     const typeMatch = selectedRemixType === 'All' || remix.remixType === selectedRemixType;
     const yearMatch = selectedRemixYear === 'All' || remix.year === selectedRemixYear;
     const collabMatch = selectedRemixCollab === 'All' || remix.collab === selectedRemixCollab;
-    const genreMatch = selectedRemixGenre === 'All' || remix.genre === selectedRemixGenre;
+    const genreMatch = genreMatches(remix.genre, selectedRemixGenre);
     return typeMatch && yearMatch && collabMatch && genreMatch;
   });
 
   const years = Array.from(new Set(remixTracks.map(r => r.year).filter(Boolean))).sort((a, b) => b - a) as number[];
+
+  // Extract dynamic genres for remixes
+  const remixGenres = useMemo(() => {
+    return extractUniqueGenres(remixTracks, { sort: true });
+  }, [remixTracks]);
 
   // Show login modal if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -235,9 +250,9 @@ export default function RemixesPage() {
               },
               {
                 label: 'Genre',
-                options: ['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'],
+                options: ['All', ...remixGenres],
                 value: selectedRemixGenre,
-                onChange: (value) => setSelectedRemixGenre(value as typeof selectedRemixGenre),
+                onChange: (value) => setSelectedRemixGenre(value),
               },
               {
                 label: 'Sort',

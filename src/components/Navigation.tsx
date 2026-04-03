@@ -407,7 +407,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                           animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
                         }}
                       >
-                        <div className="flex items-center justify-between group-hover:translate-x-2 transition-transform duration-300">
+                        <div className={`flex items-center justify-between transition-transform duration-300 ${!item.expanded ? 'group-hover:translate-x-2' : ''}`}>
                           <div>
                             <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
                               {item.label}
@@ -421,8 +421,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       </button>
 
                       {/* Submenu */}
-                      {item.submenu && item.expanded && (
-                        <div className="overflow-hidden transition-all duration-300 ease-out">
+                      {item.submenu && (
+                        <div className={`overflow-hidden transition-all duration-300 ease-out ${item.expanded ? 'max-h-96' : 'max-h-0'}`}>
                           {item.submenu.map((subitem, subIndex) => (
                             <button
                               key={subitem.href}

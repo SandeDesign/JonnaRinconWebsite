@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { beatService } from '../../lib/firebase/services/beatService';
 import { Beat } from '../../lib/firebase/types';
 import ArtistLayout from '../../components/artist/ArtistLayout';
 import { Music, Play, Heart, Download } from 'lucide-react';
+import { extractUniqueGenres } from '../../lib/utils/genreExtractor';
 
 const ArtistShop: React.FC = () => {
+  const [allBeats, setAllBeats] = useState<Beat[]>([]);
   const [beats, setBeats] = useState<Beat[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<{
@@ -16,20 +18,37 @@ const ArtistShop: React.FC = () => {
     sortBy: 'newest',
   });
 
+  // Load all beats on mount
   useEffect(() => {
-    loadBeats();
-  }, [filter]);
+    const loadAllBeats = async () => {
+      try {
+        const published = await beatService.getPublishedBeats();
+        setAllBeats(published);
+      } catch (error) {
+        console.error('Failed to load beats:', error);
+      }
+    };
+    loadAllBeats();
+  }, []);
 
-  const loadBeats = async () => {
+  // Filter beats when filter changes or allBeats updates
+  useEffect(() => {
+    filterAndSortBeats();
+  }, [filter, allBeats]);
+
+  const filterAndSortBeats = () => {
     try {
       setLoading(true);
-      const allBeats = await beatService.getPublishedBeats();
-
       // Filter beats
       let filtered = allBeats;
 
       if (filter.genre) {
-        filtered = filtered.filter((b) => b.genre === filter.genre);
+        // Handle comma-separated genres in the genre field
+        filtered = filtered.filter((b) => {
+          if (!b.genre) return false;
+          const genres = b.genre.split(',').map(g => g.trim());
+          return genres.includes(filter.genre!);
+        });
       }
 
       if (filter.search) {
@@ -59,14 +78,15 @@ const ArtistShop: React.FC = () => {
       });
 
       setBeats(filtered);
-    } catch (error) {
-      console.error('Failed to load beats:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const genres = ['Trap', 'Hip Hop', 'Drill', 'R&B', 'Pop', 'Electronic', 'Afrobeat'];
+  // Extract dynamic genres from all beats
+  const genres = useMemo(() => {
+    return extractUniqueGenres(allBeats, { sort: true });
+  }, [allBeats]);
 
   return (
     <ArtistLayout>

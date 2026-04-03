@@ -56,11 +56,12 @@ const BeatsShop: React.FC = () => {
         });
         setBeats(beatsData);
 
-        // Extract unique genres dynamically
+        // Extract unique genres dynamically and split comma-separated genres
         const uniqueGenres = Array.from(new Set(
           beatsData
             .map(b => b.genre)
             .filter((g): g is string => !!g)
+            .flatMap(g => g.split(',').map(genre => genre.trim()))
         )).sort();
         setDynamicGenres(uniqueGenres);
 
@@ -108,7 +109,11 @@ const BeatsShop: React.FC = () => {
     let result = [...beats];
 
     if (filter.genre) {
-      result = result.filter((b) => b.genre === filter.genre);
+      result = result.filter((b) => {
+        if (!b.genre) return false;
+        const genres = b.genre.split(',').map(g => g.trim());
+        return genres.includes(filter.genre);
+      });
     }
 
     if (filter.search) {
