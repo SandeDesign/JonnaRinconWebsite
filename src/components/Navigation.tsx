@@ -667,8 +667,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
         onClose={() => setIsCartOpen(false)}
         items={cartItems}
         onRemoveItem={(beatId) => {
-          const index = cartItems.findIndex(item => item.beat.id === beatId);
-          if (index !== -1) removeItemByIndex(index);
+          removeFromCart(beatId);
         }}
         onCheckout={() => {
           alert('Proceeding to checkout...');
