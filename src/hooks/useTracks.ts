@@ -12,12 +12,20 @@ export const useTracks = (filters?: {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setError(null);
+    setLoading(true);
+
     const unsubscribe = trackService.subscribeToTracks(
       (tracksData) => {
         setTracks(tracksData);
+        setError(null);
         setLoading(false);
       },
-      filters
+      filters,
+      (error) => {
+        setError(error.message || 'Failed to load tracks');
+        setLoading(false);
+      }
     );
 
     return () => unsubscribe();
@@ -52,16 +60,23 @@ export const useFeaturedTracks = () => {
 export const useTrackGenres = () => {
   const [genres, setGenres] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGenres = async () => {
-      const genresList = await trackService.getGenres();
-      setGenres(genresList);
-      setLoading(false);
+      try {
+        setError(null);
+        const genresList = await trackService.getGenres();
+        setGenres(genresList);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load genres');
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchGenres();
   }, []);
 
-  return { genres, loading };
+  return { genres, loading, error };
 };

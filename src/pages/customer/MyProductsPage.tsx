@@ -11,6 +11,7 @@ export default function MyProductsPage() {
   const { user, isAuthenticated } = useAuth();
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Purchase | null>(null);
   const [sortBy, setSortBy] = useState<'recent' | 'expiry'>('recent');
 
@@ -20,9 +21,11 @@ export default function MyProductsPage() {
     const fetchPurchases = async () => {
       try {
         setLoading(true);
+        setError(null);
         const data = await purchaseService.getUserPurchases(user.uid);
         setPurchases(data);
-      } catch (error) {
+      } catch (error: any) {
+        setError(error.message || 'Failed to fetch purchases');
         console.error('Failed to fetch purchases:', error);
       } finally {
         setLoading(false);
@@ -51,6 +54,15 @@ export default function MyProductsPage() {
           <h1 className="text-4xl font-black text-white mb-2">My Products</h1>
           <p className="text-white/40">Your purchased beats and products</p>
         </div>
+
+        {/* Error Banner */}
+        {error && (
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-red-400 text-sm font-semibold">
+              ⚠️ {error}
+            </p>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

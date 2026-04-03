@@ -8,7 +8,7 @@ import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, Ar
 import { toDirectUrl } from '../../lib/utils/urlUtils';
 
 const TracksPage: React.FC = () => {
-  const { tracks, loading } = useTracks();
+  const { tracks, loading, error } = useTracks();
   const [showModal, setShowModal] = useState(false);
   const [editingTrack, setEditingTrack] = useState<Track | null>(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
@@ -260,6 +260,14 @@ const TracksPage: React.FC = () => {
             <span>Add Track</span>
           </button>
         </div>
+
+        {error && (
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-red-400 text-sm font-semibold">
+              ⚠️ {error}
+            </p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
