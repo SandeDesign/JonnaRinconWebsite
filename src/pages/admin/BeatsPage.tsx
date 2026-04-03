@@ -314,14 +314,11 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
       if (match) {
         const [, title, bpm, key, genres, artist] = match;
 
-        // Get the first genre only for genre field
-        const primaryGenre = genres.split(',')[0].trim();
-
         return {
           title: title.trim(),
           bpm: parseInt(bpm, 10),
           key: key.trim(),
-          genre: primaryGenre,
+          genre: genres.trim(), // Keep all genres
           artist: artist.trim(),
           tags: genres, // Use all genres as tags
         };
@@ -419,9 +416,9 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-2xl w-full my-8">
-        <div className="p-6 border-b border-white/[0.08]">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+      <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-white/[0.08] sticky top-0 bg-white/[0.10] z-10">
           <h2 className="text-2xl font-bold text-white">
             {beat ? 'Edit Beat' : 'Add New Beat'}
           </h2>
@@ -617,7 +614,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
             </label>
           </div>
 
-          <div className="flex items-center justify-end space-x-4 pt-4 border-t border-white/[0.06]">
+          <div className="flex items-center justify-end space-x-4 pt-4 border-t border-white/[0.06] sticky bottom-0 bg-white/[0.10] -mx-6 px-6 py-4">
             <button
               type="button"
               onClick={onClose}
