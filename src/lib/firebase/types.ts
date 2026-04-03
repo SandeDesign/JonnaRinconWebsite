@@ -130,6 +130,50 @@ export interface Beat {
 }
 
 // ============================================
+// PURCHASE/ORDER TYPES
+// ============================================
+
+export interface Purchase {
+  id: string;
+  productNumber: string; // Unique product number (e.g., "PROD-2024-001")
+  userId: string; // UID of buyer
+  beatId: string;
+  beatTitle: string;
+  beatArtist: string;
+  artworkUrl: string;
+  audioUrl: string;
+  stemsUrl?: string;
+
+  // License type purchased
+  licenseType: 'basic' | 'premium' | 'exclusive';
+  price: number;
+
+  // Download links (time-limited, 30 days)
+  downloadLinks: {
+    wav?: {
+      url: string;
+      expiresAt: Timestamp;
+    };
+    stems?: {
+      url: string;
+      expiresAt: Timestamp;
+    };
+    contract?: {
+      url: string;
+      expiresAt: Timestamp;
+    };
+  };
+
+  // Status
+  status: 'pending' | 'completed' | 'expired';
+
+  // Timestamps
+  createdAt: Timestamp;
+  expiresAt: Timestamp;
+  downloadedAt?: Timestamp;
+}
+
+// ============================================
 // TRACK TYPES
 // ============================================
 
