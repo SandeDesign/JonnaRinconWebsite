@@ -4,6 +4,7 @@ export { trackService } from './trackService';
 export { remixService } from './remixService';
 export { editService } from './editService';
 export { orderService } from './orderService';
+export { purchaseService } from './purchaseService';
 export { contentService } from './contentService';
 export { collaborationService } from './collaborationService';
 export { fileUploadService } from './fileUploadService';
