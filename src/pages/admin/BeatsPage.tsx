@@ -595,10 +595,13 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
               <label className="block text-sm font-medium text-white/60 mb-2">Exclusive License Price (€)</label>
               <input
                 type="number"
+                step="0.01"
+                min="0"
                 value={formData.exclusivePrice}
-                onChange={(e) => setFormData({ ...formData, exclusivePrice: parseFloat(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, exclusivePrice: parseFloat(e.target.value) || 0 })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 placeholder="199"
+                required
               />
               <p className="text-xs text-white/40 mt-1">Price for exclusive license (full ownership, unlimited rights)</p>
             </div>

@@ -165,15 +165,9 @@ export default function BeatDetailModal({
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/[0.04] rounded-xl p-3 border border-white/[0.08] text-center">
-                  <p className="text-white/40 text-xs uppercase tracking-wider">Plays</p>
-                  <p className="text-white font-black text-xl mt-1">{beat.plays?.toLocaleString() || '0'}</p>
-                </div>
-                <div className="bg-white/[0.04] rounded-xl p-3 border border-white/[0.08] text-center">
-                  <p className="text-white/40 text-xs uppercase tracking-wider">Type</p>
-                  <p className="text-white font-black text-sm mt-1 uppercase">{beat.beatType || 'Free'}</p>
-                </div>
+              <div className="bg-white/[0.04] rounded-xl p-3 border border-white/[0.08] text-center">
+                <p className="text-white/40 text-xs uppercase tracking-wider">Type</p>
+                <p className="text-white font-black text-sm mt-1 uppercase">{beat.beatType || 'Free'}</p>
               </div>
             </div>
           </div>
