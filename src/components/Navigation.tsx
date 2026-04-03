@@ -24,7 +24,6 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const [authName, setAuthName] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
-  const [expandedShop, setExpandedShop] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, signIn, signUp, signOut } = useAuth();
   const { cartItems, removeFromCart, removeItemByIndex, clearCart } = useCart();
@@ -149,15 +148,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   const navTextColor = useWhiteNav ? 'text-white' : 'text-black';
 
-  const shopSubmenu = [
-    { label: 'Beat Shop', subtitle: 'Browse instrumentals', href: '/shop/beats' },
-    { label: 'Services', subtitle: 'Professional audio services', href: '/shop/services' },
-    { label: 'Merchandise', subtitle: 'Official branded products', href: '/shop/merchandise' },
-    { label: 'Art', subtitle: 'Digital & visual art', href: '/shop/art' },
-  ];
-
-  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: typeof shopSubmenu }[] = [
-    { label: 'SHOP', subtitle: 'Browse our catalog', action: () => { setExpandedShop(!expandedShop); }, submenu: shopSubmenu },
+  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void }[] = [
+    { label: 'SHOP', subtitle: 'Browse our catalog', action: () => { closeMenu(); navigate('/shop'); } },
     { label: 'MY TRACKS', subtitle: 'Full discography', action: () => { closeMenu(); navigate('/tracks'); } },
     { label: 'SOCIALS & CONTACT', subtitle: 'Follow & Get in touch', action: () => { closeMenu(); navigate('/socials'); } },
   ];
@@ -379,55 +371,26 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                 {/* Menu items — clean, modern, spaced */}
                 <div className="flex-1 flex flex-col justify-center -mt-8">
                   {menuItems.map((item, i) => (
-                    <div key={item.label} className={`${i === menuItems.length - 1 && !expandedShop ? 'border-b border-white/[0.04]' : ''}`}>
-                      <button
-                        onClick={item.action}
-                        className="group w-full text-left py-4 md:py-5 cursor-pointer border-b border-white/[0.04]"
-                        style={{
-                          animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
-                        }}
-                      >
-                        <div className="flex items-center justify-between group-hover:translate-x-2 transition-transform duration-300">
-                          <div>
-                            <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
-                              {item.label}
-                            </span>
-                            <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-red-400/60 transition-colors duration-300">
-                              {item.subtitle}
-                            </span>
-                          </div>
-                          <ArrowUpRight className={`w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${expandedShop && item.label === 'SHOP' ? 'rotate-90' : ''}`} />
+                    <button
+                      key={item.label}
+                      onClick={item.action}
+                      className="group w-full text-left py-4 md:py-5 cursor-pointer border-b border-white/[0.04]"
+                      style={{
+                        animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
+                      }}
+                    >
+                      <div className="flex items-center justify-between group-hover:translate-x-2 transition-transform duration-300">
+                        <div>
+                          <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
+                            {item.label}
+                          </span>
+                          <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-red-400/60 transition-colors duration-300">
+                            {item.subtitle}
+                          </span>
                         </div>
-                      </button>
-
-                      {/* Shop Submenu */}
-                      {item.submenu && expandedShop && item.label === 'SHOP' && (
-                        <div className={`bg-white/[0.02] border-b border-white/[0.04] overflow-hidden transition-all duration-300 ease-out ${expandedShop ? 'max-h-96' : 'max-h-0'}`}>
-                          <div className="px-8 md:px-12 py-3">
-                            {item.submenu.map((subitem, subIndex) => (
-                              <button
-                                key={subitem.href}
-                                onClick={() => {
-                                  closeMenu();
-                                  navigate(subitem.href);
-                                }}
-                                className="group w-full text-left py-3 md:py-3.5 cursor-pointer border-b border-white/[0.02] last:border-b-0 hover:translate-x-1.5 transition-transform duration-300"
-                                style={{
-                                  animation: expandedShop && isMenuClosing === false ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
-                                }}
-                              >
-                                <span className="block text-lg md:text-xl font-semibold text-white/70 group-hover:text-white transition-colors duration-300 tracking-tight">
-                                  {subitem.label}
-                                </span>
-                                <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
-                                  {subitem.subtitle}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                        <ArrowUpRight className="w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </div>
+                    </button>
                   ))}
 
                   {/* Auth item */}
