@@ -320,33 +320,11 @@ export default function TracksPage() {
             {heroTitle.display}
           </h1>
 
-          {/* Page Title with pijltjes */}
+          {/* Page Title */}
           <div className="flex flex-col items-center gap-6 mb-8">
-            <div className="flex items-center justify-center gap-6">
-              <button
-                onClick={() => {
-                  const currentIndex = buttons.findIndex(b => b.id === activeTab);
-                  if (currentIndex > 0) setActiveTab(buttons[currentIndex - 1].id);
-                }}
-                disabled={buttons.findIndex(b => b.id === activeTab) === 0}
-                className="text-white/40 hover:text-white hover:scale-125 disabled:opacity-20 disabled:hover:scale-100 transition-all duration-200 p-1 text-2xl"
-              >
-                ◄
-              </button>
-              <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white whitespace-nowrap">
-                {buttons.find(b => b.id === activeTab)?.label}
-              </h2>
-              <button
-                onClick={() => {
-                  const currentIndex = buttons.findIndex(b => b.id === activeTab);
-                  if (currentIndex < buttons.length - 1) setActiveTab(buttons[currentIndex + 1].id);
-                }}
-                disabled={buttons.findIndex(b => b.id === activeTab) === buttons.length - 1}
-                className="text-white/40 hover:text-white hover:scale-125 disabled:opacity-20 disabled:hover:scale-100 transition-all duration-200 p-1 text-2xl"
-              >
-                ►
-              </button>
-            </div>
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white whitespace-nowrap">
+              {buttons.find(b => b.id === activeTab)?.label}
+            </h2>
 
             {/* Filter Button - Mobile only, conditional */}
             {(activeTab === 'tracks' || activeTab === 'remixes') && (
