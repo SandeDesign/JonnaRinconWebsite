@@ -660,7 +660,7 @@ export default function TracksPage() {
                   },
                   {
                     label: 'Genre',
-                    options: ['All', 'EDM', 'Rap', 'Lo-Fi', 'Urban'],
+                    options: ['All', ...remixGenres],
                     value: selectedRemixGenre,
                     onChange: (value) => setSelectedRemixGenre(value as typeof selectedRemixGenre),
                   },
