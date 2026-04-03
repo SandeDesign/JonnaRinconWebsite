@@ -412,29 +412,28 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
                       {/* Submenu */}
                       {item.submenu && item.expanded && (
-                        <div className="bg-white/[0.02] border-b border-white/[0.04] overflow-hidden transition-all duration-300 ease-out">
-                          <div className="px-8 md:px-12 py-3">
-                            {item.submenu.map((subitem, subIndex) => (
-                              <button
-                                key={subitem.href}
-                                onClick={() => {
-                                  closeMenu();
-                                  navigate(subitem.href);
-                                }}
-                                className="group w-full text-left py-3 md:py-3.5 cursor-pointer border-b border-white/[0.02] last:border-b-0 hover:translate-x-1.5 transition-transform duration-300"
-                                style={{
-                                  animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
-                                }}
-                              >
-                                <span className="block text-lg md:text-xl font-semibold text-white/70 group-hover:text-white transition-colors duration-300 tracking-tight">
-                                  {subitem.label}
-                                </span>
-                                <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
-                                  {subitem.subtitle}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
+                        <div className="overflow-hidden transition-all duration-300 ease-out">
+                          {item.submenu.map((subitem, subIndex) => (
+                            <button
+                              key={subitem.href}
+                              onClick={() => {
+                                closeMenu();
+                                navigate(subitem.href);
+                              }}
+                              className="group w-full text-left py-3 md:py-4 cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300"
+                              style={{
+                                animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
+                                paddingLeft: '2rem',
+                              }}
+                            >
+                              <span className="block text-lg md:text-lg font-semibold text-white/60 group-hover:text-white transition-colors duration-300 tracking-tight">
+                                {subitem.label}
+                              </span>
+                              <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
+                                {subitem.subtitle}
+                              </span>
+                            </button>
+                          ))}
                         </div>
                       )}
                     </div>
