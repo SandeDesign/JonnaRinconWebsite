@@ -1,10 +1,10 @@
 import { X, ShoppingCart as CartIcon, Trash2 } from 'lucide-react';
-import { CartItem } from '../lib/types';
+import { Beat } from '../lib/firebase/types';
 
 interface ShoppingCartProps {
   isOpen: boolean;
   onClose: () => void;
-  items: CartItem[];
+  items: Beat[];
   onRemoveItem: (beatId: string) => void;
   onCheckout: () => void;
 }
@@ -16,7 +16,7 @@ export default function ShoppingCart({
   onRemoveItem,
   onCheckout,
 }: ShoppingCartProps) {
-  const total = items.reduce((sum, item) => sum + item.price, 0);
+  const total = items.reduce((sum, item) => sum + (item.licenses.basic?.price || 0), 0);
 
   if (!isOpen) return null;
 
@@ -63,43 +63,46 @@ export default function ShoppingCart({
               </div>
             ) : (
               <div className="space-y-4">
-                {items.map((item, index) => (
-                  <div
-                    key={`${item.beat.id}-${item.license}-${index}`}
-                    className="bg-white/5 border border-white/10 rounded-lg p-5 transition-all hover:bg-white/10"
-                  >
-                    <div className="flex gap-5">
-                      <img
-                        src={item.beat.artwork_url}
-                        alt={item.beat.title}
-                        className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-xl text-white mb-1 truncate">
-                          {item.beat.title}
-                        </h3>
-                        <p className="text-sm text-gray-400 mb-3">
-                          {item.beat.artist} &bull; {item.beat.bpm} BPM &bull; {item.beat.key}
-                        </p>
-                        <div className="flex items-center gap-3">
-                          <span className="px-3 py-1 bg-white/10 rounded-lg text-xs font-semibold text-gray-300 uppercase">
-                            {item.license} License
-                          </span>
-                          <span className="text-2xl font-black text-white">
-                            &euro;{item.price.toFixed(2)}
-                          </span>
+                {items.map((item, index) => {
+                  const basicPrice = item.licenses.basic?.price || 0;
+                  return (
+                    <div
+                      key={`${item.id}-${index}`}
+                      className="bg-white/5 border border-white/10 rounded-lg p-5 transition-all hover:bg-white/10"
+                    >
+                      <div className="flex gap-5">
+                        <img
+                          src={item.artworkUrl || '/JEIGHTENESIS.jpg'}
+                          alt={item.title}
+                          className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-xl text-white mb-1 truncate">
+                            {item.title}
+                          </h3>
+                          <p className="text-sm text-gray-400 mb-3">
+                            {item.artist} &bull; {item.bpm} BPM &bull; {item.key}
+                          </p>
+                          <div className="flex items-center gap-3">
+                            <span className="px-3 py-1 bg-white/10 rounded-lg text-xs font-semibold text-gray-300 uppercase">
+                              Basic License
+                            </span>
+                            <span className="text-2xl font-black text-white">
+                              &euro;{basicPrice.toFixed(2)}
+                            </span>
+                          </div>
                         </div>
+                        <button
+                          onClick={() => onRemoveItem(item.id)}
+                          className="p-3 hover:bg-red-600/20 rounded-xl transition-all group flex-shrink-0"
+                          title="Remove from cart"
+                        >
+                          <Trash2 className="w-5 h-5 text-gray-400 group-hover:text-red-400 transition-colors" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => onRemoveItem(item.beat.id)}
-                        className="p-3 hover:bg-red-600/20 rounded-xl transition-all group flex-shrink-0"
-                        title="Remove from cart"
-                      >
-                        <Trash2 className="w-5 h-5 text-gray-400 group-hover:text-red-400 transition-colors" />
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
