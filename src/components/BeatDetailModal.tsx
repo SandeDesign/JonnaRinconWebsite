@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { X, ShoppingCart, Play, Pause, Music, Zap, Download, Globe, Disc3, TrendingUp, BadgeCheck } from 'lucide-react';
+import { X, ShoppingCart, Play, Pause, Music, Zap, Download, Globe, Disc3, TrendingUp, BadgeCheck, Users, Headphones, Radio, Copy, Check } from 'lucide-react';
 import { Beat } from '../lib/firebase/types';
 import { getCurrentTrack } from './GlobalAudioPlayer';
 
@@ -23,6 +23,7 @@ export default function BeatDetailModal({
   cartCount,
 }: BeatDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [copiedSlug, setCopiedSlug] = React.useState(false);
 
   // Handle click outside
   useEffect(() => {
@@ -58,15 +59,27 @@ export default function BeatDetailModal({
   const exclusiveLicense = beat.licenses?.exclusive;
   const hasStems = beat.stemsUrl && beat.stemsUrl.length > 0;
 
+  const handleCopySlug = () => {
+    navigator.clipboard.writeText(beat.slug || beat.id);
+    setCopiedSlug(true);
+    setTimeout(() => setCopiedSlug(false), 2000);
+  };
+
   // Premium features for exclusive license
   const premiumFeatures = [
-    { icon: Globe, text: 'Commercial Use Rights' },
-    { icon: Download, text: 'Full Ownership' },
-    { icon: Music, text: 'Unlimited Downloads' },
-    { icon: Zap, text: 'Exclusive License' },
-    { icon: Disc3, text: 'Stems Available', available: hasStems },
-    { icon: TrendingUp, text: 'Distribution Rights' },
+    { icon: Globe, text: 'Commercial Use Rights', description: 'Use in monetized content' },
+    { icon: Download, text: 'Full Ownership', description: 'Exclusive rights to the beat' },
+    { icon: Music, text: 'Unlimited Downloads', description: 'Download as many times as needed' },
+    { icon: Disc3, text: 'Stems Available', description: 'Individual track stems included', available: hasStems },
+    { icon: TrendingUp, text: 'Distribution Rights', description: 'Distribute across all platforms' },
+    { icon: Users, text: 'No Attribution Required', description: 'Use without crediting producer' },
   ];
+
+  // License type badge color
+  const getLicenseColor = () => {
+    if (exclusiveLicense) return 'from-orange-500/30 to-amber-500/30 border-orange-400/40';
+    return 'from-purple-500/20 to-pink-500/20 border-purple-400/30';
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 max-h-screen overflow-y-auto">
@@ -211,25 +224,53 @@ export default function BeatDetailModal({
               </div>
             )}
 
+            {/* Producer Info Card */}
+            <div className="mb-6 p-4 bg-white/[0.06] border border-white/[0.1] rounded-xl">
+              <p className="text-white/40 text-xs uppercase tracking-wider font-semibold mb-2">Producer</p>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/30 to-pink-500/30 border border-purple-400/20 flex items-center justify-center flex-shrink-0">
+                  <Headphones size={20} className="text-purple-300" />
+                </div>
+                <div>
+                  <p className="text-white font-bold text-sm">{beat.artist}</p>
+                  <p className="text-white/40 text-xs">Producer & Engineer</p>
+                </div>
+              </div>
+            </div>
+
             {/* Premium Features */}
             {exclusiveLicense && (
               <div className="mb-6">
-                <p className="text-white/40 text-xs uppercase tracking-wider font-semibold mb-3">What You Get</p>
-                <div className="grid grid-cols-2 gap-3">
+                <p className="text-white/40 text-xs uppercase tracking-wider font-semibold mb-3">Premium Features Included</p>
+                <div className="grid grid-cols-1 gap-2.5">
                   {premiumFeatures.map((feature, idx) => {
                     const Icon = feature.icon;
                     const isAvailable = feature.available !== false;
                     return (
                       <div
                         key={idx}
-                        className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border transition-all ${
+                        className={`flex items-start gap-3 px-4 py-3 rounded-lg border transition-all ${
                           isAvailable
-                            ? 'bg-white/[0.05] border-white/[0.1] text-white/80'
-                            : 'bg-white/[0.02] border-white/[0.05] text-white/30'
+                            ? 'bg-gradient-to-r from-white/[0.08] to-white/[0.04] border-white/[0.1] hover:border-white/[0.15]'
+                            : 'bg-white/[0.02] border-white/[0.05]'
                         }`}
                       >
-                        <Icon size={16} className={isAvailable ? 'text-purple-400' : 'text-white/20'} />
-                        <span className="text-xs font-semibold uppercase tracking-wider">{feature.text}</span>
+                        <Icon size={18} className={isAvailable ? 'text-orange-300 flex-shrink-0 mt-0.5' : 'text-white/20 flex-shrink-0 mt-0.5'} />
+                        <div className="flex-1">
+                          <p className={`text-xs font-bold uppercase tracking-wider ${
+                            isAvailable ? 'text-white' : 'text-white/40'
+                          }`}>
+                            {feature.text}
+                          </p>
+                          <p className={`text-xs mt-0.5 ${
+                            isAvailable ? 'text-white/50' : 'text-white/30'
+                          }`}>
+                            {feature.description}
+                          </p>
+                        </div>
+                        {isAvailable && (
+                          <Check size={16} className="text-green-400 flex-shrink-0 mt-0.5" />
+                        )}
                       </div>
                     );
                   })}
@@ -237,67 +278,168 @@ export default function BeatDetailModal({
               </div>
             )}
 
+            {/* Beat Stats */}
+            <div className="mb-6 grid grid-cols-3 gap-2.5">
+              <div className="bg-white/[0.06] border border-white/[0.1] rounded-lg p-3 text-center">
+                <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Total Plays</p>
+                <p className="text-white font-black text-lg">{beat.plays?.toLocaleString() || '0'}</p>
+              </div>
+              <div className="bg-white/[0.06] border border-white/[0.1] rounded-lg p-3 text-center">
+                <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Downloads</p>
+                <p className="text-white font-black text-lg">{beat.downloads || '0'}</p>
+              </div>
+              <div className="bg-white/[0.06] border border-white/[0.1] rounded-lg p-3 text-center">
+                <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-1">Likes</p>
+                <p className="text-white font-black text-lg">{beat.likes || '0'}</p>
+              </div>
+            </div>
+
             {/* Stems Info */}
             {hasStems && (
-              <div className="mb-6 p-3 bg-blue-500/10 border border-blue-400/20 rounded-lg flex items-start gap-2">
-                <Disc3 size={16} className="text-blue-300 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-xs font-bold text-blue-200 uppercase tracking-wider">Stems Available</p>
-                  <p className="text-xs text-blue-200/60">Individual stems included with this beat</p>
+              <div className="mb-6 p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-400/20 rounded-lg flex items-start gap-3">
+                <Disc3 size={18} className="text-cyan-300 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs font-bold text-cyan-200 uppercase tracking-wider">Premium: Stems Available</p>
+                  <p className="text-xs text-cyan-200/70 mt-0.5">Individual drum, bass, melody, and other track stems are included for professional remixing and production use.</p>
                 </div>
               </div>
             )}
 
+            {/* Beat Details Grid */}
+            <div className="mb-6 grid grid-cols-2 gap-3">
+              {beat.bpm && (
+                <div className="bg-white/[0.06] border border-white/[0.1] rounded-lg p-3">
+                  <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold">Tempo</p>
+                  <p className="text-white font-bold text-sm mt-1">{beat.bpm} BPM</p>
+                </div>
+              )}
+              {beat.key && (
+                <div className="bg-white/[0.06] border border-white/[0.1] rounded-lg p-3">
+                  <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold">Key</p>
+                  <p className="text-white font-bold text-sm mt-1">{beat.key}</p>
+                </div>
+              )}
+              {beat.genre && (
+                <div className="bg-white/[0.06] border border-white/[0.1] rounded-lg p-3">
+                  <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold">Genre</p>
+                  <p className="text-white font-bold text-sm mt-1 capitalize">{beat.genre}</p>
+                </div>
+              )}
+              {beat.beatType && (
+                <div className="bg-white/[0.06] border border-white/[0.1] rounded-lg p-3">
+                  <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold">License Type</p>
+                  <p className="text-white font-bold text-sm mt-1 uppercase">{beat.beatType}</p>
+                </div>
+              )}
+            </div>
+
             {/* License Description */}
             {exclusiveLicense && (
-              <div className="mb-8 p-4 bg-gradient-to-br from-white/[0.08] to-white/[0.04] border border-white/[0.1] rounded-xl">
-                <p className="text-white/50 text-xs leading-relaxed">
-                  <span className="font-bold text-white">Exclusive License includes:</span> Full ownership rights, unlimited commercial use, distribution across all platforms, unlimited downloads, and the ability to modify the beat as needed.
-                </p>
+              <div className="mb-8">
+                <div className="p-4 bg-gradient-to-br from-orange-500/10 to-amber-500/10 border border-orange-400/20 rounded-xl">
+                  <p className="text-white/80 text-xs leading-relaxed font-medium">
+                    <span className="font-bold text-orange-200 block mb-2">Exclusive License Rights:</span>
+                    This exclusive license grants you complete ownership and all rights to use, modify, distribute, and monetize this beat across any platform without attribution requirements. You get unlimited downloads and can use it in unlimited projects.
+                  </p>
+                </div>
+
+                <div className="mt-4 p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
+                  <p className="text-white/40 text-[10px] uppercase tracking-wider font-bold mb-2">What You Can Do:</p>
+                  <ul className="space-y-1.5 text-xs text-white/60">
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
+                      <span>Use in commercial projects and monetized content</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
+                      <span>Modify and remix the beat to fit your needs</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
+                      <span>Distribute across streaming platforms (Spotify, Apple Music, etc.)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
+                      <span>No attribution required (mention us if you want!)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 flex-shrink-0"></span>
+                      <span>Use in unlimited projects</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             )}
 
             {/* Price & Action */}
-            <div className="space-y-4 border-t border-white/[0.1] pt-6">
+            <div className="border-t border-white/[0.1] pt-6">
               {exclusiveLicense && (
-                <div>
-                  <p className="text-white/40 text-xs uppercase tracking-wider font-semibold mb-2">Price</p>
-                  <div className="flex items-end gap-2">
-                    <p className="text-5xl font-black bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-                      €{exclusiveLicense.price.toFixed(0)}
-                    </p>
-                    <p className="text-white/40 text-sm mb-2">One-time purchase</p>
+                <div className="mb-6 p-5 bg-gradient-to-br from-red-500/10 to-orange-500/10 border border-red-400/20 rounded-xl">
+                  <p className="text-white/40 text-xs uppercase tracking-wider font-bold mb-3">Exclusive Price</p>
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <p className="text-5xl font-black bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent leading-none">
+                        €{exclusiveLicense.price.toFixed(0)}
+                      </p>
+                      <p className="text-white/50 text-xs mt-2">One-time purchase • Lifetime access</p>
+                    </div>
                   </div>
                 </div>
               )}
 
-              <button
-                onClick={() => {
-                  onAddToCart(beat);
-                  onClose();
-                }}
-                className="w-full px-6 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-xl font-bold uppercase tracking-wider transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50 flex items-center justify-center gap-2 group"
-              >
-                <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
-                <span>Add to Cart ({cartCount})</span>
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    onAddToCart(beat);
+                    onClose();
+                  }}
+                  className="w-full px-6 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-xl font-bold uppercase tracking-wider transition-all duration-200 hover:shadow-lg hover:shadow-red-500/50 flex items-center justify-center gap-2 group shadow-lg"
+                >
+                  <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
+                  <span>Add to Cart</span>
+                  {cartCount > 0 && (
+                    <span className="ml-2 px-2.5 py-0.5 bg-black/40 rounded-full text-xs font-bold">
+                      {cartCount} item{cartCount > 1 ? 's' : ''}
+                    </span>
+                  )}
+                </button>
 
-              <button
-                onClick={() => onPlay(beat)}
-                className="w-full px-6 py-3 border border-white/[0.2] hover:bg-white/[0.08] text-white rounded-xl font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2"
-              >
-                {isCurrentBeatPlaying ? (
-                  <>
-                    <Pause size={18} className="fill-current" />
-                    <span>Now Playing</span>
-                  </>
-                ) : (
-                  <>
-                    <Play size={18} className="fill-current" />
-                    <span>Preview Beat</span>
-                  </>
+                <button
+                  onClick={() => onPlay(beat)}
+                  className="w-full px-6 py-3.5 border border-white/[0.3] hover:border-white/[0.5] hover:bg-white/[0.1] text-white rounded-xl font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 group"
+                >
+                  {isCurrentBeatPlaying ? (
+                    <>
+                      <Pause size={18} className="fill-current text-red-400" />
+                      <span>Now Playing</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play size={18} className="fill-current ml-0.5" />
+                      <span>Preview Beat</span>
+                    </>
+                  )}
+                </button>
+
+                {beat.slug && (
+                  <button
+                    onClick={handleCopySlug}
+                    className="w-full px-6 py-2.5 bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.1] text-white/70 hover:text-white rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    {copiedSlug ? (
+                      <>
+                        <Check size={14} className="text-green-400" />
+                        <span>Beat ID Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={14} />
+                        <span>Copy Beat ID</span>
+                      </>
+                    )}
+                  </button>
                 )}
-              </button>
+              </div>
             </div>
           </div>
         </div>

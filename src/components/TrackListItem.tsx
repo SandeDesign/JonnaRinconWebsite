@@ -98,36 +98,46 @@ export default function TrackListItem({
           </div>
         )}
 
-        {/* Metadata */}
-        {showMetadata && (
-          <div className="flex flex-wrap gap-2 text-[10px] text-white/30 uppercase tracking-wider mt-1">
-            {showYear && (
-              <>
-                <span>{track.year}</span>
-                <span>•</span>
-              </>
-            )}
-            {showGenre && (
-              <>
-                <span>{track.genre}</span>
-                <span>•</span>
-              </>
-            )}
-            {showBPM && track.bpm && (
-              <>
-                <span>{track.bpm} BPM</span>
-                <span>•</span>
-              </>
-            )}
-            <span>{track.duration}</span>
-            {track.remixType && (
-              <>
-                <span>•</span>
-                <span className="text-red-400">{track.remixType}</span>
-              </>
-            )}
-          </div>
-        )}
+        {/* Metadata Row 2 - Additional Beat/Track Info */}
+        <div className="flex flex-wrap gap-3 text-[10px] text-white/50 uppercase tracking-wider mt-1">
+          {showYear && track.year && (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-white/30">•</span>
+              <span>{track.year}</span>
+            </span>
+          )}
+          {showGenre && track.genre && (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-white/30">•</span>
+              <span className="text-purple-300 font-semibold">{track.genre}</span>
+            </span>
+          )}
+          {showBPM && track.bpm && (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-white/30">•</span>
+              <span className="text-cyan-300 font-semibold">{track.bpm} BPM</span>
+            </span>
+          )}
+          {track.key && (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-white/30">•</span>
+              <span className="text-amber-300 font-semibold">{track.key}</span>
+            </span>
+          )}
+          {track.duration && (
+            <span className="inline-flex items-center gap-1">
+              <span className="text-white/30">•</span>
+              <span>{track.duration}</span>
+            </span>
+          )}
+          {track.remixType && (
+            <span className="inline-flex items-center gap-1 ml-auto">
+              <span className="text-red-400 font-bold bg-red-500/20 px-2 py-0.5 rounded">
+                {track.remixType}
+              </span>
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Play Button */}

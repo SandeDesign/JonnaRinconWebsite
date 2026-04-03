@@ -53,6 +53,7 @@ interface Track {
   collab?: 'Solo' | 'Collab';
   genre?: string;
   bpm?: number;
+  key?: string;          // Musical key (e.g., C Major, A Minor)
   duration?: string;
   album?: string;        // Album name for grouping
   trackNumber?: number;  // Track position in album
@@ -143,6 +144,7 @@ export default function TracksPage() {
     duration: '0:00',
     genre: t.genre,
     bpm: t.bpm,
+    key: t.key,
     year: t.year,
     type: t.type,
     collab: t.collab,
