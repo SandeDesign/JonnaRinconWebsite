@@ -282,6 +282,13 @@ export default function TracksPage() {
     setExpandedYears(newExpanded);
   };
 
+  // Clear expanded albums/years when filters change
+  useEffect(() => {
+    setExpandedAlbums(new Set());
+    setExpandedYears(new Set());
+    setShowAllYears(false);
+  }, [selectedType, selectedYear, selectedGenre, selectedCollab]);
+
   // Group tracks by year when type is 'All'
   const tracksByYear = selectedType === 'All'
     ? filteredTracks.reduce((acc, track) => {
