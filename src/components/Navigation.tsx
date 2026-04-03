@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { X, ShoppingBag, ArrowUpRight, Music, LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useCart } from '../hooks/useCart';
+import ShoppingCart from './ShoppingCart';
 import { getCurrentTrack, togglePlayerOpen } from './GlobalAudioPlayer';
 
 interface NavigationProps {
@@ -22,7 +24,10 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const [authName, setAuthName] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [expandedShop, setExpandedShop] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, signIn, signUp, signOut } = useAuth();
+  const { cartItems, removeFromCart, removeItemByIndex, clearCart } = useCart();
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -144,8 +149,15 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   const navTextColor = useWhiteNav ? 'text-white' : 'text-black';
 
-  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void }[] = [
-    { label: 'BEAT SHOP', subtitle: 'Browse instrumentals', action: () => { closeMenu(); navigate('/shop/beats'); } },
+  const shopSubmenu = [
+    { label: 'Beat Shop', subtitle: 'Browse instrumentals', href: '/shop/beats' },
+    { label: 'Services', subtitle: 'Professional audio services', href: '/shop/services' },
+    { label: 'Merchandise', subtitle: 'Official branded products', href: '/shop/merchandise' },
+    { label: 'Art', subtitle: 'Digital & visual art', href: '/shop/art' },
+  ];
+
+  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: typeof shopSubmenu }[] = [
+    { label: 'SHOP', subtitle: 'Browse our catalog', action: () => { setExpandedShop(!expandedShop); }, submenu: shopSubmenu },
     { label: 'MY TRACKS', subtitle: 'Full discography', action: () => { closeMenu(); navigate('/tracks'); } },
     { label: 'SOCIALS & CONTACT', subtitle: 'Follow & Get in touch', action: () => { closeMenu(); navigate('/socials'); } },
   ];
@@ -184,14 +196,14 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
         {/* Right side — Cart + MENU */}
         <div className="flex items-center gap-5 md:gap-6">
           {/* Cart icon */}
-          {onCartClick && cartItemCount > 0 && (
+          {cartItems.length > 0 && (
             <button
-              onClick={onCartClick}
+              onClick={() => setIsCartOpen(true)}
               className={`relative transition-all duration-300 hover:scale-110 cursor-pointer ${navTextColor}`}
             >
               <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-600 rounded-full flex items-center justify-center text-[9px] font-bold text-white">
-                {cartItemCount}
+                {cartItems.length}
               </span>
             </button>
           )}
@@ -367,26 +379,55 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                 {/* Menu items — clean, modern, spaced */}
                 <div className="flex-1 flex flex-col justify-center -mt-8">
                   {menuItems.map((item, i) => (
-                    <button
-                      key={item.label}
-                      onClick={item.action}
-                      className="group w-full text-left py-4 md:py-5 cursor-pointer border-b border-white/[0.04] last:border-b-0"
-                      style={{
-                        animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
-                      }}
-                    >
-                      <div className="flex items-center justify-between group-hover:translate-x-2 transition-transform duration-300">
-                        <div>
-                          <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
-                            {item.label}
-                          </span>
-                          <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-red-400/60 transition-colors duration-300">
-                            {item.subtitle}
-                          </span>
+                    <div key={item.label} className={`${i === menuItems.length - 1 && !expandedShop ? 'border-b border-white/[0.04]' : ''}`}>
+                      <button
+                        onClick={item.action}
+                        className="group w-full text-left py-4 md:py-5 cursor-pointer border-b border-white/[0.04]"
+                        style={{
+                          animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
+                        }}
+                      >
+                        <div className="flex items-center justify-between group-hover:translate-x-2 transition-transform duration-300">
+                          <div>
+                            <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
+                              {item.label}
+                            </span>
+                            <span className="block text-xs text-white/25 mt-1 uppercase tracking-widest font-medium group-hover:text-red-400/60 transition-colors duration-300">
+                              {item.subtitle}
+                            </span>
+                          </div>
+                          <ArrowUpRight className={`w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${expandedShop && item.label === 'SHOP' ? 'rotate-90' : ''}`} />
                         </div>
-                        <ArrowUpRight className="w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      </div>
-                    </button>
+                      </button>
+
+                      {/* Shop Submenu */}
+                      {item.submenu && expandedShop && item.label === 'SHOP' && (
+                        <div className={`bg-white/[0.02] border-b border-white/[0.04] overflow-hidden transition-all duration-300 ease-out ${expandedShop ? 'max-h-96' : 'max-h-0'}`}>
+                          <div className="px-8 md:px-12 py-3">
+                            {item.submenu.map((subitem, subIndex) => (
+                              <button
+                                key={subitem.href}
+                                onClick={() => {
+                                  closeMenu();
+                                  navigate(subitem.href);
+                                }}
+                                className="group w-full text-left py-3 md:py-3.5 cursor-pointer border-b border-white/[0.02] last:border-b-0 hover:translate-x-1.5 transition-transform duration-300"
+                                style={{
+                                  animation: expandedShop && isMenuClosing === false ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
+                                }}
+                              >
+                                <span className="block text-lg md:text-xl font-semibold text-white/70 group-hover:text-white transition-colors duration-300 tracking-tight">
+                                  {subitem.label}
+                                </span>
+                                <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
+                                  {subitem.subtitle}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ))}
 
                   {/* Auth item */}
@@ -437,19 +478,19 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       {/* Cart Button */}
                       <button
                         onClick={() => {
-                          if (onCartClick) {
-                            handleCartClick();
+                          closeMenu();
+                          if (cartItems.length > 0) {
+                            setIsCartOpen(true);
                           } else {
-                            closeMenu();
-                            navigate('/shop/beats');
+                            navigate('/shop');
                           }
                         }}
                         className="relative transition-all hover:scale-110 duration-300 cursor-pointer"
                       >
                         <ShoppingBag className="w-5 h-5 text-white/30 hover:text-white transition-colors" strokeWidth={1.5} />
-                        {cartItemCount > 0 && (
+                        {cartItems.length > 0 && (
                           <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-600 rounded-full flex items-center justify-center text-[8px] font-bold text-white">
-                            {cartItemCount}
+                            {cartItems.length}
                           </span>
                         )}
                       </button>
@@ -562,6 +603,23 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           }
         }
       `}</style>
+
+      {/* Shopping Cart Modal */}
+      <ShoppingCart
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        items={cartItems}
+        onRemoveItem={(beatId) => {
+          const index = cartItems.findIndex(item => item.beat.id === beatId);
+          if (index !== -1) removeItemByIndex(index);
+        }}
+        onCheckout={() => {
+          alert('Proceeding to checkout...');
+          // TODO: Implement checkout flow
+          clearCart();
+          setIsCartOpen(false);
+        }}
+      />
     </nav>
   );
 }

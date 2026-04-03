@@ -151,7 +151,7 @@ export default function Hero() {
           style={{ opacity: done ? 1 : 0 }}
         >
           <a
-            href="#beats"
+            href="/shop"
             className="px-8 py-3.5 bg-white text-black font-bold text-sm uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 hover:scale-105 active:scale-95 text-center min-w-[180px]"
           >
             Browse Beats
