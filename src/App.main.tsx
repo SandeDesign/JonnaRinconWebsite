@@ -11,6 +11,9 @@ import RegisterPage from './pages/RegisterPage';
 
 // Shop pages (public)
 import BeatsShop from './pages/shop/BeatsPage';
+import ServicesShop from './pages/shop/ServicesPage';
+import MerchandiseShop from './pages/shop/MerchandisePage';
+import ArtShop from './pages/shop/ArtPage';
 
 // Standalone pages (public)
 import TracksPage from './pages/TracksPage';
@@ -30,6 +33,7 @@ import CustomerCollaborations from './pages/customer/CollaborationsPage';
 import CustomerRequestArtistRole from './pages/customer/RequestArtistRolePage';
 import CustomerShop from './pages/customer/ShopPage';
 import CustomerChat from './pages/customer/ChatPage';
+import CustomerMyProducts from './pages/customer/MyProductsPage';
 
 // Artist pages (protected - artist role)
 import ArtistDashboard from './pages/artist/DashboardPage';
@@ -75,6 +79,9 @@ const MainApp: React.FC = () => {
 
           {/* Shop Routes (public) */}
           <Route path="/shop/beats" element={<BeatsShop />} />
+          <Route path="/shop/services" element={<ServicesShop />} />
+          <Route path="/shop/merchandise" element={<MerchandiseShop />} />
+          <Route path="/shop/art" element={<ArtShop />} />
 
           {/* Standalone Pages (public) */}
           <Route path="/tracks" element={<TracksPage />} />
@@ -161,6 +168,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['user']}>
                 <CustomerRequestArtistRole />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/my-products"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <CustomerMyProducts />
               </ProtectedRoute>
             }
           />
