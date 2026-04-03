@@ -100,27 +100,40 @@ export default function GlobalAudioPlayer() {
   return (
     <>
       <div className="fixed bottom-0 left-0 right-0 z-40 jonna-audio-player">
-        <AudioPlayer
-          ref={audioRef}
-          autoPlay
-          src={store.currentTrack.audioUrl || ''}
-          onClickNext={handleNext}
-          onClickPrevious={handlePrevious}
-          showFilledVolume
-          layout="horizontal-reverse"
-          volume={1.0}
-          customAdditionalControls={[
-            <button
-              key="close-player"
-              onClick={handleClose}
-              className="jonna-close-button text-white/40 hover:text-white/70 transition-colors"
-              title="Close player"
-              aria-label="Close player"
-            >
-              <X size={20} />
-            </button>,
-          ]}
-        />
+        <div className="flex gap-4 h-full">
+          {store.currentTrack?.coverArt && (
+            <div className="hidden md:flex items-center px-4">
+              <img
+                src={store.currentTrack.coverArt}
+                alt={store.currentTrack.title}
+                className="w-24 h-24 rounded-lg object-cover shadow-lg"
+              />
+            </div>
+          )}
+          <div className="flex-1">
+            <AudioPlayer
+              ref={audioRef}
+              autoPlay
+              src={store.currentTrack.audioUrl || ''}
+              onClickNext={handleNext}
+              onClickPrevious={handlePrevious}
+              showFilledVolume
+              layout="horizontal-reverse"
+              volume={1.0}
+              customAdditionalControls={[
+                <button
+                  key="close-player"
+                  onClick={handleClose}
+                  className="jonna-close-button text-white/40 hover:text-white/70 transition-colors"
+                  title="Close player"
+                  aria-label="Close player"
+                >
+                  <X size={20} />
+                </button>,
+              ]}
+            />
+          </div>
+        </div>
       </div>
       <style>{`
         body {
