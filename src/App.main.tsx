@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
 // Shop pages (public)
+import ShopHub from './pages/shop/ShopPage';
 import BeatsShop from './pages/shop/BeatsPage';
 import ServicesShop from './pages/shop/ServicesPage';
 import MerchandiseShop from './pages/shop/MerchandisePage';
@@ -78,6 +79,7 @@ const MainApp: React.FC = () => {
           <Route path="/register" element={<RegisterPage />} />
 
           {/* Shop Routes (public) */}
+          <Route path="/shop" element={<ShopHub />} />
           <Route path="/shop/beats" element={<BeatsShop />} />
           <Route path="/shop/services" element={<ServicesShop />} />
           <Route path="/shop/merchandise" element={<MerchandiseShop />} />
