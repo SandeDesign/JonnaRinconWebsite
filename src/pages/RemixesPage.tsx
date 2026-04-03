@@ -11,6 +11,7 @@ import FilterModal from '../components/FilterModal';
 import TrackDetailModal from '../components/TrackDetailModal';
 import LoginModal from '../components/LoginModal';
 import { extractUniqueGenres } from '../lib/utils/genreExtractor';
+import { remixService } from '../lib/firebase/services';
 
 // Track data structure
 interface Track {
@@ -83,11 +84,18 @@ export default function RemixesPage() {
     return genres.includes(selectedGenre);
   };
 
-  const handlePlayRemix = (remix: RemixTrack) => {
+  const handlePlayRemix = async (remix: RemixTrack) => {
     // Check if user is authenticated
     if (!isAuthenticated) {
       setIsLoginModalOpen(true);
       return;
+    }
+
+    // Increment plays counter for this remix
+    if (remix.id) {
+      await remixService.incrementPlays(remix.id).catch((error) => {
+        console.error('Failed to increment remix plays:', error);
+      });
     }
 
     // Filter remixes matching current filters and create queue

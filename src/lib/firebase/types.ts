@@ -64,9 +64,9 @@ export type ManagerPermission =
 // BEAT / PRODUCT TYPES
 // ============================================
 
-export type LicenseType = 'basic' | 'premium' | 'exclusive';
+export type LicenseType = 'exclusive';
 
-export type BeatType = 'free' | 'basic' | 'premium' | 'exclusive';
+export type BeatType = 'free' | 'exclusive';
 
 export interface LicenseDetails {
   type: LicenseType;
@@ -97,8 +97,6 @@ export interface Beat {
 
   // Licensing
   licenses: {
-    basic?: LicenseDetails;
-    premium?: LicenseDetails;
     exclusive?: LicenseDetails;
   };
 
@@ -145,7 +143,7 @@ export interface Purchase {
   stemsUrl?: string;
 
   // License type purchased
-  licenseType: 'basic' | 'premium' | 'exclusive';
+  licenseType: 'exclusive';
   price: number;
 
   // Download links (time-limited, 30 days)
@@ -203,8 +201,6 @@ export interface Track {
 
   // Licensing
   licenses: {
-    basic?: LicenseDetails;
-    premium?: LicenseDetails;
     exclusive?: LicenseDetails;
   };
 
@@ -262,8 +258,6 @@ export interface Remix {
 
   // Licensing
   licenses: {
-    basic?: LicenseDetails;
-    premium?: LicenseDetails;
     exclusive?: LicenseDetails;
   };
 
@@ -321,8 +315,6 @@ export interface Edit {
 
   // Licensing
   licenses: {
-    basic?: LicenseDetails;
-    premium?: LicenseDetails;
     exclusive?: LicenseDetails;
   };
 

@@ -13,6 +13,7 @@ import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestor
 import { db } from '../../lib/firebase/config';
 import FilterModal from '../../components/FilterModal';
 import BeatDetailModal from '../../components/BeatDetailModal';
+import { beatService } from '../../lib/firebase/services';
 
 const BeatsShop: React.FC = () => {
   const [beats, setBeats] = useState<Beat[]>([]);
@@ -81,7 +82,14 @@ const BeatsShop: React.FC = () => {
     return currentTrack?.id === beatId;
   };
 
-  const handlePlayBeat = (beat: Beat) => {
+  const handlePlayBeat = async (beat: Beat) => {
+    // Increment plays counter for this beat
+    if (beat.id) {
+      await beatService.incrementPlays(beat.id).catch((error) => {
+        console.error('Failed to increment beat plays:', error);
+      });
+    }
+
     // Convert beat to track format
     const trackBeat = {
       id: beat.id,

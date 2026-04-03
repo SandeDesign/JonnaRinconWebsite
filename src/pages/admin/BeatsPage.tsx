@@ -197,12 +197,10 @@ const BeatsPage: React.FC = () => {
                               ? 'bg-green-500/20 text-green-400'
                               : beat.beatType === 'exclusive'
                               ? 'bg-orange-500/20 text-orange-400'
-                              : beat.beatType === 'premium'
-                              ? 'bg-purple-500/20 text-purple-400'
-                              : 'bg-blue-500/20 text-blue-400'
+                              : 'bg-gray-500/20 text-gray-400'
                           }`}
                         >
-                          {beat.beatType || 'basic'}
+                          {beat.beatType || 'free'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-white/60">{beat.plays}</td>
@@ -290,13 +288,33 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
     stemsUrl: beat?.stemsUrl || '',
     slug: beat?.slug || '',
     status: beat?.status || 'draft',
-    beatType: beat?.beatType || 'basic',
+    beatType: beat?.beatType || 'free',
     featured: beat?.featured || false,
-    basicPrice: beat?.licenses?.basic?.price || 29,
-    premiumPrice: beat?.licenses?.premium?.price || 49,
     exclusivePrice: beat?.licenses?.exclusive?.price || 199,
   });
   const [saving, setSaving] = useState(false);
+
+  // Update form data when beat prop changes (for editing)
+  React.useEffect(() => {
+    if (beat) {
+      setFormData({
+        title: beat.title || '',
+        artist: beat.artist || 'Jonna Rincon',
+        bpm: beat.bpm || 120,
+        key: beat.key || '',
+        genre: beat.genre || '',
+        tags: beat.tags?.join(', ') || '',
+        audioUrl: beat.audioUrl || '',
+        artworkUrl: beat.artworkUrl || '',
+        stemsUrl: beat.stemsUrl || '',
+        slug: beat.slug || '',
+        status: beat.status || 'draft',
+        beatType: beat.beatType || 'free',
+        featured: beat.featured || false,
+        exclusivePrice: beat.licenses?.exclusive?.price || 199,
+      });
+    }
+  }, [beat]);
 
   // Parse beat filename and auto-fill fields
   const parseAudioUrl = (url: string) => {
@@ -369,24 +387,6 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
         featured: formData.featured,
         trending: false,
         licenses: {
-          basic: {
-            type: 'basic' as const,
-            price: formData.basicPrice,
-            features: ['MP3 Download', 'Non-exclusive rights', 'Personal use'],
-            downloads: 1,
-            streams: 10000,
-            videos: 1,
-            distribution: false,
-          },
-          premium: {
-            type: 'premium' as const,
-            price: formData.premiumPrice,
-            features: ['WAV + MP3', 'Non-exclusive rights', 'Commercial use', 'Unlimited streams'],
-            downloads: 5,
-            streams: 1000000,
-            videos: 5,
-            distribution: true,
-          },
           exclusive: {
             type: 'exclusive' as const,
             price: formData.exclusivePrice,
@@ -504,12 +504,10 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               >
                 <option value="free">Free</option>
-                <option value="basic">Basic</option>
-                <option value="premium">Premium</option>
                 <option value="exclusive">Exclusive</option>
               </select>
               <p className="text-xs text-white/40 mt-1">
-                Classify this beat (free beats have no cost, basic/premium/exclusive are paid tiers)
+                Classify this beat (free beats have no cost, exclusive beats require purchase)
               </p>
             </div>
           </div>
@@ -570,35 +568,17 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
             <p className="text-xs text-white/30 mt-1">Link to a zip file containing the beat stems (optional)</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Basic Price (€)</label>
-              <input
-                type="number"
-                value={formData.basicPrice}
-                onChange={(e) => setFormData({ ...formData, basicPrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Premium Price (€)</label>
-              <input
-                type="number"
-                value={formData.premiumPrice}
-                onChange={(e) => setFormData({ ...formData, premiumPrice: parseFloat(e.target.value) })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Exclusive Price (€)</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Exclusive License Price (€)</label>
               <input
                 type="number"
                 value={formData.exclusivePrice}
                 onChange={(e) => setFormData({ ...formData, exclusivePrice: parseFloat(e.target.value) })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="199"
               />
+              <p className="text-xs text-white/40 mt-1">Price for exclusive license (full ownership, unlimited rights)</p>
             </div>
           </div>
 
