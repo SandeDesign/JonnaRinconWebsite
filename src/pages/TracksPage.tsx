@@ -128,8 +128,6 @@ export default function TracksPage() {
   const [selectedRemixCollab, setSelectedRemixCollab] = useState<'Solo' | 'Collab' | 'All'>('All');
   const [selectedRemixGenre, setSelectedRemixGenre] = useState<string>('All');
   const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
-  const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
-  const [showAllYears, setShowAllYears] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -272,34 +270,10 @@ export default function TracksPage() {
     setExpandedAlbums(newExpanded);
   };
 
-  const toggleYearExpand = (year: number) => {
-    const newExpanded = new Set(expandedYears);
-    if (newExpanded.has(year)) {
-      newExpanded.delete(year);
-    } else {
-      newExpanded.add(year);
-    }
-    setExpandedYears(newExpanded);
-  };
-
-  // Clear expanded albums/years when filters change
+  // Clear expanded albums when filters change
   useEffect(() => {
     setExpandedAlbums(new Set());
-    setExpandedYears(new Set());
-    setShowAllYears(false);
   }, [selectedType, selectedYear, selectedGenre, selectedCollab]);
-
-  // Group tracks by year when type is 'All'
-  const tracksByYear = selectedType === 'All'
-    ? filteredTracks.reduce((acc, track) => {
-        const year = track.year || new Date().getFullYear();
-        if (!acc[year]) {
-          acc[year] = [];
-        }
-        acc[year].push(track);
-        return acc;
-      }, {} as Record<number, Track[]>)
-    : {};
 
   // Show login modal if not authenticated
   if (!isLoading && !isAuthenticated) {
@@ -477,86 +451,8 @@ export default function TracksPage() {
           {/* Mixed Track List / Album Groups OR Year Groups */}
           <section className="px-6 md:px-12 py-2 md:py-4">
             <div className="max-w-7xl mx-auto">
-              {selectedType === 'All' ? (
-                // Year-based grouping for "All" type
-                <div className="space-y-4">
-                  {/* Show All Years Button */}
-                  <button
-                    onClick={() => setShowAllYears(!showAllYears)}
-                    className="w-full px-6 py-3 flex items-center justify-between text-left border-b-2 border-white/[0.2] hover:border-white/[0.4] transition-all group"
-                  >
-                    <span className="text-sm md:text-base font-bold text-white uppercase tracking-wide">All</span>
-                    <span className="text-white/40 text-xs">Show all tracks from all years</span>
-                  </button>
-
-                  {/* All Tracks Display */}
-                  {showAllYears && (
-                    <div className="space-y-3 mb-8">
-                      {filteredTracks
-                        .sort((a, b) => (b.year || 0) - (a.year || 0))
-                        .map((track) => (
-                          <TrackListItem
-                            key={track.id}
-                            track={track}
-                            onPlay={handlePlayTrack}
-                            onClickTrack={setSelectedTrack}
-                            showType={true}
-                            showMetadata={true}
-                          />
-                        ))}
-                    </div>
-                  )}
-
-                  {/* Year Headers with Tracks */}
-                  {Object.entries(tracksByYear)
-                    .sort(([yearA], [yearB]) => parseInt(yearB) - parseInt(yearA))
-                    .map(([yearStr, yearTracks]) => {
-                      const year = parseInt(yearStr);
-                      const isExpanded = expandedYears.has(year);
-                      const lineLength = 30; // Approximate character length for the line
-
-                      return (
-                        <div key={year}>
-                          {/* Year Header with Line */}
-                          <button
-                            onClick={() => toggleYearExpand(year)}
-                            className="w-full flex items-center gap-3 py-3 group transition-all"
-                          >
-                            <span className="text-lg md:text-xl font-bold text-white">{year}</span>
-                            <div className="flex-1 h-px bg-gradient-to-r from-white/40 to-transparent" />
-                            <ChevronDown
-                              size={18}
-                              className={`text-white/40 flex-shrink-0 transition-transform ${
-                                isExpanded ? 'rotate-180' : ''
-                              }`}
-                            />
-                          </button>
-
-                          {/* Year Tracks - Expandible */}
-                          {isExpanded && (
-                            <div className="space-y-3 mt-4 pl-4 border-l-2 border-white/[0.1]">
-                              {yearTracks
-                                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
-                                .map((track) => (
-                                  <div key={track.id}>
-                                    <TrackListItem
-                                      track={track}
-                                      onPlay={handlePlayTrack}
-                                      onClickTrack={setSelectedTrack}
-                                      showType={true}
-                                      showMetadata={true}
-                                    />
-                                  </div>
-                                ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-              ) : (
-                // Album/Type-based grouping for other types
-                <div className="space-y-3">
+              {/* Album/Type-based grouping for all types */}
+              <div className="space-y-3">
                   {Object.entries(groupedTracks)
                     .sort(([, a], [, b]) => {
                       // Albums sorted by createdAt (newest first)
@@ -637,8 +533,7 @@ export default function TracksPage() {
                         />
                       );
                     })}
-                </div>
-              )}
+              </div>
 
               {/* Discography Footer */}
               <div className="flex items-center justify-between mt-8 pt-4 border-t border-white/[0.1]">
