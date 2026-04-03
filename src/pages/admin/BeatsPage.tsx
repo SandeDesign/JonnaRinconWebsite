@@ -298,6 +298,59 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
   });
   const [saving, setSaving] = useState(false);
 
+  // Parse beat filename and auto-fill fields
+  const parseAudioUrl = (url: string) => {
+    try {
+      // Extract filename from URL (everything after the last /)
+      const filename = url.split('/').pop() || '';
+      // Remove file extension
+      const nameWithoutExt = filename.replace(/\.[^/.]+$/, '');
+
+      // Pattern: <titel> - <bpm> - <key> - <genre,genre2> - prod by <artiest>
+      // Example: GUITTARA - 118 BPM - A Minor - Urban, Rap - Prod by Jonna Rincon
+      const regex = /^(.+?)\s*-\s*(\d+)\s*BPM\s*-\s*([A-Za-z#♭\s]+)\s*-\s*(.+?)\s*-\s*(?:prod|Prod)\s+by\s+(.+)$/i;
+      const match = nameWithoutExt.match(regex);
+
+      if (match) {
+        const [, title, bpm, key, genres, artist] = match;
+
+        // Get the first genre only for genre field
+        const primaryGenre = genres.split(',')[0].trim();
+
+        return {
+          title: title.trim(),
+          bpm: parseInt(bpm, 10),
+          key: key.trim(),
+          genre: primaryGenre,
+          artist: artist.trim(),
+          tags: genres, // Use all genres as tags
+        };
+      }
+    } catch (error) {
+      console.error('Error parsing audio URL:', error);
+    }
+
+    return null;
+  };
+
+  const handleAudioUrlChange = (url: string) => {
+    setFormData({ ...formData, audioUrl: url });
+
+    // Auto-fill fields if parsing succeeds
+    const parsed = parseAudioUrl(url);
+    if (parsed) {
+      setFormData(prev => ({
+        ...prev,
+        title: parsed.title,
+        bpm: parsed.bpm,
+        key: parsed.key,
+        genre: parsed.genre,
+        artist: parsed.artist,
+        tags: parsed.tags,
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -494,7 +547,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
               label="Audio URL"
               name="audioUrl"
               type="audio"
-              onChange={(url) => setFormData({ ...formData, audioUrl: url })}
+              onChange={handleAudioUrlChange}
               defaultValue={formData.audioUrl}
               placeholder="https://nextcloud.example.com/index.php/s/abc123"
             />
