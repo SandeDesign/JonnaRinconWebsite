@@ -150,7 +150,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   const menuItems: { label: string; subtitle: string; href?: string; action?: () => void }[] = [
     { label: 'SHOP', subtitle: 'Browse our catalog', action: () => { closeMenu(); navigate('/shop'); } },
-    { label: 'MY TRACKS', subtitle: 'Full discography', action: () => { closeMenu(); navigate('/tracks'); } },
+    { label: 'CATALOGUE', subtitle: 'Browse all content', action: () => { closeMenu(); navigate('/catalogue'); } },
     { label: 'SOCIALS & CONTACT', subtitle: 'Follow & Get in touch', action: () => { closeMenu(); navigate('/socials'); } },
   ];
 

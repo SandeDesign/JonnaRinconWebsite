@@ -22,6 +22,11 @@ import ReleasesPage from './pages/ReleasesPage';
 import DownloadGatePage from './pages/DownloadGatePage';
 import SocialsPage from './pages/SocialsPage';
 import ContactPage from './pages/ContactPage';
+import CataloguePage from './pages/CataloguePage';
+import DJSetsPage from './pages/DJSetsPage';
+import ProductionsPage from './pages/ProductionsPage';
+import SpotifyPage from './pages/SpotifyPage';
+import SupportPage from './pages/SupportPage';
 
 // Customer pages (protected - user role)
 import CustomerDashboard from './pages/customer/DashboardPage';
@@ -86,7 +91,13 @@ const MainApp: React.FC = () => {
           <Route path="/shop/art" element={<ArtShop />} />
 
           {/* Standalone Pages (public) */}
+          <Route path="/catalogue" element={<CataloguePage />} />
           <Route path="/tracks" element={<TracksPage />} />
+          <Route path="/remixes" element={<TracksPage />} />
+          <Route path="/dj-sets" element={<DJSetsPage />} />
+          <Route path="/productions" element={<ProductionsPage />} />
+          <Route path="/spotify" element={<SpotifyPage />} />
+          <Route path="/support" element={<SupportPage />} />
           <Route path="/releases" element={<ReleasesPage />} />
           <Route path="/download/:trackId" element={<DownloadGatePage />} />
           <Route path="/socials" element={<SocialsPage />} />
