@@ -111,7 +111,7 @@ const skills = [
 
 export default function TracksPage() {
   const { isAuthenticated, isLoading } = useAuth();
-  const { tracks: firebaseTracks, loading: tracksLoading } = useTracks({ status: 'published' });
+  const { tracks: firebaseTracks, loading: tracksLoading, error: tracksError } = useTracks({ status: 'published' });
   const { remixes: firebaseRemixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const [activeTab, setActiveTab] = useState('tracks');
   const [currentPlaylist, setCurrentPlaylist] = useState(0);
@@ -356,6 +356,15 @@ export default function TracksPage() {
           {/* Track Content - No separate filter button */}
           <section className="px-6 md:px-12 py-4">
             <div className="max-w-7xl mx-auto">
+
+              {/* Error Banner */}
+              {tracksError && (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl mb-6">
+                  <p className="text-red-400 text-sm font-semibold">
+                    ⚠️ {tracksError}
+                  </p>
+                </div>
+              )}
 
               {/* Filter Modal */}
               <FilterModal

@@ -243,7 +243,8 @@ class TrackService {
       status?: Track['status'];
       featured?: boolean;
       genre?: string;
-    }
+    },
+    onError?: (error: Error) => void
   ): Unsubscribe {
     const constraints: QueryConstraint[] = [orderBy('createdAt', 'desc')];
 
@@ -272,6 +273,9 @@ class TrackService {
       },
       (error) => {
         console.error('Subscribe to tracks error:', error);
+        if (onError) {
+          onError(error as Error);
+        }
       }
     );
   }
