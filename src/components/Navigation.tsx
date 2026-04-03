@@ -31,18 +31,27 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const { cartItems, removeFromCart, removeItemByIndex, clearCart } = useCart();
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
+  const scrollPositionRef = useRef(0);
 
   // Lock scroll when menu is open - improved state management
   useEffect(() => {
     const updateBodyScroll = () => {
       if (isMenuOpen && !isMenuClosing) {
+        // Save current scroll position before locking
+        scrollPositionRef.current = window.scrollY;
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
         document.body.style.width = '100%';
+        document.body.style.top = `-${scrollPositionRef.current}px`;
       } else {
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.width = '';
+        document.body.style.top = '';
+        // Restore scroll position
+        if (scrollPositionRef.current > 0) {
+          window.scrollTo(0, scrollPositionRef.current);
+        }
       }
     };
 
@@ -53,6 +62,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
+      document.body.style.top = '';
     };
   }, [isMenuOpen, isMenuClosing, onMenuToggle]);
 
