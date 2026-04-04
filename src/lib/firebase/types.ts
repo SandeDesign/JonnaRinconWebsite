@@ -288,6 +288,7 @@ export interface Track {
   // Status
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
+  isFree: boolean;
 
   // Stats
   plays: number;
@@ -345,6 +346,7 @@ export interface Remix {
   // Status
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
+  isFree: boolean;
 
   // Stats
   plays: number;
@@ -402,6 +404,7 @@ export interface Edit {
   // Status
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
+  isFree: boolean;
 
   // Stats
   plays: number;
@@ -460,6 +463,7 @@ export interface Order {
   subtotal: number;
   tax: number;
   discount: number;
+  discountCode?: string;
   total: number;
   currency: string;
 
@@ -712,12 +716,97 @@ export interface SiteSettings {
   phpProxyUrl: string;
   phpProxyApiKey?: string;
 
+  // Background
+  backgroundImageUrl?: string;
+
   // Maintenance
   maintenanceMode: boolean;
   maintenanceMessage?: string;
 
   updatedAt: Timestamp;
   updatedBy: string;
+}
+
+// ============================================
+// DISCOUNT CODE TYPES
+// ============================================
+
+export type DiscountType = 'percentage' | 'fixed';
+export type DiscountUsageLimit = 'unlimited' | 'limited';
+
+export interface DiscountCode {
+  id: string;
+  code: string; // Unique discount code string
+  description?: string;
+
+  // Discount details
+  discountType: DiscountType;
+  discountValue: number; // Percentage (0-100) or fixed amount
+
+  // Applicable products
+  applicableTo: 'all' | 'specific';
+  productIds?: string[]; // Beat/Track/Remix IDs this code applies to
+  productTypes?: ('beat' | 'track' | 'remix' | 'edit')[]; // Product categories
+
+  // Usage limits
+  usageLimit: DiscountUsageLimit;
+  maxUses?: number; // Max total uses (if limited)
+  usedCount: number; // How many times it's been used
+  maxUsesPerUser?: number; // Max uses per individual user
+
+  // Validity
+  isActive: boolean;
+  hasDeadline: boolean;
+  startDate?: Timestamp;
+  endDate?: Timestamp;
+
+  // Minimum requirements
+  minimumOrderAmount?: number;
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+
+  // Creator
+  createdBy: string;
+}
+
+// ============================================
+// SITE BACKGROUND TYPES
+// ============================================
+
+export interface SiteBackground {
+  id: string;
+  imageUrl: string;
+  name?: string;
+  isActive: boolean;
+  createdAt: Timestamp;
+  createdBy: string;
+}
+
+// ============================================
+// FOLLOW GATE TYPES
+// ============================================
+
+export interface FollowGateCompletion {
+  id: string;
+  userId: string;
+  productId: string;
+  productType: 'remix' | 'track' | 'edit' | 'beat';
+  productTitle: string;
+  artworkUrl?: string;
+  audioUrl?: string;
+
+  // Follow gate steps completed
+  followedInstagram: boolean;
+  followedSpotify: boolean;
+
+  // Download access
+  downloadUrl?: string;
+  expiresAt: Timestamp; // 30-day expiry
+
+  // Timestamps
+  createdAt: Timestamp;
 }
 
 // ============================================

@@ -222,6 +222,7 @@ const EditFormModal: React.FC<EditFormModalProps> = ({ edit, onClose, onSave }) 
     slug: edit?.slug || '',
     status: edit?.status || 'draft',
     featured: edit?.featured || false,
+    isFree: edit?.isFree || false,
     basicPrice: edit?.licenses?.basic?.price || 5,
     premiumPrice: edit?.licenses?.premium?.price || 12,
     exclusivePrice: edit?.licenses?.exclusive?.price || 59,
@@ -247,6 +248,7 @@ const EditFormModal: React.FC<EditFormModalProps> = ({ edit, onClose, onSave }) 
         slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, '-'),
         status: formData.status,
         featured: formData.featured,
+        isFree: formData.isFree,
         licenses: {
           basic: {
             type: 'basic' as const,
@@ -481,6 +483,21 @@ const EditFormModal: React.FC<EditFormModalProps> = ({ edit, onClose, onSave }) 
                 className="w-4 h-4"
               />
               <span className="text-sm text-white/60">Featured Edit</span>
+            </label>
+          </div>
+
+          <div>
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.isFree}
+                onChange={(e) => setFormData({ ...formData, isFree: e.target.checked })}
+                className="w-5 h-5 rounded bg-white/[0.06] border-white/[0.08] text-purple-500 focus:ring-purple-500"
+              />
+              <div>
+                <span className="text-sm font-medium text-white/60">Free Download</span>
+                <p className="text-xs text-white/30">Enable to offer this track as a free download</p>
+              </div>
             </label>
           </div>
 

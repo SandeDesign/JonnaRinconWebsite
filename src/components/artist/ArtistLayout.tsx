@@ -38,7 +38,7 @@ const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children }) => {
     { name: 'Request Collab', href: '/artist/request-collab', icon: Plus },
     { name: 'Shop Beats', href: '/artist/beats', icon: Music },
     { name: 'My Purchases', href: '/artist/orders', icon: ShoppingCart },
-    { name: 'Free Downloads', href: '/artist/free-downloads', icon: Download },
+    { name: 'My Products', href: '/artist/my-products', icon: Download },
     { name: 'Chat', href: '/artist/chat', icon: MessageSquare },
     { name: 'Profile', href: '/artist/profile', icon: User },
     { name: 'Settings', href: '/artist/settings', icon: Settings },

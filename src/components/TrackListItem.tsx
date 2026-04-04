@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, Music } from 'lucide-react';
+import { Play, Pause, Music, ShoppingCart } from 'lucide-react';
 import { setCurrentTrack, getCurrentTrack } from './GlobalAudioPlayer';
 import { getPlayButtonContainerClass, getRowHighlightClass } from '../lib/utils/buttonStyles';
 
@@ -7,6 +7,7 @@ interface TrackListItemProps {
   track: any;
   onPlay?: (track: any) => void;
   onClickTrack?: (track: any) => void;
+  onBuy?: (track: any) => void;
   allTracks?: any[];
   showType?: boolean;
   showYear?: boolean;
@@ -21,6 +22,7 @@ export default function TrackListItem({
   track,
   onPlay,
   onClickTrack,
+  onBuy,
   allTracks = [],
   showType = true,
   showYear = true,
@@ -139,6 +141,17 @@ export default function TrackListItem({
           )}
         </div>
       </div>
+
+      {/* Buy Button */}
+      {onBuy && track.licenses?.exclusive?.price && !track.isFree && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onBuy(track); }}
+          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-110"
+          title={`Add to cart - €${track.licenses.exclusive.price.toFixed(2)}`}
+        >
+          <ShoppingCart size={16} className="text-white" />
+        </button>
+      )}
 
       {/* Play Button */}
       <button

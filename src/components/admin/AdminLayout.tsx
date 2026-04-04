@@ -18,6 +18,8 @@ import {
   Home,
   Zap,
   Palette,
+  Image,
+  Ticket,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -47,8 +49,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: 'Collaborations', href: '/admin/collaborations', icon: Handshake },
     { name: 'Collab Requests', href: '/admin/collab-requests', icon: Clock },
     { name: 'Artist Requests', href: '/admin/artist-role-requests', icon: UserPlus },
+    { name: 'Discount Codes', href: '/admin/discount-codes', icon: Ticket },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Chat', href: '/admin/chat', icon: MessageSquare },
+    { name: 'Background', href: '/admin/background', icon: Image },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 

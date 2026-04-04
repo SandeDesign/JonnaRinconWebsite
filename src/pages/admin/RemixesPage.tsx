@@ -266,6 +266,7 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
     slug: remix?.slug || '',
     status: remix?.status || 'draft',
     featured: remix?.featured || false,
+    isFree: remix?.isFree || false,
   });
   const [saving, setSaving] = useState(false);
 
@@ -289,6 +290,7 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
         slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, '-'),
         status: formData.status,
         featured: formData.featured,
+        isFree: formData.isFree,
         licenses: {
           basic: {
             type: 'basic' as const,
@@ -495,6 +497,21 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 className="w-4 h-4"
               />
               <span className="text-sm text-white/60">Featured Remix</span>
+            </label>
+          </div>
+
+          <div>
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.isFree}
+                onChange={(e) => setFormData({ ...formData, isFree: e.target.checked })}
+                className="w-5 h-5 rounded bg-white/[0.06] border-white/[0.08] text-purple-500 focus:ring-purple-500"
+              />
+              <div>
+                <span className="text-sm font-medium text-white/60">Free Download</span>
+                <p className="text-xs text-white/30">Enable to offer this track as a free download</p>
+              </div>
             </label>
           </div>
 
