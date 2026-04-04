@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { X, Play, Pause } from 'lucide-react';
+import { X, Play, Pause, ShoppingCart } from 'lucide-react';
 import { getCurrentTrack } from './GlobalAudioPlayer';
 
 interface Track {
@@ -13,6 +13,8 @@ interface Track {
   year?: number;
   type?: string;
   bpm?: number;
+  isFree?: boolean;
+  licenses?: { exclusive?: { price: number } };
 }
 
 interface TrackDetailModalProps {
@@ -21,6 +23,7 @@ interface TrackDetailModalProps {
   onClose: () => void;
   isPlaying: boolean;
   onPlay: (track: Track) => void;
+  onBuy?: (track: Track) => void;
 }
 
 export default function TrackDetailModal({
@@ -29,6 +32,7 @@ export default function TrackDetailModal({
   onClose,
   isPlaying,
   onPlay,
+  onBuy,
 }: TrackDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -168,6 +172,17 @@ export default function TrackDetailModal({
                 </p>
               </div>
             </div>
+
+            {/* Buy Button - for non-free tracks with a price */}
+            {onBuy && track && !track.isFree && track.licenses?.exclusive?.price && (
+              <button
+                onClick={() => onBuy(track)}
+                className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-bold uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mb-3"
+              >
+                <ShoppingCart size={18} />
+                <span>Add to Cart &mdash; &euro;{track.licenses.exclusive.price.toFixed(2)}</span>
+              </button>
+            )}
 
             {/* Close Button for Mobile */}
             <button

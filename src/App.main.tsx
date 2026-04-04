@@ -137,14 +137,7 @@ const MainApp: React.FC = () => {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/customer/free-downloads"
-            element={
-              <ProtectedRoute allowedRoles={['user']}>
-                <CustomerFreeDownloads />
-              </ProtectedRoute>
-            }
-          />
+          {/* Free Downloads removed - merged into My Products */}
           <Route
             path="/customer/profile"
             element={
@@ -235,14 +228,7 @@ const MainApp: React.FC = () => {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/artist/free-downloads"
-            element={
-              <ProtectedRoute allowedRoles={['artist']}>
-                <ArtistFreeDownloads />
-              </ProtectedRoute>
-            }
-          />
+          {/* Free Downloads removed - merged into My Products */}
           <Route
             path="/artist/chat"
             element={

@@ -11,3 +11,5 @@ export { contentService } from './contentService';
 export { collaborationService } from './collaborationService';
 export { fileUploadService } from './fileUploadService';
 export { settingsService } from './settingsService';
+export { discountCodeService } from './discountCodeService';
+export { followGateService } from './followGateService';

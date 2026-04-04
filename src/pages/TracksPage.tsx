@@ -14,6 +14,7 @@ import TrackDetailModal from '../components/TrackDetailModal';
 import LoginModal from '../components/LoginModal';
 import { extractUniqueGenres } from '../lib/utils/genreExtractor';
 import { trackService } from '../lib/firebase/services';
+import { useCart } from '../hooks/useCart';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -58,6 +59,8 @@ interface Track {
   album?: string;        // Album name for grouping
   trackNumber?: number;  // Track position in album
   sortOrder?: number;    // Sort order for single tracks/beats/remixes
+  isFree?: boolean;
+  licenses?: { exclusive?: { price: number } };
 }
 
 // Remix Track Interface
@@ -114,6 +117,7 @@ const skills = [
 
 export default function TracksPage() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { addTrackToCart } = useCart();
   const { tracks: firebaseTracks, loading: tracksLoading, error: tracksError } = useTracks({ status: 'published' });
   const { remixes: firebaseRemixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const [activeTab, setActiveTab] = useState('tracks');
@@ -152,6 +156,8 @@ export default function TracksPage() {
     coverArt: t.artworkUrl,
     coverArtUrl: t.artworkUrl,
     createdAt: t.createdAt.toMillis?.() || Date.now(),
+    isFree: t.isFree,
+    licenses: t.licenses,
   }));
 
   // Convert Firebase remixes to local RemixTrack interface
@@ -207,6 +213,14 @@ export default function TracksPage() {
       .sort((a, b) => b.createdAt - a.createdAt);
 
     setCurrentTrack(track, queue);
+  };
+
+  const handleBuyTrack = (track: Track) => {
+    // Convert local Track to the firebase Track shape expected by addTrackToCart
+    const firebaseTrack = firebaseTracks.find(t => t.id === track.id);
+    if (firebaseTrack) {
+      addTrackToCart(firebaseTrack);
+    }
   };
 
   const filteredTracks = demoTracks.filter(track => {
@@ -311,6 +325,7 @@ export default function TracksPage() {
         onClose={() => setSelectedTrack(null)}
         isPlaying={selectedTrack ? false : false}
         onPlay={handlePlayTrack}
+        onBuy={handleBuyTrack}
       />
 
       {/* Hero Section - Compact */}
@@ -489,6 +504,7 @@ export default function TracksPage() {
                                       track={track}
                                       onPlay={handlePlayTrack}
                                       onClickTrack={setSelectedTrack}
+                                      onBuy={handleBuyTrack}
                                       showType={false}
                                       showMetadata={true}
                                       isAlbumTrack={true}
@@ -506,6 +522,7 @@ export default function TracksPage() {
                           track={group.displayTrack}
                           onPlay={handlePlayTrack}
                           onClickTrack={setSelectedTrack}
+                          onBuy={handleBuyTrack}
                           showType={true}
                           showMetadata={true}
                         />
