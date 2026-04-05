@@ -246,8 +246,7 @@ class DiscountCodeService {
 
   subscribeToDiscountCodes(callback: (codes: DiscountCode[]) => void): Unsubscribe {
     const q = query(
-      collection(db, this.collectionName),
-      orderBy('createdAt', 'desc')
+      collection(db, this.collectionName)
     );
 
     return onSnapshot(
@@ -257,6 +256,8 @@ class DiscountCodeService {
         querySnapshot.forEach((doc) => {
           codes.push({ id: doc.id, ...doc.data() } as DiscountCode);
         });
+        // Sort client-side instead
+        codes.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
         callback(codes);
       },
       (error) => {
