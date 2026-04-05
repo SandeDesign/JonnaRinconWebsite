@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useDiscountCodes } from '../../hooks/useDiscountCodes';
-import { discountCodeService } from '../../lib/firebase/services/discountCodeService';
+import { discountCodeService } from '../../lib/firebase/services';
 import { DiscountCode, DiscountType, DiscountUsageLimit } from '../../lib/firebase/types';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';

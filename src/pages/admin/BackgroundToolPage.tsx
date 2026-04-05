@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { settingsService } from '../../lib/firebase/services/settingsService';
+import { settingsService } from '../../lib/firebase/services';
 import { SiteBackground } from '../../lib/firebase/types';
 import { Trash2, Check, Image } from 'lucide-react';
 
