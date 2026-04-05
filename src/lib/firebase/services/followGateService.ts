@@ -133,11 +133,12 @@ class FollowGateService {
   subscribeToUserCompletions(userId: string, callback: (completions: FollowGateCompletion[]) => void): Unsubscribe {
     const q = query(
       collection(db, this.collectionName),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', userId)
     );
     return onSnapshot(q, (snapshot) => {
       const completions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FollowGateCompletion));
+      // Sort client-side instead
+      completions.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
       callback(completions);
     });
   }

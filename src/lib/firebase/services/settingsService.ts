@@ -351,8 +351,7 @@ class SettingsService {
 
   subscribeToBackgrounds(callback: (backgrounds: SiteBackground[]) => void): () => void {
     const q = query(
-      collection(db, this.backgroundsCollection),
-      orderBy('createdAt', 'desc')
+      collection(db, this.backgroundsCollection)
     );
 
     const unsubscribe = onSnapshot(
@@ -362,6 +361,8 @@ class SettingsService {
           id: doc.id,
           ...doc.data(),
         })) as SiteBackground[];
+        // Sort client-side instead
+        backgrounds.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
         callback(backgrounds);
       },
       (error) => {
