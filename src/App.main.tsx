@@ -66,6 +66,8 @@ import AdminCollabRequests from './pages/admin/CollabRequestsPage';
 import AdminArtistRoleRequests from './pages/admin/ArtistRoleRequestsPage';
 import AdminSettings from './pages/admin/SettingsPage';
 import AdminChat from './pages/admin/ChatPage';
+import AdminBackground from './pages/admin/BackgroundToolPage';
+import AdminDiscountCodes from './pages/admin/DiscountCodesPage';
 
 // Manager pages (protected - manager role)
 import ManagerDashboard from './pages/manager/DashboardPage';
@@ -348,6 +350,22 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminChat />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/background"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminBackground />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/discount-codes"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDiscountCodes />
               </ProtectedRoute>
             }
           />
