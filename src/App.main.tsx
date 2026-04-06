@@ -66,6 +66,11 @@ import AdminCollabRequests from './pages/admin/CollabRequestsPage';
 import AdminArtistRoleRequests from './pages/admin/ArtistRoleRequestsPage';
 import AdminSettings from './pages/admin/SettingsPage';
 import AdminChat from './pages/admin/ChatPage';
+import AdminBackground from './pages/admin/BackgroundToolPage';
+import AdminDiscountCodes from './pages/admin/DiscountCodesPage';
+import AdminArt from './pages/admin/ArtAdminPage';
+import AdminServices from './pages/admin/ServicesPage';
+import AdminMerchandise from './pages/admin/MerchandiseAdminPage';
 
 // Manager pages (protected - manager role)
 import ManagerDashboard from './pages/manager/DashboardPage';
@@ -264,6 +269,14 @@ const MainApp: React.FC = () => {
             }
           />
           <Route
+            path="/admin/art"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminArt />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/admin/beats"
             element={
               <ProtectedRoute allowedRoles={['admin']}>
@@ -284,6 +297,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminRemixes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/services"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminServices />
               </ProtectedRoute>
             }
           />
@@ -348,6 +369,30 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminChat />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/background"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminBackground />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/discount-codes"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDiscountCodes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/merchandise"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminMerchandise />
               </ProtectedRoute>
             }
           />
