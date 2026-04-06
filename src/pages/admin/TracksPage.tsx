@@ -3,8 +3,8 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
-import { Track } from '../../lib/firebase/types';
-import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, ArrowDown } from 'lucide-react';
+import { Track, CustomTrackLink } from '../../lib/firebase/types';
+import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, ArrowDown, Link as LinkIcon } from 'lucide-react';
 import { toDirectUrl } from '../../lib/utils/urlUtils';
 
 const TracksPage: React.FC = () => {
@@ -572,6 +572,9 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
   });
 
   const [tracklist, setTracklist] = useState<TracklistItem[]>([]);
+  const [customTrackLinks, setCustomTrackLinks] = useState<CustomTrackLink[]>(track?.customTrackLinks || []);
+  const [showCustomLinkForm, setShowCustomLinkForm] = useState(false);
+  const [newCustomLink, setNewCustomLink] = useState({ mode: 'custom' as 'custom' | 'existing', title: '', audioUrl: '', trackId: '' });
   const [saving, setSaving] = useState(false);
   const { tracks: allTracks } = useTracks();
 
@@ -610,6 +613,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         status: formData.status,
         featured: formData.featured,
         isFree: formData.isFree,
+        customTrackLinks: customTrackLinks.length > 0 ? customTrackLinks : undefined,
         licenses: {
           basic: {
             type: 'basic' as const,
@@ -767,6 +771,40 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
       [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
       setTracklist(newList);
     }
+  };
+
+  const addCustomTrackLink = () => {
+    if (newCustomLink.mode === 'custom' && (!newCustomLink.title || !newCustomLink.audioUrl)) {
+      alert('Please enter both title and audio URL');
+      return;
+    }
+    if (newCustomLink.mode === 'existing' && !newCustomLink.trackId) {
+      alert('Please select a track');
+      return;
+    }
+
+    if (newCustomLink.mode === 'custom') {
+      setCustomTrackLinks([...customTrackLinks, {
+        title: newCustomLink.title,
+        audioUrl: toDirectUrl(newCustomLink.audioUrl),
+      }]);
+    } else {
+      const selectedTrack = allTracks.find(t => t.id === newCustomLink.trackId);
+      if (selectedTrack) {
+        setCustomTrackLinks([...customTrackLinks, {
+          title: selectedTrack.title,
+          audioUrl: selectedTrack.audioUrl,
+          trackId: selectedTrack.id,
+        }]);
+      }
+    }
+
+    setNewCustomLink({ mode: 'custom', title: '', audioUrl: '', trackId: '' });
+    setShowCustomLinkForm(false);
+  };
+
+  const removeCustomTrackLink = (index: number) => {
+    setCustomTrackLinks(customTrackLinks.filter((_, i) => i !== index));
   };
 
   return (
@@ -1009,6 +1047,128 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
               </div>
             </div>
           )}
+
+          {/* Custom Track Links Section */}
+          <div className="space-y-3 border-t border-white/[0.06] pt-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <LinkIcon size={16} className="text-white/60" />
+                <label className="block text-sm font-medium text-white/60">Custom Track Links (for featured tabs)</label>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCustomLinkForm(!showCustomLinkForm)}
+                className="px-3 py-1 bg-gradient-to-r from-purple-600/50 to-pink-600/50 hover:from-purple-600 hover:to-pink-600 text-white/80 text-sm rounded transition-all flex items-center gap-1"
+              >
+                <Plus size={14} />
+                Add Track Link
+              </button>
+            </div>
+
+            {/* Add Custom Link Form */}
+            {showCustomLinkForm && (
+              <div className="bg-white/[0.05] rounded-lg p-4 space-y-3 border border-white/[0.08]">
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={newCustomLink.mode === 'custom'}
+                      onChange={() => setNewCustomLink({ ...newCustomLink, mode: 'custom', trackId: '' })}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-white/60">Custom Link</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      checked={newCustomLink.mode === 'existing'}
+                      onChange={() => setNewCustomLink({ ...newCustomLink, mode: 'existing', title: '', audioUrl: '' })}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-white/60">Existing Track</span>
+                  </label>
+                </div>
+
+                {newCustomLink.mode === 'custom' ? (
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="e.g., 'Custom Mix'"
+                      value={newCustomLink.title}
+                      onChange={(e) => setNewCustomLink({ ...newCustomLink, title: e.target.value })}
+                      className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Audio URL (e.g., NextCloud share link)"
+                      value={newCustomLink.audioUrl}
+                      onChange={(e) => setNewCustomLink({ ...newCustomLink, audioUrl: e.target.value })}
+                      className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
+                    />
+                  </div>
+                ) : (
+                  <select
+                    value={newCustomLink.trackId}
+                    onChange={(e) => setNewCustomLink({ ...newCustomLink, trackId: e.target.value })}
+                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
+                  >
+                    <option value="">Select a track...</option>
+                    {allTracks
+                      .filter(t => t.status === 'published')
+                      .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+                      .map(t => (
+                        <option key={t.id} value={t.id}>
+                          {t.title} - {t.artist}
+                        </option>
+                      ))}
+                  </select>
+                )}
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={addCustomTrackLink}
+                    className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm rounded transition-all"
+                  >
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCustomLinkForm(false);
+                      setNewCustomLink({ mode: 'custom', title: '', audioUrl: '', trackId: '' });
+                    }}
+                    className="flex-1 px-3 py-2 bg-white/[0.06] hover:bg-white/[0.10] text-white/60 text-sm rounded transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Custom Links List */}
+            {customTrackLinks.length > 0 && (
+              <div className="space-y-2">
+                {customTrackLinks.map((link, index) => (
+                  <div key={index} className="flex items-center justify-between bg-white/[0.03] p-3 rounded border border-white/[0.06]">
+                    <div>
+                      <p className="text-sm text-white">{link.title}</p>
+                      <p className="text-xs text-white/40">
+                        {link.trackId ? 'Existing Track' : 'Custom Link'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeCustomTrackLink(index)}
+                      className="text-red-400/60 hover:text-red-400 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div>
             <label className="flex items-center space-x-2">

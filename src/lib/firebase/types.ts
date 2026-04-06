@@ -291,6 +291,12 @@ export interface Purchase {
 // TRACK TYPES
 // ============================================
 
+export interface CustomTrackLink {
+  title: string;
+  audioUrl: string;
+  trackId?: string; // Optional reference to existing track
+}
+
 export interface Track {
   id: string;
   title: string;
@@ -335,6 +341,9 @@ export interface Track {
   metaTitle?: string;
   metaDescription?: string;
   slug: string;
+
+  // Custom track links for featured tabs
+  customTrackLinks?: CustomTrackLink[];
 
   // Timestamps
   createdAt: Timestamp;

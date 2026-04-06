@@ -135,6 +135,7 @@ export default function TracksPage() {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [selectedTypeTab, setSelectedTypeTab] = useState<'Singles' | 'Albums & EPs' | 'All' | 'Custom 1' | 'Custom 2'>('All');
   const heroTitle = useCyberDecodeInView('Music');
 
   // Convert Firebase tracks to local Track interface - Maps all track data including album field
@@ -223,13 +224,53 @@ export default function TracksPage() {
     }
   };
 
-  const filteredTracks = demoTracks.filter(track => {
-    const typeMatch = selectedType === 'All' || track.type === selectedType;
-    const yearMatch = selectedYear === 'All' || track.year === selectedYear;
-    const collabMatch = selectedCollab === 'All' || track.collab === selectedCollab;
-    const genreMatch = genreMatches(track.genre, selectedGenre);
-    return typeMatch && yearMatch && collabMatch && genreMatch;
-  });
+  const matchesTypeTab = (track: Track): boolean => {
+    switch (selectedTypeTab) {
+      case 'Singles':
+        return !track.album && (track.type === 'Single' || track.type === 'Exclusive');
+      case 'Albums & EPs':
+        return track.type === 'Album' || track.type === 'EP';
+      case 'All':
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  const getCustomTracksForTab = (): Track[] => {
+    const customTracks: Track[] = [];
+    // Find all tracks with customTrackLinks and filter by the selected custom tab
+    demoTracks.forEach(track => {
+      if (track.customTrackLinks && track.customTrackLinks.length > 0) {
+        // For demo, display all custom tracks in both custom tabs
+        customTracks.push(...track.customTrackLinks.map((link, index) => ({
+          id: `custom-${track.id}-${index}`,
+          title: link.title,
+          artist: track.artist,
+          audioUrl: link.audioUrl,
+          coverArt: track.coverArt,
+          coverArtUrl: track.coverArtUrl,
+          type: 'Single' as const,
+          year: track.year,
+          collab: track.collab,
+          genre: track.genre,
+          createdAt: track.createdAt,
+        })) as unknown as Track);
+      }
+    });
+    return customTracks;
+  };
+
+  const filteredTracks = selectedTypeTab.startsWith('Custom')
+    ? getCustomTracksForTab()
+    : demoTracks.filter(track => {
+      const tabMatch = matchesTypeTab(track);
+      const typeMatch = selectedType === 'All' || track.type === selectedType;
+      const yearMatch = selectedYear === 'All' || track.year === selectedYear;
+      const collabMatch = selectedCollab === 'All' || track.collab === selectedCollab;
+      const genreMatch = genreMatches(track.genre, selectedGenre);
+      return tabMatch && typeMatch && yearMatch && collabMatch && genreMatch;
+    });
 
   const years = Array.from(new Set(demoTracks.map(t => t.year).filter(Boolean))).sort((a, b) => b - a) as number[];
 
@@ -438,6 +479,27 @@ export default function TracksPage() {
                   },
                 ]}
               />
+            </div>
+          </section>
+
+          {/* Type Filter Tabs */}
+          <section className="px-6 md:px-12 py-4 md:py-6 border-b border-white/[0.06]">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex flex-wrap gap-2">
+                {['Singles', 'Albums & EPs', 'All', 'Custom 1', 'Custom 2'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setSelectedTypeTab(tab as any)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      selectedTypeTab === tab
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                        : 'bg-white/[0.06] text-white/50 hover:text-white/70 hover:bg-white/[0.10]'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
 
