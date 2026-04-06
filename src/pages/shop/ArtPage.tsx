@@ -3,172 +3,15 @@ import { Heart, Share2, Eye } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
-
-interface ArtPiece {
-  id: string;
-  title: string;
-  description: string;
-  artist: string;
-  medium: string;
-  year: number;
-  image: string;
-  views: number;
-  likes: number;
-  category: string;
-}
-
-const artPieces: ArtPiece[] = [
-  {
-    id: 'digital-1',
-    title: 'Neon Frequencies',
-    description: 'Abstract digital art exploring the intersection of sound and visual. Vibrant neon colors representing different frequency spectrums.',
-    artist: 'Jonna Rincon',
-    medium: 'Digital Illustration',
-    year: 2024,
-    image: '/JEIGHTENESIS.jpg',
-    views: 2847,
-    likes: 356,
-    category: 'Digital Art',
-  },
-  {
-    id: 'digital-2',
-    title: 'Synth Waves',
-    description: 'A journey through synthesizer landscapes. Each layer represents a different synth oscillator and modulation pattern.',
-    artist: 'Jonna Rincon',
-    medium: 'Digital Painting',
-    year: 2024,
-    image: '/JEIGHTENESIS.jpg',
-    views: 1923,
-    likes: 234,
-    category: 'Digital Art',
-  },
-  {
-    id: 'cover-1',
-    title: 'Electronic Dreams EP Cover',
-    description: 'Cover artwork for the Electronic Dreams extended play. Features minimalist design with gradient overlays and glitch effects.',
-    artist: 'Jonna Rincon',
-    medium: 'Mixed Media Design',
-    year: 2023,
-    image: '/JEIGHTENESIS.jpg',
-    views: 3456,
-    likes: 428,
-    category: 'Cover Design',
-  },
-  {
-    id: 'cover-2',
-    title: 'Heartbeat Album Cover',
-    description: 'Main album artwork showcasing a pulsing heartbeat visualization with neon accents and cyberpunk aesthetics.',
-    artist: 'Jonna Rincon',
-    medium: 'Digital Design',
-    year: 2023,
-    image: '/JEIGHTENESIS.jpg',
-    views: 4102,
-    likes: 512,
-    category: 'Cover Design',
-  },
-  {
-    id: 'visual-1',
-    title: 'Acid Rain',
-    description: 'Experimental visual art piece combining 3D modeling and post-processing. Represents the meeting of nature and digital technology.',
-    artist: 'Jonna Rincon',
-    medium: '3D & Post-processing',
-    year: 2024,
-    image: '/JEIGHTENESIS.jpg',
-    views: 2134,
-    likes: 287,
-    category: 'Visual Art',
-  },
-  {
-    id: 'visual-2',
-    title: 'Data Flow',
-    description: 'Kinetic visual art exploring information streams and digital communication. Used in live performances and VJ sets.',
-    artist: 'Jonna Rincon',
-    medium: '3D Animation',
-    year: 2024,
-    image: '/JEIGHTENESIS.jpg',
-    views: 1876,
-    likes: 198,
-    category: 'Visual Art',
-  },
-  {
-    id: 'poster-1',
-    title: 'Festival Poster Series #1',
-    description: 'Event poster for electronic music festival featuring bold typography and abstract geometric shapes.',
-    artist: 'Jonna Rincon',
-    medium: 'Digital Poster Design',
-    year: 2023,
-    image: '/JEIGHTENESIS.jpg',
-    views: 2567,
-    likes: 301,
-    category: 'Poster Design',
-  },
-  {
-    id: 'poster-2',
-    title: 'Festival Poster Series #2',
-    description: 'Second poster in the series with variations in color grading and composition. Part of a comprehensive visual identity system.',
-    artist: 'Jonna Rincon',
-    medium: 'Digital Poster Design',
-    year: 2023,
-    image: '/JEIGHTENESIS.jpg',
-    views: 2134,
-    likes: 267,
-    category: 'Poster Design',
-  },
-  {
-    id: 'conceptual-1',
-    title: 'The Matrix Experience',
-    description: 'Conceptual artwork exploring the digital realm and human connection to technology. Multi-layered composition with symbolic elements.',
-    artist: 'Jonna Rincon',
-    medium: 'Digital Conceptual Art',
-    year: 2024,
-    image: '/JEIGHTENESIS.jpg',
-    views: 3345,
-    likes: 389,
-    category: 'Conceptual Art',
-  },
-  {
-    id: 'conceptual-2',
-    title: 'Chromatic Consciousness',
-    description: 'An exploration of color theory and perception. Each color represents a different aspect of consciousness and emotion in music.',
-    artist: 'Jonna Rincon',
-    medium: 'Digital Illustration',
-    year: 2024,
-    image: '/JEIGHTENESIS.jpg',
-    views: 2891,
-    likes: 334,
-    category: 'Conceptual Art',
-  },
-  {
-    id: 'branding-1',
-    title: 'JR Logo Evolution',
-    description: 'Personal branding project showing the evolution of the artist signature. Multiple iterations and variations for different applications.',
-    artist: 'Jonna Rincon',
-    medium: 'Logo Design',
-    year: 2023,
-    image: '/JEIGHTENESIS.jpg',
-    views: 1645,
-    likes: 156,
-    category: 'Branding',
-  },
-  {
-    id: 'branding-2',
-    title: 'Visual Identity System',
-    description: 'Complete visual identity system including color palette, typography, and graphic elements used across all platforms.',
-    artist: 'Jonna Rincon',
-    medium: 'Brand Design',
-    year: 2023,
-    image: '/JEIGHTENESIS.jpg',
-    views: 1923,
-    likes: 187,
-    category: 'Branding',
-  },
-];
+import { useArt } from '../../hooks/useArt';
+import { Art } from '../../lib/firebase/types';
 
 const ArtPage: React.FC = () => {
   const heroTitle = useCyberDecodeInView('Art');
+  const { art: artPieces, loading } = useArt({ status: 'published' });
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [likedPieces, setLikedPieces] = useState<string[]>([]);
-  const [selectedArt, setSelectedArt] = useState<ArtPiece | null>(null);
+  const [selectedArt, setSelectedArt] = useState<Art | null>(null);
 
   const categories = Array.from(new Set(artPieces.map(piece => piece.category))).sort();
 
@@ -242,109 +85,125 @@ const ArtPage: React.FC = () => {
       {/* Art Gallery Grid */}
       <section className="px-6 md:px-12 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPieces.map((piece) => (
-              <button
-                key={piece.id}
-                onClick={() => setSelectedArt(piece)}
-                className="group text-left bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08]"
-              >
-                {/* Artwork Image */}
-                <div className="relative aspect-square overflow-hidden bg-white/[0.02]">
-                  <img
-                    src={piece.image}
-                    alt={piece.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-
-                  {/* Overlay Stats */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm">
-                    <div className="flex gap-6">
-                      <div className="text-center">
-                        <Eye size={20} className="text-white/60 mx-auto mb-1" />
-                        <span className="text-sm font-bold text-white">{(piece.views / 1000).toFixed(1)}k</span>
-                      </div>
-                      <div className="text-center">
-                        <Heart size={20} className="text-red-400 mx-auto mb-1" />
-                        <span className="text-sm font-bold text-white">{piece.likes}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Category Badge */}
-                  <div className="absolute top-3 left-3">
-                    <span className="px-3 py-1.5 bg-white/[0.08] backdrop-blur-sm border border-white/[0.1] text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
-                      {piece.category}
-                    </span>
-                  </div>
-
-                  {/* Year Badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className="px-3 py-1.5 bg-red-600/20 backdrop-blur-sm border border-red-500/30 text-red-200 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                      {piece.year}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Artwork Info */}
-                <div className="p-5 md:p-6">
-                  <h3 className="text-base md:text-lg font-bold text-white mb-1 line-clamp-2">{piece.title}</h3>
-                  <p className="text-xs text-white/40 mb-4">{piece.medium}</p>
-
-                  <p className="text-white/50 text-sm leading-relaxed mb-5 line-clamp-3">{piece.description}</p>
-
-                  {/* Footer Stats */}
-                  <div className="flex items-center justify-between pt-5 border-t border-white/[0.06]">
-                    <span className="text-xs text-white/30 uppercase tracking-wider font-medium">By {piece.artist}</span>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleLike(piece.id);
-                        }}
-                        className={`p-2 rounded-lg transition-all ${
-                          likedPieces.includes(piece.id)
-                            ? 'bg-red-600/20 text-red-400'
-                            : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.08]'
-                        }`}
-                      >
-                        <Heart size={14} fill={likedPieces.includes(piece.id) ? 'currentColor' : 'none'} />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                        }}
-                        className="p-2 rounded-lg bg-white/[0.04] text-white/40 hover:bg-white/[0.08] transition-all"
-                      >
-                        <Share2 size={14} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Empty State */}
-          {filteredPieces.length === 0 && (
+          {/* Loading State */}
+          {loading && (
             <div className="text-center py-20">
               <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-12 max-w-md mx-auto">
-                <p className="text-xl font-bold mb-2">No artwork found</p>
+                <p className="text-xl font-bold mb-2">Loading artwork...</p>
                 <p className="text-white/40 text-sm">
-                  Try selecting a different category or check back later for new pieces.
+                  Fetching your art from Firebase.
                 </p>
               </div>
             </div>
           )}
 
-          {/* Results Count */}
-          {filteredPieces.length > 0 && (
-            <div className="mt-10 text-center">
-              <span className="text-[10px] uppercase tracking-widest text-white/20">
-                Showing {filteredPieces.length} artwork{filteredPieces.length !== 1 ? 's' : ''}
-              </span>
-            </div>
+          {!loading && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredPieces.map((piece) => (
+                  <button
+                    key={piece.id}
+                    onClick={() => setSelectedArt(piece)}
+                    className="group text-left bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08]"
+                  >
+                    {/* Artwork Image */}
+                    <div className="relative aspect-square overflow-hidden bg-white/[0.02]">
+                      <img
+                        src={piece.image}
+                        alt={piece.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
+                      {/* Overlay Stats */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm">
+                        <div className="flex gap-6">
+                          <div className="text-center">
+                            <Eye size={20} className="text-white/60 mx-auto mb-1" />
+                            <span className="text-sm font-bold text-white">{(piece.views / 1000).toFixed(1)}k</span>
+                          </div>
+                          <div className="text-center">
+                            <Heart size={20} className="text-red-400 mx-auto mb-1" />
+                            <span className="text-sm font-bold text-white">{piece.likes}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Category Badge */}
+                      <div className="absolute top-3 left-3">
+                        <span className="px-3 py-1.5 bg-white/[0.08] backdrop-blur-sm border border-white/[0.1] text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
+                          {piece.category}
+                        </span>
+                      </div>
+
+                      {/* Year Badge */}
+                      <div className="absolute top-3 right-3">
+                        <span className="px-3 py-1.5 bg-red-600/20 backdrop-blur-sm border border-red-500/30 text-red-200 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                          {piece.year}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Artwork Info */}
+                    <div className="p-5 md:p-6">
+                      <h3 className="text-base md:text-lg font-bold text-white mb-1 line-clamp-2">{piece.title}</h3>
+                      <p className="text-xs text-white/40 mb-4">{piece.medium}</p>
+
+                      <p className="text-white/50 text-sm leading-relaxed mb-5 line-clamp-3">{piece.description}</p>
+
+                      {/* Footer Stats */}
+                      <div className="flex items-center justify-between pt-5 border-t border-white/[0.06]">
+                        <span className="text-xs text-white/30 uppercase tracking-wider font-medium">By {piece.artist}</span>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleLike(piece.id);
+                            }}
+                            className={`p-2 rounded-lg transition-all ${
+                              likedPieces.includes(piece.id)
+                                ? 'bg-red-600/20 text-red-400'
+                                : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.08]'
+                            }`}
+                          >
+                            <Heart size={14} fill={likedPieces.includes(piece.id) ? 'currentColor' : 'none'} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                            }}
+                            className="p-2 rounded-lg bg-white/[0.04] text-white/40 hover:bg-white/[0.08] transition-all"
+                          >
+                            <Share2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Empty State */}
+              {filteredPieces.length === 0 && (
+                <div className="text-center py-20">
+                  <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-12 max-w-md mx-auto">
+                    <p className="text-xl font-bold mb-2">No artwork found</p>
+                    <p className="text-white/40 text-sm">
+                      Try selecting a different category or check back later for new pieces.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Results Count */}
+              {filteredPieces.length > 0 && (
+                <div className="mt-10 text-center">
+                  <span className="text-[10px] uppercase tracking-widest text-white/20">
+                    Showing {filteredPieces.length} artwork{filteredPieces.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
