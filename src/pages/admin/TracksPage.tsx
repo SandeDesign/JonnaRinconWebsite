@@ -348,14 +348,6 @@ const TracksPage: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white">Filters</h3>
-              {hasActiveFilters && (
-                <button
-                  onClick={clearAllFilters}
-                  className="px-3 py-1.5 text-sm bg-red-600/20 border border-red-600/30 text-red-400 hover:bg-red-600/30 rounded-lg transition-colors"
-                >
-                  Clear All
-                </button>
-              )}
             </div>
 
             {/* Type Buttons */}
