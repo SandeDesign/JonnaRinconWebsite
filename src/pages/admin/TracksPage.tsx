@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
+import CustomTrackLinksEditor from '../../components/admin/CustomTrackLinksEditor';
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
 import { Track, CustomTrackLink } from '../../lib/firebase/types';
@@ -13,6 +14,11 @@ const TracksPage: React.FC = () => {
   const [editingTrack, setEditingTrack] = useState<Track | null>(null);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
+
+  // Filter state
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
   const handleCreate = () => {
     setEditingTrack(null);
@@ -77,6 +83,26 @@ const TracksPage: React.FC = () => {
     }
     setExpandedAlbums(newExpanded);
   };
+
+  // Filter toggle functions
+  const toggleTypeFilter = (type: string) => {
+    const newTypes = new Set(selectedTypes);
+    if (newTypes.has(type)) {
+      newTypes.delete(type);
+    } else {
+      newTypes.add(type);
+    }
+    setSelectedTypes(newTypes);
+  };
+
+  const clearAllFilters = () => {
+    setSelectedTypes(new Set());
+    setSelectedYear(null);
+    setSelectedStatus(null);
+  };
+
+  // Check if any filter is active
+  const hasActiveFilters = selectedTypes.size > 0 || selectedYear !== null || selectedStatus !== null;
 
   const moveSingleTrackUp = async (trackId: string) => {
     try {
@@ -213,8 +239,31 @@ const TracksPage: React.FC = () => {
   console.log('📊 TracksPage rendered - sortedTracks count:', sortedTracks.length);
   console.log('📊 Sorted order:', sortedTracks.filter(t => !t.album && (t.type === 'Single' || t.type === 'Exclusive')).map((t, i) => `${i}: ${t.title} (sort:${t.sortOrder})`));
 
+  // Apply filters to tracks
+  const filteredTracks = sortedTracks.filter(track => {
+    // Type filter (AND logic - must match if filter is active)
+    if (selectedTypes.size > 0 && !selectedTypes.has(track.type)) {
+      return false;
+    }
+
+    // Year filter (AND logic)
+    if (selectedYear !== null && track.year !== selectedYear) {
+      return false;
+    }
+
+    // Status filter (AND logic)
+    if (selectedStatus !== null && track.status !== selectedStatus) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Get unique years from all tracks for year filter dropdown
+  const availableYears = Array.from(new Set(tracks.map(t => t.year))).sort((a, b) => b - a);
+
   // Group tracks by album for Album/EP types
-  const groupedTracks = sortedTracks.reduce((acc, track) => {
+  const groupedTracks = filteredTracks.reduce((acc, track) => {
     if (track.type === 'Album' || track.type === 'EP') {
       // Use album field, fallback to title for backward compatibility
       const albumName = track.album || track.title;
@@ -291,6 +340,99 @@ const TracksPage: React.FC = () => {
             <p className="text-2xl font-bold text-white mt-1">
               {tracks.reduce((sum, t) => sum + t.plays, 0)}
             </p>
+          </div>
+        </div>
+
+        {/* Filter Section */}
+        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-white">Filters</h3>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearAllFilters}
+                  className="px-3 py-1.5 text-sm bg-red-600/20 border border-red-600/30 text-red-400 hover:bg-red-600/30 rounded-lg transition-colors"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+
+            {/* Type Buttons */}
+            <div className="flex flex-wrap gap-2">
+              {['Singles', 'Albums', 'EPs'].map((type) => {
+                const actualType = type === 'Singles' ? 'Single' : type === 'EPs' ? 'EP' : 'Album';
+                const isActive = selectedTypes.has(actualType);
+                return (
+                  <button
+                    key={type}
+                    onClick={() => toggleTypeFilter(actualType)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      isActive
+                        ? 'bg-red-600 text-white shadow-lg'
+                        : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Year and Status Dropdowns */}
+            <div className="flex flex-wrap gap-3">
+              <select
+                value={selectedYear ?? ''}
+                onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : null)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  selectedYear !== null
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                } focus:outline-none`}
+              >
+                <option value="">Year</option>
+                {availableYears.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedStatus ?? ''}
+                onChange={(e) => setSelectedStatus(e.target.value || null)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  selectedStatus !== null
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                } focus:outline-none`}
+              >
+                <option value="">Status</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
+
+            {/* Results Counter */}
+            {hasActiveFilters && (
+              <div className="text-sm text-white/60 pt-2">
+                Showing <span className="font-semibold text-white">{Object.keys(groupedTracks).length}</span> of{' '}
+                <span className="font-semibold text-white">{Object.keys(
+                  sortedTracks.reduce((acc, track) => {
+                    if (track.type === 'Album' || track.type === 'EP') {
+                      const albumName = track.album || track.title;
+                      const albumKey = `${track.type}:${albumName}`;
+                      if (!acc[albumKey]) acc[albumKey] = true;
+                    } else {
+                      const singleKey = `single:${track.id}`;
+                      if (!acc[singleKey]) acc[singleKey] = true;
+                    }
+                    return acc;
+                  }, {} as Record<string, boolean>)
+                ).length}</span> items
+              </div>
+            )}
           </div>
         </div>
 
@@ -573,9 +715,9 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
 
   const [tracklist, setTracklist] = useState<TracklistItem[]>([]);
   const [customTrackLinks, setCustomTrackLinks] = useState<CustomTrackLink[]>(track?.customTrackLinks || []);
+  const [saving, setSaving] = useState(false);
   const [showCustomLinkForm, setShowCustomLinkForm] = useState(false);
   const [newCustomLink, setNewCustomLink] = useState({ mode: 'custom' as 'custom' | 'existing', title: '', audioUrl: '', trackId: '' });
-  const [saving, setSaving] = useState(false);
   const { tracks: allTracks } = useTracks();
 
   // Load album tracks when editing an album
@@ -1050,124 +1192,10 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
 
           {/* Custom Track Links Section */}
           <div className="space-y-3 border-t border-white/[0.06] pt-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <LinkIcon size={16} className="text-white/60" />
-                <label className="block text-sm font-medium text-white/60">Custom Track Links (for featured tabs)</label>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCustomLinkForm(!showCustomLinkForm)}
-                className="px-3 py-1 bg-gradient-to-r from-purple-600/50 to-pink-600/50 hover:from-purple-600 hover:to-pink-600 text-white/80 text-sm rounded transition-all flex items-center gap-1"
-              >
-                <Plus size={14} />
-                Add Track Link
-              </button>
-            </div>
-
-            {/* Add Custom Link Form */}
-            {showCustomLinkForm && (
-              <div className="bg-white/[0.05] rounded-lg p-4 space-y-3 border border-white/[0.08]">
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      checked={newCustomLink.mode === 'custom'}
-                      onChange={() => setNewCustomLink({ ...newCustomLink, mode: 'custom', trackId: '' })}
-                      className="w-4 h-4"
-                    />
-                    <span className="text-sm text-white/60">Custom Link</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      checked={newCustomLink.mode === 'existing'}
-                      onChange={() => setNewCustomLink({ ...newCustomLink, mode: 'existing', title: '', audioUrl: '' })}
-                      className="w-4 h-4"
-                    />
-                    <span className="text-sm text-white/60">Existing Track</span>
-                  </label>
-                </div>
-
-                {newCustomLink.mode === 'custom' ? (
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      placeholder="e.g., 'Custom Mix'"
-                      value={newCustomLink.title}
-                      onChange={(e) => setNewCustomLink({ ...newCustomLink, title: e.target.value })}
-                      className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Audio URL (e.g., NextCloud share link)"
-                      value={newCustomLink.audioUrl}
-                      onChange={(e) => setNewCustomLink({ ...newCustomLink, audioUrl: e.target.value })}
-                      className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
-                    />
-                  </div>
-                ) : (
-                  <select
-                    value={newCustomLink.trackId}
-                    onChange={(e) => setNewCustomLink({ ...newCustomLink, trackId: e.target.value })}
-                    className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
-                  >
-                    <option value="">Select a track...</option>
-                    {allTracks
-                      .filter(t => t.status === 'published')
-                      .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
-                      .map(t => (
-                        <option key={t.id} value={t.id}>
-                          {t.title} - {t.artist}
-                        </option>
-                      ))}
-                  </select>
-                )}
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={addCustomTrackLink}
-                    className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm rounded transition-all"
-                  >
-                    Add
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowCustomLinkForm(false);
-                      setNewCustomLink({ mode: 'custom', title: '', audioUrl: '', trackId: '' });
-                    }}
-                    className="flex-1 px-3 py-2 bg-white/[0.06] hover:bg-white/[0.10] text-white/60 text-sm rounded transition-all"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Custom Links List */}
-            {customTrackLinks.length > 0 && (
-              <div className="space-y-2">
-                {customTrackLinks.map((link, index) => (
-                  <div key={index} className="flex items-center justify-between bg-white/[0.03] p-3 rounded border border-white/[0.06]">
-                    <div>
-                      <p className="text-sm text-white">{link.title}</p>
-                      <p className="text-xs text-white/40">
-                        {link.trackId ? 'Existing Track' : 'Custom Link'}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeCustomTrackLink(index)}
-                      className="text-red-400/60 hover:text-red-400 transition-colors"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <CustomTrackLinksEditor
+              customLinks={customTrackLinks}
+              onLinksChange={setCustomTrackLinks}
+            />
           </div>
 
           <div>

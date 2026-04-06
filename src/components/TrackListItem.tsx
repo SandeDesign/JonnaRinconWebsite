@@ -1,11 +1,10 @@
 import React from 'react';
-import { Play, Pause, Music, ShoppingCart } from 'lucide-react';
-import { setCurrentTrack, getCurrentTrack } from './GlobalAudioPlayer';
-import { getPlayButtonContainerClass, getRowHighlightClass } from '../lib/utils/buttonStyles';
+import { Music } from 'lucide-react';
+import { getCurrentTrack } from './GlobalAudioPlayer';
+import { getRowHighlightClass } from '../lib/utils/buttonStyles';
 
 interface TrackListItemProps {
   track: any;
-  onPlay?: (track: any) => void;
   onClickTrack?: (track: any) => void;
   onBuy?: (track: any) => void;
   allTracks?: any[];
@@ -20,7 +19,6 @@ interface TrackListItemProps {
 
 export default function TrackListItem({
   track,
-  onPlay,
   onClickTrack,
   onBuy,
   allTracks = [],
@@ -34,15 +32,6 @@ export default function TrackListItem({
 }: TrackListItemProps) {
   const currentTrack = getCurrentTrack();
   const isCurrentTrack = currentTrack?.id === track.id;
-
-  const handlePlay = () => {
-    if (onPlay) {
-      onPlay(track);
-    } else {
-      const queue = allTracks.length > 0 ? allTracks : [track];
-      setCurrentTrack(track, queue);
-    }
-  };
 
   return (
     <div
@@ -142,31 +131,6 @@ export default function TrackListItem({
         </div>
       </div>
 
-      {/* Buy Button */}
-      {onBuy && track.licenses?.exclusive?.price && !track.isFree && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onBuy(track); }}
-          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-110"
-          title={`Add to cart - €${track.licenses.exclusive.price.toFixed(2)}`}
-        >
-          <ShoppingCart size={16} className="text-white" />
-        </button>
-      )}
-
-      {/* Play Button */}
-      <button
-        onClick={handlePlay}
-        className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all bg-red-600 hover:bg-red-500 hover:scale-110 ${
-          isCurrentTrack ? 'scale-110' : ''
-        } ${getPlayButtonContainerClass(isCurrentTrack)}`}
-        title={isCurrentTrack ? "Pause track" : "Play track"}
-      >
-        {isCurrentTrack ? (
-          <Pause size={16} className="text-red-500" fill="currentColor" />
-        ) : (
-          <Play size={16} className="text-gray-400 ml-0.5" fill="currentColor" />
-        )}
-      </button>
     </div>
   );
 }

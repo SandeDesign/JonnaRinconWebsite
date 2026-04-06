@@ -296,7 +296,6 @@ export default function RemixesPage() {
                 <TrackListItem
                   key={remix.id}
                   track={remix}
-                  onPlay={handlePlayRemix}
                   onClickTrack={setSelectedTrack}
                   showType={false}
                   showMetadata={true}

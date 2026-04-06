@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, Play, Pause, ShoppingCart } from 'lucide-react';
 import { getCurrentTrack } from './GlobalAudioPlayer';
 
@@ -21,20 +21,33 @@ interface TrackDetailModalProps {
   track: Track | null;
   isOpen: boolean;
   onClose: () => void;
-  isPlaying: boolean;
-  onPlay: (track: Track) => void;
+  isPlaying?: boolean;
+  onPlay?: (track: Track) => void;
   onBuy?: (track: Track) => void;
+  cartItems?: any[];
 }
 
 export default function TrackDetailModal({
   track,
   isOpen,
   onClose,
-  isPlaying,
+  isPlaying = false,
   onPlay,
   onBuy,
+  cartItems = [],
 }: TrackDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isHoveringCover, setIsHoveringCover] = useState(false);
+
+  // Handle play button click on cover
+  const handleCoverClick = () => {
+    if (onPlay && track) {
+      onPlay(track);
+    }
+  };
+
+  // Check if track is already in cart
+  const isInCart = track ? cartItems.some(item => item.id === track.id) : false;
 
   // Handle click outside
   useEffect(() => {
@@ -79,7 +92,7 @@ export default function TrackDetailModal({
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-2xl bg-white/[0.08] backdrop-blur-xl border border-white/[0.15] rounded-3xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-4xl bg-white/[0.08] backdrop-blur-xl border border-white/[0.15] rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
       >
         {/* Close Button */}
         <button
@@ -90,30 +103,45 @@ export default function TrackDetailModal({
         </button>
 
         {/* Content */}
-        <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
           {/* Artwork */}
           <div className="w-full md:w-1/3 flex-shrink-0">
-            <div className="relative aspect-square rounded-2xl overflow-hidden">
+            <div
+              className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer"
+              onMouseEnter={() => setIsHoveringCover(true)}
+              onMouseLeave={() => setIsHoveringCover(false)}
+              onClick={handleCoverClick}
+            >
               <img
                 src={track.coverArt || '/JEIGHTENESIS.jpg'}
                 alt={track.title}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover transition-all duration-300 ${
+                  isHoveringCover ? 'scale-105 brightness-75' : 'scale-100 brightness-100'
+                }`}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-              {/* Play Button Overlay */}
-              <button
-                onClick={() => onPlay(track)}
-                className="absolute inset-0 flex items-center justify-center group"
-              >
-                <div className="w-16 h-16 rounded-full bg-red-600/90 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                  {isCurrentTrackPlaying ? (
-                    <Pause className="w-7 h-7 text-red-500 ml-0" fill="currentColor" />
-                  ) : (
-                    <Play className="w-7 h-7 text-white ml-1" fill="currentColor" />
-                  )}
-                </div>
-              </button>
+              {/* Play Button Overlay - appears on hover */}
+              {onPlay && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCoverClick();
+                  }}
+                  className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                    isHoveringCover ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <div className="w-16 h-16 rounded-full bg-red-600/90 backdrop-blur-sm flex items-center justify-center transition-transform duration-300 hover:scale-110">
+                    {isCurrentTrackPlaying ? (
+                      <Pause className="w-7 h-7 text-red-500 ml-0" fill="currentColor" />
+                    ) : (
+                      <Play className="w-7 h-7 text-white ml-1" fill="currentColor" />
+                    )}
+                  </div>
+                </button>
+              )}
             </div>
 
             {/* Track Meta Info */}
@@ -176,11 +204,18 @@ export default function TrackDetailModal({
             {/* Buy Button - for non-free tracks with a price */}
             {onBuy && track && !track.isFree && track.licenses?.exclusive?.price && (
               <button
-                onClick={() => onBuy(track)}
-                className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-bold uppercase tracking-wider transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mb-3"
+                onClick={() => !isInCart && onBuy(track)}
+                disabled={isInCart}
+                className={`w-full px-6 py-3 text-white rounded-xl font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 mb-3 ${
+                  isInCart
+                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 cursor-default'
+                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.02] active:scale-95'
+                }`}
               >
                 <ShoppingCart size={18} />
-                <span>Add to Cart &mdash; &euro;{track.licenses.exclusive.price.toFixed(2)}</span>
+                <span>
+                  {isInCart ? 'In Cart' : `Add to Cart — €${track.licenses.exclusive.price.toFixed(2)}`}
+                </span>
               </button>
             )}
 
@@ -191,6 +226,7 @@ export default function TrackDetailModal({
             >
               Close
             </button>
+          </div>
           </div>
         </div>
       </div>

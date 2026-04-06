@@ -31,6 +31,10 @@ export interface ShopSettings {
   taxRate: number;
   enableDownloads: boolean;
   watermarkPreviews: boolean;
+  enabledCustomTabs?: {
+    custom1: boolean;
+    custom2: boolean;
+  };
   updatedAt?: any;
   updatedBy?: string;
 }
@@ -62,6 +66,15 @@ export interface SecuritySettings {
   sessionTimeout: number;
   enableAutoBackup: boolean;
   backupFrequency: string;
+  updatedAt?: any;
+  updatedBy?: string;
+}
+
+export interface TrackSettings {
+  customTab1Enabled: boolean;
+  customTab1Label: string;
+  customTab2Enabled: boolean;
+  customTab2Label: string;
   updatedAt?: any;
   updatedBy?: string;
 }
@@ -230,6 +243,47 @@ class SettingsService {
     } catch (error: any) {
       console.error('Save security settings error:', error);
       throw new Error(error.message || 'Failed to save security settings');
+    }
+  }
+
+  async getTrackSettings(): Promise<TrackSettings | null> {
+    try {
+      const docRef = doc(db, this.collectionName, 'tracks');
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return docSnap.data() as TrackSettings;
+      }
+      return null;
+    } catch (error: any) {
+      console.error('Get track settings error:', error);
+      throw new Error(error.message || 'Failed to get track settings');
+    }
+  }
+
+  async saveTrackSettings(settings: TrackSettings): Promise<void> {
+    const user = authService.getCurrentUser();
+    if (!user || user.role !== 'admin') {
+      throw new Error('Unauthorized: Only admins can save settings');
+    }
+
+    try {
+      const docRef = doc(db, this.collectionName, 'tracks');
+      const settingsWithMeta = {
+        ...settings,
+        updatedAt: serverTimestamp(),
+        updatedBy: user.uid,
+      };
+
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        await updateDoc(docRef, settingsWithMeta);
+      } else {
+        await setDoc(docRef, settingsWithMeta);
+      }
+    } catch (error: any) {
+      console.error('Save track settings error:', error);
+      throw new Error(error.message || 'Failed to save track settings');
     }
   }
 
