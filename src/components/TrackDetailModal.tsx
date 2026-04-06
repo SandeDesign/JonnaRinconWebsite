@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Play, Pause, ShoppingCart } from 'lucide-react';
+import { X, Play, Pause, ShoppingCart, Download } from 'lucide-react';
 import { getCurrentTrack } from './GlobalAudioPlayer';
 
 interface Track {
@@ -200,6 +200,18 @@ export default function TrackDetailModal({
                 </p>
               </div>
             </div>
+
+            {/* Download Button - if track has audioUrl */}
+            {track.audioUrl && (
+              <a
+                href={track.audioUrl}
+                download
+                className="w-full px-6 py-3 text-white rounded-xl font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 mb-3 bg-red-600/80 hover:bg-red-600 hover:scale-[1.02] active:scale-95"
+              >
+                <Download size={18} />
+                <span>Download Track</span>
+              </a>
+            )}
 
             {/* Buy Button - for non-free tracks with a price */}
             {onBuy && track && !track.isFree && track.licenses?.exclusive?.price && (

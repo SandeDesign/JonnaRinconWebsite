@@ -63,7 +63,7 @@ export default function RemixesPage() {
     title: r.title,
     artist: r.remixArtist,
     remixArtist: r.remixArtist,
-    duration: '0:00',
+    duration: r.duration || '0:00',
     genre: r.genre,
     bpm: r.bpm,
     key: r.key,
