@@ -13,3 +13,4 @@ export { fileUploadService } from './fileUploadService';
 export { settingsService } from './settingsService';
 export { discountCodeService } from './discountCodeService';
 export { followGateService } from './followGateService';
+export { merchandiseService } from './merchandiseService';
