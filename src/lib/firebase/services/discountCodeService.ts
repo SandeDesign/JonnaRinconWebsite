@@ -18,6 +18,7 @@ import {
 import { db } from '../config';
 import { DiscountCode } from '../types';
 import { authService } from './authService';
+import { cleanFirestoreData } from '../utils/cleanFirestoreData';
 
 class DiscountCodeService {
   private collectionName = 'discountCodes';
@@ -31,14 +32,14 @@ class DiscountCodeService {
     }
 
     try {
-      const newCode = {
+      const newCode = cleanFirestoreData({
         ...data,
         code: data.code.toUpperCase(),
         usedCount: 0,
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      };
+      });
 
       const docRef = await addDoc(collection(db, this.collectionName), newCode);
       const createdCode = await this.getDiscountCodeById(docRef.id);
@@ -131,10 +132,11 @@ class DiscountCodeService {
     }
 
     try {
-      await updateDoc(doc(db, this.collectionName, id), {
+      const updateData = cleanFirestoreData({
         ...updates,
         updatedAt: serverTimestamp(),
       });
+      await updateDoc(doc(db, this.collectionName, id), updateData);
     } catch (error: any) {
       console.error('Update discount code error:', error);
       throw new Error(error.message || 'Failed to update discount code');

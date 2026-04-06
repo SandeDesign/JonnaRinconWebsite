@@ -17,6 +17,7 @@ import {
 import { db } from '../config';
 import { authService } from './authService';
 import type { SiteBackground } from '../types';
+import { cleanFirestoreData } from '../utils/cleanFirestoreData';
 
 export interface ShopSettings {
   storeName: string;
@@ -291,13 +292,14 @@ class SettingsService {
       await batch.commit();
 
       // Add new background as active
-      const docRef = await addDoc(collection(db, this.backgroundsCollection), {
+      const backgroundData = cleanFirestoreData({
         imageUrl,
         name: name || '',
         isActive: true,
         createdAt: serverTimestamp(),
         createdBy: user.uid,
       });
+      const docRef = await addDoc(collection(db, this.backgroundsCollection), backgroundData);
 
       return docRef.id;
     } catch (error: any) {

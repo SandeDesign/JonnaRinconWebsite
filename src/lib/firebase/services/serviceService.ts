@@ -21,6 +21,7 @@ import {
 import { db } from '../config';
 import { Service, PaginatedResponse } from '../types';
 import { authService } from './authService';
+import { cleanFirestoreData } from '../utils/cleanFirestoreData';
 
 class ServiceService {
   private collectionName = 'services';
@@ -53,14 +54,14 @@ class ServiceService {
     }
 
     try {
-      const newService = {
+      const newService = cleanFirestoreData({
         ...serviceData,
         inquiries: 0,
         createdBy: user.uid,
         lastUpdatedBy: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      };
+      });
 
       const docRef = await addDoc(collection(db, this.collectionName), newService);
       const createdService = await this.getServiceById(docRef.id);
@@ -153,11 +154,12 @@ class ServiceService {
     }
 
     try {
-      await updateDoc(doc(db, this.collectionName, id), {
+      const updateData = cleanFirestoreData({
         ...updates,
         lastUpdatedBy: user.uid,
         updatedAt: serverTimestamp(),
       });
+      await updateDoc(doc(db, this.collectionName, id), updateData);
     } catch (error: any) {
       console.error('Update service error:', error);
       throw new Error(error.message || 'Failed to update service');

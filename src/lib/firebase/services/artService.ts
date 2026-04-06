@@ -21,6 +21,7 @@ import {
 import { db } from '../config';
 import { Art, PaginatedResponse } from '../types';
 import { authService } from './authService';
+import { cleanFirestoreData } from '../utils/cleanFirestoreData';
 
 class ArtService {
   private collectionName = 'art';
@@ -53,7 +54,7 @@ class ArtService {
     }
 
     try {
-      const newArt = {
+      const newArt = cleanFirestoreData({
         ...artData,
         views: 0,
         likes: 0,
@@ -61,7 +62,7 @@ class ArtService {
         lastUpdatedBy: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      };
+      });
 
       const docRef = await addDoc(collection(db, this.collectionName), newArt);
       const createdArt = await this.getArtById(docRef.id);
@@ -154,11 +155,12 @@ class ArtService {
     }
 
     try {
-      await updateDoc(doc(db, this.collectionName, id), {
+      const updateData = cleanFirestoreData({
         ...updates,
         lastUpdatedBy: user.uid,
         updatedAt: serverTimestamp(),
       });
+      await updateDoc(doc(db, this.collectionName, id), updateData);
     } catch (error: any) {
       console.error('Update art error:', error);
       throw new Error(error.message || 'Failed to update art');
