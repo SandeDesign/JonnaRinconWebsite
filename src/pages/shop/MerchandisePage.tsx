@@ -3,18 +3,10 @@ import { ShoppingCart, Star } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
+import { useMerchandise } from '../../hooks/useMerchandise';
+import { useCart } from '../../hooks/useCart';
 
-interface MerchandiseItem {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  image: string;
-  inStock: boolean;
-  rating: number;
-}
-
-const merchandiseItems: MerchandiseItem[] = [
+const merchandiseItems: any[] = [
   {
     id: 'tshirt-1',
     name: 'Jonna Rincon Logo T-Shirt',
@@ -128,24 +120,23 @@ const merchandiseItems: MerchandiseItem[] = [
 const MerchandisePage: React.FC = () => {
   const heroTitle = useCyberDecodeInView('Merchandise');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [cartItems, setCartItems] = useState<string[]>([]);
+  const { merchandise, loading } = useMerchandise({ status: 'published' });
+  const { addTrackToCart, cartItems = [] } = useCart();
 
-  const categories = Array.from(new Set(merchandiseItems.map(item => item.category))).sort();
+  // Use real data from Firebase, fallback to demo if empty
+  const displayItems = merchandise.length > 0 ? merchandise : merchandiseItems;
+
+  const categories = Array.from(new Set(displayItems.map(item => item.category))).sort();
 
   const filteredItems = selectedCategory
-    ? merchandiseItems.filter(item => item.category === selectedCategory)
-    : merchandiseItems;
+    ? displayItems.filter(item => item.category === selectedCategory)
+    : displayItems;
 
   const handleAddToCart = (itemId: string) => {
-    setCartItems([...cartItems, itemId]);
-    setTimeout(() => {
-      const index = cartItems.indexOf(itemId);
-      if (index > -1) {
-        const newItems = [...cartItems];
-        newItems.splice(index, 1);
-        setCartItems(newItems);
-      }
-    }, 2000);
+    const item = displayItems.find(m => m.id === itemId);
+    if (item) {
+      addTrackToCart(item as any);
+    }
   };
 
   return (

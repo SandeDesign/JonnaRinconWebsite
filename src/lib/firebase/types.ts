@@ -175,6 +175,44 @@ export interface Art {
 }
 
 // ============================================
+// MERCHANDISE TYPES
+// ============================================
+
+export interface Merchandise {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string; // e.g., "Clothing", "Accessories", "Home", "Other"
+  image: string; // Main product image URL
+
+  // Media
+  gallery?: string[]; // Additional product images
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+  inStock: boolean;
+
+  // Stats
+  views: number;
+  sold: number;
+
+  // SEO & Meta
+  slug: string;
+  metaTitle?: string;
+  metaDescription?: string;
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+}
+
+// ============================================
 // SERVICE TYPES
 // ============================================
 

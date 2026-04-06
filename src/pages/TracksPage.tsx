@@ -117,7 +117,7 @@ const skills = [
 
 export default function TracksPage() {
   const { isAuthenticated, isLoading } = useAuth();
-  const { addTrackToCart } = useCart();
+  const { addTrackToCart, cartItems = [] } = useCart();
   const { tracks: firebaseTracks, loading: tracksLoading, error: tracksError } = useTracks({ status: 'published' });
   const { remixes: firebaseRemixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const [activeTab, setActiveTab] = useState('tracks');

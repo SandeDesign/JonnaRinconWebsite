@@ -1,71 +1,86 @@
 import { useState, useEffect } from 'react';
 import { merchandiseService } from '../lib/firebase/services';
-import { Merchandise } from '../lib/firebase/types';
+import type { Merchandise } from '../lib/firebase/types';
 
-export function useMerchandise() {
+export function useMerchandise(filters?: { status?: string; featured?: boolean }) {
   const [merchandise, setMerchandise] = useState<Merchandise[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = merchandiseService.subscribeToMerchandise((data) => {
-      setMerchandise(data);
-      setLoading(false);
-      setError(null);
-    });
+    setLoading(true);
+    setError(null);
 
-    return () => unsubscribe();
-  }, []);
+    if (filters?.status === 'published' && !filters?.featured) {
+      // Get published merchandise
+      merchandiseService
+        .getPublishedMerchandise()
+        .then((data) => {
+          setMerchandise(data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err.message || 'Failed to fetch merchandise');
+          setLoading(false);
+        });
+    } else {
+      // Subscribe to filtered merchandise
+      const unsubscribe = merchandiseService.subscribeToMerchandise((data) => {
+        setMerchandise(data);
+        setLoading(false);
+      }, filters);
+
+      return () => unsubscribe();
+    }
+  }, [filters?.status, filters?.featured]);
 
   return { merchandise, loading, error };
 }
 
 export function useMerchandiseById(id: string) {
-  const [item, setItem] = useState<Merchandise | null>(null);
+  const [merchandise, setMerchandise] = useState<Merchandise | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) {
+      setMerchandise(null);
       setLoading(false);
       return;
     }
 
-    const fetchItem = async () => {
-      try {
-        const data = await merchandiseService.getMerchandiseById(id);
-        setItem(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
+    merchandiseService
+      .getMerchandiseById(id)
+      .then((data) => {
+        setMerchandise(data);
         setLoading(false);
-      }
-    };
-
-    fetchItem();
+      })
+      .catch((err) => {
+        setError(err.message || 'Failed to fetch merchandise');
+        setLoading(false);
+      });
   }, [id]);
 
-  return { item, loading, error };
+  return { merchandise, loading, error };
 }
 
 export function useFeaturedMerchandise() {
   const [merchandise, setMerchandise] = useState<Merchandise[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        const data = await merchandiseService.getFeaturedMerchandise();
+    merchandiseService
+      .getFeaturedMerchandise()
+      .then((data) => {
         setMerchandise(data);
-      } catch (error) {
-        console.error('Failed to fetch featured merchandise:', error);
-      } finally {
         setLoading(false);
-      }
-    };
-
-    fetchFeatured();
+      })
+      .catch((err) => {
+        setError(err.message || 'Failed to fetch featured merchandise');
+        setLoading(false);
+      });
   }, []);
 
-  return { merchandise, loading };
+  return { merchandise, loading, error };
 }

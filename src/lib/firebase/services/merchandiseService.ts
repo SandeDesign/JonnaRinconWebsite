@@ -21,6 +21,7 @@ import {
 import { db } from '../config';
 import { Merchandise, PaginatedResponse } from '../types';
 import { authService } from './authService';
+import { cleanFirestoreData } from '../utils/cleanFirestoreData';
 
 class MerchandiseService {
   private collectionName = 'merchandise';
@@ -53,7 +54,7 @@ class MerchandiseService {
     }
 
     try {
-      const newMerchandise = {
+      const newMerchandise = cleanFirestoreData({
         ...merchandiseData,
         views: 0,
         sold: 0,
@@ -61,7 +62,7 @@ class MerchandiseService {
         lastUpdatedBy: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      };
+      });
 
       const docRef = await addDoc(collection(db, this.collectionName), newMerchandise);
       const createdMerchandise = await this.getMerchandiseById(docRef.id);
@@ -154,11 +155,12 @@ class MerchandiseService {
     }
 
     try {
-      await updateDoc(doc(db, this.collectionName, id), {
+      const updateData = cleanFirestoreData({
         ...updates,
         lastUpdatedBy: user.uid,
         updatedAt: serverTimestamp(),
       });
+      await updateDoc(doc(db, this.collectionName, id), updateData);
     } catch (error: any) {
       console.error('Update merchandise error:', error);
       throw new Error(error.message || 'Failed to update merchandise');
