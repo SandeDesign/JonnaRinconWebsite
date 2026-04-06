@@ -40,6 +40,8 @@ export default function MarqueeRed() {
     </>
   );
 
+  const strokeColor = 'rgb(255, 255, 255)';
+
   return (
     <div className="overflow-hidden py-6 md:py-10 select-none flex flex-col gap-2 md:gap-3">
       <div className="marquee-red-row marquee-red-ltr">
