@@ -1,78 +1,42 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Zap, Headphones, Music, Volume2, Users, Palette, ArrowRight } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
+import { useServices } from '../../hooks/useServices';
+import { Service } from '../../lib/firebase/types';
 
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  rate: string;
-  cta: string;
-  gradient: string;
-}
+// Icon mapping from string names to React components
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Zap,
+  Headphones,
+  Music,
+  Volume2,
+  Users,
+  Palette,
+};
 
-const services: Service[] = [
-  {
-    id: 'beat-production',
-    name: 'Beat Production',
-    description: 'Custom beats tailored to your style. From hip-hop to electronic, trap to ambient soundscapes.',
-    icon: Zap,
-    rate: 'From €50',
-    cta: 'Inquire Now',
-    gradient: 'from-red-600 to-red-500',
-  },
-  {
-    id: 'audio-engineering',
-    name: 'Audio Engineering',
-    description: 'Professional recording, arrangement, and production engineering for your tracks.',
-    icon: Headphones,
-    rate: 'From €75',
-    cta: 'Get Started',
-    gradient: 'from-pink-600 to-pink-500',
-  },
-  {
-    id: 'music-lessons',
-    name: 'Music Lessons',
-    description: 'Learn production, DJing, or music theory from an experienced electronic music artist.',
-    icon: Music,
-    rate: 'From €40/hr',
-    cta: 'Book Lesson',
-    gradient: 'from-purple-600 to-purple-500',
-  },
-  {
-    id: 'mixing-mastering',
-    name: 'Mixing & Mastering',
-    description: 'Professional mixing and mastering to bring your tracks to commercial quality.',
-    icon: Volume2,
-    rate: 'From €100',
-    cta: 'Submit Track',
-    gradient: 'from-blue-600 to-blue-500',
-  },
-  {
-    id: 'collaboration',
-    name: 'Collaboration Consulting',
-    description: 'Guidance on creative partnerships, production workflows, and collaborative projects.',
-    icon: Users,
-    rate: 'From €60',
-    cta: 'Discuss',
-    gradient: 'from-cyan-600 to-cyan-500',
-  },
-  {
-    id: 'sound-design',
-    name: 'Sound Design',
-    description: 'Custom sound design, synth programming, and audio effects for your unique sonic identity.',
-    icon: Palette,
-    rate: 'From €85',
-    cta: 'Create',
-    gradient: 'from-indigo-600 to-indigo-500',
-  },
-];
+// Get icon component from string name, fallback to Zap
+const getIcon = (iconName: string): React.ComponentType<{ className?: string }> => {
+  return iconMap[iconName] || Zap;
+};
+
+// Format rate as string for display
+const formatRate = (rate: number): string => {
+  return `From €${rate}`;
+};
 
 const ServicesPage: React.FC = () => {
   const heroTitle = useCyberDecodeInView('Services');
+  const { services, loading } = useServices({ status: 'published' });
+
+  // Memoize formatted services to avoid unnecessary re-renders
+  const formattedServices = useMemo(() => {
+    return services.map((service) => ({
+      ...service,
+      displayRate: formatRate(service.rate),
+    }));
+  }, [services]);
 
   return (
     <div className="min-h-screen text-white">
@@ -101,32 +65,42 @@ const ServicesPage: React.FC = () => {
       {/* Services Grid */}
       <section className="px-6 md:px-12 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {services.map((service) => {
-              const Icon = service.icon;
-              return (
-                <div
-                  key={service.id}
-                  className="group relative bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8 hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08] flex flex-col"
-                >
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-white/50">Loading services...</div>
+            </div>
+          ) : formattedServices.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-white/50">No services available at the moment.</div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {formattedServices.map((service) => {
+                const Icon = getIcon(service.icon);
+                return (
+                  <div
+                    key={service.id}
+                    className="group relative bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8 hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08] flex flex-col"
+                  >
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
 
-                  <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">{service.name}</h3>
-                  <p className="text-white/50 text-sm leading-relaxed mb-6 flex-1">{service.description}</p>
+                    <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">{service.name}</h3>
+                    <p className="text-white/50 text-sm leading-relaxed mb-6 flex-1">{service.description}</p>
 
-                  <div className="flex items-center justify-between pt-6 border-t border-white/[0.06]">
-                    <span className="text-sm text-white/30 font-bold uppercase tracking-wider">{service.rate}</span>
-                    <button className="flex items-center gap-2 text-xs text-white/40 group-hover:text-red-400 transition-colors font-bold uppercase tracking-wider hover:gap-3">
-                      {service.cta}
-                      <ArrowRight size={16} />
-                    </button>
+                    <div className="flex items-center justify-between pt-6 border-t border-white/[0.06]">
+                      <span className="text-sm text-white/30 font-bold uppercase tracking-wider">{service.displayRate}</span>
+                      <button className="flex items-center gap-2 text-xs text-white/40 group-hover:text-red-400 transition-colors font-bold uppercase tracking-wider hover:gap-3">
+                        {service.cta}
+                        <ArrowRight size={16} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
