@@ -137,6 +137,7 @@ export default function TracksPage() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedTypeTab, setSelectedTypeTab] = useState<'Singles' | 'Albums & EPs' | 'All' | 'Custom 1' | 'Custom 2'>('All');
   const [shopSettings, setShopSettings] = useState<any>(null);
+  const [trackSettings, setTrackSettings] = useState<any>(null);
   const heroTitle = useCyberDecodeInView('Music');
 
   // Convert Firebase tracks to local Track interface - Maps all track data including album field
