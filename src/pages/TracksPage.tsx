@@ -13,7 +13,7 @@ import FilterModal from '../components/FilterModal';
 import TrackDetailModal from '../components/TrackDetailModal';
 import LoginModal from '../components/LoginModal';
 import { extractUniqueGenres } from '../lib/utils/genreExtractor';
-import { trackService } from '../lib/firebase/services';
+import { trackService, settingsService } from '../lib/firebase/services';
 import { useCart } from '../hooks/useCart';
 
 const buttons = [
@@ -136,6 +136,7 @@ export default function TracksPage() {
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedTypeTab, setSelectedTypeTab] = useState<'Singles' | 'Albums & EPs' | 'All' | 'Custom 1' | 'Custom 2'>('All');
+  const [shopSettings, setShopSettings] = useState<any>(null);
   const heroTitle = useCyberDecodeInView('Music');
 
   // Convert Firebase tracks to local Track interface - Maps all track data including album field
@@ -330,6 +331,19 @@ export default function TracksPage() {
     setExpandedAlbums(new Set());
   }, [selectedType, selectedYear, selectedGenre, selectedCollab]);
 
+  // Load shop settings for custom tabs
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await settingsService.getShopSettings();
+        setShopSettings(settings);
+      } catch (error) {
+        console.error('Failed to load shop settings:', error);
+      }
+    };
+    loadSettings();
+  }, []);
+
   // Show login modal if not authenticated
   if (!isLoading && !isAuthenticated) {
     return (
@@ -367,6 +381,7 @@ export default function TracksPage() {
         isPlaying={selectedTrack ? false : false}
         onPlay={handlePlayTrack}
         onBuy={handleBuyTrack}
+        cartItems={cartItems}
       />
 
       {/* Hero Section - Compact */}
@@ -406,16 +421,6 @@ export default function TracksPage() {
               </button>
             </div>
           )}
-
-          {/* Stats - Compact, Single Row */}
-          <div className="flex justify-between gap-4 md:gap-8 mb-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex-1 min-w-0">
-                <p className="text-lg md:text-2xl font-black text-white truncate">{stat.value}</p>
-                <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">{stat.label}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -485,20 +490,44 @@ export default function TracksPage() {
           {/* Type Filter Tabs */}
           <section className="px-6 md:px-12 py-4 md:py-6 border-b border-white/[0.06]">
             <div className="max-w-7xl mx-auto">
-              <div className="flex flex-wrap gap-2">
-                {['Singles', 'Albums & EPs', 'All', 'Custom 1', 'Custom 2'].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setSelectedTypeTab(tab as any)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                      selectedTypeTab === tab
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                        : 'bg-white/[0.06] text-white/50 hover:text-white/70 hover:bg-white/[0.10]'
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
+              <div className="flex items-center justify-between gap-4">
+                {/* Filter Button - Left side */}
+                <button
+                  onClick={() => setIsFilterModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-xs font-bold uppercase tracking-wider text-white transition-all whitespace-nowrap"
+                >
+                  <Sliders size={16} />
+                  Filter
+                </button>
+
+                {/* Tabs - Center with flex-1 */}
+                <div className="flex-1 flex flex-wrap gap-2 justify-center">
+                  {['Singles', 'Albums & EPs', 'All']
+                    .concat(
+                      // Conditionally add Custom 1 if enabled in settings
+                      shopSettings?.enabledCustomTabs?.custom1 ? ['Custom 1'] : []
+                    )
+                    .concat(
+                      // Conditionally add Custom 2 if enabled in settings
+                      shopSettings?.enabledCustomTabs?.custom2 ? ['Custom 2'] : []
+                    )
+                    .map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setSelectedTypeTab(tab as any)}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          selectedTypeTab === tab
+                            ? 'bg-red-600 text-white'
+                            : 'bg-white/[0.06] text-white/50 hover:text-white/70 hover:bg-white/[0.10]'
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                </div>
+
+                {/* Spacer for visual balance on mobile/tablet */}
+                <div className="w-[68px]"></div>
               </div>
             </div>
           </section>
@@ -564,7 +593,6 @@ export default function TracksPage() {
                                   <div key={track.id} className="pl-6 md:pl-8">
                                     <TrackListItem
                                       track={track}
-                                      onPlay={handlePlayTrack}
                                       onClickTrack={setSelectedTrack}
                                       onBuy={handleBuyTrack}
                                       showType={false}
@@ -582,7 +610,6 @@ export default function TracksPage() {
                         <TrackListItem
                           key={albumKey}
                           track={group.displayTrack}
-                          onPlay={handlePlayTrack}
                           onClickTrack={setSelectedTrack}
                           onBuy={handleBuyTrack}
                           showType={true}
@@ -601,6 +628,16 @@ export default function TracksPage() {
               </div>
             </div>
           </section>
+
+          {/* Stats - Compact, Single Row */}
+          <div className="flex justify-between gap-4 md:gap-8 mb-8">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex-1 min-w-0">
+                <p className="text-lg md:text-2xl font-black text-white truncate">{stat.value}</p>
+                <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">{stat.label}</p>
+              </div>
+            ))}
+          </div>
 
           {/* Skills & Roles */}
           <section className="px-6 md:px-12 py-16 md:py-24">
@@ -765,18 +802,6 @@ export default function TracksPage() {
                     <TrackListItem
                       key={remix.id}
                       track={remix}
-                      onPlay={(t) => {
-                        const queue = remixTracks
-                          .filter((r) => {
-                            const typeMatch = selectedRemixType === 'All' || r.remixType === selectedRemixType;
-                            const yearMatch = selectedRemixYear === 'All' || r.year === selectedRemixYear;
-                            const collabMatch = selectedRemixCollab === 'All' || r.collab === selectedRemixCollab;
-                            const genreMatch = genreMatches(r.genre, selectedRemixGenre);
-                            return typeMatch && yearMatch && collabMatch && genreMatch;
-                          })
-                          .sort((a, b) => b.createdAt - a.createdAt);
-                        setCurrentTrack(t, queue);
-                      }}
                       onClickTrack={setSelectedTrack}
                       showType={false}
                       showMetadata={true}
