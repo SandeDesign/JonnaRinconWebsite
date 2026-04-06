@@ -336,10 +336,14 @@ export default function TracksPage() {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const settings = await settingsService.getShopSettings();
-        setShopSettings(settings);
+        const [shopData, trackData] = await Promise.all([
+          settingsService.getShopSettings(),
+          settingsService.getTrackSettings(),
+        ]);
+        setShopSettings(shopData);
+        setTrackSettings(trackData);
       } catch (error) {
-        console.error('Failed to load shop settings:', error);
+        console.error('Failed to load settings:', error);
       }
     };
     loadSettings();
@@ -505,12 +509,12 @@ export default function TracksPage() {
                 <div className="flex-1 flex flex-wrap gap-2 justify-center">
                   {['Singles', 'Albums & EPs', 'All']
                     .concat(
-                      // Conditionally add Custom 1 if enabled in settings
-                      shopSettings?.enabledCustomTabs?.custom1 ? ['Custom 1'] : []
+                      // Conditionally add Custom Tab 1 if enabled in settings
+                      trackSettings?.customTab1Enabled ? [trackSettings.customTab1Label || 'Custom 1'] : []
                     )
                     .concat(
-                      // Conditionally add Custom 2 if enabled in settings
-                      shopSettings?.enabledCustomTabs?.custom2 ? ['Custom 2'] : []
+                      // Conditionally add Custom Tab 2 if enabled in settings
+                      trackSettings?.customTab2Enabled ? [trackSettings.customTab2Label || 'Custom 2'] : []
                     )
                     .map((tab) => (
                       <button
