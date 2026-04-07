@@ -4,7 +4,10 @@ import { settingsService } from '../../lib/firebase/services';
 import { SiteBackground } from '../../lib/firebase/types';
 import { Trash2, Check, Image } from 'lucide-react';
 
+// Background management tool - allows admins to change site background
 const BackgroundToolPage: React.FC = () => {
+  // Force component to be included in bundle
+  console.log('BackgroundToolPage loaded');
   const [activeTab, setActiveTab] = useState<'set' | 'history'>('set');
   const [backgrounds, setBackgrounds] = useState<SiteBackground[]>([]);
   const [loading, setLoading] = useState(true);
