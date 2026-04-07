@@ -59,6 +59,14 @@ export default function GlobalAudioPlayer() {
   const audioRef = useRef<any>(null);
   const [store, setStore] = useState<PlayerStore>(playerStore);
   const [isVisible, setIsVisible] = useState(isPlayerVisible);
+  const [volume, setVolume] = useState<number>(() => {
+    // Load volume from localStorage on mount, default to 0.5 (50%)
+    if (typeof window !== 'undefined') {
+      const savedVolume = localStorage.getItem('audioPlayerVolume');
+      return savedVolume ? parseFloat(savedVolume) : 0.5;
+    }
+    return 0.5;
+  });
 
   // Register UI updaters
   React.useEffect(() => {
@@ -69,6 +77,13 @@ export default function GlobalAudioPlayer() {
       setIsVisible(!isVisible);
     };
   }, [isVisible]);
+
+  // Save volume to localStorage when it changes
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('audioPlayerVolume', volume.toString());
+    }
+  }, [volume]);
 
   if (!store.currentTrack || !isVisible) {
     return null;
@@ -119,7 +134,8 @@ export default function GlobalAudioPlayer() {
               onClickPrevious={handlePrevious}
               showFilledVolume
               layout="horizontal-reverse"
-              volume={1.0}
+              volume={volume}
+              onVolumeChange={(newVolume) => setVolume(newVolume)}
               customAdditionalControls={[
                 <button
                   key="close-player"
