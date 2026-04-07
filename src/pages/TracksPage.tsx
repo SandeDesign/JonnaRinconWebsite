@@ -495,18 +495,9 @@ export default function TracksPage() {
           {/* Type Filter Tabs */}
           <section className="px-6 md:px-12 py-4 md:py-6 border-b border-white/[0.06]">
             <div className="max-w-7xl mx-auto">
-              <div className="flex items-center justify-between gap-4">
-                {/* Filter Button - Left side */}
-                <button
-                  onClick={() => setIsFilterModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-xs font-bold uppercase tracking-wider text-white transition-all whitespace-nowrap"
-                >
-                  <Sliders size={16} />
-                  Filter
-                </button>
-
-                {/* Tabs - Center with flex-1 */}
-                <div className="flex-1 flex flex-wrap gap-2 justify-center">
+              <div className="flex items-center justify-center gap-4">
+                {/* Tabs - Center */}
+                <div className="flex flex-wrap gap-2 justify-center">
                   {['Singles', 'Albums & EPs', 'All']
                     .concat(
                       // Conditionally add Custom Tab 1 if enabled in settings
@@ -530,9 +521,6 @@ export default function TracksPage() {
                       </button>
                     ))}
                 </div>
-
-                {/* Spacer for visual balance on mobile/tablet */}
-                <div className="w-[68px]"></div>
               </div>
             </div>
           </section>
