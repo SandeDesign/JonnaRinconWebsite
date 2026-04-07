@@ -587,6 +587,7 @@ export default function TracksPage() {
                                     <TrackListItem
                                       track={track}
                                       onClickTrack={setSelectedTrack}
+                                      onPlay={handlePlayTrack}
                                       onBuy={handleBuyTrack}
                                       showType={false}
                                       showMetadata={true}
@@ -604,6 +605,7 @@ export default function TracksPage() {
                           key={albumKey}
                           track={group.displayTrack}
                           onClickTrack={setSelectedTrack}
+                          onPlay={handlePlayTrack}
                           onBuy={handleBuyTrack}
                           showType={true}
                           showMetadata={true}
@@ -796,6 +798,7 @@ export default function TracksPage() {
                       key={remix.id}
                       track={remix}
                       onClickTrack={setSelectedTrack}
+                      onPlay={handlePlayTrack}
                       showType={false}
                       showMetadata={true}
                     />

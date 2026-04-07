@@ -6,6 +6,7 @@ import { getRowHighlightClass } from '../lib/utils/buttonStyles';
 interface TrackListItemProps {
   track: any;
   onClickTrack?: (track: any) => void;
+  onPlay?: (track: any) => void;
   onBuy?: (track: any) => void;
   allTracks?: any[];
   showType?: boolean;
@@ -20,6 +21,7 @@ interface TrackListItemProps {
 export default function TrackListItem({
   track,
   onClickTrack,
+  onPlay,
   onBuy,
   allTracks = [],
   showType = true,
@@ -40,7 +42,10 @@ export default function TrackListItem({
       } ${getRowHighlightClass(isCurrentTrack)}`}
     >
       {/* Cover Art */}
-      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden">
+      <div
+        onClick={() => onPlay?.(track)}
+        className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+      >
         {track.coverArt ? (
           <img
             src={track.coverArt}
