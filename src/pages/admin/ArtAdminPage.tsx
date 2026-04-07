@@ -199,7 +199,7 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
     slug: art?.slug || '',
     metaTitle: art?.metaTitle || '',
     metaDescription: art?.metaDescription || '',
-    status: art?.status || 'published',
+    status: art?.status || 'draft',
     featured: art?.featured || false,
   });
   const [saving, setSaving] = useState(false);
