@@ -45,7 +45,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: 'Art', href: '/admin/art', icon: Palette },
     { name: 'Beats', href: '/admin/beats', icon: Music },
     { name: 'Tracks', href: '/admin/tracks', icon: Music },
-    { name: 'Albums', href: '/admin/albums', icon: Music },
+    { name: 'Playlists', href: '/admin/playlists', icon: Music },
     { name: 'Remixes', href: '/admin/remixes', icon: Music },
     { name: 'Services', href: '/admin/services', icon: Zap },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
