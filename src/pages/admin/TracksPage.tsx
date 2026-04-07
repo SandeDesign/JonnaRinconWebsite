@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
 import CustomTrackLinksEditor from '../../components/admin/CustomTrackLinksEditor';
+import CustomButtonConfig from '../../components/admin/CustomButtonConfig';
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
 import { Track, CustomTrackLink } from '../../lib/firebase/types';
