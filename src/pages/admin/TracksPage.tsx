@@ -708,6 +708,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
     tags: track?.tags?.join(', ') || '',
     audioUrl: track?.audioUrl || '',
     artworkUrl: track?.artworkUrl || '',
+    price: track?.price ?? '',
     slug: track?.slug || '',
     status: track?.status || 'draft',
     featured: track?.featured || false,
@@ -756,6 +757,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         status: formData.status,
         featured: formData.featured,
         isFree: formData.isFree,
+        ...(formData.price && formData.price !== '' && { price: parseFloat(formData.price as any) }),
         customTrackLinks: customTrackLinks.length > 0 ? customTrackLinks : undefined,
         licenses: {
           basic: {
@@ -1029,6 +1031,19 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Price (€) - Optional</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="Leave empty for free tracks"
+              />
+              <p className="text-xs text-white/40 mt-1">Leave empty for free tracks</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Status</label>
