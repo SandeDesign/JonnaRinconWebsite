@@ -376,6 +376,15 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
             required
           />
 
+          {formData.image && willHaveDownloadAppended(formData.image) && (
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+              <p className="text-yellow-400 text-sm font-semibold">
+                <strong>Final URL:</strong> {toDirectUrl(formData.image)}
+              </p>
+              <p className="text-yellow-400 text-xs mt-1">⚠️ /download will be auto-appended when saving</p>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">Gallery Images</label>
             <div className="space-y-2">
