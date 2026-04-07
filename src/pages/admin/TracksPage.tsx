@@ -343,88 +343,96 @@ const TracksPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Filter Section */}
-        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Filters</h3>
-            </div>
-
-            {/* Type Buttons */}
-            <div className="flex flex-wrap gap-2">
-              {['Singles', 'Albums', 'EPs'].map((type) => {
-                const actualType = type === 'Singles' ? 'Single' : type === 'EPs' ? 'EP' : 'Album';
-                const isActive = selectedTypes.has(actualType);
-                return (
-                  <button
-                    key={type}
-                    onClick={() => toggleTypeFilter(actualType)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                      isActive
-                        ? 'bg-red-600 text-white shadow-lg'
-                        : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Year and Status Dropdowns */}
-            <div className="flex flex-wrap gap-3">
-              <select
-                value={selectedYear ?? ''}
-                onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : null)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  selectedYear !== null
-                    ? 'bg-red-600 text-white'
-                    : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
-                } focus:outline-none`}
-              >
-                <option value="">Year</option>
-                {availableYears.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedStatus ?? ''}
-                onChange={(e) => setSelectedStatus(e.target.value || null)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  selectedStatus !== null
-                    ? 'bg-red-600 text-white'
-                    : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
-                } focus:outline-none`}
-              >
-                <option value="">Status</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-                <option value="archived">Archived</option>
-              </select>
-            </div>
-
-            {/* Results Counter */}
-            {hasActiveFilters && (
-              <div className="text-sm text-white/60 pt-2">
-                Showing <span className="font-semibold text-white">{Object.keys(groupedTracks).length}</span> of{' '}
-                <span className="font-semibold text-white">{Object.keys(
-                  sortedTracks.reduce((acc, track) => {
-                    if (track.type === 'Album' || track.type === 'EP') {
-                      const albumName = track.album || track.title;
-                      const albumKey = `${track.type}:${albumName}`;
-                      if (!acc[albumKey]) acc[albumKey] = true;
-                    } else {
-                      const singleKey = `single:${track.id}`;
-                      if (!acc[singleKey]) acc[singleKey] = true;
-                    }
-                    return acc;
-                  }, {} as Record<string, boolean>)
-                ).length}</span> items
+        {/* Filter and Custom Button Configuration Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Filter Section */}
+          <div className="lg:col-span-1 bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Filters</h3>
               </div>
-            )}
+
+              {/* Type Buttons */}
+              <div className="flex flex-wrap gap-2">
+                {['Singles', 'Albums', 'EPs'].map((type) => {
+                  const actualType = type === 'Singles' ? 'Single' : type === 'EPs' ? 'EP' : 'Album';
+                  const isActive = selectedTypes.has(actualType);
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => toggleTypeFilter(actualType)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        isActive
+                          ? 'bg-red-600 text-white shadow-lg'
+                          : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Year and Status Dropdowns */}
+              <div className="flex flex-col gap-3">
+                <select
+                  value={selectedYear ?? ''}
+                  onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : null)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    selectedYear !== null
+                      ? 'bg-red-600 text-white'
+                      : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                  } focus:outline-none`}
+                >
+                  <option value="">Year</option>
+                  {availableYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedStatus ?? ''}
+                  onChange={(e) => setSelectedStatus(e.target.value || null)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    selectedStatus !== null
+                      ? 'bg-red-600 text-white'
+                      : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                  } focus:outline-none`}
+                >
+                  <option value="">Status</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+
+              {/* Results Counter */}
+              {hasActiveFilters && (
+                <div className="text-sm text-white/60 pt-2">
+                  Showing <span className="font-semibold text-white">{Object.keys(groupedTracks).length}</span> of{' '}
+                  <span className="font-semibold text-white">{Object.keys(
+                    sortedTracks.reduce((acc, track) => {
+                      if (track.type === 'Album' || track.type === 'EP') {
+                        const albumName = track.album || track.title;
+                        const albumKey = `${track.type}:${albumName}`;
+                        if (!acc[albumKey]) acc[albumKey] = true;
+                      } else {
+                        const singleKey = `single:${track.id}`;
+                        if (!acc[singleKey]) acc[singleKey] = true;
+                      }
+                      return acc;
+                    }, {} as Record<string, boolean>)
+                  ).length}</span> items
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Custom Button Configuration */}
+          <div className="lg:col-span-2">
+            <CustomButtonConfig isExpanded={true} />
           </div>
         </div>
 
