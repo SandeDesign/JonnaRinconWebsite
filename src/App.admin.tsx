@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { BackgroundProvider } from './contexts/BackgroundContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import BackgroundRenderer from './components/BackgroundRenderer';
 
 // Admin Pages
 import LoginPage from './pages/admin/LoginPage';

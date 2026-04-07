@@ -1,8 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { BackgroundProvider } from './contexts/BackgroundContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
+import BackgroundRenderer from './components/BackgroundRenderer';
 
 // Public pages
 import HomePage from './App';
@@ -76,9 +78,11 @@ import ManagerChat from './pages/manager/ChatPage';
 const MainApp: React.FC = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <GlobalAudioPlayer />
-        <Routes>
+      <BackgroundProvider>
+        <BrowserRouter>
+          <BackgroundRenderer />
+          <GlobalAudioPlayer />
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -395,7 +399,8 @@ const MainApp: React.FC = () => {
           {/* 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+        </BrowserRouter>
+      </BackgroundProvider>
     </AuthProvider>
   );
 };
