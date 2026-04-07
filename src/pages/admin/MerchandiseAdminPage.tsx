@@ -4,6 +4,7 @@ import LinkInput from '../../components/admin/LinkInput';
 import { useMerchandise } from '../../hooks/useMerchandise';
 import { merchandiseService } from '../../lib/firebase/services';
 import { Merchandise } from '../../lib/firebase/types';
+import { toDirectUrl } from '../../lib/utils/urlUtils';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 const categories = [
@@ -204,14 +205,9 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
   const [saving, setSaving] = useState(false);
   const [galleryInput, setGalleryInput] = useState('');
 
-  // Helper function to get final URL with /download appended
-  const getFinalUrl = (url: string): string => {
-    return url.endsWith('/download') ? url : `${url}/download`;
-  };
-
-  // Check if a URL will have /download appended
+  // Helper function to check if URL will have /download appended
   const willHaveDownloadAppended = (url: string): boolean => {
-    return !url.endsWith('/download');
+    return url.includes('/index.php/s/') && !url.endsWith('/download');
   };
 
   // Update form data when merchandise prop changes (for editing)
@@ -236,9 +232,10 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
 
   const handleAddGalleryImage = () => {
     if (galleryInput.trim()) {
+      const transformedUrl = toDirectUrl(galleryInput.trim());
       setFormData({
         ...formData,
-        gallery: [...formData.gallery, galleryInput.trim()],
+        gallery: [...formData.gallery, transformedUrl],
       });
       setGalleryInput('');
     }
@@ -283,8 +280,8 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
         description: formData.description,
         price: price,
         category: formData.category,
-        image: formData.image.endsWith('/download') ? formData.image : `${formData.image}/download`,
-        gallery: formData.gallery.length > 0 ? formData.gallery.map(url => url.endsWith('/download') ? url : `${url}/download`) : undefined,
+        image: toDirectUrl(formData.image),
+        gallery: formData.gallery.length > 0 ? formData.gallery : undefined,
         slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
         metaTitle: formData.metaTitle || undefined,
         metaDescription: formData.metaDescription || undefined,
@@ -369,31 +366,15 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">Main Image URL</label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              placeholder="https://example.com/image.jpg"
-              required
-            />
-            {formData.image && (
-              <div className={`mt-2 p-3 rounded-lg text-sm ${
-                willHaveDownloadAppended(formData.image)
-                  ? 'bg-yellow-500/10 border border-yellow-500/20'
-                  : 'bg-green-500/10 border border-green-500/20'
-              }`}>
-                <p className={willHaveDownloadAppended(formData.image) ? 'text-yellow-400' : 'text-green-400'}>
-                  <strong>Final URL:</strong> {getFinalUrl(formData.image)}
-                </p>
-                {willHaveDownloadAppended(formData.image) && (
-                  <p className="text-yellow-400 text-xs mt-1">⚠️ /download will be auto-appended when saving</p>
-                )}
-              </div>
-            )}
-          </div>
+          <LinkInput
+            label="Main Image URL"
+            name="image"
+            type="image"
+            onChange={(url) => setFormData({ ...formData, image: url })}
+            defaultValue={formData.image}
+            placeholder="https://example.com/image.jpg"
+            required
+          />
 
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">Gallery Images</label>
@@ -425,23 +406,16 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
                   {formData.gallery.map((url, index) => (
                     <div
                       key={index}
-                      className="flex flex-col px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg"
+                      className="flex items-center justify-between px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-white/60 truncate">{url}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveGalleryImage(index)}
-                          className="ml-2 text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      {willHaveDownloadAppended(url) && (
-                        <p className="text-yellow-400 text-xs mt-1">
-                          Final: {getFinalUrl(url)}
-                        </p>
-                      )}
+                      <span className="text-sm text-white/60 truncate">{url}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveGalleryImage(index)}
+                        className="ml-2 text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
+                      >
+                        Remove
+                      </button>
                     </div>
                   ))}
                 </div>

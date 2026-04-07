@@ -219,7 +219,8 @@ const MerchandisePage: React.FC = () => {
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08] flex flex-col"
+                className="group bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08] flex flex-col cursor-pointer"
+                onClick={() => handleOpenModal(item)}
               >
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden bg-white/[0.02]">
@@ -255,19 +256,22 @@ const MerchandisePage: React.FC = () => {
                       <Star
                         key={i}
                         size={14}
-                        className={i < Math.floor(item.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-white/20'}
+                        className={i < Math.floor(item.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-white/20'}
                       />
                     ))}
-                    <span className="text-xs text-white/40 ml-1">({item.rating})</span>
+                    <span className="text-xs text-white/40 ml-1">({item.rating?.toFixed(1) || 'N/A'})</span>
                   </div>
 
                   {/* Price and Button */}
                   <div className="mt-auto flex items-center justify-between pt-5 border-t border-white/[0.06]">
                     <span className="text-lg md:text-xl font-black text-red-500">
-                      €{item.price.toFixed(2)}
+                      ${item.price.toFixed(2)}
                     </span>
                     <button
-                      onClick={() => handleAddToCart(item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(item.id);
+                      }}
                       disabled={!item.inStock}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all group-hover:scale-105 ${
                         item.inStock
@@ -276,7 +280,7 @@ const MerchandisePage: React.FC = () => {
                       }`}
                     >
                       <ShoppingCart size={14} />
-                      {cartItems.includes(item.id) ? 'Added!' : 'Add'}
+                      {cartItems.some((cart: any) => cart.id === item.id) ? 'Added!' : 'Add'}
                     </button>
                   </div>
                 </div>
@@ -308,6 +312,15 @@ const MerchandisePage: React.FC = () => {
       </section>
 
       <Footer />
+
+      {/* Merchandise Detail Modal */}
+      <MerchandiseDetailModal
+        merchandise={selectedMerchandise}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onAddToCart={handleModalAddToCart}
+        cartItems={cartItems}
+      />
     </div>
   );
 };

@@ -277,8 +277,14 @@ class SettingsService {
 
     try {
       const docRef = doc(db, this.collectionName, 'tracks');
+
+      // Filter out undefined values to avoid Firestore errors
+      const cleanedSettings = Object.fromEntries(
+        Object.entries(settings).filter(([_, value]) => value !== undefined)
+      );
+
       const settingsWithMeta = {
-        ...settings,
+        ...cleanedSettings,
         updatedAt: serverTimestamp(),
         updatedBy: user.uid,
       };

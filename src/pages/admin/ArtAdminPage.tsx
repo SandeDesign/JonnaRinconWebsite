@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
 import { useArt } from '../../hooks/useArt';
+import { toDirectUrl } from '../../lib/utils/urlUtils';
 import { artService } from '../../lib/firebase/services';
 import { Art } from '../../lib/firebase/types';
 import { Plus, Edit, Trash2 } from 'lucide-react';
@@ -229,9 +230,10 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
 
   const handleAddGalleryImage = () => {
     if (galleryInput.trim()) {
+      const transformedUrl = toDirectUrl(galleryInput.trim());
       setFormData({
         ...formData,
-        gallery: [...formData.gallery, galleryInput.trim()],
+        gallery: [...formData.gallery, transformedUrl],
       });
       setGalleryInput('');
     }
@@ -383,17 +385,15 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">Main Image URL</label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              placeholder="https://example.com/image.jpg"
-              required
-            />
-          </div>
+          <LinkInput
+            label="Main Image URL"
+            name="image"
+            type="image"
+            onChange={(url) => setFormData({ ...formData, image: url })}
+            defaultValue={formData.image}
+            placeholder="https://example.com/image.jpg"
+            required
+          />
 
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">Gallery Images</label>

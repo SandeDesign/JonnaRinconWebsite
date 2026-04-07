@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import LinkInput from '../../components/admin/LinkInput';
 import { useAlbums } from '../../hooks/useAlbums';
 import { useTracks } from '../../hooks/useTracks';
 import { albumService, trackService } from '../../lib/firebase/services';
@@ -400,20 +401,14 @@ const AlbumsPage: React.FC = () => {
                 </div>
 
                 {/* Cover Image */}
-                <div>
-                  <label className="block text-sm font-semibold text-white/80 mb-2">
-                    Cover Image URL
-                  </label>
-                  <input
-                    type="url"
-                    value={formData.coverImageUrl || ''}
-                    onChange={(e) =>
-                      setFormData({ ...formData, coverImageUrl: e.target.value })
-                    }
-                    className="w-full px-4 py-2 bg-white/[0.1] border border-white/[0.2] rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3]"
-                    placeholder="https://example.com/cover.jpg"
-                  />
-                </div>
+                <LinkInput
+                  label="Cover Image URL"
+                  name="coverImageUrl"
+                  type="image"
+                  onChange={(url) => setFormData({ ...formData, coverImageUrl: url })}
+                  defaultValue={formData.coverImageUrl || ''}
+                  placeholder="https://example.com/cover.jpg"
+                />
 
                 {/* Pricing */}
                 <div className="space-y-4 p-4 bg-white/[0.05] rounded-lg border border-white/[0.1]">
