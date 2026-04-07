@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import { Sliders } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAuth } from '../hooks/useAuth';
-import { setCurrentTrack } from '../components/GlobalAudioPlayer';
+import { setCurrentTrack, getCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
@@ -55,6 +55,7 @@ export default function RemixesPage() {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState<RemixTrack | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const heroTitle = useCyberDecodeInView('REMIXES');
 
   // Convert Firebase remixes to local RemixTrack interface
@@ -118,6 +119,21 @@ export default function RemixesPage() {
       });
 
     setCurrentTrack(remix, queue);
+  };
+
+  const handleTogglePlayRemix = (remix: RemixTrack) => {
+    const currentTrack = getCurrentTrack();
+
+    if (currentTrack?.id === remix.id) {
+      // If clicking the same track, toggle play/pause
+      setIsPlaying(!isPlaying);
+      // The actual play/pause would be handled by the global audio player
+      // This just toggles the UI state
+    } else {
+      // If clicking a different track, play it
+      handlePlayRemix(remix);
+      setIsPlaying(true);
+    }
   };
 
   const filteredRemixes = remixTracks.filter(remix => {
@@ -298,8 +314,10 @@ export default function RemixesPage() {
                   track={remix}
                   onClickTrack={setSelectedTrack}
                   onPlay={handlePlayRemix}
+                  onTogglePlay={handleTogglePlayRemix}
                   showType={false}
                   showMetadata={true}
+                  isPlaying={isPlaying}
                 />
               ))}
           </div>

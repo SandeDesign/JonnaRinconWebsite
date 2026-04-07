@@ -1,5 +1,5 @@
 import React from 'react';
-import { Music } from 'lucide-react';
+import { Music, Play, Pause } from 'lucide-react';
 import { getCurrentTrack } from './GlobalAudioPlayer';
 import { getRowHighlightClass } from '../lib/utils/buttonStyles';
 
@@ -7,6 +7,7 @@ interface TrackListItemProps {
   track: any;
   onClickTrack?: (track: any) => void;
   onPlay?: (track: any) => void;
+  onTogglePlay?: (track: any) => void;
   onBuy?: (track: any) => void;
   allTracks?: any[];
   showType?: boolean;
@@ -16,12 +17,14 @@ interface TrackListItemProps {
   showMetadata?: boolean;
   isAlbumTrack?: boolean;
   trackNumber?: number;
+  isPlaying?: boolean;
 }
 
 export default function TrackListItem({
   track,
   onClickTrack,
   onPlay,
+  onTogglePlay,
   onBuy,
   allTracks = [],
   showType = true,
@@ -31,6 +34,7 @@ export default function TrackListItem({
   showMetadata = false,
   isAlbumTrack = false,
   trackNumber,
+  isPlaying = false,
 }: TrackListItemProps) {
   const currentTrack = getCurrentTrack();
   const isCurrentTrack = currentTrack?.id === track.id;
@@ -43,7 +47,7 @@ export default function TrackListItem({
     >
       {/* Cover Art */}
       <div
-        onClick={() => onPlay?.(track)}
+        onClick={() => onClickTrack?.(track)}
         className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
       >
         {track.coverArt ? (
@@ -136,6 +140,25 @@ export default function TrackListItem({
         </div>
       </div>
 
+      {/* Play/Pause Button */}
+      {onTogglePlay && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onTogglePlay(track);
+          }}
+          className="flex-shrink-0 flex items-center justify-center text-white/40 hover:text-white/60 transition-colors duration-200"
+          style={{ width: '16px', height: '16px' }}
+          title={isCurrentTrack && isPlaying ? 'Pause' : 'Play'}
+          aria-label={isCurrentTrack && isPlaying ? 'Pause track' : 'Play track'}
+        >
+          {isCurrentTrack && isPlaying ? (
+            <Pause size={12} fill="currentColor" />
+          ) : (
+            <Play size={12} fill="currentColor" />
+          )}
+        </button>
+      )}
     </div>
   );
 }

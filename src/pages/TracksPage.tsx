@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3, Radio, Award, Mic2, ChevronDown, Sliders } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAuth } from '../hooks/useAuth';
-import { setCurrentTrack } from '../components/GlobalAudioPlayer';
+import { setCurrentTrack, getCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
 import { useRemixes } from '../hooks/useRemixes';
@@ -138,6 +138,7 @@ export default function TracksPage() {
   const [selectedTypeTab, setSelectedTypeTab] = useState<'Singles' | 'Albums & EPs' | 'All' | 'Custom 1' | 'Custom 2'>('All');
   const [shopSettings, setShopSettings] = useState<any>(null);
   const [trackSettings, setTrackSettings] = useState<any>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const heroTitle = useCyberDecodeInView('Music');
 
   // Convert Firebase tracks to local Track interface - Maps all track data including album field
@@ -223,6 +224,21 @@ export default function TracksPage() {
     const firebaseTrack = firebaseTracks.find(t => t.id === track.id);
     if (firebaseTrack) {
       addTrackToCart(firebaseTrack);
+    }
+  };
+
+  const handleTogglePlayTrack = (track: Track) => {
+    const currentTrack = getCurrentTrack();
+
+    if (currentTrack?.id === track.id) {
+      // If clicking the same track, toggle play/pause
+      setIsPlaying(!isPlaying);
+      // The actual play/pause would be handled by the global audio player
+      // This just toggles the UI state
+    } else {
+      // If clicking a different track, play it
+      handlePlayTrack(track);
+      setIsPlaying(true);
     }
   };
 
@@ -588,11 +604,13 @@ export default function TracksPage() {
                                       track={track}
                                       onClickTrack={setSelectedTrack}
                                       onPlay={handlePlayTrack}
+                                      onTogglePlay={handleTogglePlayTrack}
                                       onBuy={handleBuyTrack}
                                       showType={false}
                                       showMetadata={true}
                                       isAlbumTrack={true}
                                       trackNumber={index + 1}
+                                      isPlaying={isPlaying}
                                     />
                                   </div>
                                 ))}
@@ -606,9 +624,11 @@ export default function TracksPage() {
                           track={group.displayTrack}
                           onClickTrack={setSelectedTrack}
                           onPlay={handlePlayTrack}
+                          onTogglePlay={handleTogglePlayTrack}
                           onBuy={handleBuyTrack}
                           showType={true}
                           showMetadata={true}
+                          isPlaying={isPlaying}
                         />
                       );
                     })}
@@ -799,8 +819,10 @@ export default function TracksPage() {
                       track={remix}
                       onClickTrack={setSelectedTrack}
                       onPlay={handlePlayTrack}
+                      onTogglePlay={handleTogglePlayTrack}
                       showType={false}
                       showMetadata={true}
+                      isPlaying={isPlaying}
                     />
                   ))}
               </div>
