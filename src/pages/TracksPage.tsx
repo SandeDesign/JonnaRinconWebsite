@@ -12,9 +12,12 @@ import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
 import TrackDetailModal from '../components/TrackDetailModal';
 import LoginModal from '../components/LoginModal';
+import PlaylistModal from '../components/PlaylistModal';
+import PlaylistDetailView from '../components/PlaylistDetailView';
 import { extractUniqueGenres } from '../lib/utils/genreExtractor';
 import { trackService, settingsService } from '../lib/firebase/services';
 import { useCart } from '../hooks/useCart';
+import { Playlist, Track as FirebaseTrack } from '../lib/firebase/types';
 
 const buttons = [
   { id: 'tracks', label: 'Tracks', icon: Music },
@@ -139,6 +142,9 @@ export default function TracksPage() {
   const [shopSettings, setShopSettings] = useState<any>(null);
   const [trackSettings, setTrackSettings] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
+  const [isPlaylistDetailOpen, setIsPlaylistDetailOpen] = useState(false);
   const heroTitle = useCyberDecodeInView('Music');
 
   // Convert Firebase tracks to local Track interface - Maps all track data including album field
@@ -238,6 +244,42 @@ export default function TracksPage() {
     } else {
       // If clicking a different track, play it
       handlePlayTrack(track);
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePlaylistSelect = (playlist: Playlist) => {
+    setSelectedPlaylist(playlist);
+    setIsPlaylistDetailOpen(true);
+  };
+
+  const handlePlayPlaylistTracks = (playlistTracks: FirebaseTrack[], startIndex: number = 0) => {
+    if (playlistTracks.length === 0) return;
+
+    // Convert Firebase tracks to local Track interface
+    const tracksToPlay = playlistTracks.map(t => ({
+      id: t.id,
+      title: t.title,
+      artist: t.artist,
+      album: t.album,
+      trackNumber: t.trackNumber,
+      duration: t.duration || '0:00',
+      genre: t.genre,
+      bpm: t.bpm,
+      key: t.key,
+      year: t.year,
+      type: t.type,
+      collab: t.collab,
+      audioUrl: t.audioUrl,
+      coverArt: t.artworkUrl,
+      createdAt: t.createdAt.toMillis?.() || Date.now(),
+      isFree: t.isFree,
+      licenses: t.licenses,
+    }));
+
+    if (tracksToPlay.length > 0) {
+      const trackToPlay = tracksToPlay[startIndex] || tracksToPlay[0];
+      setCurrentTrack(trackToPlay, tracksToPlay);
       setIsPlaying(true);
     }
   };
@@ -405,6 +447,27 @@ export default function TracksPage() {
         cartItems={cartItems}
       />
 
+      {/* Playlist Modal */}
+      <PlaylistModal
+        isOpen={isPlaylistModalOpen}
+        onClose={() => setIsPlaylistModalOpen(false)}
+        onPlaylistSelect={handlePlaylistSelect}
+      />
+
+      {/* Playlist Detail View */}
+      {selectedPlaylist && (
+        <PlaylistDetailView
+          playlist={selectedPlaylist}
+          isOpen={isPlaylistDetailOpen}
+          onClose={() => {
+            setIsPlaylistDetailOpen(false);
+            setSelectedPlaylist(null);
+          }}
+          onPlayTracks={handlePlayPlaylistTracks}
+          isPlaying={isPlaying}
+        />
+      )}
+
       {/* Hero Section - Compact */}
       <section className="relative pt-40 px-6 md:px-12 pb-4">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
@@ -418,21 +481,32 @@ export default function TracksPage() {
               {buttons.find(b => b.id === activeTab)?.label}
             </h2>
 
-            {/* Filter Button - Mobile only, conditional */}
+            {/* Filter & Playlist Buttons - Mobile only, conditional */}
             {(activeTab === 'tracks' || activeTab === 'remixes') && (
-              <button
-                onClick={() => setIsFilterModalOpen(true)}
-                className="md:hidden flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
-              >
-                <Sliders size={16} />
-                Filters
-              </button>
+              <div className="md:hidden flex items-center gap-2">
+                <button
+                  onClick={() => setIsFilterModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+                >
+                  <Sliders size={16} />
+                  Filters
+                </button>
+                {activeTab === 'tracks' && isAuthenticated && (
+                  <button
+                    onClick={() => setIsPlaylistModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+                  >
+                    <Music size={16} />
+                    Playlists
+                  </button>
+                )}
+              </div>
             )}
           </div>
 
-          {/* Filter Button - Desktop only, conditional */}
+          {/* Filter & Playlist Buttons - Desktop only, conditional */}
           {(activeTab === 'tracks' || activeTab === 'remixes') && (
-            <div className="hidden md:flex justify-center mb-8">
+            <div className="hidden md:flex justify-center gap-3 mb-8">
               <button
                 onClick={() => setIsFilterModalOpen(true)}
                 className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
@@ -440,6 +514,15 @@ export default function TracksPage() {
                 <Sliders size={16} />
                 Filters
               </button>
+              {activeTab === 'tracks' && isAuthenticated && (
+                <button
+                  onClick={() => setIsPlaylistModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+                >
+                  <Music size={16} />
+                  Playlists
+                </button>
+              )}
             </div>
           )}
         </div>

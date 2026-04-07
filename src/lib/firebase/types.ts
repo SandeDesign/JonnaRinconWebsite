@@ -857,6 +857,26 @@ export interface FollowGateCompletion {
 }
 
 // ============================================
+// PLAYLIST TYPES
+// ============================================
+
+export interface Playlist {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  trackIds: string[];
+  coverImage: string; // URL of first track's cover
+  isPublic: boolean;
+  isFeatured: boolean; // Admin only
+  views: number;
+  likes: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  createdBy: string;
+}
+
+// ============================================
 // UTILITY TYPES
 // ============================================
 

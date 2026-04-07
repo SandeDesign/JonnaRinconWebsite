@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Music, Play, Pause } from 'lucide-react';
-import { getCurrentTrack } from './GlobalAudioPlayer';
+import { getCurrentTrack, getIsPlaying, setCurrentTrack, togglePlayPause, subscribeToPlayerState } from './GlobalAudioPlayer';
 import { getRowHighlightClass } from '../lib/utils/buttonStyles';
 
 interface TrackListItemProps {
@@ -36,8 +36,40 @@ export default function TrackListItem({
   trackNumber,
   isPlaying = false,
 }: TrackListItemProps) {
+  // Force re-render when global player state changes
+  const [, setPlayerState] = useState({});
+
+  useEffect(() => {
+    const unsubscribe = subscribeToPlayerState(() => {
+      setPlayerState({});
+    });
+    return unsubscribe;
+  }, []);
+
   const currentTrack = getCurrentTrack();
   const isCurrentTrack = currentTrack?.id === track.id;
+  const globalIsPlaying = getIsPlaying();
+
+  // Use global playing state if this is current track, otherwise use props
+  const actualIsPlaying = isCurrentTrack ? globalIsPlaying : isPlaying;
+
+  const handlePlayClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // If this track is already playing, toggle play/pause
+    if (isCurrentTrack) {
+      togglePlayPause();
+    } else {
+      // Otherwise, set as current track and start playing
+      if (onTogglePlay) {
+        onTogglePlay(track);
+      } else if (allTracks && allTracks.length > 0) {
+        setCurrentTrack(track, allTracks);
+      } else {
+        setCurrentTrack(track, [track]);
+      }
+    }
+  };
 
   return (
     <div
@@ -141,24 +173,19 @@ export default function TrackListItem({
       </div>
 
       {/* Play/Pause Button */}
-      {onTogglePlay && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onTogglePlay(track);
-          }}
-          className="flex-shrink-0 flex items-center justify-center text-white/40 hover:text-white/60 transition-colors duration-200"
-          style={{ width: '16px', height: '16px' }}
-          title={isCurrentTrack && isPlaying ? 'Pause' : 'Play'}
-          aria-label={isCurrentTrack && isPlaying ? 'Pause track' : 'Play track'}
-        >
-          {isCurrentTrack && isPlaying ? (
-            <Pause size={12} fill="currentColor" />
-          ) : (
-            <Play size={12} fill="currentColor" />
-          )}
-        </button>
-      )}
+      <button
+        onClick={handlePlayClick}
+        className="flex-shrink-0 flex items-center justify-center text-white/40 hover:text-white/60 transition-colors duration-200"
+        style={{ width: '16px', height: '16px' }}
+        title={isCurrentTrack && actualIsPlaying ? 'Pause' : 'Play'}
+        aria-label={isCurrentTrack && actualIsPlaying ? 'Pause track' : 'Play track'}
+      >
+        {isCurrentTrack && actualIsPlaying ? (
+          <Pause size={12} fill="currentColor" />
+        ) : (
+          <Play size={12} fill="currentColor" />
+        )}
+      </button>
     </div>
   );
 }
