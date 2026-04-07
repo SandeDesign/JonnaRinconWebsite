@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { ShoppingCart, Star } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
+import MerchandiseDetailModal from '../../components/MerchandiseDetailModal';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
 import { useMerchandise } from '../../hooks/useMerchandise';
 import { useCart } from '../../hooks/useCart';
+import { Merchandise } from '../../lib/firebase/types';
 
 const merchandiseItems: any[] = [
   {
@@ -120,6 +122,8 @@ const merchandiseItems: any[] = [
 const MerchandisePage: React.FC = () => {
   const heroTitle = useCyberDecodeInView('Merchandise');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedMerchandise, setSelectedMerchandise] = useState<Merchandise | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { merchandise, loading } = useMerchandise({ status: 'published' });
   const { addTrackToCart, cartItems = [] } = useCart();
 
@@ -137,6 +141,20 @@ const MerchandisePage: React.FC = () => {
     if (item) {
       addTrackToCart(item as any);
     }
+  };
+
+  const handleOpenModal = (item: any) => {
+    setSelectedMerchandise(item as Merchandise);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMerchandise(null);
+  };
+
+  const handleModalAddToCart = (merchandise: Merchandise) => {
+    addTrackToCart(merchandise as any);
   };
 
   return (
