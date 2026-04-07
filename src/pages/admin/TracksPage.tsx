@@ -5,8 +5,8 @@ import CustomTrackLinksEditor from '../../components/admin/CustomTrackLinksEdito
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
 import { Track, CustomTrackLink } from '../../lib/firebase/types';
-import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, ArrowDown, Link as LinkIcon } from 'lucide-react';
-import { toDirectUrl } from '../../lib/utils/urlUtils';
+import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, ArrowDown, Link as LinkIcon, AlertCircle } from 'lucide-react';
+import { toDirectUrl, detectUrlType, isValidUrl } from '../../lib/utils/urlUtils';
 
 const TracksPage: React.FC = () => {
   const { tracks, loading, error } = useTracks();
@@ -1120,7 +1120,25 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 {tracklist.length === 0 ? (
                   <p className="text-white/40 text-sm">No tracks added yet</p>
                 ) : (
-                  tracklist.map((item, index) => (
+                  tracklist.map((item, index) => {
+                    const transformedUrl = toDirectUrl(item.audioUrl);
+                    const wasTransformed = item.audioUrl && item.audioUrl !== transformedUrl;
+                    const isValidAudioUrl = !item.audioUrl || isValidUrl(item.audioUrl);
+                    const urlType = detectUrlType(item.audioUrl);
+
+                    const getUrlTypeLabel = () => {
+                      if (!item.audioUrl) return '';
+                      switch (urlType) {
+                        case 'nextcloud':
+                          return 'Nextcloud/ownCloud';
+                        case 'firebase':
+                          return 'Firebase Storage';
+                        default:
+                          return 'Direct URL';
+                      }
+                    };
+
+                    return (
                     <div key={item.id} className="space-y-2 p-3 bg-white/[0.05] rounded border border-white/[0.06]">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -1163,7 +1181,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                         onChange={(e) => updateTrackInList(item.id, 'title', e.target.value)}
                         className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
                       />
-                      <div className="relative">
+                      <div className="space-y-2">
                         <input
                           type="text"
                           placeholder="Audio URL"
@@ -1174,9 +1192,41 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                           }}
                           className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
                         />
+
+                        {/* URL Feedback Section */}
+                        {item.audioUrl && isValidAudioUrl && (
+                          <div className="flex flex-col gap-2">
+                            {/* URL Type Badge */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-white/40">Type:</span>
+                              <span className="text-xs bg-white/[0.08] text-white/60 px-2 py-1 rounded">
+                                {getUrlTypeLabel()}
+                              </span>
+                            </div>
+
+                            {/* Missing /download Notification */}
+                            {wasTransformed && (
+                              <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2">
+                                <AlertCircle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                                <p className="text-xs text-amber-400">
+                                  Missing <code className="bg-black/30 px-1 rounded">/download</code> - will be added automatically
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Final URL Display */}
+                            <div className="bg-white/[0.04] border border-white/[0.08] rounded px-3 py-2">
+                              <div>
+                                <p className="text-xs text-white/40 mb-1">Final URL:</p>
+                                <p className="text-xs text-white break-all font-mono">{transformedUrl}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>

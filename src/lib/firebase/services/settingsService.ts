@@ -70,11 +70,19 @@ export interface SecuritySettings {
   updatedBy?: string;
 }
 
+export interface CustomButton {
+  label: string;
+  url: string;
+  color: string;
+}
+
 export interface TrackSettings {
   customTab1Enabled: boolean;
   customTab1Label: string;
   customTab2Enabled: boolean;
   customTab2Label: string;
+  customButton1?: CustomButton;
+  customButton2?: CustomButton;
   updatedAt?: any;
   updatedBy?: string;
 }
