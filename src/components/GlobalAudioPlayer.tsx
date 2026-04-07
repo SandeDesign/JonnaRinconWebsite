@@ -63,7 +63,13 @@ export default function GlobalAudioPlayer() {
     // Load volume from localStorage on mount, default to 0.5 (50%)
     if (typeof window !== 'undefined') {
       const savedVolume = localStorage.getItem('audioPlayerVolume');
-      return savedVolume ? parseFloat(savedVolume) : 0.5;
+      if (savedVolume) {
+        const parsed = parseFloat(savedVolume);
+        // Ensure volume is a valid number between 0 and 1
+        if (!isNaN(parsed) && isFinite(parsed) && parsed >= 0 && parsed <= 1) {
+          return parsed;
+        }
+      }
     }
     return 0.5;
   });
@@ -80,7 +86,7 @@ export default function GlobalAudioPlayer() {
 
   // Save volume to localStorage when it changes
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && isFinite(volume)) {
       localStorage.setItem('audioPlayerVolume', volume.toString());
     }
   }, [volume]);
@@ -135,7 +141,11 @@ export default function GlobalAudioPlayer() {
               showFilledVolume
               layout="horizontal-reverse"
               volume={volume}
-              onVolumeChange={(newVolume) => setVolume(newVolume)}
+              onVolumeChange={(newVolume) => {
+                // Ensure volume is a valid number between 0 and 1
+                const validVolume = Math.max(0, Math.min(1, newVolume || 0.5));
+                setVolume(isFinite(validVolume) ? validVolume : 0.5);
+              }}
               customAdditionalControls={[
                 <button
                   key="close-player"
