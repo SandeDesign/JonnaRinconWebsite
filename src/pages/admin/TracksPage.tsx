@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
 import CustomTrackLinksEditor from '../../components/admin/CustomTrackLinksEditor';
+import CustomButtonConfig from '../../components/admin/CustomButtonConfig';
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
 import { Track, CustomTrackLink } from '../../lib/firebase/types';
-import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, ArrowDown, Link as LinkIcon } from 'lucide-react';
-import { toDirectUrl } from '../../lib/utils/urlUtils';
+import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, ArrowDown, Link as LinkIcon, AlertCircle } from 'lucide-react';
+import { toDirectUrl, detectUrlType, isValidUrl } from '../../lib/utils/urlUtils';
 
 const TracksPage: React.FC = () => {
   const { tracks, loading, error } = useTracks();
@@ -343,88 +344,96 @@ const TracksPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Filter Section */}
-        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Filters</h3>
-            </div>
-
-            {/* Type Buttons */}
-            <div className="flex flex-wrap gap-2">
-              {['Singles', 'Albums', 'EPs'].map((type) => {
-                const actualType = type === 'Singles' ? 'Single' : type === 'EPs' ? 'EP' : 'Album';
-                const isActive = selectedTypes.has(actualType);
-                return (
-                  <button
-                    key={type}
-                    onClick={() => toggleTypeFilter(actualType)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                      isActive
-                        ? 'bg-red-600 text-white shadow-lg'
-                        : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Year and Status Dropdowns */}
-            <div className="flex flex-wrap gap-3">
-              <select
-                value={selectedYear ?? ''}
-                onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : null)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  selectedYear !== null
-                    ? 'bg-red-600 text-white'
-                    : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
-                } focus:outline-none`}
-              >
-                <option value="">Year</option>
-                {availableYears.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedStatus ?? ''}
-                onChange={(e) => setSelectedStatus(e.target.value || null)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  selectedStatus !== null
-                    ? 'bg-red-600 text-white'
-                    : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
-                } focus:outline-none`}
-              >
-                <option value="">Status</option>
-                <option value="published">Published</option>
-                <option value="draft">Draft</option>
-                <option value="archived">Archived</option>
-              </select>
-            </div>
-
-            {/* Results Counter */}
-            {hasActiveFilters && (
-              <div className="text-sm text-white/60 pt-2">
-                Showing <span className="font-semibold text-white">{Object.keys(groupedTracks).length}</span> of{' '}
-                <span className="font-semibold text-white">{Object.keys(
-                  sortedTracks.reduce((acc, track) => {
-                    if (track.type === 'Album' || track.type === 'EP') {
-                      const albumName = track.album || track.title;
-                      const albumKey = `${track.type}:${albumName}`;
-                      if (!acc[albumKey]) acc[albumKey] = true;
-                    } else {
-                      const singleKey = `single:${track.id}`;
-                      if (!acc[singleKey]) acc[singleKey] = true;
-                    }
-                    return acc;
-                  }, {} as Record<string, boolean>)
-                ).length}</span> items
+        {/* Filter and Custom Button Configuration Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Filter Section */}
+          <div className="lg:col-span-1 bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Filters</h3>
               </div>
-            )}
+
+              {/* Type Buttons */}
+              <div className="flex flex-wrap gap-2">
+                {['Singles', 'Albums', 'EPs'].map((type) => {
+                  const actualType = type === 'Singles' ? 'Single' : type === 'EPs' ? 'EP' : 'Album';
+                  const isActive = selectedTypes.has(actualType);
+                  return (
+                    <button
+                      key={type}
+                      onClick={() => toggleTypeFilter(actualType)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        isActive
+                          ? 'bg-red-600 text-white shadow-lg'
+                          : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Year and Status Dropdowns */}
+              <div className="flex flex-col gap-3">
+                <select
+                  value={selectedYear ?? ''}
+                  onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : null)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    selectedYear !== null
+                      ? 'bg-red-600 text-white'
+                      : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                  } focus:outline-none`}
+                >
+                  <option value="">Year</option>
+                  {availableYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedStatus ?? ''}
+                  onChange={(e) => setSelectedStatus(e.target.value || null)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    selectedStatus !== null
+                      ? 'bg-red-600 text-white'
+                      : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'
+                  } focus:outline-none`}
+                >
+                  <option value="">Status</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+
+              {/* Results Counter */}
+              {hasActiveFilters && (
+                <div className="text-sm text-white/60 pt-2">
+                  Showing <span className="font-semibold text-white">{Object.keys(groupedTracks).length}</span> of{' '}
+                  <span className="font-semibold text-white">{Object.keys(
+                    sortedTracks.reduce((acc, track) => {
+                      if (track.type === 'Album' || track.type === 'EP') {
+                        const albumName = track.album || track.title;
+                        const albumKey = `${track.type}:${albumName}`;
+                        if (!acc[albumKey]) acc[albumKey] = true;
+                      } else {
+                        const singleKey = `single:${track.id}`;
+                        if (!acc[singleKey]) acc[singleKey] = true;
+                      }
+                      return acc;
+                    }, {} as Record<string, boolean>)
+                  ).length}</span> items
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Custom Button Configuration */}
+          <div className="lg:col-span-2">
+            <CustomButtonConfig isExpanded={true} />
           </div>
         </div>
 
@@ -699,6 +708,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
     tags: track?.tags?.join(', ') || '',
     audioUrl: track?.audioUrl || '',
     artworkUrl: track?.artworkUrl || '',
+    price: track?.price ?? '',
     slug: track?.slug || '',
     status: track?.status || 'draft',
     featured: track?.featured || false,
@@ -747,6 +757,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         status: formData.status,
         featured: formData.featured,
         isFree: formData.isFree,
+        ...(formData.price && formData.price !== '' && { price: parseFloat(formData.price as any) }),
         customTrackLinks: customTrackLinks.length > 0 ? customTrackLinks : undefined,
         licenses: {
           basic: {
@@ -1022,6 +1033,19 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
               />
             </div>
             <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Price (€) - Optional</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="Leave empty for free tracks"
+              />
+              <p className="text-xs text-white/40 mt-1">Leave empty for free tracks</p>
+            </div>
+            <div>
               <label className="block text-sm font-medium text-white/60 mb-2">Status</label>
               <select
                 value={formData.status}
@@ -1120,7 +1144,25 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 {tracklist.length === 0 ? (
                   <p className="text-white/40 text-sm">No tracks added yet</p>
                 ) : (
-                  tracklist.map((item, index) => (
+                  tracklist.map((item, index) => {
+                    const transformedUrl = toDirectUrl(item.audioUrl);
+                    const wasTransformed = item.audioUrl && item.audioUrl !== transformedUrl;
+                    const isValidAudioUrl = !item.audioUrl || isValidUrl(item.audioUrl);
+                    const urlType = detectUrlType(item.audioUrl);
+
+                    const getUrlTypeLabel = () => {
+                      if (!item.audioUrl) return '';
+                      switch (urlType) {
+                        case 'nextcloud':
+                          return 'Nextcloud/ownCloud';
+                        case 'firebase':
+                          return 'Firebase Storage';
+                        default:
+                          return 'Direct URL';
+                      }
+                    };
+
+                    return (
                     <div key={item.id} className="space-y-2 p-3 bg-white/[0.05] rounded border border-white/[0.06]">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -1163,7 +1205,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                         onChange={(e) => updateTrackInList(item.id, 'title', e.target.value)}
                         className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
                       />
-                      <div className="relative">
+                      <div className="space-y-2">
                         <input
                           type="text"
                           placeholder="Audio URL"
@@ -1174,9 +1216,41 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                           }}
                           className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded text-white text-sm"
                         />
+
+                        {/* URL Feedback Section */}
+                        {item.audioUrl && isValidAudioUrl && (
+                          <div className="flex flex-col gap-2">
+                            {/* URL Type Badge */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-white/40">Type:</span>
+                              <span className="text-xs bg-white/[0.08] text-white/60 px-2 py-1 rounded">
+                                {getUrlTypeLabel()}
+                              </span>
+                            </div>
+
+                            {/* Missing /download Notification */}
+                            {wasTransformed && (
+                              <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded px-3 py-2">
+                                <AlertCircle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                                <p className="text-xs text-amber-400">
+                                  Missing <code className="bg-black/30 px-1 rounded">/download</code> - will be added automatically
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Final URL Display */}
+                            <div className="bg-white/[0.04] border border-white/[0.08] rounded px-3 py-2">
+                              <div>
+                                <p className="text-xs text-white/40 mb-1">Final URL:</p>
+                                <p className="text-xs text-white break-all font-mono">{transformedUrl}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>

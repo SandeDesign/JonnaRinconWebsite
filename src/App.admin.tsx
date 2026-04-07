@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { BackgroundProvider } from './contexts/BackgroundContext';
@@ -11,6 +11,7 @@ import DashboardPage from './pages/admin/DashboardPage';
 import ArtAdminPage from './pages/admin/ArtAdminPage';
 import BeatsPage from './pages/admin/BeatsPage';
 import TracksPage from './pages/admin/TracksPage';
+import AlbumsPage from './pages/admin/AlbumsPage';
 import RemixesPage from './pages/admin/RemixesPage';
 import EditsPage from './pages/admin/EditsPage';
 import ServicesPage from './pages/admin/ServicesPage';
@@ -58,6 +59,14 @@ const AdminApp: React.FC = () => {
             element={
               <ProtectedRoute requireAdmin={true}>
                 <TracksPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/albums"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AlbumsPage />
               </ProtectedRoute>
             }
           />

@@ -13,6 +13,7 @@ interface Track {
   year?: number;
   type?: string;
   bpm?: number;
+  price?: number;
   isFree?: boolean;
   licenses?: { exclusive?: { price: number } };
 }
@@ -168,6 +169,12 @@ export default function TrackDetailModal({
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-white/40">BPM</span>
                   <span className="text-white font-bold">{track.bpm}</span>
+                </div>
+              )}
+              {track.price && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/40">Price</span>
+                  <span className="text-red-400 font-bold">€{track.price.toFixed(2)}</span>
                 </div>
               )}
             </div>

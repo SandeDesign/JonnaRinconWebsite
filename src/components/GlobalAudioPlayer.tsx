@@ -150,7 +150,13 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
   const [volume, setVolume] = useState<number>(() => {
     if (typeof window !== 'undefined') {
       const savedVolume = localStorage.getItem('audioPlayerVolume');
-      return savedVolume ? parseFloat(savedVolume) : 0.5;
+      if (savedVolume) {
+        const parsed = parseFloat(savedVolume);
+        // Ensure volume is a valid number between 0 and 1
+        if (!isNaN(parsed) && isFinite(parsed) && parsed >= 0 && parsed <= 1) {
+          return parsed;
+        }
+      }
     }
     return 0.5;
   });
@@ -173,7 +179,7 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
 
   // Save volume to localStorage when it changes
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && isFinite(volume)) {
       localStorage.setItem('audioPlayerVolume', volume.toString());
     }
   }, [volume]);
