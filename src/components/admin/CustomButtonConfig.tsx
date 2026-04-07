@@ -41,8 +41,8 @@ const CustomButtonConfig: React.FC<CustomButtonConfigProps> = ({ isExpanded: ini
 
       const updatedSettings: TrackSettings = {
         ...settings!,
-        customButton1: button1,
-        customButton2: button2,
+        ...(button1 && { customButton1: button1 }),
+        ...(button2 && { customButton2: button2 }),
       };
 
       await updateSettings(updatedSettings);

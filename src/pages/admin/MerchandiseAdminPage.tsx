@@ -4,6 +4,7 @@ import LinkInput from '../../components/admin/LinkInput';
 import { useMerchandise } from '../../hooks/useMerchandise';
 import { merchandiseService } from '../../lib/firebase/services';
 import { Merchandise } from '../../lib/firebase/types';
+import { toDirectUrl } from '../../lib/utils/urlUtils';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 const categories = [
@@ -204,6 +205,11 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
   const [saving, setSaving] = useState(false);
   const [galleryInput, setGalleryInput] = useState('');
 
+  // Helper function to check if URL will have /download appended
+  const willHaveDownloadAppended = (url: string): boolean => {
+    return url.includes('/index.php/s/') && !url.endsWith('/download');
+  };
+
   // Update form data when merchandise prop changes (for editing)
   React.useEffect(() => {
     if (merchandise) {
@@ -226,9 +232,10 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
 
   const handleAddGalleryImage = () => {
     if (galleryInput.trim()) {
+      const transformedUrl = toDirectUrl(galleryInput.trim());
       setFormData({
         ...formData,
-        gallery: [...formData.gallery, galleryInput.trim()],
+        gallery: [...formData.gallery, transformedUrl],
       });
       setGalleryInput('');
     }
@@ -273,7 +280,7 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
         description: formData.description,
         price: price,
         category: formData.category,
-        image: formData.image,
+        image: toDirectUrl(formData.image),
         gallery: formData.gallery.length > 0 ? formData.gallery : undefined,
         slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
         metaTitle: formData.metaTitle || undefined,
@@ -359,17 +366,24 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">Main Image URL</label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              placeholder="https://example.com/image.jpg"
-              required
-            />
-          </div>
+          <LinkInput
+            label="Main Image URL"
+            name="image"
+            type="image"
+            onChange={(url) => setFormData({ ...formData, image: url })}
+            defaultValue={formData.image}
+            placeholder="https://example.com/image.jpg"
+            required
+          />
+
+          {formData.image && willHaveDownloadAppended(formData.image) && (
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+              <p className="text-yellow-400 text-sm font-semibold">
+                <strong>Final URL:</strong> {toDirectUrl(formData.image)}
+              </p>
+              <p className="text-yellow-400 text-xs mt-1">⚠️ /download will be auto-appended when saving</p>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">Gallery Images</label>
