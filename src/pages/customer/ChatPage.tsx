@@ -86,7 +86,7 @@ const CustomerChat: React.FC = () => {
       } else {
         const existing = conversationMap.get(otherUserId)!;
         // Update if this message is newer
-        if (msg.createdAt.toMillis() > existing.lastMessageTime.toMillis()) {
+        if ((msg.createdAt?.toMillis?.() || 0) > (existing.lastMessageTime?.toMillis?.() || 0)) {
           existing.lastMessage = msg.message;
           existing.lastMessageTime = msg.createdAt;
         }
@@ -94,7 +94,7 @@ const CustomerChat: React.FC = () => {
     });
 
     const convos = Array.from(conversationMap.values()).sort(
-      (a, b) => b.lastMessageTime.toMillis() - a.lastMessageTime.toMillis()
+      (a, b) => (b.lastMessageTime?.toMillis?.() || 0) - (a.lastMessageTime?.toMillis?.() || 0)
     );
 
     setConversations(convos);

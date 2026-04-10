@@ -85,7 +85,7 @@ export default function RemixesPage() {
     audioUrl: r.audioUrl,
     coverArt: r.artworkUrl,
     coverArtUrl: r.artworkUrl,
-    createdAt: r.createdAt.toMillis?.() || Date.now(),
+    createdAt: r.createdAt?.toMillis?.() || Date.now(),
   }));
 
   // Helper function to check if a remix matches a genre (handles comma-separated)
