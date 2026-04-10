@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { usePlaylists } from '../../hooks/usePlaylists';
 import { useTracks } from '../../hooks/useTracks';
 import { playlistService } from '../../lib/firebase/services';
@@ -158,7 +159,7 @@ const PlaylistsPage: React.FC = () => {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+          <LoadingSpinner text="Loading playlists..." />
         </div>
       </AdminLayout>
     );

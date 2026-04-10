@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { useEdits } from '../../hooks/useEdits';
 import { editService } from '../../lib/firebase/services';
 import { Edit } from '../../lib/firebase/types';
@@ -100,8 +101,8 @@ const EditsPage: React.FC = () => {
               <tbody className="divide-y divide-white/[0.06]">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-white/40">
-                      Loading edits...
+                    <td colSpan={7} className="px-6 py-12">
+                      <LoadingSpinner text="Loading edits..." />
                     </td>
                   </tr>
                 ) : edits.length === 0 ? (

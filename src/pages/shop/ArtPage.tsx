@@ -3,6 +3,7 @@ import { Heart, Share2, Eye } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { useArt } from '../../hooks/useArt';
 import { Art } from '../../lib/firebase/types';
 
@@ -89,10 +90,7 @@ const ArtPage: React.FC = () => {
           {loading && (
             <div className="text-center py-20">
               <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-12 max-w-md mx-auto">
-                <p className="text-xl font-bold mb-2">Loading artwork...</p>
-                <p className="text-white/40 text-sm">
-                  Fetching your art from Firebase.
-                </p>
+                <LoadingSpinner text="Loading artwork..." />
               </div>
             </div>
           )}

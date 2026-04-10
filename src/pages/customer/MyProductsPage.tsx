@@ -6,6 +6,7 @@ import { Purchase, FollowGateCompletion } from '../../lib/firebase/types';
 import CustomerLayout from '../../components/customer/CustomerLayout';
 import ProductCard from '../../components/ProductCard';
 import ProductDetailModal from '../../components/ProductDetailModal';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { Download, Calendar, Package, AlertCircle, Gift, ShoppingBag, ExternalLink } from 'lucide-react';
 
 type FilterType = 'all' | 'purchased' | 'free';
@@ -148,9 +149,8 @@ export default function MyProductsPage() {
         </div>
 
         {loading ? (
-          <div className="flex flex-col justify-center items-center h-64 gap-4">
-            <div className="w-12 h-12 border-2 border-white/20 border-t-red-500 rounded-full animate-spin" />
-            <p className="text-sm text-white/30 uppercase tracking-widest">Loading your products...</p>
+          <div className="flex flex-col justify-center items-center h-64">
+            <LoadingSpinner text="Loading your products..." />
           </div>
         ) : totalAll === 0 ? (
           <div className="text-center py-20">

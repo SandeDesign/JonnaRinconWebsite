@@ -6,6 +6,7 @@ import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAuth } from '../hooks/useAuth';
 import { useTrackDetail } from '../contexts/TrackDetailContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { setCurrentTrack, getCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
@@ -634,11 +635,21 @@ export default function TracksPage() {
             </div>
           </section>
 
+          {/* Loading Spinner */}
+          {tracksLoading && (
+            <section className="px-6 md:px-12 py-16">
+              <div className="max-w-7xl mx-auto">
+                <LoadingSpinner text="Loading tracks..." />
+              </div>
+            </section>
+          )}
+
           {/* Mixed Track List / Album Groups OR Year Groups */}
-          <section className="px-6 md:px-12 py-2 md:py-4">
-            <div className="max-w-7xl mx-auto">
-              {/* Album/Type-based grouping for all types */}
-              <div className="space-y-3">
+          {!tracksLoading && (
+            <section className="px-6 md:px-12 py-2 md:py-4">
+              <div className="max-w-7xl mx-auto">
+                {/* Album/Type-based grouping for all types */}
+                <div className="space-y-3">
                   {Object.entries(groupedTracks)
                     .sort(([, a], [, b]) => {
                       // Albums sorted by createdAt (newest first)
@@ -752,6 +763,7 @@ export default function TracksPage() {
               </div>
             </div>
           </section>
+            )}
 
           {/* Stats - Compact, Single Row */}
           <div className="flex justify-between gap-4 md:gap-8 mb-8">
@@ -903,10 +915,20 @@ export default function TracksPage() {
             </div>
           </section>
 
+          {/* Loading Spinner */}
+          {remixesLoading && (
+            <section className="px-6 md:px-12 py-16">
+              <div className="max-w-7xl mx-auto">
+                <LoadingSpinner text="Loading remixes..." />
+              </div>
+            </section>
+          )}
+
           {/* Remix Tracks List */}
-          <section className="px-6 md:px-12 py-2 md:py-4">
-            <div className="max-w-7xl mx-auto">
-              <div className="space-y-3">
+          {!remixesLoading && (
+            <section className="px-6 md:px-12 py-2 md:py-4">
+              <div className="max-w-7xl mx-auto">
+                <div className="space-y-3">
                 {remixTracks
                   .filter((t) => {
                     const typeMatch = selectedRemixType === 'All' || t.remixType === selectedRemixType;
@@ -956,7 +978,8 @@ export default function TracksPage() {
                 </p>
               </div>
             </div>
-          </section>
+            </section>
+          )}
         </>
       )}
 
