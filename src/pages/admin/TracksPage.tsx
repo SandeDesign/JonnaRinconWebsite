@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
 import CustomTrackLinksEditor from '../../components/admin/CustomTrackLinksEditor';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
 import { Track, CustomTrackLink } from '../../lib/firebase/types';
@@ -430,8 +431,8 @@ const TracksPage: React.FC = () => {
 
         <div className="space-y-3">
           {loading ? (
-            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
-              Loading tracks...
+            <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12">
+              <LoadingSpinner text="Loading tracks..." />
             </div>
           ) : tracks.length === 0 ? (
             <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center text-white/40">
