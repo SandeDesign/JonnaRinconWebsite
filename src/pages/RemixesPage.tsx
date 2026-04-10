@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import { Sliders } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAuth } from '../hooks/useAuth';
+import { useTrackDetail } from '../contexts/TrackDetailContext';
 import { setCurrentTrack, getCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useRemixes } from '../hooks/useRemixes';
@@ -53,7 +54,7 @@ export default function RemixesPage() {
   const [selectedRemixGenre, setSelectedRemixGenre] = useState<string>('All');
   const [selectedRemixSort, setSelectedRemixSort] = useState<'newest' | 'oldest'>('newest');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [selectedTrack, setSelectedTrack] = useState<RemixTrack | null>(null);
+  const { selectedTrack, setSelectedTrack, isModalOpen, setIsModalOpen } = useTrackDetail() as any;
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const heroTitle = useCyberDecodeInView('REMIXES');
@@ -183,8 +184,8 @@ export default function RemixesPage() {
       {/* Remix Detail Modal */}
       <TrackDetailModal
         track={selectedTrack}
-        isOpen={!!selectedTrack}
-        onClose={() => setSelectedTrack(null)}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         isPlaying={selectedTrack ? false : false}
         onPlay={handlePlayRemix}
       />

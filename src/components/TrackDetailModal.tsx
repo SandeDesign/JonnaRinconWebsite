@@ -17,6 +17,12 @@ interface Track {
   licenses?: { exclusive?: { price: number } };
   description?: string;
   collab?: string;
+  originalArtist?: string;
+  remixType?: string;
+  key?: string;
+  album?: string;
+  trackNumber?: number;
+  tags?: string[];
 }
 
 interface TrackDetailModalProps {
@@ -50,6 +56,18 @@ export default function TrackDetailModal({
 
   // Check if track is already in cart
   const isInCart = track ? cartItems.some(item => item.id === track.id) : false;
+
+  // Handle body scroll lock when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
 
   // Handle click outside
   useEffect(() => {
@@ -172,6 +190,24 @@ export default function TrackDetailModal({
                   <span className="text-white font-bold">{track.bpm}</span>
                 </div>
               )}
+              {track.key && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/40">Key</span>
+                  <span className="text-white font-bold">{track.key}</span>
+                </div>
+              )}
+              {track.duration && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/40">Duration</span>
+                  <span className="text-white font-bold">{track.duration}</span>
+                </div>
+              )}
+              {track.remixType && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/40">Remix Type</span>
+                  <span className="text-white font-bold">{track.remixType}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -182,11 +218,16 @@ export default function TrackDetailModal({
               <h2 className="text-2xl md:text-3xl font-black text-white mb-1 uppercase tracking-tight">
                 {track.title}
               </h2>
-              <p className="text-white/40 text-sm md:text-base mb-6">{track.artist}</p>
+              <p className="text-white/40 text-sm md:text-base mb-2">{track.artist}</p>
+
+              {/* Original Artist for Remixes */}
+              {track.originalArtist && (
+                <p className="text-white/30 text-xs md:text-sm mb-6">Original: {track.originalArtist}</p>
+              )}
 
               {/* Duration */}
               {track.duration && (
-                <div className="mb-6">
+                <div className="mb-4">
                   <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Duration</p>
                   <p className="text-white text-sm">{track.duration}</p>
                 </div>
