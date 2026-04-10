@@ -2,6 +2,7 @@ export { authService } from './authService';
 export { artService } from './artService';
 export { beatService } from './beatService';
 export { trackService } from './trackService';
+export { albumService } from './albumService';
 export { remixService } from './remixService';
 export { editService } from './editService';
 export { serviceService } from './serviceService';

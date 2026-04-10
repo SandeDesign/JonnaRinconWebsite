@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+
+// Admin navigation layout component
 import {
   LayoutDashboard,
   Music,
@@ -20,6 +22,7 @@ import {
   Palette,
   Image,
   Ticket,
+  Package,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -51,6 +54,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     { name: 'Collab Requests', href: '/admin/collab-requests', icon: Clock },
     { name: 'Artist Requests', href: '/admin/artist-role-requests', icon: UserPlus },
     { name: 'Discount Codes', href: '/admin/discount-codes', icon: Ticket },
+    { name: 'Merchandise', href: '/admin/merchandise', icon: Package },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Chat', href: '/admin/chat', icon: MessageSquare },
     { name: 'Background', href: '/admin/background', icon: Image },
