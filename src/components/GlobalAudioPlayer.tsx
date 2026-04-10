@@ -548,11 +548,11 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
       </div>
       <style>{`
         body {
-          padding-bottom: ${store.currentTrack ? '200px' : '0'};
+          padding-bottom: ${store.currentTrack ? '170px' : '0'};
         }
         @media (max-width: 768px) {
           body {
-            padding-bottom: ${store.currentTrack ? '240px' : '0'} !important;
+            padding-bottom: ${store.currentTrack ? '190px' : '0'} !important;
           }
         }
       `}</style>
