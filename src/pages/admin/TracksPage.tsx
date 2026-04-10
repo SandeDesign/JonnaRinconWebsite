@@ -713,6 +713,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
     status: track?.status || 'draft',
     featured: track?.featured || false,
     isFree: track?.isFree || false,
+    description: track?.description || '',
   });
 
   const [tracklist, setTracklist] = useState<TracklistItem[]>([]);
@@ -757,7 +758,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         status: formData.status,
         featured: formData.featured,
         isFree: formData.isFree,
-        ...(formData.price && formData.price !== '' && { price: parseFloat(formData.price as any) }),
+        description: formData.description || undefined,
         customTrackLinks: customTrackLinks.length > 0 ? customTrackLinks : undefined,
         licenses: {
           basic: {
@@ -1261,6 +1262,19 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
             <CustomTrackLinksEditor
               customLinks={customTrackLinks}
               onLinksChange={setCustomTrackLinks}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white/60 mb-2">
+              Description (optional)
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Add a description for this track..."
+              className="w-full px-3 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-white/[0.2]"
+              rows={3}
             />
           </div>
 

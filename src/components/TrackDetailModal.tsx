@@ -16,6 +16,8 @@ interface Track {
   price?: number;
   isFree?: boolean;
   licenses?: { exclusive?: { price: number } };
+  description?: string;
+  collab?: string;
 }
 
 interface TrackDetailModalProps {
@@ -194,6 +196,22 @@ export default function TrackDetailModal({
                 <div className="mb-6">
                   <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Duration</p>
                   <p className="text-white text-sm">{track.duration}</p>
+                </div>
+              )}
+
+              {/* Description */}
+              {track.description && (
+                <div className="mb-6">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Description</p>
+                  <p className="text-white text-sm leading-relaxed">{track.description}</p>
+                </div>
+              )}
+
+              {/* Collaboration Info */}
+              {track.collab && (
+                <div className="mb-6">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Type</p>
+                  <p className="text-white text-sm">{track.collab}</p>
                 </div>
               )}
 
