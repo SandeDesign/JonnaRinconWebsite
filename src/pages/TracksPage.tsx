@@ -556,52 +556,20 @@ export default function TracksPage() {
             </div>
           )}
 
-          {/* Type Filter Tabs - Mobile only */}
-          {activeTab === 'tracks' && (
-            <div className="md:hidden w-full">
-              <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${
-                ['Singles', 'Albums & EPs', 'All']
-                  .concat(trackSettings?.customTab1Enabled ? [trackSettings.customTab1Label || 'Custom 1'] : [])
-                  .concat(trackSettings?.customTab2Enabled ? [trackSettings.customTab2Label || 'Custom 2'] : [])
-                  .length
-              }, 1fr)` }}>
-                {['Singles', 'Albums & EPs', 'All']
-                  .concat(trackSettings?.customTab1Enabled ? [trackSettings.customTab1Label || 'Custom 1'] : [])
-                  .concat(trackSettings?.customTab2Enabled ? [trackSettings.customTab2Label || 'Custom 2'] : [])
-                  .map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setSelectedTypeTab(tab as any)}
-                      className={`w-full px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${
-                        selectedTypeTab === tab
-                          ? 'bg-red-600 text-white border-red-500/50'
-                          : 'bg-white/[0.06] text-white/60 border-white/[0.1] hover:text-white hover:bg-white/[0.12] hover:border-white/[0.15]'
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
-              </div>
-            </div>
-          )}
+          {/* Type Filter Tabs - Mobile and Desktop */}
+          {activeTab === 'tracks' && (() => {
+            const tabsList = ['Singles', 'Albums & EPs', 'All']
+              .concat(trackSettings?.customTab1Enabled ? [trackSettings.customTab1Label || 'Custom 1'] : [])
+              .concat(trackSettings?.customTab2Enabled ? [trackSettings.customTab2Label || 'Custom 2'] : []);
 
-          {/* Type Filter Tabs - Desktop only */}
-          {activeTab === 'tracks' && (
-            <div className="hidden md:block w-full">
-              <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${
-                ['Singles', 'Albums & EPs', 'All']
-                  .concat(trackSettings?.customTab1Enabled ? [trackSettings.customTab1Label || 'Custom 1'] : [])
-                  .concat(trackSettings?.customTab2Enabled ? [trackSettings.customTab2Label || 'Custom 2'] : [])
-                  .length
-              }, 1fr)` }}>
-                {['Singles', 'Albums & EPs', 'All']
-                  .concat(trackSettings?.customTab1Enabled ? [trackSettings.customTab1Label || 'Custom 1'] : [])
-                  .concat(trackSettings?.customTab2Enabled ? [trackSettings.customTab2Label || 'Custom 2'] : [])
-                  .map((tab) => (
+            return (
+              <div className="w-full">
+                <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${tabsList.length}, 1fr)` }}>
+                  {tabsList.map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setSelectedTypeTab(tab as any)}
-                      className={`w-full px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${
+                      className={`w-full px-3 md:px-4 py-2 md:py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${
                         selectedTypeTab === tab
                           ? 'bg-red-600 text-white border-red-500/50'
                           : 'bg-white/[0.06] text-white/60 border-white/[0.1] hover:text-white hover:bg-white/[0.12] hover:border-white/[0.15]'
@@ -610,9 +578,10 @@ export default function TracksPage() {
                       {tab}
                     </button>
                   ))}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       </section>
 
