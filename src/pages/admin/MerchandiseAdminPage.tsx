@@ -1,41 +1,40 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
-import { useArt } from '../../hooks/useArt';
+import { useMerchandise } from '../../hooks/useMerchandise';
+import { merchandiseService } from '../../lib/firebase/services';
+import { Merchandise } from '../../lib/firebase/types';
 import { toDirectUrl } from '../../lib/utils/urlUtils';
-import { artService } from '../../lib/firebase/services';
-import { Art } from '../../lib/firebase/types';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 const categories = [
-  'Digital Art',
-  'Cover Design',
-  'Visual Art',
-  'Illustration',
-  'Photography',
+  'Clothing',
+  'Accessories',
+  'Home',
+  'Other',
 ];
 
-const ArtAdminPage: React.FC = () => {
-  const { art, loading } = useArt();
+const MerchandiseAdminPage: React.FC = () => {
+  const { merchandise, loading } = useMerchandise();
   const [showModal, setShowModal] = useState(false);
-  const [editingArt, setEditingArt] = useState<Art | null>(null);
+  const [editingMerchandise, setEditingMerchandise] = useState<Merchandise | null>(null);
 
   const handleCreate = () => {
-    setEditingArt(null);
+    setEditingMerchandise(null);
     setShowModal(true);
   };
 
-  const handleEdit = (artItem: Art) => {
-    setEditingArt(artItem);
+  const handleEdit = (merchandiseItem: Merchandise) => {
+    setEditingMerchandise(merchandiseItem);
     setShowModal(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this art?')) return;
+    if (!confirm('Are you sure you want to delete this merchandise?')) return;
 
     try {
-      await artService.deleteArt(id);
-      alert('Art deleted successfully');
+      await merchandiseService.deleteMerchandise(id);
+      alert('Merchandise deleted successfully');
     } catch (error: any) {
       alert(error.message);
     }
@@ -47,58 +46,55 @@ const ArtAdminPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">Art Management</h1>
-            <p className="text-white/40 mt-2">Manage your art portfolio</p>
+            <h1 className="text-3xl font-bold text-white">Merchandise Management</h1>
+            <p className="text-white/40 mt-2">Manage your merchandise products</p>
           </div>
           <button
             onClick={handleCreate}
             className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all flex items-center space-x-2"
           >
             <Plus size={20} />
-            <span>Add Art</span>
+            <span>Add Merchandise</span>
           </button>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
-            <p className="text-white/40 text-sm">Total Art</p>
-            <p className="text-2xl font-bold text-white mt-1">{art.length}</p>
+            <p className="text-white/40 text-sm">Total Merchandise</p>
+            <p className="text-2xl font-bold text-white mt-1">{merchandise.length}</p>
           </div>
           <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Published</p>
             <p className="text-2xl font-bold text-white mt-1">
-              {art.filter((a) => a.status === 'published').length}
+              {merchandise.filter((m) => m.status === 'published').length}
             </p>
           </div>
           <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
             <p className="text-white/40 text-sm">Featured</p>
             <p className="text-2xl font-bold text-white mt-1">
-              {art.filter((a) => a.featured).length}
+              {merchandise.filter((m) => m.featured).length}
             </p>
           </div>
         </div>
 
-        {/* Art Table */}
+        {/* Merchandise Table */}
         <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/[0.06]">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Title
-                  </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Artist
+                    Name
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
                     Category
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Views
+                    Price
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white/60">
-                    Likes
+                    Status
                   </th>
                   <th className="px-6 py-4 text-right text-sm font-semibold text-white/60">
                     Actions
@@ -108,48 +104,53 @@ const ArtAdminPage: React.FC = () => {
               <tbody className="divide-y divide-white/[0.06]">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-white/40">
-                      Loading art...
+                    <td colSpan={5} className="px-6 py-12 text-center text-white/40">
+                      Loading merchandise...
                     </td>
                   </tr>
-                ) : art.length === 0 ? (
+                ) : merchandise.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-white/40">
-                      No art yet. Create your first art piece!
+                    <td colSpan={5} className="px-6 py-12 text-center text-white/40">
+                      No merchandise yet. Create your first product!
                     </td>
                   </tr>
                 ) : (
-                  art.map((artItem) => (
-                    <tr key={artItem.id} className="hover:bg-white/[0.06]">
+                  merchandise.map((merchandiseItem) => (
+                    <tr key={merchandiseItem.id} className="hover:bg-white/[0.06]">
                       <td className="px-6 py-4">
                         <div>
-                          <p className="font-medium text-white">{artItem.title}</p>
-                          <p className="text-sm text-white/40">{artItem.medium}</p>
+                          <p className="font-medium text-white">{merchandiseItem.name}</p>
+                          <p className="text-sm text-white/40">{merchandiseItem.description?.substring(0, 50)}...</p>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-white">{artItem.artist}</span>
+                        <span className="text-white/60">{merchandiseItem.category}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-white/60">{artItem.category}</span>
+                        <span className="text-white">${merchandiseItem.price.toFixed(2)}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-white">{artItem.views}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-white">{artItem.likes}</span>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          merchandiseItem.status === 'published'
+                            ? 'bg-green-500/20 text-green-300'
+                            : merchandiseItem.status === 'draft'
+                            ? 'bg-yellow-500/20 text-yellow-300'
+                            : 'bg-red-500/20 text-red-300'
+                        }`}>
+                          {merchandiseItem.status.charAt(0).toUpperCase() + merchandiseItem.status.slice(1)}
+                        </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end space-x-2">
                           <button
-                            onClick={() => handleEdit(artItem)}
+                            onClick={() => handleEdit(merchandiseItem)}
                             className="p-2 text-white/40 hover:text-blue-400 transition-colors"
                             title="Edit"
                           >
                             <Edit size={18} />
                           </button>
                           <button
-                            onClick={() => handleDelete(artItem.id)}
+                            onClick={() => handleDelete(merchandiseItem.id)}
                             className="p-2 text-white/40 hover:text-red-400 transition-colors"
                             title="Delete"
                           >
@@ -166,14 +167,14 @@ const ArtAdminPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Art Form Modal */}
+      {/* Merchandise Form Modal */}
       {showModal && (
-        <ArtFormModal
-          art={editingArt}
+        <MerchandiseFormModal
+          merchandise={editingMerchandise}
           onClose={() => setShowModal(false)}
           onSave={() => {
             setShowModal(false);
-            setEditingArt(null);
+            setEditingMerchandise(null);
           }}
         />
       )}
@@ -181,52 +182,53 @@ const ArtAdminPage: React.FC = () => {
   );
 };
 
-interface ArtFormModalProps {
-  art: Art | null;
+interface MerchandiseFormModalProps {
+  merchandise: Merchandise | null;
   onClose: () => void;
   onSave: () => void;
 }
 
-const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => {
+const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    title: art?.title || '',
-    description: art?.description || '',
-    artist: art?.artist || '',
-    medium: art?.medium || '',
-    year: art?.year || new Date().getFullYear(),
-    category: art?.category || 'Digital Art',
-    image: art?.image || '',
-    gallery: art?.gallery || [],
-    slug: art?.slug || '',
-    metaTitle: art?.metaTitle || '',
-    metaDescription: art?.metaDescription || '',
-    status: art?.status || 'draft',
-    featured: art?.featured || false,
+    name: merchandise?.name || '',
+    description: merchandise?.description || '',
+    price: merchandise?.price || 0,
+    category: merchandise?.category || 'Clothing',
+    image: merchandise?.image || '',
+    gallery: merchandise?.gallery || [],
+    slug: merchandise?.slug || '',
+    metaTitle: merchandise?.metaTitle || '',
+    metaDescription: merchandise?.metaDescription || '',
+    status: merchandise?.status || 'draft',
+    featured: merchandise?.featured || false,
   });
   const [saving, setSaving] = useState(false);
   const [galleryInput, setGalleryInput] = useState('');
 
-  // Update form data when art prop changes (for editing)
+  // Helper function to check if URL will have /download appended
+  const willHaveDownloadAppended = (url: string): boolean => {
+    return url.includes('/index.php/s/') && !url.endsWith('/download');
+  };
+
+  // Update form data when merchandise prop changes (for editing)
   React.useEffect(() => {
-    if (art) {
+    if (merchandise) {
       setFormData({
-        title: art.title || '',
-        description: art.description || '',
-        artist: art.artist || '',
-        medium: art.medium || '',
-        year: art.year || new Date().getFullYear(),
-        category: art.category || 'Digital Art',
-        image: art.image || '',
-        gallery: art.gallery || [],
-        slug: art.slug || '',
-        metaTitle: art.metaTitle || '',
-        metaDescription: art.metaDescription || '',
-        status: art.status || 'draft',
-        featured: art.featured || false,
+        name: merchandise.name || '',
+        description: merchandise.description || '',
+        price: merchandise.price || 0,
+        category: merchandise.category || 'Clothing',
+        image: merchandise.image || '',
+        gallery: merchandise.gallery || [],
+        slug: merchandise.slug || '',
+        metaTitle: merchandise.metaTitle || '',
+        metaDescription: merchandise.metaDescription || '',
+        status: merchandise.status || 'draft',
+        featured: merchandise.featured || false,
       });
       setGalleryInput('');
     }
-  }, [art]);
+  }, [merchandise]);
 
   const handleAddGalleryImage = () => {
     if (galleryInput.trim()) {
@@ -251,12 +253,18 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
     setSaving(true);
 
     try {
-      const year = typeof formData.year === 'string'
-        ? parseInt(formData.year)
-        : formData.year;
+      const price = typeof formData.price === 'string'
+        ? parseFloat(formData.price)
+        : formData.price;
 
-      if (isNaN(year) || year < 1900 || year > new Date().getFullYear() + 1) {
-        alert('Please enter a valid year');
+      if (isNaN(price) || price < 0) {
+        alert('Please enter a valid price');
+        setSaving(false);
+        return;
+      }
+
+      if (!formData.name.trim()) {
+        alert('Please provide a product name');
         setSaving(false);
         return;
       }
@@ -267,28 +275,26 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
         return;
       }
 
-      const artData: any = {
-        title: formData.title,
+      const merchandiseData: any = {
+        name: formData.name,
         description: formData.description,
-        artist: formData.artist,
-        medium: formData.medium,
-        year: year,
+        price: price,
         category: formData.category,
-        image: formData.image.endsWith('/download') ? formData.image : `${formData.image}/download`,
-        gallery: formData.gallery.length > 0 ? formData.gallery.map(url => url.endsWith('/download') ? url : `${url}/download`) : undefined,
-        slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, '-'),
+        image: toDirectUrl(formData.image),
+        gallery: formData.gallery.length > 0 ? formData.gallery : undefined,
+        slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
         metaTitle: formData.metaTitle || undefined,
         metaDescription: formData.metaDescription || undefined,
         status: formData.status,
         featured: formData.featured,
       };
 
-      if (art) {
-        await artService.updateArt(art.id, artData);
-        alert('Art updated successfully');
+      if (merchandise) {
+        await merchandiseService.updateMerchandise(merchandise.id, merchandiseData);
+        alert('Merchandise updated successfully');
       } else {
-        await artService.createArt(artData);
-        alert('Art created successfully');
+        await merchandiseService.createMerchandise(merchandiseData);
+        alert('Merchandise created successfully');
       }
 
       onSave();
@@ -304,29 +310,31 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
       <div className="bg-white/[0.10] backdrop-blur-2xl border border-white/[0.10] rounded-2xl max-w-2xl w-full my-auto max-h-[90vh] flex flex-col">
         <div className="p-6 border-b border-white/[0.08] bg-white/[0.10] flex-shrink-0">
           <h2 className="text-2xl font-bold text-white">
-            {art ? 'Edit Art' : 'Add New Art'}
+            {merchandise ? 'Edit Merchandise' : 'Add New Merchandise'}
           </h2>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Title</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Name</label>
               <input
                 type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Artist</label>
+              <label className="block text-sm font-medium text-white/60 mb-2">Price</label>
               <input
-                type="text"
-                value={formData.artist}
-                onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price}
+                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
               />
@@ -341,33 +349,6 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
               className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white min-h-[100px] resize-none"
               required
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Medium</label>
-              <input
-                type="text"
-                value={formData.medium}
-                onChange={(e) => setFormData({ ...formData, medium: e.target.value })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-                placeholder="e.g., Digital, Acrylic"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-white/60 mb-2">Year</label>
-              <input
-                type="number"
-                min="1900"
-                max={new Date().getFullYear() + 1}
-                value={formData.year}
-                onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || new Date().getFullYear() })}
-                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-                required
-              />
-            </div>
           </div>
 
           <div>
@@ -394,6 +375,15 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
             placeholder="https://example.com/image.jpg"
             required
           />
+
+          {formData.image && willHaveDownloadAppended(formData.image) && (
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+              <p className="text-yellow-400 text-sm font-semibold">
+                <strong>Final URL:</strong> {toDirectUrl(formData.image)}
+              </p>
+              <p className="text-yellow-400 text-xs mt-1">⚠️ /download will be auto-appended when saving</p>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">Gallery Images</label>
@@ -447,7 +437,7 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
               <label className="block text-sm font-medium text-white/60 mb-2">Status</label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as Art['status'] })}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as Merchandise['status'] })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
               >
                 <option value="draft">Draft</option>
@@ -463,7 +453,7 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-                placeholder="auto-generated from title"
+                placeholder="auto-generated from name"
               />
             </div>
           </div>
@@ -497,7 +487,7 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
                 onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                 className="w-4 h-4"
               />
-              <span className="text-sm text-white/60">Featured Art</span>
+              <span className="text-sm text-white/60">Featured Merchandise</span>
             </label>
           </div>
 
@@ -514,7 +504,7 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
               disabled={saving}
               className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
             >
-              {saving ? 'Saving...' : art ? 'Update Art' : 'Create Art'}
+              {saving ? 'Saving...' : merchandise ? 'Update Merchandise' : 'Create Merchandise'}
             </button>
           </div>
         </form>
@@ -523,4 +513,4 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
   );
 };
 
-export default ArtAdminPage;
+export default MerchandiseAdminPage;

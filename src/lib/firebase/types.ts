@@ -34,6 +34,9 @@ export type AdminPermission =
   | 'tracks.read'
   | 'tracks.write'
   | 'tracks.delete'
+  | 'albums.read'
+  | 'albums.write'
+  | 'albums.delete'
   | 'remixes.read'
   | 'remixes.write'
   | 'remixes.delete'
@@ -247,6 +250,41 @@ export interface Service {
 }
 
 // ============================================
+// MERCHANDISE TYPES
+// ============================================
+
+export interface Merchandise {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string; // e.g., "Clothing", "Accessories", "Home", "Other"
+  image: string; // Product image URL
+  gallery?: string[]; // Additional product images
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+
+  // Stats
+  views: number;
+  sold: number;
+
+  // SEO & Meta
+  slug: string;
+  metaTitle?: string;
+  metaDescription?: string;
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+}
+
+// ============================================
 // PURCHASE/ORDER TYPES
 // ============================================
 
@@ -324,6 +362,9 @@ export interface Track {
   artworkUrl: string;
   waveformUrl?: string;
 
+  // Pricing (optional - free tracks if not set)
+  price?: number;
+
   // Licensing
   licenses: {
     exclusive?: LicenseDetails;
@@ -347,6 +388,69 @@ export interface Track {
 
   // Custom track links for featured tabs
   customTrackLinks?: CustomTrackLink[];
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  publishedAt?: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+
+  // Album reference
+  albumId?: string; // Reference to Album document
+  sortOrder?: number; // Track order within album
+}
+
+// ============================================
+// ALBUM TYPES
+// ============================================
+
+export interface AlbumTrackInfo {
+  trackId: string;
+  trackNumber: number;
+  price?: number; // Per-track price override
+}
+
+export interface Album {
+  id: string;
+  title: string;
+  artist: string;
+  description: string;
+  releaseDate: Timestamp;
+  genre: string;
+  subGenre?: string;
+  mood?: string[];
+  tags: string[];
+
+  // Media
+  coverImageUrl: string;
+  artworkUrl: string; // Alias for consistency
+
+  // Tracks
+  trackIds: string[]; // References to Track documents
+  trackCount: number;
+  duration?: number; // Total duration in seconds
+
+  // Pricing
+  perTrackPrice: number; // Price for individual track purchase
+  fullAlbumPrice: number; // Discounted price for full album
+  isFree: boolean;
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+
+  // Stats
+  plays: number;
+  downloads: number;
+  likes: number;
+
+  // SEO & Meta
+  metaTitle?: string;
+  metaDescription?: string;
+  slug: string;
 
   // Timestamps
   createdAt: Timestamp;

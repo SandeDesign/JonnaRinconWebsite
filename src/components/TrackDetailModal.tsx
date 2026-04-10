@@ -13,6 +13,7 @@ interface Track {
   year?: number;
   type?: string;
   bpm?: number;
+  price?: number;
   isFree?: boolean;
   licenses?: { exclusive?: { price: number } };
   description?: string;
