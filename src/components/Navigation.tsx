@@ -38,8 +38,16 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   // Smart color detection for menu button and logo
   const smartColor = useContrastColor();
 
-  // Use smart color detection, fallback based on isDarkOverlay if needed
-  const navTextColor = `text-${smartColor}`;
+  // Convert color name to actual color value for inline styles
+  const getColorValue = (colorName: string): string => {
+    const colors: Record<string, string> = {
+      'white': '#ffffff',
+      'black': '#000000',
+    };
+    return colors[colorName] || '#ffffff';
+  };
+
+  const navTextColor = getColorValue(smartColor);
 
   // Lock scroll when menu is open - improved state management
   useEffect(() => {
@@ -232,7 +240,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           {cartItems.length > 0 && (
             <button
               onClick={() => setIsCartOpen(true)}
-              className={`relative transition-all duration-300 hover:scale-110 cursor-pointer ${navTextColor}`}
+              style={{ color: navTextColor }}
+              className={`relative transition-all duration-300 hover:scale-110 cursor-pointer`}
             >
               <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-600 rounded-full flex items-center justify-center text-[9px] font-bold text-white">
@@ -244,7 +253,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           {/* MENU button */}
           <button
             onClick={openMenu}
-            className={`text-lg md:text-xl font-black uppercase tracking-[0.3em] transition-all duration-500 hover:opacity-60 cursor-pointer ${navTextColor}`}
+            style={{ color: navTextColor }}
+            className={`text-lg md:text-xl font-black uppercase tracking-[0.3em] transition-all duration-500 hover:opacity-60 cursor-pointer`}
           >
             Menu
           </button>
