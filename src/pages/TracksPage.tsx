@@ -301,27 +301,44 @@ export default function TracksPage() {
     }
   };
 
+  // Handler to open track detail modal when clicking on a track
+  const handleTrackClick = (track: Track) => {
+    setSelectedTrack(track);
+    setIsModalOpen(true);
+  };
+
   const getCustomTracksForTab = (): Track[] => {
     const customTracks: Track[] = [];
-    // Find all tracks with customTrackLinks and filter by the selected custom tab
+    const isCustom1 = selectedTypeTab === 'Custom 1' || selectedTypeTab === (trackSettings?.customTab1Label || 'Custom 1');
+    const isCustom2 = selectedTypeTab === 'Custom 2' || selectedTypeTab === (trackSettings?.customTab2Label || 'Custom 2');
+
+    if (!isCustom1 && !isCustom2) return [];
+
+    // Find all tracks with customTrackLinks
     demoTracks.forEach(track => {
-      if (track.customTrackLinks && track.customTrackLinks.length > 0) {
-        // For demo, display all custom tracks in both custom tabs
-        customTracks.push(...track.customTrackLinks.map((link, index) => ({
-          id: `custom-${track.id}-${index}`,
-          title: link.title,
-          artist: track.artist,
-          audioUrl: link.audioUrl,
-          coverArt: track.coverArt,
-          coverArtUrl: track.coverArtUrl,
-          type: 'Single' as const,
-          year: track.year,
-          collab: track.collab,
-          genre: track.genre,
-          createdAt: track.createdAt,
-        })) as unknown as Track);
+      // Only process tracks that have customTrackLinks
+      if (track.customTrackLinks && Array.isArray(track.customTrackLinks) && track.customTrackLinks.length > 0) {
+        track.customTrackLinks.forEach((link, index) => {
+          customTracks.push({
+            id: `custom-${track.id}-${index}`,
+            title: link.title || `Custom ${index + 1}`,
+            artist: track.artist,
+            audioUrl: link.audioUrl,
+            coverArt: track.coverArt,
+            coverArtUrl: track.coverArtUrl,
+            type: 'Single' as const,
+            year: track.year,
+            collab: track.collab,
+            genre: track.genre,
+            bpm: track.bpm,
+            key: track.key,
+            duration: track.duration,
+            createdAt: track.createdAt,
+          } as Track);
+        });
       }
     });
+
     return customTracks;
   };
 
@@ -605,9 +622,8 @@ export default function TracksPage() {
           {/* Type Filter Tabs */}
           <section className="px-6 md:px-12 py-4 md:py-6 border-b border-white/[0.06]">
             <div className="max-w-7xl mx-auto">
-              <div className="flex items-center justify-center gap-4">
-                {/* Tabs - Center */}
-                <div className="flex flex-wrap gap-2 justify-center">
+              <div className="w-full">
+                <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
                   {['Singles', 'Albums & EPs', 'All']
                     .concat(
                       // Conditionally add Custom Tab 1 if enabled in settings
@@ -621,10 +637,10 @@ export default function TracksPage() {
                       <button
                         key={tab}
                         onClick={() => setSelectedTypeTab(tab as any)}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        className={`w-full px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${
                           selectedTypeTab === tab
-                            ? 'bg-red-600 text-white'
-                            : 'bg-white/[0.06] text-white/50 hover:text-white/70 hover:bg-white/[0.10]'
+                            ? 'bg-red-600 text-white border-red-500/50'
+                            : 'bg-white/[0.06] text-white/60 border-white/[0.1] hover:text-white hover:bg-white/[0.12] hover:border-white/[0.15]'
                         }`}
                       >
                         {tab}
@@ -722,7 +738,7 @@ export default function TracksPage() {
                                   <div key={track.id} className="pl-6 md:pl-8">
                                     <TrackListItem
                                       track={track}
-                                      onClickTrack={setSelectedTrack}
+                                      onClickTrack={handleTrackClick}
                                       onPlay={handlePlayTrack}
                                       onTogglePlay={handleTogglePlayTrack}
                                       onBuy={handleBuyTrack}
@@ -742,7 +758,7 @@ export default function TracksPage() {
                         <TrackListItem
                           key={albumKey}
                           track={group.displayTrack}
-                          onClickTrack={setSelectedTrack}
+                          onClickTrack={handleTrackClick}
                           onPlay={handlePlayTrack}
                           onTogglePlay={handleTogglePlayTrack}
                           onBuy={handleBuyTrack}
@@ -948,7 +964,7 @@ export default function TracksPage() {
                     <TrackListItem
                       key={remix.id}
                       track={remix}
-                      onClickTrack={setSelectedTrack}
+                      onClickTrack={handleTrackClick}
                       onPlay={handlePlayTrack}
                       onTogglePlay={handleTogglePlayTrack}
                       showType={false}

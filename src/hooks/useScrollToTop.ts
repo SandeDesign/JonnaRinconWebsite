@@ -13,5 +13,12 @@ export const useScrollToTop = () => {
     // Also try to scroll html element (in case window doesn't work)
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
+
+    // Use setTimeout as fallback for browsers that need delayed scroll
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 0);
   }, [pathname]);
 };

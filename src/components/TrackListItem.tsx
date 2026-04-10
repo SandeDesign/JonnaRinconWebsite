@@ -20,6 +20,7 @@ interface TrackListItemProps {
   trackNumber?: number;
   isPlaying?: boolean;
   showDownload?: boolean;
+  showCover?: boolean;
 }
 
 export default function TrackListItem({
@@ -39,6 +40,7 @@ export default function TrackListItem({
   trackNumber,
   isPlaying = false,
   showDownload = false,
+  showCover = true,
 }: TrackListItemProps) {
   // Force re-render when global player state changes
   const [, setPlayerState] = useState({});
@@ -82,20 +84,22 @@ export default function TrackListItem({
       } ${getRowHighlightClass(isCurrentTrack)}`}
     >
       {/* Cover Art */}
-      <div
-        onClick={() => onClickTrack?.(track)}
-        className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
-      >
-        {track.coverArt ? (
-          <img
-            src={track.coverArt}
-            alt={track.title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <Music size={20} className="text-white/30" />
-        )}
-      </div>
+      {showCover && (
+        <div
+          onClick={() => onClickTrack?.(track)}
+          className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-600/40 to-red-900/20 border border-white/[0.08] flex-shrink-0 flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+        >
+          {track.coverArt ? (
+            <img
+              src={track.coverArt}
+              alt={track.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Music size={20} className="text-white/30" />
+          )}
+        </div>
+      )}
 
       {/* Track Info */}
       <div

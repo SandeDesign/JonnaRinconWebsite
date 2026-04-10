@@ -73,16 +73,6 @@ export default function AlbumModal({ album, isOpen, onClose }: AlbumModalProps) 
 
   if (!isOpen || !album) return null;
 
-  const handlePlayAlbum = () => {
-    if (album.tracks.length > 0) {
-      setCurrentTrack(album.tracks[0], album.tracks);
-    }
-  };
-
-  const currentTrack = getCurrentTrack();
-  const isPlayingAlbum = album.tracks.some(t => t.id === currentTrack?.id);
-  const isPlaying = isPlayingAlbum && getIsPlaying();
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -116,20 +106,6 @@ export default function AlbumModal({ album, isOpen, onClose }: AlbumModalProps) 
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-
-                {/* Play Button */}
-                <button
-                  onClick={handlePlayAlbum}
-                  className="absolute inset-0 flex items-center justify-center"
-                >
-                  <div className="w-16 h-16 rounded-full bg-red-600/90 backdrop-blur-sm flex items-center justify-center transition-transform hover:scale-110">
-                    {isPlaying ? (
-                      <Pause className="w-7 h-7 text-white" fill="currentColor" />
-                    ) : (
-                      <Play className="w-7 h-7 text-white ml-1" fill="currentColor" />
-                    )}
-                  </div>
-                </button>
               </div>
 
               {/* Album Meta */}
@@ -162,7 +138,7 @@ export default function AlbumModal({ album, isOpen, onClose }: AlbumModalProps) 
               </div>
 
               {/* Tracks List */}
-              <div className="space-y-2 mt-6">
+              <div className="space-y-1 mt-6">
                 {album.tracks.map((track, index) => (
                   <TrackListItem
                     key={track.id}
@@ -180,6 +156,7 @@ export default function AlbumModal({ album, isOpen, onClose }: AlbumModalProps) 
                     trackNumber={track.trackNumber || index + 1}
                     showMetadata={true}
                     showType={false}
+                    showCover={false}
                   />
                 ))}
               </div>
