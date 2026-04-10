@@ -327,27 +327,31 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
                 className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg p-2 md:p-4 transition-all hover:scale-[1.02] group"
               >
                 <div className="grid grid-cols-12 gap-2 md:gap-4 items-center">
+                  {/* Play Button */}
+                  <button
+                    onClick={() => setPlayingId(playingId === beat.id ? null : beat.id)}
+                    className="col-span-1 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
+                    title={playingId === beat.id ? 'Pause' : 'Play'}
+                  >
+                    {playingId === beat.id ? (
+                      <Pause className="w-4 h-4 md:w-5 md:h-5" fill="currentColor" />
+                    ) : (
+                      <Play className="w-4 h-4 md:w-5 md:h-5 ml-0.5" fill="currentColor" />
+                    )}
+                  </button>
+
+                  {/* Number */}
                   <div className="col-span-1 text-gray-400 text-xs md:text-sm font-semibold">
                     {currentPage * BEATS_PER_PAGE + index + 1}
                   </div>
 
-                  <div className="col-span-5 flex items-center gap-2 md:gap-4">
+                  <div className="col-span-4 flex items-center gap-2 md:gap-4">
                     <div className="relative w-10 h-10 md:w-16 md:h-16 flex-shrink-0">
                       <img
                         src={beat.artwork_url}
                         alt={beat.title}
                         className="w-full h-full object-cover rounded-lg"
                       />
-                      <button
-                        onClick={() => setPlayingId(playingId === beat.id ? null : beat.id)}
-                        className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
-                      >
-                        {playingId === beat.id ? (
-                          <Pause className="w-4 h-4 md:w-6 md:h-6 text-white" fill="currentColor" />
-                        ) : (
-                          <Play className="w-4 h-4 md:w-6 md:h-6 text-white ml-1" fill="currentColor" />
-                        )}
-                      </button>
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
@@ -400,16 +404,6 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
                     alt={beat.title}
                     className="w-full h-full object-cover"
                   />
-                  <button
-                    onClick={() => setPlayingId(playingId === beat.id ? null : beat.id)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    {playingId === beat.id ? (
-                      <Pause className="w-5 h-5 md:w-8 md:h-8 text-white" fill="currentColor" />
-                    ) : (
-                      <Play className="w-5 h-5 md:w-8 md:h-8 text-white ml-1" fill="currentColor" />
-                    )}
-                  </button>
                   {beat.featured && (
                     <div className="absolute top-0.5 right-0.5 md:top-2 md:right-2 bg-red-600 text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-xs font-bold shadow-lg">
                       F

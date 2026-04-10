@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { BackgroundProvider } from './contexts/BackgroundContext';
 import { TrackDetailProvider } from './contexts/TrackDetailContext';
+import { useScrollToTop } from './hooks/useScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 import BackgroundRenderer from './components/BackgroundRenderer';
@@ -81,16 +82,23 @@ import ManagerBeats from './pages/manager/BeatsPage';
 import ManagerCollaborations from './pages/manager/CollaborationsPage';
 import ManagerChat from './pages/manager/ChatPage';
 
+// Scroll to top on route change
+const ScrollToTopWrapper = ({ children }: { children: React.ReactNode }) => {
+  useScrollToTop();
+  return <>{children}</>;
+};
+
 const MainApp: React.FC = () => {
   return (
     <AuthProvider>
       <BackgroundProvider>
         <TrackDetailProvider>
           <BrowserRouter>
-            <BackgroundRenderer />
-            <GlobalAudioPlayer />
-          <Routes>
-          {/* Public Routes */}
+            <ScrollToTopWrapper>
+              <BackgroundRenderer />
+              <GlobalAudioPlayer />
+              <Routes>
+              {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -445,7 +453,8 @@ const MainApp: React.FC = () => {
 
           {/* 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+              </Routes>
+            </ScrollToTopWrapper>
             </BrowserRouter>
         </TrackDetailProvider>
       </BackgroundProvider>
