@@ -46,10 +46,6 @@ interface RemixTrack extends Track {
   coverArtUrl?: string;
 }
 
-const stats = [
-  { value: '100+', label: 'Remixes & Edits' },
-];
-
 export default function RemixesPage() {
   useScrollToTop();
   const { isAuthenticated, isLoading } = useAuth();
@@ -208,7 +204,7 @@ export default function RemixesPage() {
         {/* Fixed JEIGHTENESIS Background */}
         <div className="fixed inset-0 w-full h-screen -z-10">
           <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{objectPosition: 'center'}} />
-          <div className="absolute inset-0 bg-black/75" />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
         <Navigation isDarkOverlay={true} isLightMode={false} />
@@ -222,7 +218,7 @@ export default function RemixesPage() {
       {/* Fixed JEIGHTENESIS Background */}
       <div className="fixed inset-0 w-full h-screen -z-10">
         <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{objectPosition: 'center'}} />
-        <div className="absolute inset-0 bg-black/75" />
+        <div className="absolute inset-0 bg-black/60" />
       </div>
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
@@ -274,7 +270,7 @@ export default function RemixesPage() {
             </h2>
 
             {/* Filter & Playlist Buttons - Mobile only */}
-            <div className="flex items-center gap-2">
+            <div className="md:hidden flex items-center gap-2">
               <button
                 onClick={() => setIsFilterModalOpen(true)}
                 className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs font-bold uppercase tracking-wider text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
@@ -312,16 +308,6 @@ export default function RemixesPage() {
                 Playlists
               </button>
             )}
-          </div>
-
-          {/* Stats - Compact, Single Row */}
-          <div className="flex justify-between gap-4 md:gap-8 mb-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex-1 min-w-0">
-                <p className="text-lg md:text-2xl font-black text-white truncate">{stat.value}</p>
-                <p className="text-[9px] md:text-[10px] text-white/30 uppercase tracking-wider mt-0.5 truncate">{stat.label}</p>
-              </div>
-            ))}
           </div>
 
           {/* Subtitle */}
