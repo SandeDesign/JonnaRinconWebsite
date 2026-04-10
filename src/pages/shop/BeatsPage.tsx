@@ -138,10 +138,10 @@ const BeatsShop: React.FC = () => {
       switch (filter.sortBy) {
         case 'newest':
           // Sort by sortOrder first (if set in admin), then by createdAt
-          const aSort = a.sortOrder ?? b.createdAt.toMillis();
-          const bSort = b.sortOrder ?? a.createdAt.toMillis();
+          const aSort = a.sortOrder ?? (a.createdAt?.toMillis?.() || 0);
+          const bSort = b.sortOrder ?? (b.createdAt?.toMillis?.() || 0);
           if (aSort !== bSort) return bSort - aSort;
-          return b.createdAt.toMillis() - a.createdAt.toMillis();
+          return (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0);
         case 'popular':
           return b.plays - a.plays;
         case 'price_low':

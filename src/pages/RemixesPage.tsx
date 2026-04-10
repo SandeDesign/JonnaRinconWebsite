@@ -5,6 +5,7 @@ import { Sliders, Music } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAuth } from '../hooks/useAuth';
 import { useTrackDetail } from '../contexts/TrackDetailContext';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 import { setCurrentTrack, getCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useRemixes } from '../hooks/useRemixes';
@@ -50,6 +51,7 @@ const stats = [
 ];
 
 export default function RemixesPage() {
+  useScrollToTop();
   const { isAuthenticated, isLoading } = useAuth();
   const { remixes: firebaseRemixes, loading: remixesLoading } = useRemixes({ status: 'published' });
   const [selectedRemixType, setSelectedRemixType] = useState<'Remix' | 'Edit' | 'Bootleg' | 'All'>('All');
