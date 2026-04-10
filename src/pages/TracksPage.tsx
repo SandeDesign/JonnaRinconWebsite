@@ -6,6 +6,7 @@ import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAuth } from '../hooks/useAuth';
 import { useTrackDetail } from '../contexts/TrackDetailContext';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { setCurrentTrack, getCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
@@ -122,6 +123,7 @@ const skills = [
 ];
 
 export default function TracksPage() {
+  useScrollToTop();
   const { isAuthenticated, isLoading } = useAuth();
   const { addTrackToCart, cartItems = [] } = useCart();
   const { tracks: firebaseTracks, loading: tracksLoading, error: tracksError } = useTracks({ status: 'published' });
@@ -553,6 +555,33 @@ export default function TracksPage() {
               )}
             </div>
           )}
+
+          {/* Type Filter Tabs - Mobile and Desktop */}
+          {activeTab === 'tracks' && (() => {
+            const tabsList = ['Singles', 'Albums & EPs', 'All']
+              .concat(trackSettings?.customTab1Enabled ? [trackSettings.customTab1Label || 'Custom 1'] : [])
+              .concat(trackSettings?.customTab2Enabled ? [trackSettings.customTab2Label || 'Custom 2'] : []);
+
+            return (
+              <div className="w-full">
+                <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${tabsList.length}, 1fr)` }}>
+                  {tabsList.map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setSelectedTypeTab(tab as any)}
+                      className={`w-full px-3 md:px-4 py-2 md:py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${
+                        selectedTypeTab === tab
+                          ? 'bg-red-600 text-white border-red-500/50'
+                          : 'bg-white/[0.06] text-white/60 border-white/[0.1] hover:text-white hover:bg-white/[0.12] hover:border-white/[0.15]'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </section>
 
@@ -619,37 +648,6 @@ export default function TracksPage() {
             </div>
           </section>
 
-          {/* Type Filter Tabs */}
-          <section className="px-6 md:px-12 py-4 md:py-6 border-b border-white/[0.06]">
-            <div className="max-w-7xl mx-auto">
-              <div className="w-full">
-                <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-                  {['Singles', 'Albums & EPs', 'All']
-                    .concat(
-                      // Conditionally add Custom Tab 1 if enabled in settings
-                      trackSettings?.customTab1Enabled ? [trackSettings.customTab1Label || 'Custom 1'] : []
-                    )
-                    .concat(
-                      // Conditionally add Custom Tab 2 if enabled in settings
-                      trackSettings?.customTab2Enabled ? [trackSettings.customTab2Label || 'Custom 2'] : []
-                    )
-                    .map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => setSelectedTypeTab(tab as any)}
-                        className={`w-full px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${
-                          selectedTypeTab === tab
-                            ? 'bg-red-600 text-white border-red-500/50'
-                            : 'bg-white/[0.06] text-white/60 border-white/[0.1] hover:text-white hover:bg-white/[0.12] hover:border-white/[0.15]'
-                        }`}
-                      >
-                        {tab}
-                      </button>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </section>
 
           {/* Loading Spinner */}
           {tracksLoading && (

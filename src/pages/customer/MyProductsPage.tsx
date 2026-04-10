@@ -47,9 +47,9 @@ export default function MyProductsPage() {
 
   const sortedPurchases = [...purchases].sort((a, b) => {
     if (sortBy === 'recent') {
-      return b.createdAt.toMillis() - a.createdAt.toMillis();
+      return (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0);
     } else {
-      return a.expiresAt.toMillis() - b.expiresAt.toMillis();
+      return (a.expiresAt?.toMillis?.() || 0) - (b.expiresAt?.toMillis?.() || 0);
     }
   });
 

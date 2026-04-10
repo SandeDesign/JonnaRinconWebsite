@@ -76,7 +76,7 @@ const AdminChat: React.FC = () => {
         });
       } else {
         const existing = userMap.get(userId)!;
-        if (msg.createdAt.toMillis() > existing.lastMessageTime.toMillis()) {
+        if ((msg.createdAt?.toMillis?.() || 0) > (existing.lastMessageTime?.toMillis?.() || 0)) {
           existing.lastMessage = msg.message;
           existing.lastMessageTime = msg.createdAt;
         }
@@ -84,7 +84,7 @@ const AdminChat: React.FC = () => {
     });
 
     let convos = Array.from(userMap.values()).sort(
-      (a, b) => b.lastMessageTime.toMillis() - a.lastMessageTime.toMillis()
+      (a, b) => (b.lastMessageTime?.toMillis?.() || 0) - (a.lastMessageTime?.toMillis?.() || 0)
     );
 
     // Apply role filter
@@ -118,7 +118,7 @@ const AdminChat: React.FC = () => {
           (msg.senderId === selectedUserId) ||
           (msg.recipientId === selectedUserId && msg.senderRole === 'admin')
       )
-      .sort((a, b) => a.createdAt.toMillis() - b.createdAt.toMillis());
+      .sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
 
     setMessages(filtered);
   }, [selectedUserId, allMessages]);
