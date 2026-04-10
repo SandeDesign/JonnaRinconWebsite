@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import LoadingSpinner from './LoadingSpinner';
 
 // Firebase imports
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
@@ -205,16 +206,6 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
                       alt={beat.title}
                       className="w-full h-full object-cover"
                     />
-                    <button
-                      onClick={() => setPlayingId(playingId === beat.id ? null : beat.id)}
-                      className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      {playingId === beat.id ? (
-                        <Pause className="w-8 h-8 text-white" fill="currentColor" />
-                      ) : (
-                        <Play className="w-8 h-8 text-white ml-1" fill="currentColor" />
-                      )}
-                    </button>
                   </div>
 
                   <div className="p-3 flex-1 flex flex-col">
@@ -292,9 +283,7 @@ export default function BeatStore({ onAddToCart }: BeatStoreProps) {
 
         {/* LOADING STATE */}
         {loading ? (
-          <div className="flex justify-center items-center flex-1">
-            <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-          </div>
+          <LoadingSpinner />
         ) : error ? (
           <div className="text-center flex-1 flex items-center justify-center">
             <div className="bg-white/5 border border-white/10 p-8 rounded-lg max-w-md">

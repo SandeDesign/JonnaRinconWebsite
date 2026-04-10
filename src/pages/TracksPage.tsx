@@ -6,6 +6,7 @@ import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAuth } from '../hooks/useAuth';
 import { useTrackDetail } from '../contexts/TrackDetailContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { setCurrentTrack, getCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
