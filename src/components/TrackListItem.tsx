@@ -79,7 +79,7 @@ export default function TrackListItem({
 
   return (
     <div
-      className={`rounded-xl p-4 flex items-center gap-4 hover:bg-white/[0.06] transition-all duration-300 border backdrop-blur-md ${
+      className={`rounded-xl ${isAlbumTrack ? 'p-2' : 'p-4'} flex items-center ${isAlbumTrack ? 'gap-2' : 'gap-4'} hover:bg-white/[0.06] transition-all duration-300 border backdrop-blur-md ${
         isCurrentTrack ? 'border-red-500/50 bg-white/[0.08]' : 'bg-white/[0.04] border-white/[0.06]'
       } ${getRowHighlightClass(isCurrentTrack)}`}
     >
@@ -108,13 +108,13 @@ export default function TrackListItem({
             e.stopPropagation();
             handlePlayClick();
           }}
-          className="flex-shrink-0 p-2 hover:bg-white/[0.1] rounded-lg transition-all"
+          className="flex-shrink-0 p-1 hover:bg-white/[0.1] rounded-lg transition-all"
           title={isCurrentTrack && getIsPlaying() ? 'Pause' : 'Play'}
         >
           {isCurrentTrack && getIsPlaying() ? (
-            <Pause size={18} className="text-red-600" fill="currentColor" />
+            <Pause size={14} className="text-red-600" fill="currentColor" />
           ) : (
-            <Play size={18} className="text-white/60 hover:text-white" fill="currentColor" />
+            <Play size={14} className="text-white/60 hover:text-white" fill="currentColor" />
           )}
         </button>
       )}
@@ -125,16 +125,16 @@ export default function TrackListItem({
         onClick={() => onClickTrack?.(track)}
       >
         {isAlbumTrack ? (
-          // Album Track Layout: Number + Title together, Artist name bold
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-white text-sm md:text-base truncate">
+          // Album Track Layout: Number + Title together, Artist name - more compact
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-bold text-white text-xs truncate">
               {trackNumber && `${trackNumber}. `}{track.title}
             </span>
-            <span className="text-white/40 text-sm md:text-base truncate">
+            <span className="text-white/40 text-xs truncate">
               {track.artist}
             </span>
             {showType && (
-              <span className="px-2 py-1 bg-red-600/20 border border-red-500/30 rounded-full text-[10px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
+              <span className="px-1.5 py-0.5 bg-red-600/20 border border-red-500/30 rounded-full text-[8px] font-bold text-red-400 uppercase tracking-wider flex-shrink-0">
                 {track.type}
               </span>
             )}
@@ -157,7 +157,7 @@ export default function TrackListItem({
         )}
 
         {/* Metadata Row 2 - Additional Beat/Track Info */}
-        <div className="flex flex-wrap gap-3 text-[10px] text-white/50 uppercase tracking-wider mt-1">
+        <div className={`flex flex-wrap ${isAlbumTrack ? 'gap-1.5 text-[8px] mt-0' : 'gap-3 text-[10px] mt-1'} text-white/50 uppercase tracking-wider`}>
           {showYear && track.year && (
             <span className="inline-flex items-center gap-1">
               <span className="text-white/30">•</span>
