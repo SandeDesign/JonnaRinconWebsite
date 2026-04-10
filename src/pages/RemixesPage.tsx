@@ -11,6 +11,7 @@ import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
 import TrackDetailModal from '../components/TrackDetailModal';
 import LoginModal from '../components/LoginModal';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { extractUniqueGenres } from '../lib/utils/genreExtractor';
 import { remixService } from '../lib/firebase/services';
 
@@ -292,10 +293,20 @@ export default function RemixesPage() {
         </div>
       </section>
 
+      {/* Loading Spinner */}
+      {remixesLoading && (
+        <section className="px-6 md:px-12 py-16">
+          <div className="max-w-7xl mx-auto">
+            <LoadingSpinner text="Loading remixes..." />
+          </div>
+        </section>
+      )}
+
       {/* Remix Tracks List */}
-      <section className="px-6 md:px-12 py-2 md:py-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="space-y-3">
+      {!remixesLoading && (
+        <section className="px-6 md:px-12 py-2 md:py-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="space-y-3">
             {filteredRemixes
               .sort((a, b) => {
                 // Sort by sortOrder first (if set in admin), then by createdAt
@@ -332,7 +343,8 @@ export default function RemixesPage() {
             </p>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <Footer />
