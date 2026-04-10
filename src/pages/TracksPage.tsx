@@ -5,12 +5,14 @@ import Footer from '../components/Footer';
 import { Play, ExternalLink, ChevronLeft, ChevronRight, Music, Headphones, Disc3, Radio, Award, Mic2, ChevronDown, Sliders } from 'lucide-react';
 import { useCyberDecodeInView } from '../hooks/useCyberDecode';
 import { useAuth } from '../hooks/useAuth';
+import { useTrackDetail } from '../contexts/TrackDetailContext';
 import { setCurrentTrack, getCurrentTrack } from '../components/GlobalAudioPlayer';
 import TrackListItem from '../components/TrackListItem';
 import { useTracks } from '../hooks/useTracks';
 import { useRemixes } from '../hooks/useRemixes';
 import FilterModal from '../components/FilterModal';
 import TrackDetailModal from '../components/TrackDetailModal';
+import AlbumModal from '../components/AlbumModal';
 import LoginModal from '../components/LoginModal';
 import PlaylistModal from '../components/PlaylistModal';
 import PlaylistDetailView from '../components/PlaylistDetailView';
@@ -136,12 +138,13 @@ export default function TracksPage() {
   const [selectedRemixGenre, setSelectedRemixGenre] = useState<string>('All');
   const [expandedAlbums, setExpandedAlbums] = useState<Set<string>>(new Set());
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
+  const { selectedTrack, setSelectedTrack, isModalOpen, setIsModalOpen } = useTrackDetail();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedTypeTab, setSelectedTypeTab] = useState<'Singles' | 'Albums & EPs' | 'All' | 'Custom 1' | 'Custom 2'>('All');
   const [shopSettings, setShopSettings] = useState<any>(null);
   const [trackSettings, setTrackSettings] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
   const [isPlaylistDetailOpen, setIsPlaylistDetailOpen] = useState(false);
@@ -439,12 +442,19 @@ export default function TracksPage() {
       {/* Track Detail Modal */}
       <TrackDetailModal
         track={selectedTrack}
-        isOpen={!!selectedTrack}
-        onClose={() => setSelectedTrack(null)}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         isPlaying={selectedTrack ? false : false}
         onPlay={handlePlayTrack}
         onBuy={handleBuyTrack}
         cartItems={cartItems}
+      />
+
+      {/* Album Modal */}
+      <AlbumModal
+        album={selectedAlbum}
+        isOpen={!!selectedAlbum}
+        onClose={() => setSelectedAlbum(null)}
       />
 
       {/* Playlist Modal */}
@@ -649,12 +659,28 @@ export default function TracksPage() {
                             onClick={() => toggleAlbumExpand(albumKey)}
                             className="w-full px-6 py-4 flex items-center gap-4 border border-white/[0.06] rounded-xl hover:bg-white/[0.06] transition-all bg-white/[0.04] backdrop-blur-md group"
                           >
-                            {/* Album Cover - Small */}
-                            <img
-                              src={group.artwork}
-                              alt={group.albumName}
-                              className="w-12 h-12 rounded object-cover flex-shrink-0"
-                            />
+                            {/* Album Cover - Small - Clickable */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedAlbum({
+                                  name: group.albumName,
+                                  type: group.type,
+                                  artwork: group.artwork,
+                                  artist: group.displayTrack.artist,
+                                  year: group.displayTrack.year,
+                                  tracks: group.tracks,
+                                });
+                              }}
+                              className="flex-shrink-0 hover:scale-110 transition-transform"
+                              title="View album"
+                            >
+                              <img
+                                src={group.artwork}
+                                alt={group.albumName}
+                                className="w-12 h-12 rounded object-cover"
+                              />
+                            </button>
 
                             {/* Album Info */}
                             <div className="flex-1 min-w-0">
