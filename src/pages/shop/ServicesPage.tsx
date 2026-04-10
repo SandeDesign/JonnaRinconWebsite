@@ -3,6 +3,7 @@ import { Zap, Headphones, Music, Volume2, Users, Palette, ArrowRight } from 'luc
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { useServices } from '../../hooks/useServices';
 import { Service } from '../../lib/firebase/types';
 
@@ -66,8 +67,8 @@ const ServicesPage: React.FC = () => {
       <section className="px-6 md:px-12 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-white/50">Loading services...</div>
+            <div className="flex items-center justify-center py-16">
+              <LoadingSpinner text="Loading services..." />
             </div>
           ) : formattedServices.length === 0 ? (
             <div className="flex items-center justify-center py-12">
