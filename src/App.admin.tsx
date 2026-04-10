@@ -2,8 +2,15 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { BackgroundProvider } from './contexts/BackgroundContext';
+import { useScrollToTop } from './hooks/useScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import BackgroundRenderer from './components/BackgroundRenderer';
+
+// Scroll to top on route change
+const ScrollToTopWrapper = ({ children }: { children: React.ReactNode }) => {
+  useScrollToTop();
+  return <>{children}</>;
+};
 
 // Admin Pages
 import LoginPage from './pages/admin/LoginPage';
@@ -23,8 +30,11 @@ import PlaylistsPage from './pages/admin/PlaylistsPage';
 const AdminApp: React.FC = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <BackgroundProvider>
+        <BrowserRouter>
+          <ScrollToTopWrapper>
+            <BackgroundRenderer />
+            <Routes>
           {/* Login Route */}
           <Route path="/admin/login" element={<LoginPage />} />
 
@@ -132,8 +142,10 @@ const AdminApp: React.FC = () => {
 
           {/* Catch all - redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+            </Routes>
+          </ScrollToTopWrapper>
+        </BrowserRouter>
+      </BackgroundProvider>
     </AuthProvider>
   );
 };
