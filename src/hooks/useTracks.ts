@@ -34,7 +34,7 @@ export const useTracks = (filters?: {
     );
 
     return () => unsubscribe();
-  }, [filters]);
+  }, [typeof filters === 'string' ? filters : JSON.stringify(filters)]);
 
   return { tracks, loading, error, setError };
 };
