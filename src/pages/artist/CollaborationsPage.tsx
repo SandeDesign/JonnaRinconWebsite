@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { collaborationService } from '../../lib/firebase/services/collaborationService';
 import { Collaboration } from '../../lib/firebase/types';
 import ArtistLayout from '../../components/artist/ArtistLayout';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { Handshake, Mail, MessageSquare, Send, X } from 'lucide-react';
 import { db } from '../../lib/firebase/config';
 import { collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot, Timestamp } from 'firebase/firestore';
@@ -99,7 +100,7 @@ const ArtistCollaborations: React.FC = () => {
     return (
       <ArtistLayout>
         <div className="flex justify-center items-center h-64">
-          <div className="text-xl text-white">Loading collaborations...</div>
+          <LoadingSpinner text="Loading collaborations..." />
         </div>
       </ArtistLayout>
     );
