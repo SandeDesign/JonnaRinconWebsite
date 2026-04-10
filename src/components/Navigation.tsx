@@ -35,10 +35,9 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const scrollPositionRef = useRef(0);
 
   // Smart color detection for menu button and logo
-  const smartColor = useContrastColor(window.innerWidth - 60, 30);
+  const smartColor = useContrastColor();
 
-  // Fall back to original logic if smart color not available, but prefer smart detection
-  const fallbackNavTextColor = isDarkOverlay && !isLightMode ? 'text-white' : 'text-black';
+  // Use smart color detection, fallback based on isDarkOverlay if needed
   const navTextColor = `text-${smartColor}`;
 
   // Lock scroll when menu is open - improved state management
