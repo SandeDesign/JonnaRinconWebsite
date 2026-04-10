@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Play, Pause, Share2, Lock, Unlock, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
-import { playlistService, trackService } from '../lib/firebase/services';
+import { playlistService, trackService, remixService } from '../lib/firebase/services';
 import { useAuth } from '../hooks/useAuth';
 import { Playlist, Track } from '../lib/firebase/types';
 import TrackListItem from './TrackListItem';
@@ -55,7 +55,7 @@ export default function PlaylistDetailView({
     return unsubscribe;
   }, [isOpen, playlist.id]);
 
-  // Fetch tracks
+  // Fetch tracks and remixes
   useEffect(() => {
     const fetchTracks = async () => {
       if (!updatedPlaylist.trackIds || updatedPlaylist.trackIds.length === 0) {
@@ -67,9 +67,16 @@ export default function PlaylistDetailView({
       const fetchedTracks: Track[] = [];
 
       for (const trackId of updatedPlaylist.trackIds) {
-        const track = await trackService.getTrackById(trackId);
-        if (track) {
-          fetchedTracks.push(track);
+        // Try to fetch as track first
+        let item = await trackService.getTrackById(trackId);
+
+        // If not found, try as remix
+        if (!item) {
+          item = await remixService.getRemixById(trackId);
+        }
+
+        if (item) {
+          fetchedTracks.push(item);
         }
       }
 
