@@ -27,6 +27,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const [authLoading, setAuthLoading] = useState(false);
   const [expandedShop, setExpandedShop] = useState(false);
   const [expandedCatalogue, setExpandedCatalogue] = useState(false);
+  const [expandedGetInTouch, setExpandedGetInTouch] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, signIn, signUp, signOut } = useAuth();
   const { cartItems, removeFromCart, removeItemByIndex, clearCart } = useCart();
@@ -182,10 +183,16 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     { label: 'Support', subtitle: 'Artist support & features', href: '/support', isSmall: true },
   ];
 
-  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: Array<{ label: string; subtitle: string; href: string }>; expanded?: boolean }[] = [
+  const getInTouchSubmenu = [
+    { label: 'Social Media', subtitle: 'Follow on all platforms', href: '#', action: () => {} },
+    { label: 'Messenger', subtitle: 'Chat with Jonna Rincon', href: '#', action: () => { closeMenu(); setAuthMode('login'); setIsAuthModalOpen(true); } },
+    { label: 'Contact', subtitle: 'For serious inquiries', href: '#', action: () => { closeMenu(); navigate('/contact'); } },
+  ];
+
+  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: Array<{ label: string; subtitle: string; href: string; action?: () => void }>; expanded?: boolean }[] = [
     { label: 'SHOP', subtitle: 'Browse our catalog', action: () => setExpandedShop(!expandedShop), submenu: shopSubmenu, expanded: expandedShop },
     { label: 'CATALOGUE', subtitle: 'Browse all content', action: () => setExpandedCatalogue(!expandedCatalogue), submenu: catalogueSubmenu, expanded: expandedCatalogue },
-    { label: 'SOCIALS & CONTACT', subtitle: 'Follow & Get in touch', action: () => { closeMenu(); navigate('/socials'); } },
+    { label: 'GET IN TOUCH', subtitle: 'Connect with Jonna', action: () => setExpandedGetInTouch(!expandedGetInTouch), submenu: getInTouchSubmenu, expanded: expandedGetInTouch },
   ];
 
   const socialLinks = [
@@ -403,7 +410,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                 <div className="w-full h-px bg-white/[0.06]" />
 
                 {/* Menu items — clean, modern, spaced, scrollable */}
-                <div className="flex-1 flex flex-col overflow-y-auto -mt-8 pr-2">
+                <div className="flex-1 flex flex-col overflow-y-auto -mt-8 pr-2 pb-6">
                   {menuItems.map((item, i) => (
                     <div key={item.label}>
                       <button
@@ -439,10 +446,14 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                                 {/* Regular items */}
                                 {regularItems.map((subitem: any, subIndex) => (
                                   <button
-                                    key={subitem.href}
+                                    key={subitem.href || subitem.label}
                                     onClick={() => {
-                                      closeMenu();
-                                      navigate(subitem.href);
+                                      if (subitem.action) {
+                                        subitem.action();
+                                      } else {
+                                        closeMenu();
+                                        navigate(subitem.href);
+                                      }
                                     }}
                                     className="group w-full text-left py-3 md:py-4 cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300"
                                     style={{
