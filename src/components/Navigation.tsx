@@ -184,9 +184,9 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   ];
 
   const getInTouchSubmenu = [
-    { label: 'Social Media', subtitle: 'Follow on all platforms', href: '#', action: () => {} },
-    { label: 'Messenger', subtitle: 'Chat with Jonna Rincon', href: '#', action: () => { closeMenu(); setAuthMode('login'); setIsAuthModalOpen(true); } },
-    { label: 'Contact', subtitle: 'For serious inquiries', href: '#', action: () => { closeMenu(); navigate('/contact'); } },
+    { label: 'Social Media', subtitle: 'Follow on all platforms', href: '#socials', action: () => { closeMenu(); } },
+    { label: 'Messenger', subtitle: 'Chat with Jonna Rincon', href: '#messenger', action: () => { closeMenu(); navigate(user ? '/messenger' : '/tracks'); if (!user) setIsAuthModalOpen(true); } },
+    { label: 'Contact', subtitle: 'For serious inquiries', href: '#contact', action: () => { closeMenu(); navigate('/contact'); } },
   ];
 
   const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: Array<{ label: string; subtitle: string; href: string; action?: () => void }>; expanded?: boolean }[] = [
