@@ -101,6 +101,24 @@ export default function TrackListItem({
         </div>
       )}
 
+      {/* Play/Pause Button for Album Tracks */}
+      {isAlbumTrack && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePlayClick();
+          }}
+          className="flex-shrink-0 p-2 hover:bg-white/[0.1] rounded-lg transition-all"
+          title={isCurrentTrack && getIsPlaying() ? 'Pause' : 'Play'}
+        >
+          {isCurrentTrack && getIsPlaying() ? (
+            <Pause size={18} className="text-red-600" fill="currentColor" />
+          ) : (
+            <Play size={18} className="text-white/60 hover:text-white" fill="currentColor" />
+          )}
+        </button>
+      )}
+
       {/* Track Info */}
       <div
         className="flex-1 min-w-0 cursor-pointer"

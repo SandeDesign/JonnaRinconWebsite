@@ -169,7 +169,7 @@ export default function TracksPage() {
     audioUrl: t.audioUrl,
     coverArt: t.artworkUrl,
     coverArtUrl: t.artworkUrl,
-    createdAt: t.createdAt.toMillis?.() || Date.now(),
+    createdAt: t.createdAt?.toMillis?.() || Date.now(),
     isFree: t.isFree,
     licenses: t.licenses,
   }));
@@ -276,7 +276,7 @@ export default function TracksPage() {
       collab: t.collab,
       audioUrl: t.audioUrl,
       coverArt: t.artworkUrl,
-      createdAt: t.createdAt.toMillis?.() || Date.now(),
+      createdAt: t.createdAt?.toMillis?.() || Date.now(),
       isFree: t.isFree,
       licenses: t.licenses,
     }));
