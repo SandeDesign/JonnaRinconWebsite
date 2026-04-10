@@ -146,6 +146,12 @@ export default function RemixesPage() {
     return typeMatch && yearMatch && collabMatch && genreMatch;
   });
 
+  // Handler to open remix detail modal when clicking on a remix
+  const handleRemixClick = (remix: RemixTrack) => {
+    setSelectedTrack(remix as any);
+    setIsModalOpen(true);
+  };
+
   const years = Array.from(new Set(remixTracks.map(r => r.year).filter(Boolean))).sort((a, b) => b - a) as number[];
 
   // Extract dynamic genres for remixes
@@ -324,7 +330,7 @@ export default function RemixesPage() {
                 <TrackListItem
                   key={remix.id}
                   track={remix}
-                  onClickTrack={setSelectedTrack}
+                  onClickTrack={handleRemixClick}
                   onPlay={handlePlayRemix}
                   onTogglePlay={handleTogglePlayRemix}
                   showType={false}
