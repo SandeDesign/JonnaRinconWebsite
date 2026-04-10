@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { BackgroundProvider } from './contexts/BackgroundContext';
+import { TrackDetailProvider } from './contexts/TrackDetailContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 import BackgroundRenderer from './components/BackgroundRenderer';
@@ -79,9 +80,10 @@ const MainApp: React.FC = () => {
   return (
     <AuthProvider>
       <BackgroundProvider>
-        <BrowserRouter>
-          <BackgroundRenderer />
-          <GlobalAudioPlayer />
+        <TrackDetailProvider>
+          <BrowserRouter>
+            <BackgroundRenderer />
+            <GlobalAudioPlayer />
           <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
@@ -399,7 +401,8 @@ const MainApp: React.FC = () => {
           {/* 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        </BrowserRouter>
+            </BrowserRouter>
+        </TrackDetailProvider>
       </BackgroundProvider>
     </AuthProvider>
   );

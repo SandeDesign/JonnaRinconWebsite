@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Music, Play, Pause } from 'lucide-react';
+import { Music, Play, Pause, Download } from 'lucide-react';
 import { getCurrentTrack, getIsPlaying, setCurrentTrack, togglePlayPause, subscribeToPlayerState } from './GlobalAudioPlayer';
 import { getRowHighlightClass } from '../lib/utils/buttonStyles';
 
@@ -9,6 +9,7 @@ interface TrackListItemProps {
   onPlay?: (track: any) => void;
   onTogglePlay?: (track: any) => void;
   onBuy?: (track: any) => void;
+  onDownload?: (track: any) => void;
   allTracks?: any[];
   showType?: boolean;
   showYear?: boolean;
@@ -18,6 +19,7 @@ interface TrackListItemProps {
   isAlbumTrack?: boolean;
   trackNumber?: number;
   isPlaying?: boolean;
+  showDownload?: boolean;
 }
 
 export default function TrackListItem({
@@ -26,6 +28,7 @@ export default function TrackListItem({
   onPlay,
   onTogglePlay,
   onBuy,
+  onDownload,
   allTracks = [],
   showType = true,
   showYear = true,
@@ -35,6 +38,7 @@ export default function TrackListItem({
   isAlbumTrack = false,
   trackNumber,
   isPlaying = false,
+  showDownload = false,
 }: TrackListItemProps) {
   // Force re-render when global player state changes
   const [, setPlayerState] = useState({});
@@ -171,6 +175,26 @@ export default function TrackListItem({
           )}
         </div>
       </div>
+
+      {/* Download Button */}
+      {showDownload && track.audioUrl && (
+        <a
+          href={track.audioUrl}
+          download
+          className="flex-shrink-0 flex items-center justify-center text-white/40 hover:text-red-400 transition-colors duration-200"
+          style={{ width: '16px', height: '16px' }}
+          title="Download track"
+          aria-label="Download track"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onDownload) {
+              onDownload(track);
+            }
+          }}
+        >
+          <Download size={14} />
+        </a>
+      )}
 
       {/* Play/Pause Button */}
       <button

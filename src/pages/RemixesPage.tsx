@@ -317,6 +317,7 @@ export default function RemixesPage() {
                   onTogglePlay={handleTogglePlayRemix}
                   showType={false}
                   showMetadata={true}
+                  showDownload={true}
                   isPlaying={isPlaying}
                 />
               ))}

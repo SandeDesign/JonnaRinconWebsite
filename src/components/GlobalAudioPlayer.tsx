@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { SkipBack, Play, Pause, SkipForward, Shuffle, Repeat, Volume2, VolumeX, X } from 'lucide-react';
+import { useTrackDetail } from '../contexts/TrackDetailContext';
 import './GlobalAudioPlayer.css';
 
 interface Track {
@@ -143,9 +144,10 @@ export function togglePlayPause() {
   notifySubscribers();
 }
 
-export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () => void }) {
+export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () => void } = {}) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [store, setStore] = useState<PlayerStore>(playerStore);
+  const { setSelectedTrack, setIsModalOpen } = useTrackDetail();
   const [isVisible, setIsVisible] = useState(isPlayerVisible);
   const [volume, setVolume] = useState<number>(() => {
     if (typeof window !== 'undefined') {
@@ -368,8 +370,9 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
         volume={isMuted ? 0 : volume}
       />
       <div className="fixed bottom-0 left-0 right-0 z-40 jonna-audio-player">
-        {/* Progress Bar at Top */}
+        {/* Progress Bar at Top - Spotify Style with Times */}
         <div className="jonna-progress-container">
+          <span className="jonna-current-time">{formatTime(currentTime)}</span>
           <input
             type="range"
             min="0"
@@ -380,6 +383,7 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
             title="Progress"
             aria-label="Progress"
           />
+          <span className="jonna-total-time">{formatTime(duration)}</span>
         </div>
 
         {/* Main Player Content */}
@@ -389,11 +393,35 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
             {store.currentTrack?.coverArt && (
               <div
                 className="jonna-cover-wrapper"
-                onClick={onCoverClick}
+                onClick={() => {
+                  if (store.currentTrack) {
+                    const trackData: any = {
+                      id: store.currentTrack.id,
+                      title: store.currentTrack.title,
+                      artist: store.currentTrack.artist,
+                      audioUrl: store.currentTrack.audioUrl,
+                      coverArt: store.currentTrack.coverArt,
+                    };
+                    setSelectedTrack(trackData);
+                    setIsModalOpen(true);
+                  }
+                  onCoverClick?.();
+                }}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
+                    if (store.currentTrack) {
+                      const trackData: any = {
+                        id: store.currentTrack.id,
+                        title: store.currentTrack.title,
+                        artist: store.currentTrack.artist,
+                        audioUrl: store.currentTrack.audioUrl,
+                        coverArt: store.currentTrack.coverArt,
+                      };
+                      setSelectedTrack(trackData);
+                      setIsModalOpen(true);
+                    }
                     onCoverClick?.();
                   }
                 }}
@@ -510,12 +538,6 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
               <X size={20} />
             </button>
           </div>
-        </div>
-
-        {/* Time Display at Bottom */}
-        <div className="jonna-time-display">
-          <span className="jonna-current-time">{formatTime(currentTime)}</span>
-          <span className="jonna-total-time">{formatTime(duration)}</span>
         </div>
       </div>
       <style>{`

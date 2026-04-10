@@ -7,16 +7,18 @@
   padding-top: 0 !important;
 }
 
-/* Progress bar at top */
+/* Progress bar at top - Spotify style with times */
 .jonna-progress-container {
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
-  padding: 8px 16px 0 16px;
+  padding: 8px 16px;
   height: auto;
 }
 
 .jonna-progress-slider {
-  width: 100%;
+  flex: 1;
   height: 6px;
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.08);
@@ -289,33 +291,42 @@
   background: rgba(220, 38, 38, 0.15);
 }
 
-/* Time display at bottom - Current time LEFT, Total time RIGHT */
-.jonna-time-display {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px 12px 16px;
-  width: 100%;
+/* Time display - within progress container */
+.jonna-progress-container .jonna-current-time {
+  min-width: 30px;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.5);
+  text-align: right;
 }
 
-.jonna-current-time {
+.jonna-progress-container .jonna-total-time {
   min-width: 30px;
-}
-
-.jonna-total-time {
-  min-width: 30px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: left;
 }
 
 /* Mobile/Tablet responsive */
 @media (max-width: 768px) {
+  .jonna-progress-container {
+    padding: 8px 12px;
+    gap: 4px;
+  }
+
+  .jonna-progress-container .jonna-current-time,
+  .jonna-progress-container .jonna-total-time {
+    font-size: 10px;
+    min-width: 28px;
+  }
+
   .jonna-player-content {
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 8px;
     min-height: auto;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .jonna-cover-section {
@@ -323,38 +334,38 @@
   }
 
   .jonna-center-controls {
-    width: 100%;
+    flex: 1;
     justify-content: center;
+    gap: 4px;
   }
 
   .jonna-right-controls {
-    width: 100%;
-    justify-content: center;
+    display: flex;
     gap: 4px;
-    flex-wrap: wrap;
-  }
-
-  .jonna-time-display {
-    padding: 8px 12px 12px 12px;
-    font-size: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
 
   .jonna-play-pause-btn {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
   }
 
   .jonna-control-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
   }
 
   .jonna-close-btn {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
   }
 
   .jonna-volume-slider {
-    width: 60px;
+    width: 50px;
+    flex-shrink: 0;
   }
 }
