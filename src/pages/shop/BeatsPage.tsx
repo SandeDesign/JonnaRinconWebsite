@@ -104,7 +104,9 @@ const BeatsShop: React.FC = () => {
       year: new Date().getFullYear(),
       collab: 'Solo' as const,
       createdAt: beat.createdAt?.seconds ? beat.createdAt.seconds * 1000 : Date.now(),
-    };
+      _isBeat: true, // Mark as beat for player
+      _beatData: beat, // Store original beat data
+    } as any;
 
     // Use global player
     setCurrentTrack(trackBeat, [trackBeat]);
