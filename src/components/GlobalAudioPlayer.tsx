@@ -445,36 +445,8 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
             </div>
           </div>
 
-          {/* CENTER: Play/Pause + Prev/Next */}
-          <div className="jonna-center-controls">
-            <button
-              className="jonna-control-btn jonna-prev-btn"
-              onClick={handlePrevious}
-              title="Previous track"
-              aria-label="Previous track"
-            >
-              <SkipBack size={20} />
-            </button>
-            <button
-              className="jonna-play-pause-btn"
-              onClick={togglePlayPause}
-              title={isPlaying ? 'Pause' : 'Play'}
-              aria-label={isPlaying ? 'Pause' : 'Play'}
-            >
-              {store.isPlaying ? <Pause size={32} /> : <Play size={32} />}
-            </button>
-            <button
-              className="jonna-control-btn jonna-next-btn"
-              onClick={handleNext}
-              title="Next track"
-              aria-label="Next track"
-            >
-              <SkipForward size={20} />
-            </button>
-          </div>
-
-          {/* RIGHT: Controls (Shuffle, Repeat, Mute, Volume) */}
-          <div className="jonna-right-controls">
+          {/* CENTER: Shuffle + Prev/Play/Next + Repeat */}
+          <div className="jonna-center-section">
             <button
               className={`jonna-control-btn ${store.isShuffleEnabled ? 'jonna-active' : ''}`}
               onClick={handleToggleShuffle}
@@ -483,6 +455,34 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
             >
               <Shuffle size={20} />
             </button>
+
+            <div className="jonna-play-controls">
+              <button
+                className="jonna-control-btn jonna-skip-btn"
+                onClick={handlePrevious}
+                title="Previous track"
+                aria-label="Previous track"
+              >
+                <SkipBack size={20} />
+              </button>
+              <button
+                className="jonna-play-pause-btn"
+                onClick={togglePlayPause}
+                title={isPlaying ? 'Pause' : 'Play'}
+                aria-label={isPlaying ? 'Pause' : 'Play'}
+              >
+                {store.isPlaying ? <Pause size={32} /> : <Play size={32} />}
+              </button>
+              <button
+                className="jonna-control-btn jonna-skip-btn"
+                onClick={handleNext}
+                title="Next track"
+                aria-label="Next track"
+              >
+                <SkipForward size={20} />
+              </button>
+            </div>
+
             <button
               className={`jonna-control-btn ${repeat !== 'off' ? 'jonna-active' : ''}`}
               onClick={handleRepeatToggle}
@@ -514,6 +514,10 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
                 </span>
               )}
             </button>
+          </div>
+
+          {/* RIGHT: Controls (Mute, Volume, Close) */}
+          <div className="jonna-right-controls">
             <button
               className={`jonna-control-btn ${isMuted ? 'jonna-active' : ''}`}
               onClick={handleMuteToggle}

@@ -130,14 +130,28 @@
   max-width: 200px;
 }
 
-/* CENTER: Play/Pause + Prev/Next buttons (LARGE RED PLAY BUTTON IN MIDDLE) */
-.jonna-center-controls {
+/* CENTER: Shuffle + Play Controls + Repeat */
+.jonna-center-section {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  flex: 0 1 auto;
+  gap: 16px;
+  flex: 1;
   min-width: fit-content;
+}
+
+/* Play controls: Prev + Play + Next together */
+.jonna-play-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: fit-content;
+}
+
+.jonna-skip-btn {
+  width: 40px;
+  height: 40px;
 }
 
 .jonna-play-pause-btn {
@@ -191,15 +205,7 @@
   transform: scale(0.95);
 }
 
-.jonna-prev-btn {
-  order: 1;
-}
-
-.jonna-next-btn {
-  order: 3;
-}
-
-/* RIGHT: Controls (Shuffle, Repeat, Mute, Volume) */
+/* RIGHT: Controls (Mute, Volume, Close) */
 .jonna-right-controls {
   display: flex;
   align-items: center;
@@ -333,15 +339,24 @@
     display: none !important;
   }
 
-  .jonna-center-controls {
-    flex: 0;
+  .jonna-center-section {
+    flex: 1;
     justify-content: center;
     gap: 8px;
     order: 2;
   }
 
+  .jonna-play-controls {
+    gap: 4px;
+  }
+
   .jonna-right-controls {
     display: none;
+  }
+
+  .jonna-skip-btn {
+    width: 36px;
+    height: 36px;
   }
 
   .jonna-play-pause-btn {
