@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Star } from 'lucide-react';
+import { ShoppingCart, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import MerchandiseDetailModal from '../../components/MerchandiseDetailModal';
@@ -161,12 +161,7 @@ const MerchandisePage: React.FC = () => {
 
   return (
     <div className="min-h-screen text-white">
-      {/* Fixed JEIGHTENESIS Background */}
-      <div className="fixed inset-0 w-full h-screen -z-10">
-        <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
-        <div className="absolute inset-0 bg-black/80" />
-      </div>
-
+      {/* Background is handled by BackgroundRenderer */}
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
       {/* Hero Section - Centered Layout */}
@@ -233,8 +228,8 @@ const MerchandisePage: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
 
-                  {/* Stock Badge */}
-                  {!item.inStock && (
+                  {/* Stock Badge - Show only when totalStock is 0 */}
+                  {(item.totalStock ?? 0) === 0 && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                       <span className="text-white font-bold text-lg">Out of Stock</span>
                     </div>
@@ -274,15 +269,15 @@ const MerchandisePage: React.FC = () => {
                         e.stopPropagation();
                         handleAddToCart(item.id);
                       }}
-                      disabled={!item.inStock}
+                      disabled={(item.totalStock ?? 0) === 0}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all group-hover:scale-105 ${
-                        item.inStock
+                        (item.totalStock ?? 0) > 0
                           ? 'bg-red-600 hover:bg-red-700 text-white'
                           : 'bg-white/[0.04] text-white/30 cursor-not-allowed'
                       }`}
                     >
                       <ShoppingCart size={14} />
-                      {cartItems.some((cart: any) => cart.id === item.id) ? 'Added!' : 'Add'}
+                      {(item.totalStock ?? 0) === 0 ? 'Out of Stock' : 'Add'}
                     </button>
                   </div>
                 </div>
