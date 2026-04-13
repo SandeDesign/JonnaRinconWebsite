@@ -147,11 +147,11 @@ export default function MerchandiseDetailModal({
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
               {/* Logos */}
-              <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+              <div className="absolute top-4 left-4 right-4 flex justify-between items-start gap-2">
                 {merchandise.showJonnaRinconLogo && (
-                  <div className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-2 flex items-center justify-center">
+                  <div className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
                     <img
-                      src="/jonna-rincon-logo-white.png"
+                      src="/Jonna Rincon Logo WH.png"
                       alt="Jonna Rincon"
                       className="w-full h-full object-contain"
                       onError={(e) => {
@@ -162,11 +162,11 @@ export default function MerchandiseDetailModal({
                   </div>
                 )}
                 {merchandise.showJeighteenLogo && (
-                  <div className="w-12 h-12 bg-black/60 backdrop-blur-sm border border-white/20 rounded-lg p-2 flex items-center justify-center">
+                  <div className="w-12 h-12 bg-black/60 backdrop-blur-sm border border-white/20 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
                     <img
-                      src="/JEIGHTEEN-logo-inverted.png"
+                      src="/Logo.png"
                       alt="JEIGHTEEN"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain invert"
                       onError={(e) => {
                         // Fallback to a text badge if logo doesn't load
                         (e.target as HTMLImageElement).style.display = 'none';
