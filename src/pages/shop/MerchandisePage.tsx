@@ -235,8 +235,36 @@ const MerchandisePage: React.FC = () => {
                     </div>
                   )}
 
+                  {/* Logos */}
+                  <div className="absolute top-3 left-3 right-3 flex justify-between items-start gap-2">
+                    {item.showJonnaRinconLogo && (
+                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-1.5 flex items-center justify-center flex-shrink-0">
+                        <img
+                          src="/Jonna Rincon Logo WH.png"
+                          alt="Jonna Rincon"
+                          className="w-full h-full object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    {item.showJeighteenLogo && (
+                      <div className="w-10 h-10 bg-black/60 backdrop-blur-sm border border-white/20 rounded-lg p-1.5 flex items-center justify-center flex-shrink-0">
+                        <img
+                          src="/Logo.png"
+                          alt="JEIGHTEEN"
+                          className="w-full h-full object-contain invert"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
                   {/* Category Badge */}
-                  <div className="absolute top-3 left-3">
+                  <div className="absolute bottom-3 left-3">
                     <span className="px-3 py-1.5 bg-white/[0.08] backdrop-blur-sm border border-white/[0.1] text-white text-[10px] font-bold rounded-full uppercase tracking-wider">
                       {item.category}
                     </span>
