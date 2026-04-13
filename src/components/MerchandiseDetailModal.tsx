@@ -164,9 +164,9 @@ export default function MerchandiseDetailModal({
                 {merchandise.showJeighteenLogo && (
                   <div className="w-12 h-12 bg-black/60 backdrop-blur-sm border border-white/20 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
                     <img
-                      src="/Logo.png"
+                      src="/JEIGHTEEN-logo.png"
                       alt="JEIGHTEEN"
-                      className="w-full h-full object-contain invert"
+                      className="w-full h-full object-contain"
                       onError={(e) => {
                         // Fallback to a text badge if logo doesn't load
                         (e.target as HTMLImageElement).style.display = 'none';
