@@ -99,25 +99,13 @@ export default function Hero() {
     if (imgRef.current) {
       imgRef.current.style.opacity = '1';
     }
-  }, []);
+  }, [overlayRef, gradientRef, imgRef]);
 
   useEffect(() => {
-    // Call handleScroll immediately on mount
-    handleScroll();
-
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
-
-  // Force update on mount
-  useEffect(() => {
-    if (overlayRef.current) {
-      overlayRef.current.style.opacity = '0';
-    }
-    if (gradientRef.current) {
-      gradientRef.current.style.opacity = '0';
-    }
-  }, []);
 
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center">
