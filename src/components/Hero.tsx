@@ -103,7 +103,7 @@ export default function Hero() {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    handleScroll(); // initial call
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
@@ -122,12 +122,12 @@ export default function Hero() {
         <div
           ref={overlayRef}
           className="absolute inset-0 bg-black"
-          style={{ opacity: 0, transition: 'opacity 0.2s ease-out', WebkitTransition: 'opacity 0.2s ease-out' }}
+          style={{ opacity: 0, transition: 'opacity 0.3s ease-out' }}
         ></div>
         <div
           ref={gradientRef}
           className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30"
-          style={{ opacity: 0, transition: 'opacity 0.2s ease-out', WebkitTransition: 'opacity 0.2s ease-out' }}
+          style={{ opacity: 0 }}
         ></div>
       </div>
 
