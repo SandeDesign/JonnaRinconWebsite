@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { Timestamp } from 'firebase/firestore';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
 import { useMerchandise } from '../../hooks/useMerchandise';
 import { merchandiseService } from '../../lib/firebase/services';
-import { Merchandise } from '../../lib/firebase/types';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Merchandise, MerchandiseSize } from '../../lib/firebase/types';
+import { toDirectUrl } from '../../lib/utils/urlUtils';
+import { Plus, Edit, Trash2, X } from 'lucide-react';
 
 const categories = [
   'Clothing',
@@ -200,13 +202,37 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
     metaDescription: merchandise?.metaDescription || '',
     status: merchandise?.status || 'draft',
     featured: merchandise?.featured || false,
+    totalStock: merchandise?.totalStock || 0,
+    sizes: merchandise?.sizes || [],
+    isPreOrder: merchandise?.isPreOrder || false,
+    preOrderDeadline: merchandise?.preOrderDeadline || '',
+    showJeighteenLogo: merchandise?.showJeighteenLogo || false,
+    showJonnaRinconLogo: merchandise?.showJonnaRinconLogo || false,
   });
   const [saving, setSaving] = useState(false);
   const [galleryInput, setGalleryInput] = useState('');
+  const [sizeInput, setSizeInput] = useState({ name: '', stock: 0 });
+
+  // Helper function to check if URL will have /download appended
+  const willHaveDownloadAppended = (url: string): boolean => {
+    return url.includes('/index.php/s/') && !url.endsWith('/download');
+  };
 
   // Update form data when merchandise prop changes (for editing)
   React.useEffect(() => {
     if (merchandise) {
+      // Convert Timestamp to datetime-local string format if it exists
+      let preOrderDeadlineStr = '';
+      if (merchandise.preOrderDeadline) {
+        try {
+          const date = merchandise.preOrderDeadline.toDate ? merchandise.preOrderDeadline.toDate() : merchandise.preOrderDeadline;
+          const isoString = new Date(date).toISOString().slice(0, 16);
+          preOrderDeadlineStr = isoString;
+        } catch (err) {
+          console.error('Error converting preOrderDeadline:', err);
+        }
+      }
+
       setFormData({
         name: merchandise.name || '',
         description: merchandise.description || '',
@@ -219,16 +245,24 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
         metaDescription: merchandise.metaDescription || '',
         status: merchandise.status || 'draft',
         featured: merchandise.featured || false,
+        totalStock: merchandise.totalStock || 0,
+        sizes: merchandise.sizes || [],
+        isPreOrder: merchandise.isPreOrder || false,
+        preOrderDeadline: preOrderDeadlineStr,
+        showJeighteenLogo: merchandise.showJeighteenLogo || false,
+        showJonnaRinconLogo: merchandise.showJonnaRinconLogo || false,
       });
       setGalleryInput('');
+      setSizeInput({ name: '', stock: 0 });
     }
   }, [merchandise]);
 
   const handleAddGalleryImage = () => {
     if (galleryInput.trim()) {
+      const transformedUrl = toDirectUrl(galleryInput.trim());
       setFormData({
         ...formData,
-        gallery: [...formData.gallery, galleryInput.trim()],
+        gallery: [...formData.gallery, transformedUrl],
       });
       setGalleryInput('');
     }
@@ -268,18 +302,36 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
         return;
       }
 
+      // Convert preOrderDeadline string to Timestamp if it exists
+      let preOrderDeadline: Timestamp | undefined = undefined;
+      if (formData.isPreOrder && formData.preOrderDeadline) {
+        try {
+          const date = new Date(formData.preOrderDeadline);
+          preOrderDeadline = Timestamp.fromDate(date);
+        } catch (err) {
+          console.error('Invalid pre-order deadline:', err);
+        }
+      }
+
       const merchandiseData: any = {
         name: formData.name,
         description: formData.description,
         price: price,
         category: formData.category,
-        image: formData.image,
+        image: toDirectUrl(formData.image),
         gallery: formData.gallery.length > 0 ? formData.gallery : undefined,
         slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
         metaTitle: formData.metaTitle || undefined,
         metaDescription: formData.metaDescription || undefined,
         status: formData.status,
         featured: formData.featured,
+        totalStock: formData.totalStock || 0,
+        sizes: formData.sizes.length > 0 ? formData.sizes : undefined,
+        isPreOrder: formData.isPreOrder,
+        preOrderDeadline: preOrderDeadline,
+        showJeighteenLogo: formData.showJeighteenLogo,
+        showJonnaRinconLogo: formData.showJonnaRinconLogo,
+        sold: merchandise?.sold || 0,
       };
 
       if (merchandise) {
@@ -359,17 +411,24 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">Main Image URL</label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              placeholder="https://example.com/image.jpg"
-              required
-            />
-          </div>
+          <LinkInput
+            label="Main Image URL"
+            name="image"
+            type="image"
+            onChange={(url) => setFormData({ ...formData, image: url })}
+            defaultValue={formData.image}
+            placeholder="https://example.com/image.jpg"
+            required
+          />
+
+          {formData.image && willHaveDownloadAppended(formData.image) && (
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+              <p className="text-yellow-400 text-sm font-semibold">
+                <strong>Final URL:</strong> {toDirectUrl(formData.image)}
+              </p>
+              <p className="text-yellow-400 text-xs mt-1">⚠️ /download will be auto-appended when saving</p>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">Gallery Images</label>
@@ -465,7 +524,135 @@ const MerchandiseFormModal: React.FC<MerchandiseFormModalProps> = ({ merchandise
             />
           </div>
 
-          <div>
+          {/* Inventory Section */}
+          <div className="pt-4 border-t border-white/[0.06] space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Total Stock</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.totalStock}
+                onChange={(e) => setFormData({ ...formData, totalStock: parseInt(e.target.value) || 0 })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+              />
+            </div>
+
+            {/* Sizes */}
+            {formData.category === 'Clothing' && (
+              <div>
+                <label className="block text-sm font-medium text-white/60 mb-2">Sizes (Optional)</label>
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Size (e.g., S, M, L)"
+                      value={sizeInput.name}
+                      onChange={(e) => setSizeInput({ ...sizeInput, name: e.target.value })}
+                      className="flex-1 px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="Stock"
+                      value={sizeInput.stock}
+                      onChange={(e) => setSizeInput({ ...sizeInput, stock: parseInt(e.target.value) || 0 })}
+                      className="w-20 px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (sizeInput.name) {
+                          setFormData({
+                            ...formData,
+                            sizes: [...formData.sizes, { name: sizeInput.name, stock: sizeInput.stock }],
+                          });
+                          setSizeInput({ name: '', stock: 0 });
+                        }
+                      }}
+                      className="px-4 py-2 bg-white/[0.12] border border-white/[0.08] rounded-lg text-white/60 hover:text-white transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  {formData.sizes.length > 0 && (
+                    <div className="space-y-2">
+                      {formData.sizes.map((size, index) => (
+                        <div key={index} className="flex items-center justify-between px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg">
+                          <span className="text-white/60">{size.name} - {size.stock} items</span>
+                          <button
+                            type="button"
+                            onClick={() => setFormData({
+                              ...formData,
+                              sizes: formData.sizes.filter((_, i) => i !== index),
+                            })}
+                            className="text-red-400 hover:text-red-300 transition-colors"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Pre-order Section */}
+          <div className="pt-4 space-y-3">
+            <div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={formData.isPreOrder}
+                  onChange={(e) => setFormData({ ...formData, isPreOrder: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm text-white/60">Pre-Order Item</span>
+              </label>
+            </div>
+
+            {formData.isPreOrder && (
+              <div>
+                <label className="block text-sm font-medium text-white/60 mb-2">Pre-order Deadline</label>
+                <input
+                  type="datetime-local"
+                  value={formData.preOrderDeadline}
+                  onChange={(e) => setFormData({ ...formData, preOrderDeadline: e.target.value })}
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Brand Logos Section */}
+          <div className="pt-4 border-t border-white/[0.06] space-y-3">
+            <div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={formData.showJeighteenLogo}
+                  onChange={(e) => setFormData({ ...formData, showJeighteenLogo: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm text-white/60">Show JEIGHTEEN Logo</span>
+              </label>
+            </div>
+
+            <div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={formData.showJonnaRinconLogo}
+                  onChange={(e) => setFormData({ ...formData, showJonnaRinconLogo: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm text-white/60">Show JONNA RINCON Logo</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="pt-4">
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"

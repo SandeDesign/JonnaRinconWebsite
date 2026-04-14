@@ -15,7 +15,7 @@ const PRODUCT_TYPE_OPTIONS: { value: 'beat' | 'track' | 'remix' | 'edit'; label:
 
 const isExpired = (code: DiscountCode): boolean => {
   if (!code.hasDeadline || !code.endDate) return false;
-  return Timestamp.now().toMillis() > code.endDate.toMillis();
+  return (Timestamp.now()?.toMillis?.() || 0) > (code.endDate?.toMillis?.() || 0);
 };
 
 const DiscountCodesPage: React.FC = () => {

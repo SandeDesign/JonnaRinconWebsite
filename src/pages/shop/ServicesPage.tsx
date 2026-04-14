@@ -3,8 +3,10 @@ import { Zap, Headphones, Music, Volume2, Users, Palette, ArrowRight } from 'luc
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { useServices } from '../../hooks/useServices';
 import { Service } from '../../lib/firebase/types';
+import { useScrollToTop } from '../../hooks/useScrollToTop';
 
 // Icon mapping from string names to React components
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -27,6 +29,7 @@ const formatRate = (rate: number): string => {
 };
 
 const ServicesPage: React.FC = () => {
+  useScrollToTop();
   const heroTitle = useCyberDecodeInView('Services');
   const { services, loading } = useServices({ status: 'published' });
 
@@ -40,18 +43,15 @@ const ServicesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen text-white">
-      {/* Fixed JEIGHTENESIS Background */}
-      <div className="fixed inset-0 w-full h-screen -z-10">
-        <img src="/JEIGHTENESIS.jpg" alt="" className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
-        <div className="absolute inset-0 bg-black/80" />
-      </div>
+      {/* Fixed Dark Overlay */}
+      <div className="fixed inset-0 w-full h-screen -z-10 bg-black/80" />
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
       {/* Hero Section - Centered Layout */}
       <section className="relative pt-40 px-6 md:px-12 pb-4">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} className="text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8 text-center">
+          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} style={{fontSize: 'clamp(1.875rem, 8vw, 10.2rem)'}} className="font-black uppercase leading-[0.85] tracking-tighter mb-8 text-center">
             {heroTitle.display}
           </h1>
 
@@ -66,8 +66,8 @@ const ServicesPage: React.FC = () => {
       <section className="px-6 md:px-12 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-white/50">Loading services...</div>
+            <div className="flex items-center justify-center py-16">
+              <LoadingSpinner text="Loading services..." />
             </div>
           ) : formattedServices.length === 0 ? (
             <div className="flex items-center justify-center py-12">

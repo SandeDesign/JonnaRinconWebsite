@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { useRemixes } from '../../hooks/useRemixes';
 import { remixService } from '../../lib/firebase/services';
 import { Remix } from '../../lib/firebase/types';
@@ -125,8 +126,8 @@ const RemixesPage: React.FC = () => {
               <tbody className="divide-y divide-white/[0.06]">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-white/40">
-                      Loading remixes...
+                    <td colSpan={7} className="px-6 py-12">
+                      <LoadingSpinner text="Loading remixes..." />
                     </td>
                   </tr>
                 ) : remixes.length === 0 ? (

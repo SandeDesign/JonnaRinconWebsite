@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { BackgroundProvider } from './contexts/BackgroundContext';
+import { TrackDetailProvider } from './contexts/TrackDetailContext';
+import { BeatDetailProvider } from './contexts/BeatDetailContext';
+import { useScrollToTop } from './hooks/useScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
-import BackgroundRenderer from './components/BackgroundRenderer';
+import GlobalBeatDetailModal from './components/GlobalBeatDetailModal';
 
 // Public pages
 import HomePage from './App';
@@ -25,6 +27,7 @@ import ReleasesPage from './pages/ReleasesPage';
 import DownloadGatePage from './pages/DownloadGatePage';
 import SocialsPage from './pages/SocialsPage';
 import ContactPage from './pages/ContactPage';
+import MessengerPage from './pages/MessengerPage';
 import CataloguePage from './pages/CataloguePage';
 import DJSetsPage from './pages/DJSetsPage';
 import ProductionsPage from './pages/ProductionsPage';
@@ -68,7 +71,6 @@ import AdminCollabRequests from './pages/admin/CollabRequestsPage';
 import AdminArtistRoleRequests from './pages/admin/ArtistRoleRequestsPage';
 import AdminSettings from './pages/admin/SettingsPage';
 import AdminChat from './pages/admin/ChatPage';
-import AdminBackground from './pages/admin/BackgroundToolPage';
 import AdminDiscountCodes from './pages/admin/DiscountCodesPage';
 import AdminArt from './pages/admin/ArtAdminPage';
 import AdminServices from './pages/admin/ServicesPage';
@@ -80,15 +82,23 @@ import ManagerBeats from './pages/manager/BeatsPage';
 import ManagerCollaborations from './pages/manager/CollaborationsPage';
 import ManagerChat from './pages/manager/ChatPage';
 
+// Scroll to top on route change
+const ScrollToTopWrapper = ({ children }: { children: React.ReactNode }) => {
+  useScrollToTop();
+  return <>{children}</>;
+};
+
 const MainApp: React.FC = () => {
   return (
     <AuthProvider>
-      <BackgroundProvider>
-        <BrowserRouter>
-          <BackgroundRenderer />
-          <GlobalAudioPlayer />
-          <Routes>
-          {/* Public Routes */}
+      <TrackDetailProvider>
+        <BeatDetailProvider>
+          <BrowserRouter>
+          <ScrollToTopWrapper>
+              <GlobalAudioPlayer />
+              <GlobalBeatDetailModal />
+              <Routes>
+              {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -112,6 +122,14 @@ const MainApp: React.FC = () => {
           <Route path="/download/:trackId" element={<DownloadGatePage />} />
           <Route path="/socials" element={<SocialsPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route
+            path="/messenger"
+            element={
+              <ProtectedRoute allowedRoles={['user', 'artist', 'admin']}>
+                <MessengerPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Customer Routes (protected - user role only) */}
           <Route
@@ -377,14 +395,6 @@ const MainApp: React.FC = () => {
             }
           />
           <Route
-            path="/admin/background"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminBackground />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/admin/discount-codes"
             element={
               <ProtectedRoute allowedRoles={['admin']}>
@@ -443,11 +453,13 @@ const MainApp: React.FC = () => {
 
           {/* 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        </BrowserRouter>
-      </BackgroundProvider>
-    </AuthProvider>
-  );
-};
+              </Routes>
+            </ScrollToTopWrapper>
+            </BrowserRouter>
+          </BeatDetailProvider>
+        </TrackDetailProvider>
+      </AuthProvider>
+    );
+  };
 
 export default MainApp;

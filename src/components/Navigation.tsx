@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../hooks/useCart';
 import ShoppingCart from './ShoppingCart';
 import { getCurrentTrack, togglePlayerOpen } from './GlobalAudioPlayer';
+import { useContrastColor } from '../lib/utils/colorDetection';
 
 interface NavigationProps {
   cartItemCount?: number;
@@ -26,12 +27,27 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const [authLoading, setAuthLoading] = useState(false);
   const [expandedShop, setExpandedShop] = useState(false);
   const [expandedCatalogue, setExpandedCatalogue] = useState(false);
+  const [expandedGetInTouch, setExpandedGetInTouch] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, signIn, signUp, signOut } = useAuth();
   const { cartItems, removeFromCart, removeItemByIndex, clearCart } = useCart();
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollPositionRef = useRef(0);
+
+  // Smart color detection for menu button and logo
+  const smartColor = useContrastColor();
+
+  // Convert color name to actual color value for inline styles
+  const getColorValue = (colorName: string): string => {
+    const colors: Record<string, string> = {
+      'white': '#ffffff',
+      'black': '#000000',
+    };
+    return colors[colorName] || '#ffffff';
+  };
+
+  const navTextColor = getColorValue(smartColor);
 
   // Lock scroll when menu is open - improved state management
   useEffect(() => {
@@ -154,11 +170,10 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     }
   };
 
-  // Determine nav colors based on context
-  const useWhiteNav = isDarkOverlay && !isLightMode;
-  const useBlackNav = isLightMode || !isDarkOverlay;
-
-  const navTextColor = useWhiteNav ? 'text-white' : 'text-black';
+  // Determine nav colors based on smart detection
+  // Use smartColor for both logo and menu based on background brightness
+  const useWhiteNav = smartColor === 'white';  // Logo should be white when text should be white (dark background)
+  const useBlackNav = smartColor === 'black';  // Logo should be black when text should be black (light background)
 
   const shopSubmenu = [
     { label: 'Beat Shop', subtitle: 'Browse instrumentals', href: '/shop/beats' },
@@ -176,10 +191,16 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     { label: 'Support', subtitle: 'Artist support & features', href: '/support', isSmall: true },
   ];
 
-  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: Array<{ label: string; subtitle: string; href: string }>; expanded?: boolean }[] = [
+  const getInTouchSubmenu = [
+    { label: 'Social Media', subtitle: 'Follow on all platforms', href: '#socials', action: () => { closeMenu(); } },
+    { label: 'Messenger', subtitle: 'Chat with Jonna Rincon', href: '#messenger', action: () => { closeMenu(); navigate(user ? '/messenger' : '/tracks'); if (!user) setIsAuthModalOpen(true); } },
+    { label: 'Contact', subtitle: 'For serious inquiries', href: '#contact', action: () => { closeMenu(); navigate('/contact'); } },
+  ];
+
+  const menuItems: { label: string; subtitle: string; href?: string; action?: () => void; submenu?: Array<{ label: string; subtitle: string; href: string; action?: () => void }>; expanded?: boolean }[] = [
     { label: 'SHOP', subtitle: 'Browse our catalog', action: () => setExpandedShop(!expandedShop), submenu: shopSubmenu, expanded: expandedShop },
     { label: 'CATALOGUE', subtitle: 'Browse all content', action: () => setExpandedCatalogue(!expandedCatalogue), submenu: catalogueSubmenu, expanded: expandedCatalogue },
-    { label: 'SOCIALS & CONTACT', subtitle: 'Follow & Get in touch', action: () => { closeMenu(); navigate('/socials'); } },
+    { label: 'GET IN TOUCH', subtitle: 'Connect with Jonna', action: () => setExpandedGetInTouch(!expandedGetInTouch), submenu: getInTouchSubmenu, expanded: expandedGetInTouch },
   ];
 
   const socialLinks = [
@@ -219,7 +240,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           {cartItems.length > 0 && (
             <button
               onClick={() => setIsCartOpen(true)}
-              className={`relative transition-all duration-300 hover:scale-110 cursor-pointer ${navTextColor}`}
+              style={{ color: navTextColor }}
+              className={`relative transition-all duration-300 hover:scale-110 cursor-pointer`}
             >
               <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
               <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-600 rounded-full flex items-center justify-center text-[9px] font-bold text-white">
@@ -231,7 +253,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           {/* MENU button */}
           <button
             onClick={openMenu}
-            className={`text-lg md:text-xl font-black uppercase tracking-[0.3em] transition-all duration-500 hover:opacity-60 cursor-pointer ${navTextColor}`}
+            style={{ color: navTextColor }}
+            className={`text-lg md:text-xl font-black uppercase tracking-[0.3em] transition-all duration-500 hover:opacity-60 cursor-pointer`}
           >
             Menu
           </button>
@@ -394,10 +417,10 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                 </div>
 
                 {/* Divider */}
-                <div className="w-full h-px bg-white/[0.06]" />
+                <div className="w-full h-px bg-white/[0.06] mb-4" />
 
-                {/* Menu items — clean, modern, spaced */}
-                <div className="flex-1 flex flex-col justify-center -mt-8">
+                {/* Menu items — clean, modern, spaced, scrollable */}
+                <div className="flex-1 flex flex-col overflow-y-auto pr-2 pb-12">
                   {menuItems.map((item, i) => (
                     <div key={item.label}>
                       <button
@@ -422,7 +445,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
                       {/* Submenu */}
                       {item.submenu && (
-                        <div className={`overflow-hidden transition-all duration-300 ease-out ${item.expanded ? 'max-h-96' : 'max-h-0'}`}>
+                        <div className={`overflow-hidden transition-all duration-300 ease-out ${item.expanded ? 'max-h-[800px]' : 'max-h-0'}`}>
                           {/* Group small items together */}
                           {(() => {
                             const smallItems = item.submenu.filter((s: any) => s.isSmall);
@@ -433,10 +456,14 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                                 {/* Regular items */}
                                 {regularItems.map((subitem: any, subIndex) => (
                                   <button
-                                    key={subitem.href}
+                                    key={subitem.href || subitem.label}
                                     onClick={() => {
-                                      closeMenu();
-                                      navigate(subitem.href);
+                                      if (subitem.action) {
+                                        subitem.action();
+                                      } else {
+                                        closeMenu();
+                                        navigate(subitem.href);
+                                      }
                                     }}
                                     className="group w-full text-left py-3 md:py-4 cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300"
                                     style={{
@@ -636,6 +663,11 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
         .animate-panel-slide-in {
           animation: panel-slide-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        @media (max-width: 768px) {
+          .animate-panel-slide-in {
+            animation: panel-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+        }
 
         @keyframes panel-slide-out {
           from {
@@ -648,6 +680,11 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
         .animate-panel-slide-out {
           animation: panel-slide-out 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards;
         }
+        @media (max-width: 768px) {
+          .animate-panel-slide-out {
+            animation: panel-slide-out 0.2s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+          }
+        }
 
         @keyframes menu-item-reveal {
           from {
@@ -657,6 +694,13 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           to {
             opacity: 1;
             transform: translateX(0);
+          }
+        }
+
+        @media (max-width: 768px) {
+          /* Faster animations on mobile */
+          [style*="animation-delay"] {
+            animation-duration: 0.3s !important;
           }
         }
       `}</style>

@@ -34,6 +34,9 @@ export type AdminPermission =
   | 'tracks.read'
   | 'tracks.write'
   | 'tracks.delete'
+  | 'albums.read'
+  | 'albums.write'
+  | 'albums.delete'
   | 'remixes.read'
   | 'remixes.write'
   | 'remixes.delete'
@@ -144,59 +147,31 @@ export interface Art {
   title: string;
   description: string;
   artist: string;
-  medium: string; // e.g., "Digital", "Acrylic", "Mixed Media"
+  medium: string;
   year: number;
-  category: string; // e.g., "Digital Art", "Cover Design", "Visual Art", "Illustration", "Photography"
-  image: string; // Main image URL
 
-  // Media
-  gallery?: string[]; // Additional gallery images
+  // Art Type System
+  type: 'Painting' | 'Hardware' | 'Furniture' | 'Clothing';
+  subtype?: string; // For Clothing: 'Jacket', 'Bomber Jacket', 'Jeans', 'Leather Jacket', 'Belt', 'Cap', 'Sunglasses', etc.
+  category: string; // Legacy category support
 
-  // Status
-  status: 'draft' | 'published' | 'archived';
-  featured: boolean;
+  image: string;
+  gallery?: string[];
 
-  // Stats
-  views: number;
-  likes: number;
+  // Pricing & Availability
+  forSale: boolean; // Toggle for NOT FOR SALE
+  price?: number; // Optional, if not set = FREE
+  isFree: boolean; // True if no price set or price is 0
 
-  // SEO & Meta
-  slug: string;
-  metaTitle?: string;
-  metaDescription?: string;
-
-  // Timestamps
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-
-  // Creator info
-  createdBy: string;
-  lastUpdatedBy: string;
-}
-
-// ============================================
-// MERCHANDISE TYPES
-// ============================================
-
-export interface Merchandise {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string; // e.g., "Clothing", "Accessories", "Home", "Other"
-  image: string; // Main product image URL
-
-  // Media
-  gallery?: string[]; // Additional product images
+  // Stock Management (All art pieces are unique, stock = 1)
+  stock: number; // Always 1 for unique pieces
+  sold: boolean; // True when purchased
+  soldAt?: Timestamp; // When it was sold
+  soldToUserId?: string; // User who bought it
 
   // Status
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
-  inStock: boolean;
-
-  // Stats
-  views: number;
-  sold: number;
 
   // SEO & Meta
   slug: string;
@@ -247,6 +222,15 @@ export interface Service {
 }
 
 // ============================================
+// MERCHANDISE SIZE TYPE
+// ============================================
+
+export interface MerchandiseSize {
+  name: string; // e.g., "S", "M", "L", "XL"
+  stock: number; // Quantity available in this size
+}
+
+// ============================================
 // MERCHANDISE TYPES
 // ============================================
 
@@ -259,13 +243,25 @@ export interface Merchandise {
   image: string; // Product image URL
   gallery?: string[]; // Additional product images
 
+  // Inventory Management
+  totalStock: number; // Total quantity available
+  sold: number; // Total quantity sold
+  sizes?: MerchandiseSize[]; // Optional sizes with individual stock counts (for clothing)
+
+  // Pre-order
+  isPreOrder: boolean; // Whether this is a pre-order item
+  preOrderDeadline?: Timestamp; // When pre-orders close
+
+  // Brand Logos
+  showJeighteenLogo: boolean; // Show JEIGHTEEN logo
+  showJonnaRinconLogo: boolean; // Show JONNA RINCON logo
+
   // Status
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
 
   // Stats
   views: number;
-  sold: number;
 
   // SEO & Meta
   slug: string;
@@ -359,6 +355,9 @@ export interface Track {
   artworkUrl: string;
   waveformUrl?: string;
 
+  // Pricing (optional - free tracks if not set)
+  price?: number;
+
   // Licensing
   licenses: {
     exclusive?: LicenseDetails;
@@ -382,6 +381,69 @@ export interface Track {
 
   // Custom track links for featured tabs
   customTrackLinks?: CustomTrackLink[];
+
+  // Timestamps
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  publishedAt?: Timestamp;
+
+  // Creator info
+  createdBy: string;
+  lastUpdatedBy: string;
+
+  // Album reference
+  albumId?: string; // Reference to Album document
+  sortOrder?: number; // Track order within album
+}
+
+// ============================================
+// ALBUM TYPES
+// ============================================
+
+export interface AlbumTrackInfo {
+  trackId: string;
+  trackNumber: number;
+  price?: number; // Per-track price override
+}
+
+export interface Album {
+  id: string;
+  title: string;
+  artist: string;
+  description: string;
+  releaseDate: Timestamp;
+  genre: string;
+  subGenre?: string;
+  mood?: string[];
+  tags: string[];
+
+  // Media
+  coverImageUrl: string;
+  artworkUrl: string; // Alias for consistency
+
+  // Tracks
+  trackIds: string[]; // References to Track documents
+  trackCount: number;
+  duration?: number; // Total duration in seconds
+
+  // Pricing
+  perTrackPrice: number; // Price for individual track purchase
+  fullAlbumPrice: number; // Discounted price for full album
+  isFree: boolean;
+
+  // Status
+  status: 'draft' | 'published' | 'archived';
+  featured: boolean;
+
+  // Stats
+  plays: number;
+  downloads: number;
+  likes: number;
+
+  // SEO & Meta
+  metaTitle?: string;
+  metaDescription?: string;
+  slug: string;
 
   // Timestamps
   createdAt: Timestamp;
@@ -889,6 +951,26 @@ export interface FollowGateCompletion {
 
   // Timestamps
   createdAt: Timestamp;
+}
+
+// ============================================
+// PLAYLIST TYPES
+// ============================================
+
+export interface Playlist {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  trackIds: string[];
+  coverImage: string; // URL of first track's cover
+  isPublic: boolean;
+  isFeatured: boolean; // Admin only
+  views: number;
+  likes: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  createdBy: string;
 }
 
 // ============================================

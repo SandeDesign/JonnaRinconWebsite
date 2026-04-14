@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
 import { useArt } from '../../hooks/useArt';
+import { toDirectUrl } from '../../lib/utils/urlUtils';
 import { artService } from '../../lib/firebase/services';
 import { Art } from '../../lib/firebase/types';
 import { Plus, Edit, Trash2 } from 'lucide-react';
@@ -186,6 +187,14 @@ interface ArtFormModalProps {
   onSave: () => void;
 }
 
+const artTypes = ['Painting', 'Hardware', 'Furniture', 'Clothing'] as const;
+const subtypesByType: Record<string, string[]> = {
+  Painting: ['Acrylic', 'Oil', 'Watercolor', 'Digital', 'Mixed Media'],
+  Hardware: ['Sculpture', 'Installation', 'Mechanical', 'Other'],
+  Furniture: ['Chair', 'Table', 'Cabinet', 'Decor', 'Other'],
+  Clothing: ['Jacket', 'Bomber Jacket', 'Jeans', 'Leather Jacket', 'Belt', 'Cap', 'Sunglasses', 'Other'],
+};
+
 const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     title: art?.title || '',
@@ -201,6 +210,11 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
     metaDescription: art?.metaDescription || '',
     status: art?.status || 'draft',
     featured: art?.featured || false,
+    type: art?.type || 'Painting' as const,
+    subtype: art?.subtype || '',
+    forSale: art?.forSale !== undefined ? art.forSale : true,
+    price: art?.price || 0,
+    isFree: art?.isFree !== undefined ? art.isFree : false,
   });
   const [saving, setSaving] = useState(false);
   const [galleryInput, setGalleryInput] = useState('');
@@ -222,6 +236,11 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
         metaDescription: art.metaDescription || '',
         status: art.status || 'draft',
         featured: art.featured || false,
+        type: art.type || 'Painting',
+        subtype: art.subtype || '',
+        forSale: art.forSale !== undefined ? art.forSale : true,
+        price: art.price || 0,
+        isFree: art.isFree !== undefined ? art.isFree : false,
       });
       setGalleryInput('');
     }
@@ -229,9 +248,10 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
 
   const handleAddGalleryImage = () => {
     if (galleryInput.trim()) {
+      const transformedUrl = toDirectUrl(galleryInput.trim());
       setFormData({
         ...formData,
-        gallery: [...formData.gallery, galleryInput.trim()],
+        gallery: [...formData.gallery, transformedUrl],
       });
       setGalleryInput('');
     }
@@ -272,13 +292,19 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
         medium: formData.medium,
         year: year,
         category: formData.category,
-        image: formData.image,
-        gallery: formData.gallery.length > 0 ? formData.gallery : undefined,
+        image: formData.image.endsWith('/download') ? formData.image : `${formData.image}/download`,
+        gallery: formData.gallery.length > 0 ? formData.gallery.map(url => url.endsWith('/download') ? url : `${url}/download`) : undefined,
         slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, '-'),
         metaTitle: formData.metaTitle || undefined,
         metaDescription: formData.metaDescription || undefined,
         status: formData.status,
         featured: formData.featured,
+        type: formData.type,
+        subtype: formData.subtype || undefined,
+        forSale: formData.forSale,
+        price: formData.forSale && !formData.isFree ? formData.price : undefined,
+        isFree: formData.isFree,
+        stock: 1,
       };
 
       if (art) {
@@ -383,17 +409,15 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">Main Image URL</label>
-            <input
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
-              placeholder="https://example.com/image.jpg"
-              required
-            />
-          </div>
+          <LinkInput
+            label="Main Image URL"
+            name="image"
+            type="image"
+            onChange={(url) => setFormData({ ...formData, image: url })}
+            defaultValue={formData.image}
+            placeholder="https://example.com/image.jpg"
+            required
+          />
 
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">Gallery Images</label>
@@ -489,7 +513,88 @@ const ArtFormModal: React.FC<ArtFormModalProps> = ({ art, onClose, onSave }) => 
             />
           </div>
 
-          <div>
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/[0.06]">
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Type</label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as any, subtype: '' })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+              >
+                {artTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Subtype (Optional)</label>
+              <select
+                value={formData.subtype}
+                onChange={(e) => setFormData({ ...formData, subtype: e.target.value })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+              >
+                <option value="">Select a subtype...</option>
+                {subtypesByType[formData.type]?.map((subtype) => (
+                  <option key={subtype} value={subtype}>
+                    {subtype}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-4">
+            <div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={!formData.forSale}
+                  onChange={(e) => setFormData({ ...formData, forSale: !e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <span className="text-sm text-white/60">Not For Sale</span>
+              </label>
+            </div>
+
+            {formData.forSale && (
+              <>
+                <div>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.isFree}
+                      onChange={(e) => setFormData({ ...formData, isFree: e.target.checked })}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm text-white/60">Free</span>
+                  </label>
+                </div>
+
+                {!formData.isFree && (
+                  <div>
+                    <label className="block text-sm font-medium text-white/60 mb-2">Price</label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-white/60">€</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.price}
+                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                        className="flex-1 px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="pt-4">
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"

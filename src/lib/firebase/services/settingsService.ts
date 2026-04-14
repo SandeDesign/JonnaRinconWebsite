@@ -70,11 +70,19 @@ export interface SecuritySettings {
   updatedBy?: string;
 }
 
+export interface CustomButton {
+  label: string;
+  url: string;
+  color: string;
+}
+
 export interface TrackSettings {
   customTab1Enabled: boolean;
   customTab1Label: string;
   customTab2Enabled: boolean;
   customTab2Label: string;
+  customButton1?: CustomButton;
+  customButton2?: CustomButton;
   updatedAt?: any;
   updatedBy?: string;
 }
@@ -269,8 +277,14 @@ class SettingsService {
 
     try {
       const docRef = doc(db, this.collectionName, 'tracks');
+
+      // Filter out undefined values to avoid Firestore errors
+      const cleanedSettings = Object.fromEntries(
+        Object.entries(settings).filter(([_, value]) => value !== undefined)
+      );
+
       const settingsWithMeta = {
-        ...settings,
+        ...cleanedSettings,
         updatedAt: serverTimestamp(),
         updatedBy: user.uid,
       };
@@ -418,7 +432,7 @@ class SettingsService {
           ...doc.data(),
         })) as SiteBackground[];
         // Sort client-side instead
-        backgrounds.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+        backgrounds.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
         callback(backgrounds);
       },
       (error) => {

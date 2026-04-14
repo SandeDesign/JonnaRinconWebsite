@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Play, Pause, ShoppingCart, Download } from 'lucide-react';
+import { X, Play, Pause, ShoppingCart, Download, ChevronDown, Plus, Dice5 } from 'lucide-react';
 import { getCurrentTrack } from './GlobalAudioPlayer';
+import { useAuth } from '../hooks/useAuth';
+import { playlistService } from '../lib/firebase/services';
+import { Playlist } from '../lib/firebase/types';
+import { useWikipediaGenre } from '../hooks/useWikipediaGenre';
 
 interface Track {
   id: string;
@@ -13,8 +17,17 @@ interface Track {
   year?: number;
   type?: string;
   bpm?: number;
+  price?: number;
   isFree?: boolean;
   licenses?: { exclusive?: { price: number } };
+  description?: string;
+  collab?: string;
+  originalArtist?: string;
+  remixType?: string;
+  key?: string;
+  album?: string;
+  trackNumber?: number;
+  tags?: string[];
 }
 
 interface TrackDetailModalProps {
@@ -25,6 +38,8 @@ interface TrackDetailModalProps {
   onPlay?: (track: Track) => void;
   onBuy?: (track: Track) => void;
   cartItems?: any[];
+  relatedTracks?: Track[];
+  onAddToPlaylist?: (trackId: string, playlistId: string) => Promise<void>;
 }
 
 export default function TrackDetailModal({
@@ -35,9 +50,18 @@ export default function TrackDetailModal({
   onPlay,
   onBuy,
   cartItems = [],
+  relatedTracks = [],
+  onAddToPlaylist,
 }: TrackDetailModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
   const [isHoveringCover, setIsHoveringCover] = useState(false);
+  const [isPlaylistExpanded, setIsPlaylistExpanded] = useState(false);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
+  const [userPlaylists, setUserPlaylists] = useState<Playlist[]>([]);
+  const [isAddingToPlaylist, setIsAddingToPlaylist] = useState(false);
+  const [currentRelatedTracks, setCurrentRelatedTracks] = useState(relatedTracks);
+  const { content: genreInfo, loading: genreLoading } = useWikipediaGenre(track?.genre);
 
   // Handle play button click on cover
   const handleCoverClick = () => {
@@ -46,8 +70,25 @@ export default function TrackDetailModal({
     }
   };
 
+  // Update current related tracks when prop changes
+  useEffect(() => {
+    setCurrentRelatedTracks(relatedTracks);
+  }, [relatedTracks]);
+
   // Check if track is already in cart
   const isInCart = track ? cartItems.some(item => item.id === track.id) : false;
+
+  // Handle body scroll lock when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
 
   // Handle click outside
   useEffect(() => {
@@ -76,6 +117,39 @@ export default function TrackDetailModal({
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
+
+  // Load user playlists when modal opens
+  useEffect(() => {
+    if (!isOpen || !user) {
+      setUserPlaylists([]);
+      return;
+    }
+
+    playlistService
+      .getPlaylistsByUserId(user.uid)
+      .then((playlists) => {
+        setUserPlaylists(playlists);
+      })
+      .catch((error) => {
+        console.error('Error loading playlists:', error);
+      });
+  }, [isOpen, user]);
+
+  // Handle add to playlist
+  const handleAddToPlaylist = async () => {
+    if (!selectedPlaylistId || !track) return;
+    setIsAddingToPlaylist(true);
+    try {
+      await playlistService.addTrackToPlaylist(selectedPlaylistId, track.id);
+      setSelectedPlaylistId(null);
+      // Show success message
+      console.log('Track added to playlist');
+    } catch (error) {
+      console.error('Error adding to playlist:', error);
+    } finally {
+      setIsAddingToPlaylist(false);
+    }
+  };
 
   if (!isOpen || !track) return null;
 
@@ -170,6 +244,18 @@ export default function TrackDetailModal({
                   <span className="text-white font-bold">{track.bpm}</span>
                 </div>
               )}
+              {track.key && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/40">Key</span>
+                  <span className="text-white font-bold">{track.key}</span>
+                </div>
+              )}
+              {track.remixType && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-white/40">Remix Type</span>
+                  <span className="text-white font-bold">{track.remixType}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -180,13 +266,61 @@ export default function TrackDetailModal({
               <h2 className="text-2xl md:text-3xl font-black text-white mb-1 uppercase tracking-tight">
                 {track.title}
               </h2>
-              <p className="text-white/40 text-sm md:text-base mb-6">{track.artist}</p>
+              <p className="text-white/40 text-sm md:text-base mb-2">{track.artist}</p>
+
+              {/* Original Artist for Remixes */}
+              {track.originalArtist && (
+                <p className="text-white/30 text-xs md:text-sm mb-6">Original: {track.originalArtist}</p>
+              )}
+
+              {/* Producer Credits */}
+              <p className="text-white/60 text-xs md:text-sm mb-2">Producer: <span className="text-white font-semibold">Jonna Rincon</span></p>
+
+              {/* Mixed & Mastered */}
+              <p className="text-white/60 text-xs md:text-sm mb-6">
+                <span className="font-bold">Mixed & Mastered</span> by{' '}
+                <a href="/services" className="text-red-400 hover:text-red-300 underline font-semibold transition-colors">
+                  Jonna Rincon
+                </a>
+              </p>
 
               {/* Duration */}
               {track.duration && (
-                <div className="mb-6">
+                <div className="mb-4">
                   <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Duration</p>
                   <p className="text-white text-sm">{track.duration}</p>
+                </div>
+              )}
+
+              {/* Description */}
+              {track.description && (
+                <div className="mb-6">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Description</p>
+                  <p className="text-white text-sm leading-relaxed">{track.description}</p>
+                </div>
+              )}
+
+              {/* Collaboration Info */}
+              {track.collab && (
+                <div className="mb-6">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Type</p>
+                  <p className="text-white text-sm">{track.collab}</p>
+                </div>
+              )}
+
+              {/* Genre Information from Wikipedia */}
+              {track.genre && (
+                <div className="mb-6">
+                  <p className="text-white/40 text-xs uppercase tracking-wider mb-2">About {track.genre}</p>
+                  {genreLoading && (
+                    <div className="text-white/50 text-sm">Loading genre information...</div>
+                  )}
+                  {genreInfo && (
+                    <p className="text-white/70 text-sm leading-relaxed">{genreInfo}</p>
+                  )}
+                  {!genreLoading && !genreInfo && (
+                    <p className="text-white/50 text-sm italic">No information available for this genre.</p>
+                  )}
                 </div>
               )}
 
@@ -200,6 +334,123 @@ export default function TrackDetailModal({
                 </p>
               </div>
             </div>
+
+            {/* Add to Playlist Section */}
+            <div className="mt-6 border border-white/[0.1] rounded-xl overflow-hidden bg-white/[0.04]">
+              <button
+                onClick={() => setIsPlaylistExpanded(!isPlaylistExpanded)}
+                className="w-full px-6 py-3 flex items-center justify-between text-white font-semibold text-sm uppercase tracking-wider hover:bg-white/[0.06] transition-colors"
+              >
+                <span>Add to Playlist</span>
+                <ChevronDown size={16} className={`transition-transform ${isPlaylistExpanded ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isPlaylistExpanded && (
+                <div className="border-t border-white/[0.1] p-4 space-y-3">
+                  {user ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          // For now, just log - in full implementation would open create playlist flow
+                          console.log('Create new playlist');
+                        }}
+                        className="w-full px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white rounded-lg font-semibold text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+                      >
+                        <Plus size={16} />
+                        Create New Playlist
+                      </button>
+
+                      {userPlaylists.length > 0 && (
+                        <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                          {userPlaylists.map(playlist => (
+                            <label key={playlist.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.06] cursor-pointer transition-colors">
+                              <input
+                                type="radio"
+                                name="playlist"
+                                value={playlist.id}
+                                checked={selectedPlaylistId === playlist.id}
+                                onChange={() => setSelectedPlaylistId(playlist.id)}
+                                className="w-4 h-4"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white text-sm font-semibold truncate">
+                                  {(playlist as any).name || 'Untitled Playlist'}
+                                </p>
+                                <p className="text-white/40 text-xs">
+                                  {(playlist as any).trackIds?.length || 0} tracks
+                                </p>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+
+                      {userPlaylists.length === 0 && (
+                        <p className="text-white/40 text-sm text-center py-2">
+                          No playlists yet. Create one to get started!
+                        </p>
+                      )}
+
+                      {selectedPlaylistId && (
+                        <button
+                          onClick={handleAddToPlaylist}
+                          disabled={isAddingToPlaylist}
+                          className="w-full px-4 py-2 bg-white/[0.1] hover:bg-white/[0.15] disabled:opacity-50 text-white rounded-lg font-semibold text-sm uppercase tracking-wider transition-colors"
+                        >
+                          {isAddingToPlaylist ? 'Adding...' : 'Add Track'}
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-white/40 text-sm text-center py-2">
+                      Sign in to add tracks to playlists
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Related Tracks Section */}
+            {currentRelatedTracks && currentRelatedTracks.length > 0 && (
+              <div className="mt-6 pt-6 border-t border-white/[0.1]">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-white/60 text-xs uppercase tracking-wider font-semibold">
+                    Related Tracks
+                  </h3>
+                  <button
+                    onClick={() => setCurrentRelatedTracks([...currentRelatedTracks].sort(() => Math.random() - 0.5))}
+                    className="p-1.5 bg-white/[0.06] hover:bg-white/[0.12] rounded-lg text-white/40 hover:text-white transition-all"
+                    title="Generate random recommendations"
+                  >
+                    <Dice5 size={16} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2">
+                  {currentRelatedTracks.map(relTrack => (
+                    <button
+                      key={relTrack.id}
+                      onClick={() => onPlay?.(relTrack)}
+                      className="group rounded-lg bg-white/[0.04] hover:bg-white/[0.08] overflow-hidden flex flex-col transition-all border border-white/[0.08] hover:border-white/[0.12]"
+                    >
+                      <img
+                        src={relTrack.coverArt || '/JEIGHTENESIS.jpg'}
+                        alt={relTrack.title}
+                        className="w-full aspect-square object-cover"
+                      />
+                      <div className="flex-1 p-2 flex flex-col justify-between min-w-0">
+                        <p className="text-xs text-white font-semibold truncate">
+                          {relTrack.title}
+                        </p>
+                        <p className="text-[10px] text-white/50 truncate">
+                          {relTrack.artist}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Download Button - if track has audioUrl */}
             {track.audioUrl && (
@@ -221,7 +472,7 @@ export default function TrackDetailModal({
                 className={`w-full px-6 py-3 text-white rounded-xl font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 mb-3 ${
                   isInCart
                     ? 'bg-gradient-to-r from-green-600 to-emerald-600 cursor-default'
-                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:scale-[1.02] active:scale-95'
+                    : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 hover:scale-[1.02] active:scale-95'
                 }`}
               >
                 <ShoppingCart size={18} />
