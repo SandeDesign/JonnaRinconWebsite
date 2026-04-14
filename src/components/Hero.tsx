@@ -122,7 +122,7 @@ export default function Hero() {
         <div
           ref={overlayRef}
           className="absolute inset-0 bg-black"
-          style={{ opacity: 0, transition: 'opacity 0.3s ease-out' }}
+          style={{ opacity: 0 }}
         ></div>
         <div
           ref={gradientRef}
