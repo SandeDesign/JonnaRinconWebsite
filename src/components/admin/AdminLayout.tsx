@@ -308,16 +308,18 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                     >
                       <Settings size={18} />
                     </Link>
-
-                    {/* Sign Out Icon */}
-                    <button
-                      onClick={() => { closeMenu(); handleSignOut(); }}
-                      className="p-2.5 rounded-xl transition-all duration-200 text-white/40 hover:bg-white/[0.04] hover:text-white/80"
-                      title="Sign Out"
-                    >
-                      <LogOut size={18} />
-                    </button>
                   </div>
+
+                  {/* Sign Out Button */}
+                  <button
+                    onClick={() => { closeMenu(); handleSignOut(); }}
+                    className="text-left cursor-pointer w-full"
+                  >
+                    <span className="text-sm uppercase tracking-widest text-white/20 hover:text-red-400 transition-colors duration-300 font-medium flex items-center gap-2">
+                      <LogOut size={16} />
+                      Sign Out
+                    </span>
+                  </button>
                 </div>
               </div>
 
