@@ -99,7 +99,7 @@ export default function Hero() {
     if (imgRef.current) {
       imgRef.current.style.opacity = '1';
     }
-  }, [overlayRef, gradientRef, imgRef]);
+  }, []);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
