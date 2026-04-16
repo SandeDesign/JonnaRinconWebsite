@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   LayoutDashboard,
@@ -183,8 +183,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <div className="relative z-10 h-full flex flex-col px-8 md:px-12">
               {/* Top bar — Logo left, X right */}
               <div className="flex items-center justify-between py-5 md:py-6 flex-shrink-0">
-                <button
-                  onClick={() => { closeMenu(); navigate('/'); }}
+                <Link
+                  to="/"
+                  onClick={closeMenu}
                   className="block flex-shrink-0 cursor-pointer"
                 >
                   <img
@@ -192,7 +193,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                     alt="Jonna Rincon"
                     className="h-[80px] md:h-[110px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
                   />
-                </button>
+                </Link>
 
                 <button
                   onClick={closeMenu}
@@ -203,7 +204,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </div>
 
               {/* Divider */}
-              <div className="w-full h-px bg-white/[0.06] mb-4" />
+              <div className="w-full h-px bg-white/[0.06] mb-2" />
 
               {/* Menu items — clean structure matching homepage */}
               <div className="flex-1 flex flex-col overflow-y-auto pr-2 pb-12">
