@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 const imageCache = new Map<string, HTMLImageElement>();
 
@@ -107,10 +108,11 @@ export const getContrastColor = (): 'white' | 'black' => {
 
 /**
  * Hook to get reactive contrast color
- * Re-evaluates on scroll and viewport changes
+ * Re-evaluates on scroll, viewport changes, and route changes
  */
 export const useContrastColor = () => {
   const [color, setColor] = React.useState<'white' | 'black'>('white');
+  const location = useLocation();
 
   React.useEffect(() => {
     const updateColor = () => {
@@ -137,7 +139,7 @@ export const useContrastColor = () => {
       window.removeEventListener('resize', updateColor);
       observer.disconnect();
     };
-  }, []);
+  }, [location.pathname]);
 
   return color;
 };
