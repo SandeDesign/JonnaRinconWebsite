@@ -35,8 +35,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   const menuItems = [
     {
-      label: 'SHOP MNGMT',
-      subtitle: 'Manage shop items',
+      label: 'SHOP',
+      subtitle: 'Art, Beats, Services, Merchandise',
       action: () => setExpandedShop(!expandedShop),
       submenu: [
         { label: 'Art', subtitle: 'Digital & visual art', href: '/admin/art' },
@@ -47,8 +47,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       expanded: expandedShop,
     },
     {
-      label: 'CATALOGUE MNGMT',
-      subtitle: 'Manage content',
+      label: 'CATALOGUE',
+      subtitle: 'Tracks, Remixes, Playlists',
       action: () => setExpandedCatalogue(!expandedCatalogue),
       submenu: [
         { label: 'Tracks', subtitle: 'Discography', href: '/admin/tracks' },
@@ -59,7 +59,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     },
     {
       label: 'ARTIST BOARD',
-      subtitle: 'Manage requests',
+      subtitle: 'Artist Requests, Collab Requests',
       action: () => setExpandedArtist(!expandedArtist),
       submenu: [
         { label: 'Artist Requests', subtitle: 'Artist role requests', href: '/admin/artist-role-requests' },
@@ -69,7 +69,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     },
     {
       label: 'SOCIAL MEDIA',
-      subtitle: 'Content & chat',
+      subtitle: 'Social Media, Chat',
       action: () => setExpandedSocial(!expandedSocial),
       submenu: [
         { label: 'Social Media', subtitle: 'Content management', href: '/admin/content' },
@@ -79,7 +79,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     },
     {
       label: 'ANALYTICS & ORDERS',
-      subtitle: 'Business data',
+      subtitle: 'Analytics, Orders, Discount Codes',
       action: () => setExpandedAnalytics(!expandedAnalytics),
       submenu: [
         { label: 'Analytics', subtitle: 'Dashboard analytics', href: '/admin/analytics' },
@@ -182,7 +182,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             {/* Panel content */}
             <div className="relative z-10 h-full flex flex-col px-8 md:px-12">
               {/* Top bar — Logo left, X right */}
-              <div className="flex items-center justify-between py-5 md:py-6 flex-shrink-0">
+              <div className="flex items-center justify-between py-3 md:py-4 flex-shrink-0">
                 <Link
                   to="/"
                   onClick={closeMenu}
@@ -204,7 +204,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </div>
 
               {/* Divider */}
-              <div className="w-full h-px bg-white/[0.06] mb-2" />
+              <div className="w-full h-px bg-white/[0.06]" />
 
               {/* Menu items — clean structure matching homepage */}
               <div className="flex-1 flex flex-col overflow-y-auto pr-2 pb-12">

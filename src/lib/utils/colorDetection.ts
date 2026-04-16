@@ -116,6 +116,12 @@ export const useContrastColor = () => {
 
   React.useEffect(() => {
     const updateColor = () => {
+      // On non-homepage pages, always use white
+      if (location.pathname !== '/' && !location.pathname.startsWith('/#')) {
+        setColor('white');
+        return;
+      }
+
       const newColor = getContrastColor();
       setColor(newColor);
     };
