@@ -182,7 +182,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             {/* Panel content */}
             <div className="relative z-10 h-full flex flex-col px-8 md:px-12">
               {/* Top bar — Logo left, X right */}
-              <div className="flex items-center justify-between py-5 md:py-6 flex-shrink-0">
+              <div className="flex items-center justify-between py-3 md:py-4 flex-shrink-0">
                 <Link
                   to="/"
                   onClick={closeMenu}
@@ -204,7 +204,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </div>
 
               {/* Divider */}
-              <div className="w-full h-px bg-white/[0.06] mb-2" />
+              <div className="w-full h-px bg-white/[0.06]" />
 
               {/* Menu items — clean structure matching homepage */}
               <div className="flex-1 flex flex-col overflow-y-auto pr-2 pb-12">
