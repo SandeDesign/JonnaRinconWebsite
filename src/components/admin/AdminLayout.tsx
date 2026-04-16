@@ -1,49 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   LayoutDashboard,
-  Music,
-  ShoppingCart,
-  CalendarDays,
-  BarChart3,
-  MessageSquare,
   Settings,
   LogOut,
   Menu,
   X,
-  Clock,
-  UserPlus,
-  Zap,
-  Palette,
-  Ticket,
-  Package,
   ArrowUpRight,
-  Disc3,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-interface MenuItem {
-  label: string;
-  subtitle: string;
-  items: { name: string; href: string; icon: any }[];
-}
-
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
-  const [expandedTabs, setExpandedTabs] = useState<Record<string, boolean>>({
-    'SHOP MNGMT': false,
-    'CATALOGUE MNGMT': false,
-    'ARTIST BOARD': false,
-    'SOCIAL MEDIA': false,
-    'ANALYTICS & ORDERS': false,
-  });
+  const [expandedShop, setExpandedShop] = useState(false);
+  const [expandedCatalogue, setExpandedCatalogue] = useState(false);
+  const [expandedArtist, setExpandedArtist] = useState(false);
   const { user, signOut } = useAuth();
-  const location = useLocation();
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollPositionRef = useRef(0);
@@ -53,55 +30,67 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     navigate('/admin/login');
   };
 
-  const navigationTabs: MenuItem[] = [
+  const [expandedSocial, setExpandedSocial] = React.useState(false);
+  const [expandedAnalytics, setExpandedAnalytics] = React.useState(false);
+
+  const menuItems = [
     {
       label: 'SHOP MNGMT',
       subtitle: 'Manage shop items',
-      items: [
-        { name: 'Art', href: '/admin/art', icon: Palette },
-        { name: 'Beats', href: '/admin/beats', icon: Music },
-        { name: 'Services', href: '/admin/services', icon: Zap },
-        { name: 'Merchandise', href: '/admin/merchandise', icon: Package },
+      action: () => setExpandedShop(!expandedShop),
+      submenu: [
+        { label: 'Art', subtitle: 'Digital & visual art', href: '/admin/art' },
+        { label: 'Beats', subtitle: 'Beat instrumentals', href: '/admin/beats' },
+        { label: 'Services', subtitle: 'Audio services', href: '/admin/services' },
+        { label: 'Merchandise', subtitle: 'Branded products', href: '/admin/merchandise' },
       ],
+      expanded: expandedShop,
     },
     {
       label: 'CATALOGUE MNGMT',
       subtitle: 'Manage content',
-      items: [
-        { name: 'Tracks', href: '/admin/tracks', icon: Music },
-        { name: 'Remixes', href: '/admin/remixes', icon: Disc3 },
-        { name: 'Playlists', href: '/admin/playlists', icon: Music },
+      action: () => setExpandedCatalogue(!expandedCatalogue),
+      submenu: [
+        { label: 'Tracks', subtitle: 'Discography', href: '/admin/tracks' },
+        { label: 'Remixes', subtitle: 'Remixes & edits', href: '/admin/remixes' },
+        { label: 'Playlists', subtitle: 'Playlist management', href: '/admin/playlists' },
       ],
+      expanded: expandedCatalogue,
     },
     {
       label: 'ARTIST BOARD',
       subtitle: 'Manage requests',
-      items: [
-        { name: 'Artist Requests', href: '/admin/artist-role-requests', icon: UserPlus },
-        { name: 'Collab Requests', href: '/admin/collab-requests', icon: Clock },
+      action: () => setExpandedArtist(!expandedArtist),
+      submenu: [
+        { label: 'Artist Requests', subtitle: 'Artist role requests', href: '/admin/artist-role-requests' },
+        { label: 'Collab Requests', subtitle: 'Collaboration requests', href: '/admin/collab-requests' },
       ],
+      expanded: expandedArtist,
     },
     {
       label: 'SOCIAL MEDIA',
       subtitle: 'Content & chat',
-      items: [
-        { name: 'Social Media', href: '/admin/content', icon: CalendarDays },
-        { name: 'Chat', href: '/admin/chat', icon: MessageSquare },
+      action: () => setExpandedSocial(!expandedSocial),
+      submenu: [
+        { label: 'Social Media', subtitle: 'Content management', href: '/admin/content' },
+        { label: 'Chat', subtitle: 'Messaging', href: '/admin/chat' },
       ],
+      expanded: expandedSocial,
     },
     {
       label: 'ANALYTICS & ORDERS',
       subtitle: 'Business data',
-      items: [
-        { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-        { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
-        { name: 'Discount Codes', href: '/admin/discount-codes', icon: Ticket },
+      action: () => setExpandedAnalytics(!expandedAnalytics),
+      submenu: [
+        { label: 'Analytics', subtitle: 'Dashboard analytics', href: '/admin/analytics' },
+        { label: 'Orders', subtitle: 'Order management', href: '/admin/orders' },
+        { label: 'Discount Codes', subtitle: 'Promo codes', href: '/admin/discount-codes' },
       ],
+      expanded: expandedAnalytics,
     },
   ];
 
-  // Lock scroll when menu is open
-  useEffect(() => {
+  React.useEffect(() => {
     const updateBodyScroll = () => {
       if (isMenuOpen && !isMenuClosing) {
         scrollPositionRef.current = window.scrollY;
@@ -130,8 +119,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     };
   }, [isMenuOpen, isMenuClosing]);
 
-  // Cleanup timeout on unmount
-  useEffect(() => {
+  React.useEffect(() => {
     return () => {
       if (closeTimeout.current) clearTimeout(closeTimeout.current);
     };
@@ -151,14 +139,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     setIsMenuOpen(true);
   };
 
-  const toggleTab = (tabName: string) => {
-    setExpandedTabs(prev => ({
-      ...prev,
-      [tabName]: !prev[tabName],
-    }));
-  };
-
-  const isActive = (path: string) => location.pathname === path;
   const menuVisible = isMenuOpen || isMenuClosing;
 
   return (
@@ -204,13 +184,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               {/* Top bar — Logo left, X right */}
               <div className="flex items-center justify-between py-5 md:py-6 flex-shrink-0">
                 <button
-                  onClick={() => { closeMenu(); navigate('/admin/dashboard'); }}
+                  onClick={() => { closeMenu(); navigate('/'); }}
                   className="block flex-shrink-0 cursor-pointer"
                 >
                   <img
                     src="/Jonna Rincon Logo WH.png"
                     alt="Jonna Rincon"
-                    className="h-[60px] md:h-[80px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
+                    className="h-[80px] md:h-[110px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
                   />
                 </button>
 
@@ -225,18 +205,18 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               {/* Divider */}
               <div className="w-full h-px bg-white/[0.06] mb-4" />
 
-              {/* Menu items */}
+              {/* Menu items — clean structure matching homepage */}
               <div className="flex-1 flex flex-col overflow-y-auto pr-2 pb-12">
-                {navigationTabs.map((item, i) => (
+                {menuItems.map((item, i) => (
                   <div key={item.label}>
                     <button
-                      onClick={() => toggleTab(item.label)}
+                      onClick={item.action}
                       className="group w-full text-left py-4 md:py-5 cursor-pointer border-b border-white/[0.04]"
                       style={{
                         animation: isMenuClosing ? 'none' : `menu-item-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + i * 0.06}s both`,
                       }}
                     >
-                      <div className={`flex items-center justify-between transition-transform duration-300 ${!expandedTabs[item.label] ? 'group-hover:translate-x-2' : ''}`}>
+                      <div className={`flex items-center justify-between transition-transform duration-300 ${!item.expanded ? 'group-hover:translate-x-2' : ''}`}>
                         <div>
                           <span className="block text-3xl md:text-4xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
                             {item.label}
@@ -245,82 +225,74 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                             {item.subtitle}
                           </span>
                         </div>
-                        <ArrowUpRight className={`w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${expandedTabs[item.label] ? 'rotate-90' : ''}`} />
+                        <ArrowUpRight className={`w-5 h-5 text-white/10 group-hover:text-red-400/50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${item.expanded ? 'rotate-90' : ''}`} />
                       </div>
                     </button>
 
                     {/* Submenu */}
-                    <div className={`overflow-hidden transition-all duration-300 ease-out ${expandedTabs[item.label] ? 'max-h-[800px]' : 'max-h-0'}`}>
-                      <div className="space-y-0">
-                        {item.items.map((subitem, subIndex) => {
-                          const Icon = subitem.icon;
-                          return (
-                            <button
-                              key={subitem.href}
-                              onClick={() => {
-                                closeMenu();
-                                navigate(subitem.href);
-                              }}
-                              className="group w-full text-left py-3 md:py-4 cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300"
-                              style={{
-                                animation: expandedTabs[item.label] && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
-                                paddingLeft: '2rem',
-                              }}
-                            >
-                              <div className="flex items-center gap-3">
-                                <Icon size={16} className="flex-shrink-0 text-white/40" />
-                                <div>
-                                  <span className="block text-lg md:text-lg font-semibold text-white/60 group-hover:text-white transition-colors duration-300 tracking-tight">
-                                    {subitem.name}
-                                  </span>
-                                </div>
-                              </div>
-                            </button>
-                          );
-                        })}
+                    {item.submenu && (
+                      <div className={`overflow-hidden transition-all duration-300 ease-out ${item.expanded ? 'max-h-[800px]' : 'max-h-0'}`}>
+                        {item.submenu.map((subitem, subIndex) => (
+                          <button
+                            key={subitem.href}
+                            onClick={() => {
+                              closeMenu();
+                              navigate(subitem.href);
+                            }}
+                            className="group w-full text-left py-3 md:py-4 cursor-pointer border-b border-white/[0.04] hover:translate-x-1.5 transition-transform duration-300"
+                            style={{
+                              animation: item.expanded && !isMenuClosing ? `menu-item-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + subIndex * 0.04}s both` : 'none',
+                              paddingLeft: '2rem',
+                            }}
+                          >
+                            <span className="block text-lg md:text-lg font-semibold text-white/60 group-hover:text-white transition-colors duration-300 tracking-tight">
+                              {subitem.label}
+                            </span>
+                            <span className="block text-xs text-white/20 mt-0.5 uppercase tracking-widest font-medium group-hover:text-white/40 transition-colors duration-300">
+                              {subitem.subtitle}
+                            </span>
+                          </button>
+                        ))}
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
 
                 {/* Bottom section with icons and sign out */}
-                <div className="mt-8 pt-6 border-t border-white/[0.04]">
+                <div className="flex flex-col gap-4 pt-6">
                   {/* Icon Row */}
-                  <div className="flex items-center justify-center gap-3 pb-6">
-                    <Link
-                      to="/admin/dashboard"
-                      onClick={closeMenu}
-                      className={`p-2.5 rounded-xl transition-all duration-200 ${
-                        isActive('/admin/dashboard')
-                          ? 'bg-white/[0.08] text-white'
-                          : 'text-white/40 hover:bg-white/[0.04] hover:text-white/80'
-                      }`}
+                  <div className="flex items-center justify-center gap-3">
+                    <button
+                      onClick={() => { closeMenu(); navigate('/admin/dashboard'); }}
+                      className="p-2.5 rounded-xl transition-all duration-200 text-white/40 hover:bg-white/[0.04] hover:text-white/80"
                       title="Dashboard"
                     >
                       <LayoutDashboard size={18} />
-                    </Link>
+                    </button>
 
-                    <Link
-                      to="/admin/settings"
-                      onClick={closeMenu}
-                      className={`p-2.5 rounded-xl transition-all duration-200 ${
-                        isActive('/admin/settings')
-                          ? 'bg-white/[0.08] text-white'
-                          : 'text-white/40 hover:bg-white/[0.04] hover:text-white/80'
-                      }`}
+                    <button
+                      onClick={() => { closeMenu(); navigate('/admin/settings'); }}
+                      className="p-2.5 rounded-xl transition-all duration-200 text-white/40 hover:bg-white/[0.04] hover:text-white/80"
                       title="Settings"
                     >
                       <Settings size={18} />
-                    </Link>
+                    </button>
+
+                    <button
+                      onClick={() => { closeMenu(); handleSignOut(); }}
+                      className="p-2.5 rounded-xl transition-all duration-200 text-white/40 hover:bg-white/[0.04] hover:text-white/80"
+                      title="Sign Out"
+                    >
+                      <LogOut size={18} />
+                    </button>
                   </div>
 
-                  {/* Sign Out Button */}
+                  {/* Sign Out text button */}
                   <button
                     onClick={() => { closeMenu(); handleSignOut(); }}
                     className="text-left cursor-pointer w-full"
                   >
-                    <span className="text-sm uppercase tracking-widest text-white/20 hover:text-red-400 transition-colors duration-300 font-medium flex items-center gap-2">
-                      <LogOut size={16} />
+                    <span className="text-sm uppercase tracking-widest text-white/20 hover:text-red-400 transition-colors duration-300 font-medium">
                       Sign Out
                     </span>
                   </button>
