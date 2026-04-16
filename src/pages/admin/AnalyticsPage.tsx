@@ -100,11 +100,6 @@ const AnalyticsPage: React.FC = () => {
     .sort((a, b) => b.plays - a.plays)
     .slice(0, 5);
 
-  // Top performing beats
-  const topBeats = [...beats]
-    .sort((a, b) => b.plays - a.plays)
-    .slice(0, 5);
-
   // Top content by views
   const topContent = [...content]
     .sort((a, b) => b.views - a.views)
@@ -342,40 +337,6 @@ const AnalyticsPage: React.FC = () => {
                   <div className="text-right">
                     <p className="font-semibold text-white">{item.plays.toLocaleString()} plays</p>
                     <p className="text-sm text-white/40">{item.downloads} downloads</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Top Performing Beats */}
-        <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Top Performing Beats</h3>
-          <div className="space-y-3">
-            {topBeats.length === 0 ? (
-              <p className="text-white/40 text-center py-4">No beats available</p>
-            ) : (
-              topBeats.map((beat, index) => (
-                <div
-                  key={beat.id}
-                  className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg hover:bg-white/[0.06] transition-colors"
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl font-bold text-white/25">#{index + 1}</span>
-                    <img
-                      src={beat.artworkUrl}
-                      alt={beat.title}
-                      className="w-12 h-12 rounded object-cover"
-                    />
-                    <div>
-                      <p className="font-medium text-white">{beat.title}</p>
-                      <p className="text-sm text-white/40">{beat.artist}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-white">{beat.plays.toLocaleString()} plays</p>
-                    <p className="text-sm text-white/40">{beat.downloads} downloads</p>
                   </div>
                 </div>
               ))

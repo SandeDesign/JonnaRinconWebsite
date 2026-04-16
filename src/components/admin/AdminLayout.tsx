@@ -204,13 +204,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               {/* Top bar — Logo left, X right */}
               <div className="flex items-center justify-between py-5 md:py-6 flex-shrink-0">
                 <button
-                  onClick={() => { closeMenu(); navigate('/admin/dashboard'); }}
+                  onClick={() => { closeMenu(); navigate('/'); }}
                   className="block flex-shrink-0 cursor-pointer"
                 >
                   <img
                     src="/Jonna Rincon Logo WH.png"
                     alt="Jonna Rincon"
-                    className="h-[60px] md:h-[80px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
+                    className="h-[80px] md:h-[110px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
                   />
                 </button>
 
