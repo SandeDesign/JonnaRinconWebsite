@@ -30,6 +30,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     navigate('/admin/login');
   };
 
+  const [expandedSocial, setExpandedSocial] = React.useState(false);
+  const [expandedAnalytics, setExpandedAnalytics] = React.useState(false);
+
   const menuItems = [
     {
       label: 'SHOP MNGMT',
@@ -63,6 +66,27 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         { label: 'Collab Requests', subtitle: 'Collaboration requests', href: '/admin/collab-requests' },
       ],
       expanded: expandedArtist,
+    },
+    {
+      label: 'SOCIAL MEDIA',
+      subtitle: 'Content & chat',
+      action: () => setExpandedSocial(!expandedSocial),
+      submenu: [
+        { label: 'Social Media', subtitle: 'Content management', href: '/admin/content' },
+        { label: 'Chat', subtitle: 'Messaging', href: '/admin/chat' },
+      ],
+      expanded: expandedSocial,
+    },
+    {
+      label: 'ANALYTICS & ORDERS',
+      subtitle: 'Business data',
+      action: () => setExpandedAnalytics(!expandedAnalytics),
+      submenu: [
+        { label: 'Analytics', subtitle: 'Dashboard analytics', href: '/admin/analytics' },
+        { label: 'Orders', subtitle: 'Order management', href: '/admin/orders' },
+        { label: 'Discount Codes', subtitle: 'Promo codes', href: '/admin/discount-codes' },
+      ],
+      expanded: expandedAnalytics,
     },
   ];
 
