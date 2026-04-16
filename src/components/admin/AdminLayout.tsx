@@ -207,7 +207,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   onClick={() => { closeMenu(); navigate('/admin/dashboard'); }}
                   className="block flex-shrink-0 cursor-pointer"
                 >
-                  <h2 className="text-xl font-bold text-white/50 hover:text-white transition-colors duration-300">Jonna Rincon</h2>
+                  <img
+                    src="/Jonna Rincon Logo WH.png"
+                    alt="Jonna Rincon"
+                    className="h-[60px] md:h-[80px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
+                  />
                 </button>
 
                 <button
