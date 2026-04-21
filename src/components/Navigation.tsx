@@ -192,8 +192,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   ];
 
   const getInTouchSubmenu = [
-    { label: 'Social Media', subtitle: 'Follow on all platforms', href: '#socials', action: () => { closeMenu(); } },
-    { label: 'Messenger', subtitle: 'Chat with Jonna Rincon', href: '#messenger', action: () => { closeMenu(); navigate(user ? '/messenger' : '/tracks'); if (!user) setIsAuthModalOpen(true); } },
+    { label: 'Social Media', subtitle: 'Follow on all platforms', href: '/socials', action: () => { closeMenu(); navigate('/socials'); } },
+    { label: 'Messenger', subtitle: 'Chat with Jonna Rincon', href: '/messenger', action: () => { closeMenu(); navigate('/messenger'); } },
     { label: 'Contact', subtitle: 'For serious inquiries', href: '#contact', action: () => { closeMenu(); navigate('/contact'); } },
   ];
 
@@ -208,6 +208,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
     { label: 'YouTube', href: 'https://www.youtube.com/jonnarincon' },
     { label: 'Spotify', href: 'https://open.spotify.com/artist/6o3BlWTeK4EKUyByo35y6F' },
     { label: 'SoundCloud', href: 'https://soundcloud.com/jonnarincon' },
+    { label: 'Shops', href: '/shop', internal: true },
   ];
 
   const menuVisible = isMenuOpen || isMenuClosing;
@@ -524,7 +525,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="block text-2xl md:text-3xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
+                        <span className="block text-3xl md:text-4xl font-semibold text-white/90 group-hover:text-white transition-colors duration-300 tracking-tight">
                           {user ? 'DASHBOARD' : 'SIGN IN'}
                         </span>
                         {user && (
@@ -563,11 +564,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                       <button
                         onClick={() => {
                           closeMenu();
-                          if (cartItems.length > 0) {
-                            setIsCartOpen(true);
-                          } else {
-                            navigate('/shop');
-                          }
+                          setIsCartOpen(true);
                         }}
                         className="relative transition-all hover:scale-110 duration-300 cursor-pointer"
                       >
@@ -629,17 +626,27 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
                 {/* Bottom — Social links */}
                 <div className="flex-shrink-0 py-6 md:py-8">
                   <div className="flex flex-wrap gap-x-5 gap-y-2 mb-4">
-                    {socialLinks.map((link) => (
-                      <a
-                        key={link.label}
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[11px] text-white/25 uppercase tracking-[0.15em] font-medium hover:text-white/60 transition-colors duration-300"
-                      >
-                        {link.label}
-                      </a>
-                    ))}
+                    {socialLinks.map((link) =>
+                      (link as any).internal ? (
+                        <button
+                          key={link.label}
+                          onClick={() => { closeMenu(); navigate(link.href); }}
+                          className="text-[11px] text-white/25 uppercase tracking-[0.15em] font-medium hover:text-white/60 transition-colors duration-300"
+                        >
+                          {link.label}
+                        </button>
+                      ) : (
+                        <a
+                          key={link.label}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] text-white/25 uppercase tracking-[0.15em] font-medium hover:text-white/60 transition-colors duration-300"
+                        >
+                          {link.label}
+                        </a>
+                      )
+                    )}
                   </div>
                   <p className="text-[10px] text-white/15 uppercase tracking-[0.15em] font-medium">
                     &copy; 2025 Jonna Rincon

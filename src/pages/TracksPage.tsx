@@ -710,6 +710,7 @@ export default function TracksPage() {
                               <img
                                 src={group.artwork}
                                 alt={group.albumName}
+                                loading="lazy"
                                 className="w-12 h-12 rounded object-cover"
                               />
                             </button>

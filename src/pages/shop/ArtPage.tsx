@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Heart, Share2, Lock, ShoppingCart } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -18,6 +18,11 @@ const ArtPage: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedArt, setSelectedArt] = useState<Art | null>(null);
   const [likedPieces, setLikedPieces] = useState<string[]>([]);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+
+  const handleImageLoad = useCallback((id: string) => {
+    setLoadedImages(prev => new Set(prev).add(id));
+  }, []);
 
   const categories = Array.from(new Set(artPieces.map(piece => piece.category))).sort();
 
@@ -158,10 +163,20 @@ const ArtPage: React.FC = () => {
                   >
                     {/* Artwork Image */}
                     <div className="relative aspect-square overflow-hidden bg-white/[0.02]">
+                      {/* Skeleton while loading */}
+                      {!loadedImages.has(piece.id) && (
+                        <div className="absolute inset-0 bg-white/[0.04] animate-pulse flex items-center justify-center">
+                          <div className="w-10 h-10 border-2 border-white/10 border-t-white/40 rounded-full animate-spin" />
+                        </div>
+                      )}
                       <img
                         src={piece.image}
                         alt={piece.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        onLoad={() => handleImageLoad(piece.id)}
+                        className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${
+                          loadedImages.has(piece.id) ? 'opacity-100' : 'opacity-0'
+                        }`}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
