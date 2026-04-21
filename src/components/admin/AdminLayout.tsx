@@ -183,17 +183,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <div className="relative z-10 h-full flex flex-col px-8 md:px-12">
               {/* Top bar — Logo left, X right */}
               <div className="flex items-center justify-between py-3 md:py-4 flex-shrink-0">
-                <Link
-                  to="/"
-                  onClick={closeMenu}
+                <button
+                  onClick={() => {
+                    closeMenu();
+                    navigate(-1);
+                  }}
                   className="block flex-shrink-0 cursor-pointer"
+                  title="Go back"
                 >
                   <img
                     src="/Jonna Rincon Logo WH.png"
                     alt="Jonna Rincon"
                     className="h-[80px] md:h-[110px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
                   />
-                </Link>
+                </button>
 
                 <button
                   onClick={closeMenu}
@@ -306,7 +309,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               {/* Bottom — Admin info */}
               <div className="flex-shrink-0 py-6 md:py-8">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                  <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                     {user?.displayName?.[0] || user?.email?.[0] || 'A'}
                   </div>
                   <div className="min-w-0">

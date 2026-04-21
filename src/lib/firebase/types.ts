@@ -197,9 +197,14 @@ export interface Service {
   description: string;
   rate: number; // Price per hour or service rate
   cta: string; // Call-to-action button text
-  gradient: string; // e.g., "from-purple-600 to-pink-600"
+  gradient: string; // e.g., "from-red-600 to-orange-600"
   icon: string; // Icon name as string (e.g., "Zap", "Music", "Edit")
   coverUrl?: string; // Optional cover image URL
+
+  // Delivery option prices (for services with multiple delivery speeds)
+  price48h?: number; // 48-hour delivery price
+  price72h?: number; // 72-hour delivery price
+  price7days?: number; // 7-day delivery price
 
   // Status
   status: 'draft' | 'published' | 'archived';
