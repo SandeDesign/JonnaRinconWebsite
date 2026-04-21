@@ -199,6 +199,7 @@ export interface Service {
   cta: string; // Call-to-action button text
   gradient: string; // e.g., "from-purple-600 to-pink-600"
   icon: string; // Icon name as string (e.g., "Zap", "Music", "Edit")
+  coverUrl?: string; // Optional cover image URL
 
   // Status
   status: 'draft' | 'published' | 'archived';

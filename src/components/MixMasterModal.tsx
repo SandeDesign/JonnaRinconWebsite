@@ -191,9 +191,17 @@ export default function MixMasterModal({ service, isOpen, onClose }: MixMasterMo
       <div className="md:col-span-2 bg-gradient-to-b from-white/[0.08] to-transparent p-4 md:p-6 border-b md:border-b-0 md:border-r border-white/[0.1]">
         {/* Visual */}
         <div className="relative aspect-square rounded-2xl overflow-hidden mb-4 bg-gradient-to-br from-purple-900/40 to-red-900/40 flex items-center justify-center">
-          <div className={`w-24 h-24 rounded-3xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-2xl`}>
-            <Headphones className="w-12 h-12 text-white" />
-          </div>
+          {service.coverUrl ? (
+            <img
+              src={service.coverUrl}
+              alt={service.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className={`w-24 h-24 rounded-3xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-2xl`}>
+              <Headphones className="w-12 h-12 text-white" />
+            </div>
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
         </div>
 
