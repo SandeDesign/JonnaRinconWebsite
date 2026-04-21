@@ -102,11 +102,21 @@ const ServicesPage: React.FC = () => {
                     onClick={() => handleServiceClick(service)}
                     className="group relative bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8 hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08] flex flex-col text-left cursor-pointer"
                   >
-                    <div
-                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <Icon className="w-7 h-7 text-white" />
-                    </div>
+                    {service.coverUrl ? (
+                      <div className="w-14 h-14 rounded-2xl overflow-hidden mb-6 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                        <img
+                          src={service.coverUrl}
+                          alt={service.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                      >
+                        <Icon className="w-7 h-7 text-white" />
+                      </div>
+                    )}
 
                     <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">
                       {service.name}

@@ -124,9 +124,20 @@ const ServicesPage: React.FC = () => {
                   services.map((service) => (
                     <tr key={service.id} className="hover:bg-white/[0.06]">
                       <td className="px-6 py-4">
-                        <div>
-                          <p className="font-medium text-white">{service.name}</p>
-                          <p className="text-sm text-white/40">{service.description}</p>
+                        <div className="flex items-center gap-3">
+                          {service.coverUrl ? (
+                            <img
+                              src={service.coverUrl}
+                              alt={service.name}
+                              className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${service.gradient} flex-shrink-0`} />
+                          )}
+                          <div>
+                            <p className="font-medium text-white">{service.name}</p>
+                            <p className="text-sm text-white/40 line-clamp-1">{service.description}</p>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -202,6 +213,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
     cta: service?.cta || 'Get Started',
     gradient: service?.gradient || 'from-purple-600 to-pink-600',
     icon: service?.icon || 'Zap',
+    coverUrl: service?.coverUrl || '',
     slug: service?.slug || '',
     metaTitle: service?.metaTitle || '',
     metaDescription: service?.metaDescription || '',
@@ -220,6 +232,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
         cta: service.cta || 'Get Started',
         gradient: service.gradient || 'from-purple-600 to-pink-600',
         icon: service.icon || 'Zap',
+        coverUrl: service.coverUrl || '',
         slug: service.slug || '',
         metaTitle: service.metaTitle || '',
         metaDescription: service.metaDescription || '',
@@ -252,6 +265,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
         cta: formData.cta,
         gradient: formData.gradient,
         icon: formData.icon,
+        coverUrl: formData.coverUrl || undefined,
         slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
         metaTitle: formData.metaTitle || undefined,
         metaDescription: formData.metaDescription || undefined,
@@ -363,6 +377,28 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
               <option value="from-green-600 to-emerald-600">Green to Emerald</option>
               <option value="from-indigo-600 to-purple-600">Indigo to Purple</option>
             </select>
+          </div>
+
+          <div>
+            <LinkInput
+              label="Cover Image (optional)"
+              name="coverUrl"
+              type="image"
+              defaultValue={formData.coverUrl}
+              onChange={(url) => setFormData((prev) => ({ ...prev, coverUrl: url }))}
+              placeholder="https://cloud.internedata.nl/index.php/s/..."
+            />
+            {formData.coverUrl && (
+              <div className="mt-2 flex items-center gap-3">
+                <img
+                  src={formData.coverUrl}
+                  alt="Cover preview"
+                  className="w-16 h-16 rounded-xl object-cover border border-white/[0.1]"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+                <p className="text-xs text-white/40">Cover preview</p>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
