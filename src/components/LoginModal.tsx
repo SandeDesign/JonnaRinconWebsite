@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  title?: string;
+  description?: string;
 }
 
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, title, description }: LoginModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -83,13 +85,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           {/* Title */}
           <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tight">
-            Sign In to Listen
+            {title ?? 'Sign In to Listen'}
           </h2>
 
           {/* Message */}
           <div className="mb-8">
             <p className="text-white/60 text-sm mb-4">
-              Access all tracks and support the artist directly
+              {description ?? 'Access all tracks and support the artist directly'}
             </p>
 
             {/* Benefits */}

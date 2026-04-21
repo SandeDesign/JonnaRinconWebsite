@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Zap, Headphones, Music, Volume2, Users, Palette, ArrowRight } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -7,8 +7,8 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import { useServices } from '../../hooks/useServices';
 import { Service } from '../../lib/firebase/types';
 import { useScrollToTop } from '../../hooks/useScrollToTop';
+import MixMasterModal from '../../components/MixMasterModal';
 
-// Icon mapping from string names to React components
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Zap,
   Headphones,
@@ -18,14 +18,18 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Palette,
 };
 
-// Get icon component from string name, fallback to Zap
 const getIcon = (iconName: string): React.ComponentType<{ className?: string }> => {
   return iconMap[iconName] || Zap;
 };
 
-// Format rate as string for display
 const formatRate = (rate: number): string => {
   return `From €${rate}`;
+};
+
+const isMixMasterService = (service: Service): boolean => {
+  const name = service.name.toLowerCase();
+  const slug = (service.slug || '').toLowerCase();
+  return name.includes('mix') || slug.includes('mix');
 };
 
 const ServicesPage: React.FC = () => {
@@ -33,13 +37,25 @@ const ServicesPage: React.FC = () => {
   const heroTitle = useCyberDecodeInView('Services');
   const { services, loading } = useServices({ status: 'published' });
 
-  // Memoize formatted services to avoid unnecessary re-renders
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
   const formattedServices = useMemo(() => {
     return services.map((service) => ({
       ...service,
       displayRate: formatRate(service.rate),
     }));
   }, [services]);
+
+  const handleServiceClick = (service: Service) => {
+    setSelectedService(service);
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedService(null);
+  };
 
   return (
     <div className="min-h-screen text-white">
@@ -48,16 +64,19 @@ const ServicesPage: React.FC = () => {
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
-      {/* Hero Section - Centered Layout */}
+      {/* Hero Section */}
       <section className="relative pt-40 px-6 md:px-12 pb-4">
         <div className="relative z-10 max-w-7xl mx-auto w-full">
-          <h1 ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>} style={{fontSize: 'clamp(1.875rem, 8vw, 10.2rem)'}} className="font-black uppercase leading-[0.85] tracking-tighter mb-8 text-center">
+          <h1
+            ref={heroTitle.ref as React.RefObject<HTMLHeadingElement>}
+            style={{ fontSize: 'clamp(1.875rem, 8vw, 10.2rem)' }}
+            className="font-black uppercase leading-[0.85] tracking-tighter mb-8 text-center"
+          >
             {heroTitle.display}
           </h1>
-
-          {/* Description */}
           <p className="text-white/30 text-sm md:text-base text-center max-w-2xl mx-auto">
-            Professional music production services to elevate your sound. Get expert guidance from an experienced electronic music artist.
+            Professional music production services to elevate your sound. Get expert guidance from
+            an experienced electronic music artist.
           </p>
         </div>
       </section>
@@ -78,25 +97,34 @@ const ServicesPage: React.FC = () => {
               {formattedServices.map((service) => {
                 const Icon = getIcon(service.icon);
                 return (
-                  <div
+                  <button
                     key={service.id}
-                    className="group relative bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8 hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08] flex flex-col"
+                    onClick={() => handleServiceClick(service)}
+                    className="group relative bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-6 md:p-8 hover:border-white/[0.12] transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.08] flex flex-col text-left cursor-pointer"
                   >
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <div
+                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                    >
                       <Icon className="w-7 h-7 text-white" />
                     </div>
 
-                    <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">{service.name}</h3>
-                    <p className="text-white/50 text-sm leading-relaxed mb-6 flex-1">{service.description}</p>
+                    <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tight">
+                      {service.name}
+                    </h3>
+                    <p className="text-white/50 text-sm leading-relaxed mb-6 flex-1">
+                      {service.description}
+                    </p>
 
                     <div className="flex items-center justify-between pt-6 border-t border-white/[0.06]">
-                      <span className="text-sm text-white/30 font-bold uppercase tracking-wider">{service.displayRate}</span>
-                      <button className="flex items-center gap-2 text-xs text-white/40 group-hover:text-red-400 transition-colors font-bold uppercase tracking-wider hover:gap-3">
+                      <span className="text-sm text-white/30 font-bold uppercase tracking-wider">
+                        {service.displayRate}
+                      </span>
+                      <span className="flex items-center gap-2 text-xs text-white/40 group-hover:text-red-400 transition-colors font-bold uppercase tracking-wider group-hover:gap-3">
                         {service.cta}
                         <ArrowRight size={16} />
-                      </button>
+                      </span>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -108,9 +136,12 @@ const ServicesPage: React.FC = () => {
       <section className="px-6 md:px-12 py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-3xl p-8 md:p-12 text-center">
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">Ready to Work Together?</h2>
+            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight mb-3">
+              Ready to Work Together?
+            </h2>
             <p className="text-white/30 text-sm md:text-base mb-8 max-w-md mx-auto">
-              Have a custom project or want to discuss something specific? Get in touch to get started.
+              Have a custom project or want to discuss something specific? Get in touch to get
+              started.
             </p>
             <button className="px-8 md:px-10 py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-bold transition-all hover:scale-[1.03]">
               Contact Me
@@ -120,6 +151,15 @@ const ServicesPage: React.FC = () => {
       </section>
 
       <Footer />
+
+      {/* Service Modal — currently Mix & Master for all mix-type services */}
+      {selectedService && isMixMasterService(selectedService) && (
+        <MixMasterModal
+          service={selectedService}
+          isOpen={modalOpen}
+          onClose={handleModalClose}
+        />
+      )}
     </div>
   );
 };
