@@ -78,12 +78,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       expanded: expandedSocial,
     },
     {
-      label: 'ANALYTICS & ORDERS',
-      subtitle: 'Analytics, Orders, Discount Codes',
+      label: 'ORDERS AND STATS',
+      subtitle: 'Orders, Products, Analytics',
       action: () => setExpandedAnalytics(!expandedAnalytics),
       submenu: [
-        { label: 'Analytics', subtitle: 'Dashboard analytics', href: '/admin/analytics' },
         { label: 'Orders', subtitle: 'Order management', href: '/admin/orders' },
+        { label: 'Product Management', subtitle: 'Customer purchases', href: '/admin/product-management' },
+        { label: 'Analytics', subtitle: 'Dashboard analytics', href: '/admin/analytics' },
         { label: 'Discount Codes', subtitle: 'Promo codes', href: '/admin/discount-codes' },
       ],
       expanded: expandedAnalytics,

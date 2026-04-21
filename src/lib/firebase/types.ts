@@ -578,6 +578,59 @@ export interface Edit {
 }
 
 // ============================================
+// PURCHASE/DOWNLOAD LINK TYPES
+// ============================================
+
+export interface DownloadLink {
+  url: string;
+  expiresAt: Timestamp;
+  isActive: boolean;
+  downloadedAt?: Timestamp;
+}
+
+export type SupportStatus = 'idle' | 'requested' | 'in_progress' | 'completed';
+export type ProductCategory = 'beat' | 'track' | 'remix' | 'edit' | 'art' | 'merchandise' | 'service';
+
+// For Mix Masters and services with delivery timers
+export interface DeliveryTimer {
+  startedAt: Timestamp;
+  deliveryOption: '48h' | '72h' | '7days'; // Delivery time option
+  expiresAt: Timestamp;
+  isCompleted: boolean;
+  completedAt?: Timestamp;
+}
+
+export interface ProductPurchase {
+  id: string;
+  orderId: string;
+  productId: string;
+  productType: ProductCategory;
+  productTitle: string;
+  productArtist?: string;
+  price: number;
+
+  // Product-specific info
+  coverImage?: string;
+
+  // Download management
+  downloadLinks?: Record<string, DownloadLink>; // e.g., { "wav": {...}, "stems": {...}, "main": {...} }
+  supportStatus: SupportStatus;
+  supportRequestedAt?: Timestamp;
+
+  // For Mix Masters and services
+  deliveryTimer?: DeliveryTimer;
+
+  // Status and metadata
+  status: 'active' | 'expired' | 'refunded';
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+
+  // Customer and order info
+  customerId: string;
+  customerEmail: string;
+}
+
+// ============================================
 // ORDER TYPES
 // ============================================
 
@@ -592,11 +645,15 @@ export type OrderStatus =
 export type PaymentMethod = 'stripe' | 'paypal' | 'ideal' | 'bancontact';
 
 export interface OrderItem {
-  beatId: string;
-  beatTitle: string;
-  licenseType: LicenseType;
+  productId: string;
+  productType: ProductCategory;
+  productTitle: string;
+  productArtist?: string;
   price: number;
-  artworkUrl: string;
+  quantity?: number;
+  artworkUrl?: string;
+  licenseType?: LicenseType;
+  deliveryOption?: '48h' | '72h' | '7days'; // For services/mix masters
 }
 
 export interface Order {
@@ -626,8 +683,8 @@ export interface Order {
   paymentStatus: 'pending' | 'succeeded' | 'failed';
 
   // Delivery
-  downloadLinks?: Record<string, string>; // beatId -> download link
-  licensePDFs?: Record<string, string>; // beatId -> license PDF URL
+  downloadLinks?: Record<string, string>; // productId -> download link (legacy)
+  licensePDFs?: Record<string, string>; // productId -> license PDF URL
 
   // Notes
   customerNote?: string;
