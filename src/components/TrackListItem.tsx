@@ -97,6 +97,7 @@ export default function TrackListItem({
             <img
               src={track.coverArt}
               alt={track.title}
+              loading="lazy"
               className="w-full h-full object-cover"
             />
           ) : (

@@ -118,7 +118,7 @@ export default function MerchandiseDetailModal({
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative w-full max-w-4xl bg-white/[0.08] backdrop-blur-xl border border-white/[0.15] rounded-3xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-4xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] backdrop-blur-2xl border border-white/[0.2] rounded-3xl overflow-hidden shadow-2xl"
       >
         {/* Close Button */}
         <button
@@ -130,16 +130,16 @@ export default function MerchandiseDetailModal({
 
         {/* Featured Badge */}
         {merchandise.featured && (
-          <div className="absolute top-6 left-6 z-20 flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-500/30 to-pink-500/30 border border-purple-400/30 rounded-full">
-            <BadgeCheck size={14} className="text-purple-300" />
-            <span className="text-xs font-bold text-purple-200 uppercase tracking-wider">Featured</span>
+          <div className="absolute top-6 left-6 z-20 flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-red-500/30 to-orange-500/30 border border-red-400/30 rounded-full">
+            <BadgeCheck size={14} className="text-red-300" />
+            <span className="text-xs font-bold text-red-200 uppercase tracking-wider">Featured</span>
           </div>
         )}
 
         {/* Content */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-0 overflow-y-auto max-h-[90vh]">
           {/* Left Column - Image */}
-          <div className="md:col-span-2 bg-gradient-to-b from-white/[0.08] to-transparent p-4 md:p-6 border-b md:border-b-0 md:border-r border-white/[0.1]">
+          <div className="md:col-span-2 bg-gradient-to-b from-white/[0.08] to-transparent p-4 md:p-6 border-b md:border-b-0 md:border-r border-white/[0.08]">
             {/* Product Image */}
             <div className="relative aspect-square rounded-2xl overflow-hidden mb-4 group">
               {isImageLoading && (
@@ -221,7 +221,7 @@ export default function MerchandiseDetailModal({
                     }}
                     className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition-all border ${
                       currentImageIndex === index
-                        ? 'border-pink-500 ring-2 ring-pink-500'
+                        ? 'border-red-500 ring-2 ring-red-500'
                         : 'border-white/[0.1] hover:border-white/[0.2]'
                     }`}
                   >
@@ -263,8 +263,8 @@ export default function MerchandiseDetailModal({
               {/* Price */}
               <div className="mb-6">
                 <p className="text-white/40 text-xs uppercase tracking-wider font-semibold mb-2">Price</p>
-                <p className="text-4xl font-black text-pink-500">
-                  ${merchandise.price.toFixed(2)}
+                <p className="text-4xl font-black bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
+                  €{merchandise.price.toFixed(2)}
                 </p>
               </div>
 
@@ -303,7 +303,7 @@ export default function MerchandiseDetailModal({
                         disabled={size.stock === 0}
                         className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${
                           selectedSize === size.name
-                            ? 'bg-pink-600 text-white border border-pink-500'
+                            ? 'bg-red-600 text-white border border-red-500'
                             : size.stock === 0
                             ? 'bg-white/[0.04] text-white/30 border border-white/[0.08] cursor-not-allowed'
                             : 'bg-white/[0.06] border border-white/[0.1] text-white/70 hover:bg-white/[0.10] hover:border-white/[0.15]'
@@ -322,10 +322,10 @@ export default function MerchandiseDetailModal({
                 <div className="mb-6">
                   <p className="text-white/40 text-xs uppercase tracking-wider font-semibold mb-3">Features & Materials</p>
                   <div className="flex flex-wrap gap-2">
-                    {merchandise.tags.map((tag) => (
+                    {(merchandise as any).tags.map((tag: string) => (
                       <span
                         key={tag}
-                        className="px-3 py-1.5 bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-400/30 rounded-full text-xs text-pink-200 uppercase tracking-wider font-semibold"
+                        className="px-3 py-1.5 bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-400/30 rounded-full text-xs text-red-200 uppercase tracking-wider font-semibold"
                       >
                         {tag}
                       </span>
@@ -384,7 +384,7 @@ export default function MerchandiseDetailModal({
                     ? 'bg-white/[0.06] text-white/40 border border-white/[0.08] cursor-not-allowed'
                     : (merchandise.totalStock ?? 0) === 0
                     ? 'bg-white/[0.06] text-white/40 border border-white/[0.08] cursor-not-allowed'
-                    : 'bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white border border-pink-500/30 hover:border-pink-500/50'
+                    : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white border border-red-500/30 hover:border-red-500/50 hover:shadow-lg hover:shadow-red-500/30'
                 }`}
               >
                 <ShoppingCart size={18} />
