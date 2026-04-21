@@ -8,11 +8,15 @@ import {
   Menu,
   X,
   ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
+
+type SidebarPosition = 'floating' | 'left' | 'right';
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,6 +24,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [expandedShop, setExpandedShop] = useState(false);
   const [expandedCatalogue, setExpandedCatalogue] = useState(false);
   const [expandedArtist, setExpandedArtist] = useState(false);
+  const [sidebarPosition, setSidebarPosition] = useState<SidebarPosition>('floating');
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -281,6 +286,28 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                       title="Settings"
                     >
                       <Settings size={18} />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (sidebarPosition === 'floating') {
+                          setSidebarPosition('left');
+                        } else if (sidebarPosition === 'left') {
+                          setSidebarPosition('right');
+                        } else {
+                          setSidebarPosition('floating');
+                        }
+                      }}
+                      className={`p-2.5 rounded-xl transition-all duration-200 ${
+                        sidebarPosition === 'floating'
+                          ? 'text-white/40 hover:bg-white/[0.04] hover:text-white/80'
+                          : 'bg-red-600/20 text-red-400 hover:bg-red-600/30'
+                      }`}
+                      title={`Sidebar: ${sidebarPosition === 'floating' ? 'Floating' : sidebarPosition === 'left' ? 'Left' : 'Right'}`}
+                    >
+                      {sidebarPosition === 'left' && <ChevronRight size={18} />}
+                      {sidebarPosition === 'right' && <ChevronLeft size={18} />}
+                      {sidebarPosition === 'floating' && <Menu size={18} />}
                     </button>
 
                     <button
