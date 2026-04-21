@@ -217,6 +217,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
     gradient: service?.gradient || 'from-red-600 to-orange-600',
     icon: service?.icon || 'Zap',
     coverUrl: service?.coverUrl || '',
+    downloadUrl: service?.downloadUrl || '',
     slug: service?.slug || '',
     metaTitle: service?.metaTitle || '',
     metaDescription: service?.metaDescription || '',
@@ -239,6 +240,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
         gradient: service.gradient || 'from-red-600 to-orange-600',
         icon: service.icon || 'Zap',
         coverUrl: service.coverUrl || '',
+        downloadUrl: service.downloadUrl || '',
         slug: service.slug || '',
         metaTitle: service.metaTitle || '',
         metaDescription: service.metaDescription || '',
@@ -275,6 +277,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
         gradient: formData.gradient,
         icon: formData.icon,
         coverUrl: formData.coverUrl || undefined,
+        downloadUrl: formData.downloadUrl || undefined,
         slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
         metaTitle: formData.metaTitle || undefined,
         metaDescription: formData.metaDescription || undefined,
@@ -449,6 +452,18 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
                 <p className="text-xs text-white/40">Cover preview</p>
               </div>
             )}
+          </div>
+
+          <div>
+            <LinkInput
+              label="Download Link (optional)"
+              name="downloadUrl"
+              type="link"
+              defaultValue={formData.downloadUrl}
+              onChange={(url) => setFormData((prev) => ({ ...prev, downloadUrl: url }))}
+              placeholder="https://cloud.internedata.nl/index.php/s/... (add /download for internedata.nl links)"
+            />
+            <p className="text-xs text-white/40 mt-2">For internedata.nl links, add '/download' at the end</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

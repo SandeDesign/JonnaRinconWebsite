@@ -206,6 +206,9 @@ export interface Service {
   price72h?: number; // 72-hour delivery price
   price7days?: number; // 7-day delivery price
 
+  // Download link (for delivering service files/documents)
+  downloadUrl?: string; // Optional download link URL
+
   // Status
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
