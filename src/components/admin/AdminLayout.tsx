@@ -8,11 +8,15 @@ import {
   Menu,
   X,
   ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
+
+type SidebarPosition = 'floating' | 'left' | 'right';
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,6 +24,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [expandedShop, setExpandedShop] = useState(false);
   const [expandedCatalogue, setExpandedCatalogue] = useState(false);
   const [expandedArtist, setExpandedArtist] = useState(false);
+  const [sidebarPosition, setSidebarPosition] = useState<SidebarPosition>('floating');
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -78,12 +83,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       expanded: expandedSocial,
     },
     {
-      label: 'ANALYTICS & ORDERS',
-      subtitle: 'Analytics, Orders, Discount Codes',
+      label: 'ORDERS AND STATS',
+      subtitle: 'Orders, Products, Analytics',
       action: () => setExpandedAnalytics(!expandedAnalytics),
       submenu: [
-        { label: 'Analytics', subtitle: 'Dashboard analytics', href: '/admin/analytics' },
         { label: 'Orders', subtitle: 'Order management', href: '/admin/orders' },
+        { label: 'Product Management', subtitle: 'Customer purchases', href: '/admin/product-management' },
+        { label: 'Analytics', subtitle: 'Dashboard analytics', href: '/admin/analytics' },
         { label: 'Discount Codes', subtitle: 'Promo codes', href: '/admin/discount-codes' },
       ],
       expanded: expandedAnalytics,
@@ -183,17 +189,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <div className="relative z-10 h-full flex flex-col px-8 md:px-12">
               {/* Top bar — Logo left, X right */}
               <div className="flex items-center justify-between py-3 md:py-4 flex-shrink-0">
-                <Link
-                  to="/"
-                  onClick={closeMenu}
+                <button
+                  onClick={() => {
+                    closeMenu();
+                    navigate(-1);
+                  }}
                   className="block flex-shrink-0 cursor-pointer"
+                  title="Go back"
                 >
                   <img
                     src="/Jonna Rincon Logo WH.png"
                     alt="Jonna Rincon"
                     className="h-[80px] md:h-[110px] w-auto opacity-50 hover:opacity-100 transition-opacity duration-300"
                   />
-                </Link>
+                </button>
 
                 <button
                   onClick={closeMenu}
@@ -280,6 +289,28 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                     </button>
 
                     <button
+                      onClick={() => {
+                        if (sidebarPosition === 'floating') {
+                          setSidebarPosition('left');
+                        } else if (sidebarPosition === 'left') {
+                          setSidebarPosition('right');
+                        } else {
+                          setSidebarPosition('floating');
+                        }
+                      }}
+                      className={`p-2.5 rounded-xl transition-all duration-200 ${
+                        sidebarPosition === 'floating'
+                          ? 'text-white/40 hover:bg-white/[0.04] hover:text-white/80'
+                          : 'bg-red-600/20 text-red-400 hover:bg-red-600/30'
+                      }`}
+                      title={`Sidebar: ${sidebarPosition === 'floating' ? 'Floating' : sidebarPosition === 'left' ? 'Left' : 'Right'}`}
+                    >
+                      {sidebarPosition === 'left' && <ChevronRight size={18} />}
+                      {sidebarPosition === 'right' && <ChevronLeft size={18} />}
+                      {sidebarPosition === 'floating' && <Menu size={18} />}
+                    </button>
+
+                    <button
                       onClick={() => { closeMenu(); handleSignOut(); }}
                       className="p-2.5 rounded-xl transition-all duration-200 text-white/40 hover:bg-white/[0.04] hover:text-white/80"
                       title="Sign Out"
@@ -306,7 +337,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               {/* Bottom — Admin info */}
               <div className="flex-shrink-0 py-6 md:py-8">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                  <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                     {user?.displayName?.[0] || user?.email?.[0] || 'A'}
                   </div>
                   <div className="min-w-0">

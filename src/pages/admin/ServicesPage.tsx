@@ -57,7 +57,7 @@ const ServicesPage: React.FC = () => {
           </div>
           <button
             onClick={handleCreate}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all flex items-center space-x-2"
+            className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-red-700 hover:to-orange-700 transition-all flex items-center space-x-2"
           >
             <Plus size={20} />
             <span>Add Service</span>
@@ -210,10 +210,14 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
     name: service?.name || '',
     description: service?.description || '',
     rate: service?.rate || 100,
+    price48h: service?.price48h || undefined,
+    price72h: service?.price72h || undefined,
+    price7days: service?.price7days || undefined,
     cta: service?.cta || 'Get Started',
-    gradient: service?.gradient || 'from-purple-600 to-pink-600',
+    gradient: service?.gradient || 'from-red-600 to-orange-600',
     icon: service?.icon || 'Zap',
     coverUrl: service?.coverUrl || '',
+    downloadUrl: service?.downloadUrl || '',
     slug: service?.slug || '',
     metaTitle: service?.metaTitle || '',
     metaDescription: service?.metaDescription || '',
@@ -229,10 +233,14 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
         name: service.name || '',
         description: service.description || '',
         rate: service.rate || 100,
+        price48h: service.price48h || undefined,
+        price72h: service.price72h || undefined,
+        price7days: service.price7days || undefined,
         cta: service.cta || 'Get Started',
-        gradient: service.gradient || 'from-purple-600 to-pink-600',
+        gradient: service.gradient || 'from-red-600 to-orange-600',
         icon: service.icon || 'Zap',
         coverUrl: service.coverUrl || '',
+        downloadUrl: service.downloadUrl || '',
         slug: service.slug || '',
         metaTitle: service.metaTitle || '',
         metaDescription: service.metaDescription || '',
@@ -262,10 +270,14 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
         name: formData.name,
         description: formData.description,
         rate: rate,
+        price48h: formData.price48h || undefined,
+        price72h: formData.price72h || undefined,
+        price7days: formData.price7days || undefined,
         cta: formData.cta,
         gradient: formData.gradient,
         icon: formData.icon,
         coverUrl: formData.coverUrl || undefined,
+        downloadUrl: formData.downloadUrl || undefined,
         slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-'),
         metaTitle: formData.metaTitle || undefined,
         metaDescription: formData.metaDescription || undefined,
@@ -325,6 +337,47 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
             </div>
           </div>
 
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">48H Price (€)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price48h || ''}
+                onChange={(e) => setFormData({ ...formData, price48h: e.target.value ? parseFloat(e.target.value) : undefined })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="Optional"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">72H Price (€)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price72h || ''}
+                onChange={(e) => setFormData({ ...formData, price72h: e.target.value ? parseFloat(e.target.value) : undefined })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="Optional"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">7 Days Price (€)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.price7days || ''}
+                onChange={(e) => setFormData({ ...formData, price7days: e.target.value ? parseFloat(e.target.value) : undefined })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="Optional"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">Description</label>
             <textarea
@@ -371,7 +424,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
               onChange={(e) => setFormData({ ...formData, gradient: e.target.value })}
               className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
             >
-              <option value="from-purple-600 to-pink-600">Purple to Pink</option>
+              <option value="from-red-600 to-orange-600">Red to Orange</option>
               <option value="from-blue-600 to-cyan-600">Blue to Cyan</option>
               <option value="from-orange-600 to-red-600">Orange to Red</option>
               <option value="from-green-600 to-emerald-600">Green to Emerald</option>
@@ -399,6 +452,18 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
                 <p className="text-xs text-white/40">Cover preview</p>
               </div>
             )}
+          </div>
+
+          <div>
+            <LinkInput
+              label="Download Link (optional)"
+              name="downloadUrl"
+              type="link"
+              defaultValue={formData.downloadUrl}
+              onChange={(url) => setFormData((prev) => ({ ...prev, downloadUrl: url }))}
+              placeholder="https://cloud.internedata.nl/index.php/s/... (add /download for internedata.nl links)"
+            />
+            <p className="text-xs text-white/40 mt-2">For internedata.nl links, add '/download' at the end</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -471,7 +536,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({ service, onClose, o
             <button
               type="submit"
               disabled={saving}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
+              className="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-red-700 hover:to-orange-700 transition-all disabled:opacity-50"
             >
               {saving ? 'Saving...' : service ? 'Update Service' : 'Create Service'}
             </button>

@@ -64,6 +64,7 @@ import AdminBeats from './pages/admin/BeatsPage';
 import AdminTracks from './pages/admin/TracksPage';
 import AdminRemixes from './pages/admin/RemixesPage';
 import AdminOrders from './pages/admin/OrdersPage';
+import AdminProductManagement from './pages/admin/ProductManagementPage';
 import AdminContent from './pages/admin/ContentPage';
 import AdminAnalytics from './pages/admin/AnalyticsPage';
 import AdminCollaborations from './pages/admin/CollaborationsPage';
@@ -335,6 +336,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/product-management"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminProductManagement />
               </ProtectedRoute>
             }
           />
