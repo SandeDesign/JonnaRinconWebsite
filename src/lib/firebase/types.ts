@@ -96,6 +96,7 @@ export interface Beat {
   bpm: number;
   key: string;
   genre: string;
+  duration?: string; // e.g. "3:45"
   subGenre?: string;
   mood?: string[];
   tags: string[];
@@ -148,6 +149,7 @@ export interface BeatPackItem {
   bpm: number;
   key: string;
   genre: string;
+  duration?: string; // e.g. "3:45"
   audioUrl: string;
   downloadUrl: string;
 }
@@ -388,6 +390,7 @@ export interface Track {
   bpm?: number;
   key?: string;
   genre: string;
+  duration?: string; // e.g. "3:45"
   subGenre?: string;
   mood?: string[];
   tags: string[];
@@ -515,6 +518,7 @@ export interface Remix {
   bpm?: number;
   key?: string;
   genre: string;
+  duration?: string; // e.g. "3:45"
   subGenre?: string;
   mood?: string[];
   tags: string[];
