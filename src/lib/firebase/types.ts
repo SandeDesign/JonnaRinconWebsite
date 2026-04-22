@@ -1020,8 +1020,66 @@ export interface FollowGateCompletion {
 }
 
 // ============================================
-// PLAYLIST TYPES
+// CHAT & MESSAGING TYPES
 // ============================================
+
+export type ChatPersonality = 'jonna' | 'manager' | 'support';
+export type ChatCategory = 'tracks' | 'remixes' | 'beats' | 'art' | 'merchandise' | 'services' | 'business' | 'questions';
+export type MessageStatus = 'sent' | 'delivered' | 'read';
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string; // user UID or 'admin'
+  senderName: string;
+  senderAvatar?: string;
+  personality: ChatPersonality; // Which "person" this is from
+  content: string;
+  timestamp: Timestamp;
+  status: MessageStatus;
+  attachments?: string[]; // URLs to images/files
+
+  // Optional context for product/order chats
+  linkedProductId?: string;
+  linkedOrderId?: string;
+}
+
+export interface ChatConversation {
+  id: string;
+  userId: string; // Customer UID
+  userEmail: string;
+  userName?: string;
+
+  // Chat metadata
+  personalities: ChatPersonality[]; // Which personalities are involved
+  category: ChatCategory; // What this chat is about
+
+  // Context
+  linkedProductId?: string;
+  linkedOrderId?: string;
+  subject?: string;
+
+  // Messages and status
+  messageCount: number;
+  lastMessage?: string;
+  lastMessageAt?: Timestamp;
+  unreadCount: number;
+
+  // Timeline
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  closedAt?: Timestamp;
+  isClosed: boolean;
+}
+
+export interface ChatPersonalityInfo {
+  id: ChatPersonality;
+  name: string;
+  description: string;
+  avatar?: string;
+  icon?: string; // lucide-react icon name
+  color: string; // Tailwind color class
+}
 
 export interface Playlist {
   id: string;
