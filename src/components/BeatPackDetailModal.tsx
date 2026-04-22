@@ -139,20 +139,6 @@ export default function BeatPackDetailModal({ pack, isOpen, onClose }: BeatPackD
                 }`}
                 onClick={() => handlePlayBeat(i)}
               >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePlayBeat(i);
-                  }}
-                  className="hidden md:flex p-2 rounded-full bg-white/[0.08] hover:bg-white/[0.16] transition flex-shrink-0"
-                  title={isPackBeatPlaying(b.audioUrl) ? 'Pause' : 'Play'}
-                >
-                  {isPackBeatPlaying(b.audioUrl) ? (
-                    <Pause size={14} className="text-red-500" fill="currentColor" />
-                  ) : (
-                    <Play size={14} className="text-white/70" fill="currentColor" />
-                  )}
-                </button>
                 <span className="text-sm text-white/30 w-6 text-center">{String(i + 1).padStart(2, '0')}</span>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-white truncate text-sm">{b.title}</p>
@@ -170,7 +156,7 @@ export default function BeatPackDetailModal({ pack, isOpen, onClose }: BeatPackD
                     e.stopPropagation();
                     handlePlayBeat(i);
                   }}
-                  className="md:hidden p-3 rounded-full bg-white/[0.08] hover:bg-white/[0.16] transition flex-shrink-0"
+                  className="p-3 rounded-full bg-white/[0.08] hover:bg-white/[0.16] transition flex-shrink-0"
                   title={isPackBeatPlaying(b.audioUrl) ? 'Pause' : 'Play'}
                 >
                   {isPackBeatPlaying(b.audioUrl) ? (
