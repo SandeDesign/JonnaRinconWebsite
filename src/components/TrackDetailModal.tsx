@@ -12,6 +12,7 @@ interface Track {
   artist: string;
   audioUrl?: string;
   coverArt?: string;
+  artworkUrl?: string;
   genre?: string;
   duration?: string;
   year?: number;
@@ -188,7 +189,7 @@ export default function TrackDetailModal({
               onClick={handleCoverClick}
             >
               <img
-                src={track.coverArt || '/JEIGHTENESIS.jpg'}
+                src={track.coverArt || track.artworkUrl || '/JEIGHTENESIS.jpg'}
                 alt={track.title}
                 className={`w-full h-full object-cover transition-all duration-300 ${
                   isHoveringCover ? 'scale-105 brightness-75' : 'scale-100 brightness-100'
@@ -270,7 +271,7 @@ export default function TrackDetailModal({
 
               {/* Remix Artist Info */}
               {track.originalArtist && (
-                <p className="text-white/50 text-xs md:text-sm mb-4">Remix by {track.artist}</p>
+                <p className="text-white/50 text-xs md:text-sm mb-4">Original by {track.originalArtist}</p>
               )}
 
               {/* Producer Credits */}
@@ -434,7 +435,7 @@ export default function TrackDetailModal({
                       className="group rounded-lg bg-white/[0.04] hover:bg-white/[0.08] overflow-hidden flex flex-col transition-all border border-white/[0.08] hover:border-white/[0.12]"
                     >
                       <img
-                        src={relTrack.coverArt || '/JEIGHTENESIS.jpg'}
+                        src={relTrack.artworkUrl || '/JEIGHTENESIS.jpg'}
                         alt={relTrack.title}
                         className="w-full aspect-square object-cover"
                       />
