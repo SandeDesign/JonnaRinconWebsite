@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import CustomerLayout from '../../components/customer/CustomerLayout';
-import { MessageSquare, Send, Plus, HelpCircle, Check, CheckCheck, X } from 'lucide-react';
+import { MessageSquare, Send, Plus, Check, CheckCheck } from 'lucide-react';
 import { db } from '../../lib/firebase/config';
-import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp, or, updateDoc, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp, or } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface ChatMessage {
@@ -23,35 +23,34 @@ interface ChatThread {
   category: string;
   lastMessage: string;
   lastMessageTime: Timestamp;
-  unreadCount: number;
 }
 
 type RecipientGroup = 'jonna' | 'manager' | 'support';
 
-const recipientGroups: Record<RecipientGroup, { name: string; icon: string; description: string }> = {
+const recipientGroups: Record<RecipientGroup, { name: string; emoji: string; description: string }> = {
   jonna: {
     name: 'Jonna Rincon',
-    icon: '🎵',
+    emoji: '🎵',
     description: 'Direct contact (artiest is druk, verwacht geen snel antwoord!)',
   },
   manager: {
     name: 'Manager',
-    icon: '💼',
+    emoji: '💼',
     description: 'Business inquiries, collaborations',
   },
   support: {
     name: 'Support Team',
-    icon: '🆘',
+    emoji: '🆘',
     description: 'Questions, help and support',
   },
 };
 
-const categories = ['CATALOGUE', 'SHOP', 'SOCIAL MEDIA', 'DASHBOARD'];
-
-const catalogueItems = ['Tracks', 'Remixes', 'Support'];
-const shopItems = ['Beats', 'Services', 'Merchandise', 'Art'];
-const socialMediaItems = ['Content', 'Collaboration'];
-const dashboardItems = ['Orders', 'Downloads'];
+const categoryOptions = {
+  CATALOGUE: ['Tracks', 'Remixes', 'Support'],
+  SHOP: ['Beats', 'Services', 'Merchandise', 'Art'],
+  'SOCIAL MEDIA': ['Content', 'Collaboration'],
+  DASHBOARD: ['Orders', 'Downloads'],
+};
 
 const CustomerChat: React.FC = () => {
   const { user } = useAuth();
@@ -63,7 +62,6 @@ const CustomerChat: React.FC = () => {
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
 
-  // Load all messages for this user
   useEffect(() => {
     if (!user) return;
 
@@ -95,7 +93,6 @@ const CustomerChat: React.FC = () => {
     return () => unsubscribe();
   }, [user]);
 
-  // Build threads for selected group
   useEffect(() => {
     if (!user) return;
 
@@ -110,16 +107,12 @@ const CustomerChat: React.FC = () => {
           category: threadId,
           lastMessage: msg.message,
           lastMessageTime: msg.createdAt,
-          unreadCount: msg.status !== 'read' && msg.senderId !== user.uid ? 1 : 0,
         });
       } else {
         const thread = threadMap.get(threadId)!;
         if ((msg.createdAt?.toMillis?.() || 0) > (thread.lastMessageTime?.toMillis?.() || 0)) {
           thread.lastMessage = msg.message;
           thread.lastMessageTime = msg.createdAt;
-        }
-        if (msg.status !== 'read' && msg.senderId !== user.uid) {
-          thread.unreadCount++;
         }
       }
     });
@@ -131,7 +124,6 @@ const CustomerChat: React.FC = () => {
     setThreads(sortedThreads);
   }, [allMessages, selectedGroup, user]);
 
-  // Load messages for selected thread
   useEffect(() => {
     if (!selectedThread) {
       setMessages([]);
@@ -142,16 +134,15 @@ const CustomerChat: React.FC = () => {
       (msg) =>
         msg.category === selectedThread &&
         msg.recipientGroup === selectedGroup &&
-        ((msg.senderId === user?.uid && msg.recipientGroup === selectedGroup) ||
-          (msg.senderId !== user?.uid && msg.recipientGroup === selectedGroup))
+        ((msg.senderId === user?.uid) || (msg.senderId !== user?.uid))
     );
 
     setMessages(filtered);
   }, [selectedThread, selectedGroup, allMessages, user]);
 
-  const handleSendMessage = async (e: React.FormEvent, category: string) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user) return;
+    if (!newMessage.trim() || !user || !selectedThread) return;
 
     try {
       await addDoc(collection(db, 'supportMessages'), {
@@ -160,7 +151,7 @@ const CustomerChat: React.FC = () => {
         senderEmail: user.email,
         senderRole: 'customer',
         recipientGroup: selectedGroup,
-        category: category,
+        category: selectedThread,
         message: newMessage.trim(),
         createdAt: serverTimestamp(),
         status: 'sent',
@@ -171,26 +162,26 @@ const CustomerChat: React.FC = () => {
     }
   };
 
-  const createNewChat = (category: string) => {
+  const handleNewChat = (category: string) => {
     setSelectedThread(category);
     setShowCategoryPicker(false);
   };
 
   const getStatusIcon = (status: string) => {
-    if (status === 'read') return <CheckCheck size={14} className="text-blue-400" />;
-    if (status === 'delivered') return <CheckCheck size={14} className="text-white/60" />;
-    return <Check size={14} className="text-white/60" />;
+    if (status === 'read') return <CheckCheck size={12} className="text-blue-400" />;
+    if (status === 'delivered') return <CheckCheck size={12} className="text-white/60" />;
+    return <Check size={12} className="text-white/60" />;
   };
 
   return (
     <CustomerLayout>
-      <div className="grid grid-cols-5 h-[calc(100vh-150px)] gap-4">
-        {/* Personen Panel - Links */}
-        <div className="backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
-          <div className="p-4 border-b border-white/[0.1]">
-            <h2 className="font-semibold text-white text-sm">Chat With</h2>
+      <div className="grid grid-cols-12 h-[calc(100vh-150px)] gap-3">
+        {/* Kolom 1: Contactenlijst - 1 kolom */}
+        <div className="col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
+          <div className="p-3 border-b border-white/[0.1]">
+            <h2 className="font-semibold text-white text-xs">Contacts</h2>
           </div>
-          <div className="flex-1 overflow-y-auto space-y-2 p-3">
+          <div className="flex-1 overflow-y-auto space-y-2 p-2">
             {(Object.entries(recipientGroups) as [RecipientGroup, any][]).map(([key, group]) => (
               <button
                 key={key}
@@ -198,57 +189,48 @@ const CustomerChat: React.FC = () => {
                   setSelectedGroup(key);
                   setSelectedThread(null);
                 }}
-                className={`w-full p-3 rounded-lg text-left transition ${
+                className={`w-full p-3 rounded-lg text-center transition ${
                   selectedGroup === key
-                    ? 'bg-red-600/20 border border-red-600/40'
+                    ? 'bg-red-600/30 border border-red-600/40'
                     : 'bg-white/[0.04] border border-white/[0.1] hover:bg-white/[0.08]'
                 }`}
+                title={group.name}
               >
-                <div className="flex items-start gap-2 mb-1">
-                  <span className="text-lg">{group.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-white text-xs truncate">{group.name}</p>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      alert(group.description);
-                    }}
-                    className="p-0.5 hover:bg-white/[0.1] rounded-full transition"
-                    title={group.description}
-                  >
-                    <HelpCircle size={12} className="text-white/40" />
-                  </button>
-                </div>
-                <p className="text-[10px] text-white/40 line-clamp-2">{group.description}</p>
+                <div className="text-2xl mb-1">{group.emoji}</div>
+                <p className="text-[10px] text-white truncate">{group.name}</p>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Onderwerpen Panel - Midden */}
-        <div className="backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
+        {/* Kolom 2: Chats - 3 kolommen */}
+        <div className="col-span-3 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
           <div className="p-3 border-b border-white/[0.1] flex items-center justify-between">
             <h2 className="font-semibold text-white text-sm">Chats</h2>
             <div className="relative">
               <button
                 onClick={() => setShowCategoryPicker(!showCategoryPicker)}
-                className="p-2 rounded-full hover:bg-white/[0.1] transition"
-                title="Start new chat"
+                className="p-1.5 rounded-full hover:bg-white/[0.1] transition"
+                title="New chat"
               >
                 <Plus size={16} className="text-white/60" />
               </button>
 
               {showCategoryPicker && (
-                <div className="absolute top-full right-0 mt-2 bg-black/80 backdrop-blur-xl border border-white/[0.2] rounded-lg p-2 z-50 min-w-max">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => createNewChat(cat)}
-                      className="block w-full text-left px-3 py-2 text-xs text-white hover:bg-white/[0.1] rounded transition"
-                    >
-                      {cat}
-                    </button>
+                <div className="absolute top-full right-0 mt-2 bg-black/80 backdrop-blur-xl border border-white/[0.2] rounded-lg p-1 z-50 min-w-max">
+                  {Object.entries(categoryOptions).map(([category, items]) => (
+                    <div key={category}>
+                      <p className="text-xs text-white/40 px-2 py-1 font-semibold">{category}</p>
+                      {items.map((item) => (
+                        <button
+                          key={item}
+                          onClick={() => handleNewChat(item)}
+                          className="block w-full text-left px-3 py-1.5 text-xs text-white hover:bg-white/[0.1] rounded transition"
+                        >
+                          {item}
+                        </button>
+                      ))}
+                    </div>
                   ))}
                 </div>
               )}
@@ -258,7 +240,7 @@ const CustomerChat: React.FC = () => {
           <div className="flex-1 overflow-y-auto">
             {threads.length === 0 ? (
               <div className="p-4 text-center text-white/40 text-xs">
-                <MessageSquare size={24} className="mx-auto mb-2 opacity-50" />
+                <MessageSquare size={20} className="mx-auto mb-2 opacity-50" />
                 <p>START EEN NIEUWE CHAT</p>
               </div>
             ) : (
@@ -269,12 +251,12 @@ const CustomerChat: React.FC = () => {
                     onClick={() => setSelectedThread(thread.id)}
                     className={`w-full p-2 rounded-lg text-left text-xs transition ${
                       selectedThread === thread.id
-                        ? 'bg-white/[0.12] border border-white/[0.2]'
+                        ? 'bg-white/[0.12] border border-red-600/40'
                         : 'hover:bg-white/[0.06]'
                     }`}
                   >
                     <p className="font-semibold text-white truncate">{thread.category}</p>
-                    <p className="text-white/40 truncate">{thread.lastMessage}</p>
+                    <p className="text-white/40 truncate text-[11px]">{thread.lastMessage}</p>
                   </button>
                 ))}
               </div>
@@ -282,19 +264,13 @@ const CustomerChat: React.FC = () => {
           </div>
         </div>
 
-        {/* Chat Venster - Rechts */}
+        {/* Kolom 3: Chat Window - 8 kolommen */}
         {selectedThread ? (
-          <div className="lg:col-span-3 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
+          <div className="col-span-8 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
             {/* Header */}
             <div className="p-4 border-b border-white/[0.1] backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/15">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-white text-sm">
-                    {recipientGroups[selectedGroup].name}
-                  </p>
-                  <p className="text-xs text-white/40">{selectedThread}</p>
-                </div>
-              </div>
+              <p className="font-semibold text-white">{recipientGroups[selectedGroup].name}</p>
+              <p className="text-xs text-white/40">{selectedThread}</p>
             </div>
 
             {/* Messages */}
@@ -306,10 +282,7 @@ const CustomerChat: React.FC = () => {
                 </div>
               ) : (
                 messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}
-                  >
+                  <div key={msg.id} className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}>
                     <div
                       className={`max-w-xs px-3 py-2 rounded-lg ${
                         msg.senderId === user?.uid
@@ -334,17 +307,14 @@ const CustomerChat: React.FC = () => {
             </div>
 
             {/* Input */}
-            <form
-              onSubmit={(e) => handleSendMessage(e, selectedThread)}
-              className="p-4 border-t border-white/[0.1] backdrop-blur-lg bg-gradient-to-t from-white/[0.08] to-white/[0.04]"
-            >
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.1] backdrop-blur-lg bg-gradient-to-t from-white/[0.08] to-white/[0.04]">
               <div className="flex gap-3">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(e as any, selectedThread)}
-                  placeholder="Type a message..."
+                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(e as any)}
+                  placeholder="Type message..."
                   className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3] text-sm"
                 />
                 <button
@@ -358,7 +328,7 @@ const CustomerChat: React.FC = () => {
             </form>
           </div>
         ) : (
-          <div className="lg:col-span-3 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl flex items-center justify-center">
+          <div className="col-span-8 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl flex items-center justify-center">
             <div className="text-center">
               <MessageSquare size={48} className="mx-auto mb-4 text-white/20" />
               <p className="text-white/40">Select a chat to start messaging</p>

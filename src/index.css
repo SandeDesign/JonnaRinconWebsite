@@ -18,6 +18,12 @@
     background-size: cover;
   }
 
+  @media (max-width: 768px) {
+    html {
+      background-attachment: scroll;
+    }
+  }
+
   /* FOUC Prevention - Background Container States */
   #site-bg-container {
     opacity: 1;
