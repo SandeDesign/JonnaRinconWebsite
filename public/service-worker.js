@@ -73,6 +73,9 @@ self.addEventListener('fetch', (event) => {
             });
 
           return response;
+        }).catch(() => {
+          // Network error - return cached version if available
+          return caches.match(event.request);
         });
       })
   );

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { X, ShoppingBag, ArrowUpRight, Music, LogOut, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useCart } from '../hooks/useCart';
+import { useCartContext } from '../contexts/CartContext';
 import ShoppingCart from './ShoppingCart';
 import { getCurrentTrack, togglePlayerOpen } from './GlobalAudioPlayer';
 import { useContrastColor } from '../lib/utils/colorDetection';
@@ -28,9 +28,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const [expandedShop, setExpandedShop] = useState(false);
   const [expandedCatalogue, setExpandedCatalogue] = useState(false);
   const [expandedGetInTouch, setExpandedGetInTouch] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, signIn, signUp, signOut } = useAuth();
-  const { cartItems, removeFromCart, removeItemByIndex, clearCart } = useCart();
+  const { cartItems, isOpen: isCartOpen, setIsOpen: setIsCartOpen, removeFromCart, clearCart } = useCartContext();
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollPositionRef = useRef(0);
@@ -720,10 +719,8 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
           removeFromCart(beatId);
         }}
         onCheckout={() => {
-          alert('Proceeding to checkout...');
-          // TODO: Implement checkout flow
-          clearCart();
           setIsCartOpen(false);
+          navigate('/checkout');
         }}
       />
     </nav>

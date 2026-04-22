@@ -11,16 +11,31 @@
 
   html {
     background-color: #0a0a0a;
-    background-image: url('/JEIGHTENESIS.jpg');
+    background-image: url('/JEIGHTENESIS.jpg?cache=v1');
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    background-origin: padding-box;
+    background-clip: border-box;
+    /* Optimize image rendering */
+    image-rendering: -webkit-optimize-contrast;
+    background-rendering: optimizeSpeed;
+  }
+
+  body {
+    background-attachment: fixed;
+    background-image: inherit;
   }
 
   @media (max-width: 768px) {
     html {
       background-attachment: scroll;
+      background-size: auto;
+    }
+    body {
+      background-attachment: scroll;
+      background-size: auto;
     }
   }
 
