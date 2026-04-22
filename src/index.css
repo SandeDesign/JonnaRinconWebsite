@@ -11,13 +11,16 @@
 
   html {
     background-color: #0a0a0a;
-    background-image: url('/JEIGHTENESIS.jpg');
+    background-image: url('/JEIGHTENESIS.jpg?cache=v1');
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     background-origin: padding-box;
     background-clip: border-box;
+    /* Optimize image rendering */
+    image-rendering: -webkit-optimize-contrast;
+    background-rendering: optimizeSpeed;
   }
 
   body {

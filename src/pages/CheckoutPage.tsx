@@ -93,6 +93,8 @@ export default function CheckoutPage() {
                       <img
                         src={item.artworkUrl || '/JEIGHTENESIS.jpg'}
                         alt={item.title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">

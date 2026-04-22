@@ -233,7 +233,7 @@ export default function MyProductsPage() {
                       className="bg-white/[0.06] border border-white/[0.06] rounded-2xl overflow-hidden hover:border-white/[0.12] transition-all group cursor-pointer"
                     >
                       <div className="relative aspect-square">
-                        <img src={art.image} alt={art.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        <img src={art.image} alt={art.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         <div className="absolute bottom-3 left-3 right-3">
                           <h3 className="text-white font-bold text-sm truncate">{art.title}</h3>
@@ -270,7 +270,7 @@ export default function MyProductsPage() {
                     >
                       <div className="relative aspect-square">
                         {item.artworkUrl ? (
-                          <img src={item.artworkUrl} alt={item.productTitle} className="w-full h-full object-cover" />
+                          <img src={item.artworkUrl} alt={item.productTitle} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center">
                             <Gift size={40} className="text-white/20" />
