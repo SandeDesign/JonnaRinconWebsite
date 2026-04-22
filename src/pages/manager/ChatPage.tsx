@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ManagerLayout from '../../components/manager/ManagerLayout';
-import { MessageSquare, Send, Check, CheckCheck, Briefcase, Headphones, ArrowLeft, Search } from 'lucide-react';
+import { MessageSquare, Send, Check, CheckCheck, Briefcase, Headphones, ArrowLeft, Search, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { db } from '../../lib/firebase/config';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
@@ -26,7 +26,7 @@ interface UserEntry {
   userRole: string;
   lastMessage: string;
   lastMessageTime: Timestamp;
-  threadCount: number;
+  categories: string[];
 }
 
 interface ChatThread {
@@ -38,10 +38,26 @@ interface ChatThread {
 
 type RecipientGroup = 'manager' | 'support';
 type LeftView = 'contacts' | 'users' | 'threads';
+type SortOrder = 'newest' | 'oldest';
+type CategoryFilter = 'all' | 'CATALOGUE' | 'SHOP' | 'SOCIAL MEDIA' | 'DASHBOARD';
 
 const contactDefs: Record<RecipientGroup, { name: string; description: string }> = {
   manager: { name: 'Manager', description: 'Business inquiries & samenwerking' },
   support: { name: 'Support Team', description: 'Vragen, hulp en ondersteuning' },
+};
+
+const categoryGroups: Record<string, string[]> = {
+  CATALOGUE: ['Tracks', 'Remixes', 'Support'],
+  SHOP: ['Beats', 'Services', 'Merchandise', 'Art'],
+  'SOCIAL MEDIA': ['Content', 'Collaboration'],
+  DASHBOARD: ['Orders', 'Downloads'],
+};
+
+const getCategoryGroup = (category: string): string => {
+  for (const [group, items] of Object.entries(categoryGroups)) {
+    if (items.includes(category)) return group;
+  }
+  return 'OVERIG';
 };
 
 const ContactAvatar = ({ group, size = 'md' }: { group: RecipientGroup; size?: 'sm' | 'md' }) => {
@@ -70,6 +86,10 @@ const ManagerChat: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [userSearch, setUserSearch] = useState('');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
+  const [showFilter, setShowFilter] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -85,17 +105,25 @@ const ManagerChat: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const h = (e: MouseEvent) => { if (filterRef.current && !filterRef.current.contains(e.target as Node)) setShowFilter(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+
+  useEffect(() => {
     if (!selectedGroup) return;
     const groupMsgs = allMessages.filter((m) => m.recipientGroup === selectedGroup && m.senderRole !== 'admin' && m.senderRole !== 'manager');
     const map = new Map<string, UserEntry>();
     groupMsgs.forEach((m) => {
-      const categories = new Set(groupMsgs.filter(x => x.senderId === m.senderId).map(x => x.category));
       const existing = map.get(m.senderId);
+      const userCats = [...new Set(groupMsgs.filter(x => x.senderId === m.senderId).map(x => x.category))];
       if (!existing || (m.createdAt?.toMillis?.() || 0) > (existing.lastMessageTime?.toMillis?.() || 0)) {
-        map.set(m.senderId, { userId: m.senderId, userName: m.senderName, userEmail: m.senderEmail, userRole: m.senderRole, lastMessage: m.message, lastMessageTime: m.createdAt, threadCount: categories.size });
+        map.set(m.senderId, { userId: m.senderId, userName: m.senderName, userEmail: m.senderEmail, userRole: m.senderRole, lastMessage: m.message, lastMessageTime: m.createdAt, categories: userCats });
+      } else {
+        existing.categories = userCats;
       }
     });
-    setUsers(Array.from(map.values()).sort((a, b) => (b.lastMessageTime?.toMillis?.() || 0) - (a.lastMessageTime?.toMillis?.() || 0)));
+    setUsers(Array.from(map.values()));
   }, [allMessages, selectedGroup]);
 
   useEffect(() => {
@@ -142,7 +170,34 @@ const ManagerChat: React.FC = () => {
     return 'from-blue-700 to-cyan-700';
   };
 
-  const filteredUsers = users.filter((u) => !userSearch || u.userName.toLowerCase().includes(userSearch.toLowerCase()) || u.userEmail.toLowerCase().includes(userSearch.toLowerCase()));
+  const getFilteredUsers = () => {
+    let result = [...users];
+    if (userSearch) result = result.filter((u) => u.userName.toLowerCase().includes(userSearch.toLowerCase()) || u.userEmail.toLowerCase().includes(userSearch.toLowerCase()));
+    if (categoryFilter !== 'all') {
+      const allowedCats = categoryGroups[categoryFilter] || [];
+      result = result.filter((u) => u.categories.some((c) => allowedCats.includes(c)));
+    }
+    result.sort((a, b) => {
+      const diff = (a.lastMessageTime?.toMillis?.() || 0) - (b.lastMessageTime?.toMillis?.() || 0);
+      return sortOrder === 'newest' ? -diff : diff;
+    });
+    return result;
+  };
+
+  const getGroupedUsers = (userList: UserEntry[]) => {
+    if (categoryFilter !== 'all') return { [categoryFilter]: userList };
+    const grouped: Record<string, UserEntry[]> = {};
+    userList.forEach((u) => {
+      const primaryGroup = u.categories.length > 0 ? getCategoryGroup(u.categories[0]) : 'OVERIG';
+      if (!grouped[primaryGroup]) grouped[primaryGroup] = [];
+      grouped[primaryGroup].push(u);
+    });
+    return grouped;
+  };
+
+  const filteredUsers = getFilteredUsers();
+  const groupedUsers = getGroupedUsers(filteredUsers);
+  const groupOrder = ['CATALOGUE', 'SHOP', 'SOCIAL MEDIA', 'DASHBOARD', 'OVERIG'];
   const selectedUserEntry = users.find((u) => u.userId === selectedUserId);
 
   return (
@@ -158,15 +213,23 @@ const ManagerChat: React.FC = () => {
               </div>
               <div className="flex-1 overflow-y-auto py-3 px-3 space-y-2">
                 {(Object.entries(contactDefs) as [RecipientGroup, any][]).map(([key, def]) => {
-                  const count = allMessages.filter(m => m.recipientGroup === key && m.senderRole !== 'admin' && m.senderRole !== 'manager').length;
-                  const uniqueUsers = new Set(allMessages.filter(m => m.recipientGroup === key && m.senderRole !== 'admin' && m.senderRole !== 'manager').map(m => m.senderId)).size;
+                  const contactMsgs = allMessages.filter(m => m.recipientGroup === key && m.senderRole !== 'admin' && m.senderRole !== 'manager');
+                  const uniqueUsers = new Set(contactMsgs.map(m => m.senderId)).size;
+                  const cats = [...new Set(contactMsgs.map(m => getCategoryGroup(m.category)))].filter(g => g !== 'OVERIG');
                   return (
-                    <button key={key} onClick={() => { setSelectedGroup(key); setSelectedUserId(null); setSelectedThread(null); setLeftView('users'); }}
+                    <button key={key} onClick={() => { setSelectedGroup(key); setSelectedUserId(null); setSelectedThread(null); setCategoryFilter('all'); setUserSearch(''); setLeftView('users'); }}
                       className="w-full p-3 rounded-xl text-left transition-all flex items-center gap-4 hover:bg-white/[0.06] border border-transparent hover:border-white/[0.08]">
                       <ContactAvatar group={key} />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white">{def.name}</p>
-                        <p className="text-[11px] text-white/40 mt-0.5">{uniqueUsers} gebruiker{uniqueUsers !== 1 ? 's' : ''} · {count} bericht{count !== 1 ? 'en' : ''}</p>
+                        <p className="text-[11px] text-white/40 mt-0.5">{uniqueUsers} gebruiker{uniqueUsers !== 1 ? 's' : ''}</p>
+                        {cats.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {cats.slice(0, 3).map((g) => (
+                              <span key={g} className="text-[9px] px-1.5 py-0.5 bg-white/[0.06] border border-white/[0.1] rounded-full text-white/50 uppercase tracking-wide">{g}</span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       {uniqueUsers > 0 && (
                         <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
@@ -189,29 +252,83 @@ const ManagerChat: React.FC = () => {
                 <ContactAvatar group={selectedGroup} size="sm" />
                 <p className="text-sm font-semibold text-white flex-1 truncate">{contactDefs[selectedGroup].name}</p>
               </div>
-              <div className="px-3 py-2 border-b border-white/[0.06] flex-shrink-0">
-                <div className="relative">
+
+              {/* Search + Filter */}
+              <div className="px-3 py-2 border-b border-white/[0.06] flex gap-2 flex-shrink-0">
+                <div className="relative flex-1">
                   <Search size={13} className="absolute left-3 top-2.5 text-white/30" />
                   <input type="text" value={userSearch} onChange={(e) => setUserSearch(e.target.value)} placeholder="Zoek gebruiker..."
                     className="w-full pl-8 pr-3 py-1.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/[0.2]" />
                 </div>
-              </div>
-              <div className="flex-1 overflow-y-auto py-1">
-                {filteredUsers.length === 0 ? (
-                  <div className="py-10 text-center text-white/30"><MessageSquare size={24} className="mx-auto mb-2 opacity-40" /><p className="text-xs">Geen berichten</p></div>
-                ) : filteredUsers.map((u) => (
-                  <button key={u.userId} onClick={() => { setSelectedUserId(u.userId); setSelectedThread(null); setLeftView('threads'); }}
-                    className={`w-full px-3 py-3 text-left transition-all border-b border-white/[0.04] flex items-center gap-3 ${selectedUserId === u.userId ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'}`}>
-                    <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${getRoleColor(u.userRole)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
-                      {u.userName[0]?.toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-white truncate">{u.userName}</p>
-                      <p className="text-[10px] text-white/40 truncate">{u.lastMessage}</p>
-                    </div>
-                    <span className="text-[10px] text-white/30 flex-shrink-0">{u.threadCount} chat{u.threadCount !== 1 ? 's' : ''}</span>
+                <div className="relative" ref={filterRef}>
+                  <button onClick={() => setShowFilter(!showFilter)}
+                    className={`h-full px-2.5 rounded-lg border transition-colors flex items-center gap-1.5 text-xs ${showFilter || categoryFilter !== 'all' || sortOrder !== 'newest' ? 'bg-red-600/20 border-red-600/40 text-red-400' : 'bg-white/[0.06] border-white/[0.1] text-white/50 hover:text-white/80'}`}>
+                    <SlidersHorizontal size={13} />
+                    <ChevronDown size={11} className={`transition-transform ${showFilter ? 'rotate-180' : ''}`} />
                   </button>
-                ))}
+                  {showFilter && (
+                    <div className="absolute top-full right-0 mt-1.5 bg-black/95 backdrop-blur-xl border border-white/[0.15] rounded-xl p-3 z-50 w-44 shadow-2xl space-y-3">
+                      <div>
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1.5 font-semibold">Volgorde</p>
+                        {(['newest', 'oldest'] as SortOrder[]).map((s) => (
+                          <button key={s} onClick={() => setSortOrder(s)}
+                            className={`block w-full text-left px-2 py-1.5 text-xs rounded-lg transition ${sortOrder === s ? 'text-white bg-white/[0.08]' : 'text-white/50 hover:text-white hover:bg-white/[0.04]'}`}>
+                            {s === 'newest' ? 'Nieuwste eerst' : 'Oudste eerst'}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="border-t border-white/[0.08] pt-3">
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-1.5 font-semibold">Categorie</p>
+                        {(['all', 'CATALOGUE', 'SHOP', 'SOCIAL MEDIA', 'DASHBOARD'] as CategoryFilter[]).map((c) => (
+                          <button key={c} onClick={() => setCategoryFilter(c)}
+                            className={`block w-full text-left px-2 py-1.5 text-xs rounded-lg transition ${categoryFilter === c ? 'text-white bg-white/[0.08]' : 'text-white/50 hover:text-white hover:bg-white/[0.04]'}`}>
+                            {c === 'all' ? 'Alle categorieën' : c}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto">
+                {filteredUsers.length === 0 ? (
+                  <div className="py-10 text-center text-white/30">
+                    <MessageSquare size={24} className="mx-auto mb-2 opacity-40" />
+                    <p className="text-xs">Geen berichten</p>
+                  </div>
+                ) : (
+                  <div>
+                    {groupOrder.filter(g => groupedUsers[g]?.length).map((groupName) => (
+                      <div key={groupName}>
+                        <div className="px-4 py-2 border-b border-white/[0.04] bg-white/[0.02]">
+                          <p className="text-[10px] text-white/30 uppercase tracking-widest font-semibold">{groupName}</p>
+                        </div>
+                        {groupedUsers[groupName].map((u) => {
+                          const userCatGroups = [...new Set(u.categories.map(getCategoryGroup))];
+                          return (
+                            <button key={u.userId} onClick={() => { setSelectedUserId(u.userId); setSelectedThread(null); setLeftView('threads'); }}
+                              className={`w-full px-3 py-3 text-left transition-all border-b border-white/[0.04] flex items-center gap-3 ${selectedUserId === u.userId ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'}`}>
+                              <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${getRoleColor(u.userRole)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                                {u.userName[0]?.toUpperCase()}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-semibold text-white truncate">{u.userName}</p>
+                                <p className="text-[10px] text-white/40 truncate">{u.categories.join(', ')}</p>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {userCatGroups.map((g) => (
+                                    <span key={g} className="text-[9px] px-1 py-0.5 bg-white/[0.05] border border-white/[0.08] rounded text-white/40">{g}</span>
+                                  ))}
+                                </div>
+                              </div>
+                              <span className="text-[10px] text-white/30 flex-shrink-0">{u.categories.length} chat{u.categories.length !== 1 ? 's' : ''}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -230,16 +347,23 @@ const ManagerChat: React.FC = () => {
                   <p className="text-[10px] text-white/40 truncate">{contactDefs[selectedGroup].name}</p>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto py-1">
-                {threads.map((thread) => (
-                  <button key={thread.id} onClick={() => setSelectedThread(thread.id)}
-                    className={`w-full px-4 py-3 text-left transition-all border-b border-white/[0.04] flex items-center gap-3 ${selectedThread === thread.id ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'}`}>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-white truncate">{thread.category}</p>
-                      <p className="text-[10px] text-white/40 truncate mt-0.5">{thread.lastMessage}</p>
+              <div className="flex-1 overflow-y-auto">
+                {groupOrder.filter(g => threads.some(t => getCategoryGroup(t.category) === g)).map((groupName) => (
+                  <div key={groupName}>
+                    <div className="px-4 py-2 border-b border-white/[0.04] bg-white/[0.02]">
+                      <p className="text-[10px] text-white/30 uppercase tracking-widest font-semibold">{groupName}</p>
                     </div>
-                    {selectedThread === thread.id && <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />}
-                  </button>
+                    {threads.filter(t => getCategoryGroup(t.category) === groupName).map((thread) => (
+                      <button key={thread.id} onClick={() => setSelectedThread(thread.id)}
+                        className={`w-full px-4 py-3 text-left transition-all border-b border-white/[0.04] flex items-center gap-3 ${selectedThread === thread.id ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'}`}>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-white truncate">{thread.category}</p>
+                          <p className="text-[10px] text-white/40 truncate mt-0.5">{thread.lastMessage}</p>
+                        </div>
+                        {selectedThread === thread.id && <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />}
+                      </button>
+                    ))}
+                  </div>
                 ))}
               </div>
             </>
@@ -254,7 +378,7 @@ const ManagerChat: React.FC = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-white text-sm">{selectedUserEntry.userName}</p>
-                <p className="text-[11px] text-white/40">{contactDefs[selectedGroup].name} · {selectedThread}</p>
+                <p className="text-[11px] text-white/40">{contactDefs[selectedGroup].name} · {getCategoryGroup(selectedThread)} · {selectedThread}</p>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
