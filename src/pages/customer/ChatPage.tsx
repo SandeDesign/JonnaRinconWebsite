@@ -153,7 +153,7 @@ const CustomerChat: React.FC = () => {
             <p className="text-white/40 mt-2">Get help from the Jonna Rincon team</p>
           </div>
 
-          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl p-12 text-center">
             <MessageSquare size={64} className="mx-auto mb-4 text-white/20" />
             <h2 className="text-2xl font-bold text-white mb-2">No conversations yet</h2>
             <p className="text-white/40 mb-6">
@@ -188,7 +188,7 @@ const CustomerChat: React.FC = () => {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message to support..."
-                  className="flex-1 bg-white/[0.06] border border-white/[0.08] rounded-full px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-red-500"
+                  className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-red-500 focus:bg-white/[0.12] transition-all"
                 />
                 <button
                   type="submit"
@@ -216,8 +216,8 @@ const CustomerChat: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Conversations Sidebar */}
-          <div className="lg:col-span-1 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="p-4 border-b border-white/[0.06]">
+          <div className="lg:col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-white/[0.1]">
               <h2 className="font-semibold text-white">Conversations</h2>
             </div>
             <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 350px)' }}>
@@ -225,10 +225,10 @@ const CustomerChat: React.FC = () => {
                 <button
                   key={convo.userId}
                   onClick={() => setSelectedConversation(convo.userId)}
-                  className={`w-full px-4 py-3 text-left transition border-b border-white/[0.06] ${
+                  className={`w-full px-4 py-3 text-left transition border-b border-white/[0.1] ${
                     selectedConversation === convo.userId
-                      ? 'bg-white/[0.1] border-l-4 border-l-red-500'
-                      : 'hover:bg-white/[0.05]'
+                      ? 'bg-white/[0.08] border-l-4 border-l-red-500'
+                      : 'hover:bg-white/[0.04]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -253,9 +253,9 @@ const CustomerChat: React.FC = () => {
           </div>
 
           {/* Chat Window */}
-          <div className="lg:col-span-2 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
+          <div className="lg:col-span-2 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
             {/* Chat Header */}
-            <div className="p-4 border-b border-white/[0.1] bg-gradient-to-r from-red-600/10 to-orange-600/10">
+            <div className="p-4 border-b border-white/[0.1] backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/15">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white font-semibold text-sm">
                   {conversations.find((c) => c.userId === selectedConversation)?.userName[0] || 'S'}
@@ -272,7 +272,7 @@ const CustomerChat: React.FC = () => {
             </div>
 
             {/* Messages - WhatsApp Style */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-2 flex flex-col">
+            <div className="flex-1 p-6 overflow-y-auto space-y-2 flex flex-col bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
               {messages.length === 0 ? (
                 <div className="text-center text-white/40 py-12 m-auto">
                   <MessageSquare size={48} className="mx-auto mb-4 opacity-50" />
@@ -285,10 +285,10 @@ const CustomerChat: React.FC = () => {
                     className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'} mb-2`}
                   >
                     <div
-                      className={`max-w-xs px-4 py-2 rounded-2xl ${
+                      className={`max-w-xs px-4 py-2 rounded-2xl backdrop-blur-sm ${
                         msg.senderId === user?.uid
-                          ? 'bg-red-600 text-white rounded-br-none'
-                          : 'bg-white/[0.1] text-white rounded-bl-none'
+                          ? 'bg-gradient-to-br from-red-600 to-orange-600 text-white rounded-br-none shadow-lg'
+                          : 'bg-gradient-to-br from-white/[0.15] to-white/[0.08] text-white rounded-bl-none border border-white/[0.15]'
                       }`}
                     >
                       {msg.senderId !== user?.uid && (
@@ -324,7 +324,7 @@ const CustomerChat: React.FC = () => {
             </div>
 
             {/* Message Input - WhatsApp Style */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.1] bg-white/[0.04]">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.1] backdrop-blur-lg bg-gradient-to-t from-white/[0.08] to-white/[0.04]">
               <div className="flex gap-3 items-end">
                 <input
                   type="text"
@@ -332,7 +332,7 @@ const CustomerChat: React.FC = () => {
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(e as any)}
                   placeholder="Type a message..."
-                  className="flex-1 bg-white/[0.06] border border-white/[0.1] rounded-full px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:border-white/[0.2] text-sm resize-none"
+                  className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3] focus:bg-white/[0.12] text-sm resize-none transition-all"
                 />
                 <button
                   type="submit"
@@ -347,9 +347,9 @@ const CustomerChat: React.FC = () => {
         </div>
 
         {/* Info Box */}
-        <div className="bg-red-600/10 border border-red-600/20 rounded-xl p-4">
-          <p className="text-sm text-red-200">
-            💬 <strong>Support Hours:</strong> Our team typically responds within 24 hours during business days.
+        <div className="backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/10 border border-red-600/30 rounded-xl p-4">
+          <p className="text-sm text-white/70">
+            💬 <strong className="text-white">Support Hours:</strong> Our team typically responds within 24 hours during business days.
             For urgent matters, please include "URGENT" in your message.
           </p>
         </div>
