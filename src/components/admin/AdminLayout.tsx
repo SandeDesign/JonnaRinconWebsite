@@ -32,7 +32,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollPositionRef = useRef(0);
 
-  const isOnDashboard = location.pathname === '/admin/dashboard';
+  const isOnDashboard = location.pathname === '/admin/dashboard' || location.pathname === '/admin';
 
   const handleSignOut = async () => {
     await signOut();
@@ -158,11 +158,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <div className="flex-shrink-0">
           {!isOnDashboard && (
             <button
-              onClick={() => navigate(-1)}
-              className="w-10 h-10 rounded-full border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all duration-300 flex items-center justify-center"
+              onClick={() => {
+                try {
+                  navigate(-1);
+                } catch {
+                  navigate('/admin/dashboard');
+                }
+              }}
+              className="w-10 h-10 rounded-full border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all duration-300 flex items-center justify-center cursor-pointer"
               title="Go back"
             >
-              <ArrowLeft size={18} className="text-white/60 hover:text-white" />
+              <ArrowLeft size={18} className="text-white/60 group-hover:text-white transition-colors" />
             </button>
           )}
           {isOnDashboard && (
@@ -207,10 +213,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <button
                   onClick={() => {
                     closeMenu();
-                    navigate('/admin/dashboard');
+                    setTimeout(() => navigate('/admin/dashboard'), 100);
                   }}
-                  className="block flex-shrink-0 cursor-pointer"
-                  title="Dashboard"
+                  className="block flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                  title="Back to Dashboard"
                 >
                   <img
                     src="/Jonna Rincon Logo WH.png"
