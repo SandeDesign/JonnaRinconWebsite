@@ -82,7 +82,7 @@ export default function PlayerModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
       <div
         ref={modalRef}
-        className="relative w-full max-w-md bg-black/90 backdrop-blur-2xl border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-2xl bg-black/90 backdrop-blur-2xl border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden"
       >
         <button
           onClick={onClose}
@@ -91,10 +91,10 @@ export default function PlayerModal({
           <X className="w-5 h-5 text-white" />
         </button>
 
-        <div className="pt-16 pb-8 px-6">
-          {/* Cover Art */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+          {/* Left: Cover Art */}
           {track.coverArt && (
-            <div className="mb-8 aspect-square rounded-2xl overflow-hidden shadow-xl">
+            <div className="relative aspect-square rounded-none overflow-hidden shadow-xl md:rounded-l-2xl">
               <img
                 src={track.coverArt}
                 alt={track.title}
@@ -103,164 +103,198 @@ export default function PlayerModal({
             </div>
           )}
 
-          {/* Track Info */}
-          <div className="mb-8 text-center">
-            <h2 className="text-2xl font-black text-white mb-2 truncate">{track.title}</h2>
-            <p className="text-white/60 text-sm mb-2 truncate">{track.artist}</p>
-            <p className="text-xs text-white/40">{formatDuration(duration)}</p>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <input
-              type="range"
-              min="0"
-              max={duration || 0}
-              value={currentTime}
-              onChange={onProgressChange}
-              className="w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer"
-              style={{
-                WebkitAppearance: 'none',
-              }}
-            />
-            <style>{`
-              input[type="range"] {
-                -webkit-appearance: none;
-                appearance: none;
-                background: linear-gradient(to right, rgb(220, 38, 38) 0%, rgb(220, 38, 38) ${duration ? (currentTime / duration) * 100 : 0}%, rgba(255, 255, 255, 0.2) ${duration ? (currentTime / duration) * 100 : 0}%, rgba(255, 255, 255, 0.2) 100%);
-                border-radius: 999px;
-                width: 100%;
-                height: 4px;
-                cursor: pointer;
-              }
-              input[type="range"]::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 14px;
-                height: 14px;
-                border-radius: 50%;
-                background: white;
-                cursor: pointer;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-              }
-              input[type="range"]::-moz-range-thumb {
-                width: 14px;
-                height: 14px;
-                border-radius: 50%;
-                background: white;
-                cursor: pointer;
-                border: none;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-              }
-            `}</style>
-            <div className="flex justify-between text-xs text-white/40 mt-2">
-              <span>{formatDuration(currentTime)}</span>
-              <span>{formatDuration(duration)}</span>
+          {/* Right: Player Controls */}
+          <div className="pt-8 pb-8 px-6 flex flex-col justify-between">
+            {/* Track Info */}
+            <div className="mb-8 text-center md:text-left">
+              <h2 className="text-2xl font-black text-white mb-2 truncate">{track.title}</h2>
+              <p className="text-white/60 text-sm mb-2 truncate">{track.artist}</p>
+              <p className="text-xs text-white/40">{formatDuration(duration)}</p>
             </div>
-          </div>
 
-          {/* Control Buttons */}
-          <div className="flex items-center justify-center gap-6 mb-8">
-            <button
-              className={`p-2 rounded-full transition-all ${isShuffle ? 'bg-red-600' : 'bg-white/[0.08] hover:bg-white/[0.15]'}`}
-              onClick={toggleShuffle}
-              title="Shuffle"
-            >
-              <Shuffle size={20} className={isShuffle ? 'text-white' : 'text-white/70'} />
-            </button>
+            {/* Progress Bar */}
+            <div className="mb-6">
+              <input
+                type="range"
+                min="0"
+                max={duration || 0}
+                value={currentTime}
+                onChange={onProgressChange}
+                className="w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer"
+                style={{
+                  WebkitAppearance: 'none',
+                }}
+              />
+              <style>{`
+                input[type="range"] {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  background: linear-gradient(to right, rgb(220, 38, 38) 0%, rgb(220, 38, 38) ${duration ? (currentTime / duration) * 100 : 0}%, rgba(255, 255, 255, 0.2) ${duration ? (currentTime / duration) * 100 : 0}%, rgba(255, 255, 255, 0.2) 100%);
+                  border-radius: 999px;
+                  width: 100%;
+                  height: 4px;
+                  cursor: pointer;
+                }
+                input[type="range"]::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 14px;
+                  height: 14px;
+                  border-radius: 50%;
+                  background: white;
+                  cursor: pointer;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                }
+                input[type="range"]::-moz-range-thumb {
+                  width: 14px;
+                  height: 14px;
+                  border-radius: 50%;
+                  background: white;
+                  cursor: pointer;
+                  border: none;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                }
+              `}</style>
+              <div className="flex justify-between text-xs text-white/40 mt-2">
+                <span>{formatDuration(currentTime)}</span>
+                <span>{formatDuration(duration)}</span>
+              </div>
+            </div>
 
-            <button
-              className="p-3 rounded-full bg-white/[0.08] hover:bg-white/[0.15] transition-all"
-              onClick={onPreviousClick}
-              title="Previous"
-            >
-              <SkipBack size={20} className="text-white/70" />
-            </button>
+            {/* Control Buttons */}
+            <div className="flex items-center justify-center gap-6 mb-8">
+              <button
+                className={`p-2 rounded-full transition-all ${isShuffle ? 'bg-red-600' : 'bg-white/[0.08] hover:bg-white/[0.15]'}`}
+                onClick={toggleShuffle}
+                title="Shuffle"
+              >
+                <Shuffle size={20} className={isShuffle ? 'text-white' : 'text-white/70'} />
+              </button>
 
-            <button
-              className="p-4 rounded-full bg-red-600 hover:bg-red-700 transition-all"
-              onClick={onPlayPauseClick}
-              title={isPlaying ? 'Pause' : 'Play'}
-            >
-              {isPlaying ? (
-                <Pause size={32} className="text-white" fill="currentColor" />
-              ) : (
-                <Play size={32} className="text-white" fill="currentColor" />
-              )}
-            </button>
+              <button
+                className="p-3 rounded-full bg-white/[0.08] hover:bg-white/[0.15] transition-all"
+                onClick={onPreviousClick}
+                title="Previous"
+              >
+                <SkipBack size={20} className="text-white/70" />
+              </button>
 
-            <button
-              className="p-3 rounded-full bg-white/[0.08] hover:bg-white/[0.15] transition-all"
-              onClick={onNextClick}
-              title="Next"
-            >
-              <SkipForward size={20} className="text-white/70" />
-            </button>
+              <button
+                className="p-4 rounded-full bg-red-600 hover:bg-red-700 transition-all"
+                onClick={onPlayPauseClick}
+                title={isPlaying ? 'Pause' : 'Play'}
+              >
+                {isPlaying ? (
+                  <Pause size={32} className="text-white" fill="currentColor" />
+                ) : (
+                  <Play size={32} className="text-white" fill="currentColor" />
+                )}
+              </button>
 
-            <button
-              className={`p-2 rounded-full transition-all ${repeat !== 'off' ? 'bg-red-600' : 'bg-white/[0.08] hover:bg-white/[0.15]'}`}
-              onClick={onRepeatToggle}
-              title={repeat === 'off' ? 'Repeat off' : repeat === 'all' ? 'Repeat all' : 'Repeat 1x'}
-              style={{ position: 'relative' }}
-            >
-              <Repeat size={20} className={repeat !== 'off' ? 'text-white' : 'text-white/70'} />
-              {repeat === 'one' && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '-4px',
-                    right: '-4px',
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '50%',
-                    backgroundColor: 'white',
-                    color: 'rgb(220, 38, 38)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    lineHeight: '1',
-                  }}
-                >
-                  1
-                </span>
-              )}
-            </button>
-          </div>
+              <button
+                className="p-3 rounded-full bg-white/[0.08] hover:bg-white/[0.15] transition-all"
+                onClick={onNextClick}
+                title="Next"
+              >
+                <SkipForward size={20} className="text-white/70" />
+              </button>
 
-          {/* Volume Control */}
-          <div className="flex items-center gap-4 px-2">
-            <button
-              className={`p-2 rounded-full transition-all ${isMuted ? 'bg-red-600' : 'bg-white/[0.08] hover:bg-white/[0.15]'}`}
-              onClick={onMuteToggle}
-              title={isMuted ? 'Unmute' : 'Mute'}
-            >
-              {isMuted ? (
-                <VolumeX size={18} className="text-white" />
-              ) : (
-                <Volume2 size={18} className="text-white/70" />
-              )}
-            </button>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={isMuted ? 0 : volume}
-              onChange={onVolumeChange}
-              disabled={isMuted}
-              className="flex-1 h-1 bg-white/20 rounded-full appearance-none cursor-pointer"
-              title="Volume"
-              style={{ opacity: isMuted ? 0.5 : 1, cursor: isMuted ? 'not-allowed' : 'pointer' }}
-            />
-          </div>
+              <button
+                className={`p-2 rounded-full transition-all ${repeat !== 'off' ? 'bg-red-600' : 'bg-white/[0.08] hover:bg-white/[0.15]'}`}
+                onClick={onRepeatToggle}
+                title={repeat === 'off' ? 'Repeat off' : repeat === 'all' ? 'Repeat all' : 'Repeat 1x'}
+                style={{ position: 'relative' }}
+              >
+                <Repeat size={20} className={repeat !== 'off' ? 'text-white' : 'text-white/70'} />
+                {repeat === 'one' && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '-4px',
+                      right: '-4px',
+                      width: '16px',
+                      height: '16px',
+                      borderRadius: '50%',
+                      backgroundColor: 'white',
+                      color: 'rgb(220, 38, 38)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '10px',
+                      fontWeight: 'bold',
+                      lineHeight: '1',
+                    }}
+                  >
+                    1
+                  </span>
+                )}
+              </button>
+            </div>
 
-          {/* Queue Info */}
-          <div className="mt-8 pt-6 border-t border-white/[0.08]">
-            <p className="text-xs text-white/40 text-center">
-              {getQueue().length > 0 ? `Track ${(getCurrentIndex() || 0) + 1} of ${getQueue().length}` : 'No queue'}
-            </p>
+            {/* Volume Control */}
+            <div className="flex items-center gap-4 px-2 mb-6">
+              <button
+                className={`p-2 rounded-full transition-all flex-shrink-0 ${isMuted ? 'bg-red-600' : 'bg-white/[0.08] hover:bg-white/[0.15]'}`}
+                onClick={onMuteToggle}
+                title={isMuted ? 'Unmute' : 'Mute'}
+              >
+                {isMuted ? (
+                  <VolumeX size={18} className="text-white" />
+                ) : (
+                  <Volume2 size={18} className="text-white/70" />
+                )}
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={isMuted ? 0 : volume}
+                onChange={onVolumeChange}
+                disabled={isMuted}
+                className="flex-1 h-1 rounded-full appearance-none cursor-pointer"
+                title="Volume"
+                style={{
+                  background: `linear-gradient(to right, rgb(220, 38, 38) 0%, rgb(220, 38, 38) ${(isMuted ? 0 : volume) * 100}%, rgba(255, 255, 255, 0.2) ${(isMuted ? 0 : volume) * 100}%, rgba(255, 255, 255, 0.2) 100%)`,
+                  opacity: isMuted ? 0.5 : 1,
+                  cursor: isMuted ? 'not-allowed' : 'pointer',
+                  WebkitAppearance: 'none',
+                  appearance: 'none',
+                }}
+              />
+              <style>{`
+                input[type="range"] {
+                  -webkit-appearance: none;
+                  appearance: none;
+                }
+                input[type="range"]::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 12px;
+                  height: 12px;
+                  border-radius: 50%;
+                  background: rgb(220, 38, 38);
+                  cursor: pointer;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                }
+                input[type="range"]::-moz-range-thumb {
+                  width: 12px;
+                  height: 12px;
+                  border-radius: 50%;
+                  background: rgb(220, 38, 38);
+                  cursor: pointer;
+                  border: none;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                }
+              `}</style>
+            </div>
+
+            {/* Queue Info */}
+            <div className="pt-6 border-t border-white/[0.08]">
+              <p className="text-xs text-white/40 text-center">
+                {getQueue().length > 0 ? `Track ${(getCurrentIndex() || 0) + 1} of ${getQueue().length}` : 'No queue'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
