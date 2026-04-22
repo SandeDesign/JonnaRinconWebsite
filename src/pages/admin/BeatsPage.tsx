@@ -753,16 +753,24 @@ const emptyBeat = (): BeatPackItem => ({
 });
 
 const BeatPackFormModal: React.FC<BeatPackFormModalProps> = ({ pack, onClose, onSave }) => {
+  const { beats: allBeats } = useBeats();
   const [title, setTitle] = useState(pack?.title || '');
   const [description, setDescription] = useState(pack?.description || '');
   const [coverUrl, setCoverUrl] = useState(pack?.coverUrl || '');
   const [price, setPrice] = useState<number>(pack?.price || 99);
   const [status, setStatus] = useState<'draft' | 'published'>(pack?.status || 'draft');
-  const [beats, setBeats] = useState<BeatPackItem[]>(pack?.beats && pack.beats.length > 0 ? pack.beats : [emptyBeat()]);
-  const [currentPage, setCurrentPage] = useState(0); // 0 = pack details, 1+ = beat pages
+  const [beats, setBeats] = useState<BeatPackItem[]>(pack?.beats && pack.beats.length > 0 ? pack.beats : []);
+  const [currentPage, setCurrentPage] = useState(0); // 0 = pack details, 1 = beat selection, 2 = arrange, 3+ = beat edit
   const [saving, setSaving] = useState(false);
 
-  const totalPages = 1 + beats.length; // 1 for pack details, rest for beats
+  // Beat selection state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBeatIds, setSelectedBeatIds] = useState<Set<string>>(
+    new Set(pack?.beats.map((b, i) => `beat-${i}`) || [])
+  );
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+
+  const totalPages = 3 + (beats.length > 0 ? beats.length : 0); // 0=details, 1=select, 2=arrange, 3+=beats
 
   const parseBeatAudio = (url: string, idx: number) => {
     try {
@@ -803,14 +811,80 @@ const BeatPackFormModal: React.FC<BeatPackFormModalProps> = ({ pack, onClose, on
     setBeats((prev) => prev.map((b, i) => i === idx ? { ...b, [field]: value } : b));
   };
 
+  // Beat selection functions
+  const filteredBeats = allBeats.filter(beat => {
+    const query = searchQuery.toLowerCase();
+    return (
+      beat.title.toLowerCase().includes(query) ||
+      beat.artist.toLowerCase().includes(query) ||
+      beat.genre.toLowerCase().includes(query) ||
+      beat.tags?.some(tag => tag.toLowerCase().includes(query))
+    );
+  });
+
+  const getSelectedBeats = (): Beat[] => {
+    return Array.from(selectedBeatIds)
+      .map(id => {
+        const idx = parseInt(id.replace('beat-', ''));
+        return allBeats[idx];
+      })
+      .filter(b => b);
+  };
+
+  const convertToPackItems = (selectedBeats: Beat[]): BeatPackItem[] => {
+    return selectedBeats.map(beat => ({
+      title: beat.title,
+      artist: beat.artist,
+      bpm: beat.bpm,
+      key: beat.key,
+      genre: beat.genre,
+      duration: beat.duration || '0:00',
+      audioUrl: beat.audioUrl,
+      downloadUrl: '',
+    }));
+  };
+
+  const proceedToArrange = () => {
+    const selected = getSelectedBeats();
+    if (selected.length === 0) {
+      alert('Please select at least 1 beat');
+      return;
+    }
+    setBeats(convertToPackItems(selected));
+    setCurrentPage(2);
+  };
+
+  // Drag and drop functions
+  const handleDragStart = (idx: number) => {
+    setDraggingIndex(idx);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (targetIdx: number) => {
+    if (draggingIndex === null || draggingIndex === targetIdx) return;
+    const newBeats = [...beats];
+    const draggedBeat = newBeats[draggingIndex];
+    newBeats.splice(draggingIndex, 1);
+    newBeats.splice(targetIdx, 0, draggedBeat);
+    setBeats(newBeats);
+    setDraggingIndex(null);
+  };
+
   const handleSubmit = async () => {
     if (!title.trim() || !coverUrl.trim()) {
       alert('Pack title and cover image are required');
       return;
     }
-    const invalidBeat = beats.find((b) => !b.title.trim() || !b.audioUrl.trim() || !b.downloadUrl.trim());
+    if (beats.length === 0) {
+      alert('Please select at least 1 beat for this pack');
+      return;
+    }
+    const invalidBeat = beats.find((b) => !b.title.trim() || !b.audioUrl.trim());
     if (invalidBeat) {
-      alert('Every beat needs a title, audio URL, and download URL');
+      alert('Every beat needs a title and audio URL');
       return;
     }
     setSaving(true);
@@ -847,21 +921,22 @@ const BeatPackFormModal: React.FC<BeatPackFormModalProps> = ({ pack, onClose, on
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentPage === 0 ? 'bg-orange-600 text-white' : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'}`}>
               Pack Details
             </button>
-            {beats.map((_, i) => (
-              <button key={i} onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentPage === i + 1 ? 'bg-purple-600 text-white' : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'}`}>
-                Beat {i + 1}
-              </button>
-            ))}
-            <button onClick={addBeat} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.06] text-white/60 hover:bg-white/[0.12] flex items-center gap-1">
-              <Plus size={12} /> Add beat
+            <button onClick={() => setCurrentPage(1)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentPage === 1 ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'}`}>
+              Select Beats
             </button>
+            {beats.length > 0 && (
+              <button onClick={() => setCurrentPage(2)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentPage === 2 ? 'bg-green-600 text-white' : 'bg-white/[0.06] text-white/60 hover:bg-white/[0.12]'}`}>
+                Arrange ({beats.length})
+              </button>
+            )}
           </div>
         </div>
 
         {/* Content */}
         <div className="p-6 space-y-4 overflow-y-auto flex-1">
-          {currentPage === 0 ? (
+          {currentPage === 0 && (
             <>
               <div>
                 <label className="block text-sm font-medium text-white/60 mb-2">Pack Title</label>
@@ -898,69 +973,73 @@ const BeatPackFormModal: React.FC<BeatPackFormModalProps> = ({ pack, onClose, on
                 </div>
               </div>
               <div className="mt-4 p-3 rounded-lg bg-white/[0.04] border border-white/[0.06]">
-                <p className="text-xs text-white/60">This pack contains <strong className="text-white">{beats.length}</strong> beat{beats.length !== 1 ? 's' : ''}. Use the tabs above to edit each beat.</p>
+                <p className="text-xs text-white/60">Next: Select beats to add to this pack.</p>
               </div>
             </>
-          ) : (() => {
-            const idx = currentPage - 1;
-            const b = beats[idx];
-            if (!b) return null;
-            return (
-              <>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-white/80">Beat {idx + 1} of {beats.length}</p>
-                  {beats.length > 1 && (
-                    <button onClick={() => removeBeat(idx)} className="text-xs text-red-400 hover:text-red-300 flex items-center gap-1">
-                      <Trash2 size={12} /> Remove beat
-                    </button>
-                  )}
-                </div>
-                <LinkInput
-                  label="Audio URL (auto-parses filename)"
-                  name={`audioUrl-${idx}`}
-                  type="audio"
-                  onChange={(url) => parseBeatAudio(url, idx)}
-                  defaultValue={b.audioUrl}
-                  placeholder="https://nextcloud.example.com/..."
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">Title</label>
-                    <input type="text" value={b.title} onChange={(e) => updateBeat(idx, 'title', e.target.value)}
-                      className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white" required />
+          )}
+
+          {currentPage === 1 && (
+            <>
+              <div className="mb-4">
+                <input type="text" placeholder="Search beats by title, artist, genre..." value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white mb-3" />
+                <p className="text-xs text-white/40 mb-3">{filteredBeats.length} beat{filteredBeats.length !== 1 ? 's' : ''} found</p>
+              </div>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {filteredBeats.length === 0 ? (
+                  <p className="text-center text-white/40 py-8">No beats found matching your search</p>
+                ) : (
+                  filteredBeats.map((beat, idx) => (
+                    <label key={beat.id} className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] cursor-pointer transition">
+                      <input type="checkbox" checked={selectedBeatIds.has(`beat-${idx}`)}
+                        onChange={(e) => {
+                          const newSelected = new Set(selectedBeatIds);
+                          if (e.target.checked) newSelected.add(`beat-${idx}`);
+                          else newSelected.delete(`beat-${idx}`);
+                          setSelectedBeatIds(newSelected);
+                        }}
+                        className="w-4 h-4 rounded" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-white text-sm truncate">{beat.title}</p>
+                        <p className="text-xs text-white/40 truncate">{beat.artist} • {beat.bpm} BPM • {beat.key} • {beat.genre}</p>
+                      </div>
+                    </label>
+                  ))
+                )}
+              </div>
+              <div className="mt-4 p-3 rounded-lg bg-blue-600/20 border border-blue-600/30">
+                <p className="text-xs text-blue-200">Selected: <strong>{selectedBeatIds.size}</strong> beat{selectedBeatIds.size !== 1 ? 's' : ''}</p>
+              </div>
+            </>
+          )}
+
+          {currentPage === 2 && (
+            <>
+              <p className="text-sm text-white/60 mb-4">Drag to reorder beats. Set download links for buyers.</p>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {beats.map((beat, idx) => (
+                  <div key={idx} draggable onDragStart={() => handleDragStart(idx)} onDragOver={handleDragOver}
+                    onDrop={() => handleDrop(idx)}
+                    className={`p-4 rounded-lg border transition ${draggingIndex === idx ? 'opacity-50 bg-white/[0.08]' : 'bg-white/[0.04] hover:bg-white/[0.06] border-white/[0.06] cursor-move'}`}>
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="text-white/40 font-semibold text-sm mt-1">⋮⋮</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-white text-sm">{idx + 1}. {beat.title}</p>
+                        <p className="text-xs text-white/40">{beat.artist} • {beat.bpm} BPM • {beat.key} • {beat.genre}</p>
+                      </div>
+                      <button onClick={() => { if (beats.length > 1) setBeats(beats.filter((_, i) => i !== idx)); }}
+                        className="text-red-400 hover:text-red-300 transition"><Trash2 size={16} /></button>
+                    </div>
+                    <LinkInput label="Download Link" name={`dl-${idx}`} type="audio"
+                      onChange={(url) => updateBeat(idx, 'downloadUrl', url)}
+                      defaultValue={beat.downloadUrl}
+                      placeholder="https://example.com/beat-download" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">Artist</label>
-                    <input type="text" value={b.artist} onChange={(e) => updateBeat(idx, 'artist', e.target.value)}
-                      className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white" required />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">BPM</label>
-                    <input type="number" value={b.bpm} onChange={(e) => updateBeat(idx, 'bpm', parseInt(e.target.value) || 0)}
-                      className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white" required />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">Key</label>
-                    <input type="text" value={b.key} onChange={(e) => updateBeat(idx, 'key', e.target.value)}
-                      className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white" required />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white/60 mb-2">Genre</label>
-                  <input type="text" value={b.genre} onChange={(e) => updateBeat(idx, 'genre', e.target.value)}
-                    className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white" required />
-                </div>
-                <LinkInput
-                  label="Download Link (for buyer)"
-                  name={`downloadUrl-${idx}`}
-                  type="audio"
-                  onChange={(url) => updateBeat(idx, 'downloadUrl', url)}
-                  defaultValue={b.downloadUrl}
-                  placeholder="https://nextcloud.example.com/download/..."
-                />
-              </>
-            );
-          })()}
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Footer */}
@@ -971,18 +1050,25 @@ const BeatPackFormModal: React.FC<BeatPackFormModalProps> = ({ pack, onClose, on
               className="p-2 rounded-lg bg-white/[0.06] text-white/60 hover:bg-white/[0.12] disabled:opacity-30">
               <ChevronLeft size={18} />
             </button>
-            <button onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
-              disabled={currentPage === totalPages - 1}
-              className="p-2 rounded-lg bg-white/[0.06] text-white/60 hover:bg-white/[0.12] disabled:opacity-30">
-              <ChevronRight size={18} />
-            </button>
-            <span className="text-xs text-white/40 ml-2">{currentPage + 1} / {totalPages}</span>
+            {currentPage === 1 && (
+              <button onClick={proceedToArrange}
+                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
+                Proceed to Arrange →
+              </button>
+            )}
+            {currentPage !== 1 && (
+              <button onClick={() => setCurrentPage(Math.min(2, currentPage + 1))}
+                disabled={currentPage === 2 || (currentPage === 0 && beats.length === 0)}
+                className="p-2 rounded-lg bg-white/[0.06] text-white/60 hover:bg-white/[0.12] disabled:opacity-30">
+                <ChevronRight size={18} />
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <button type="button" onClick={onClose} className="px-5 py-2 text-white/60 hover:text-white transition-colors">
               Cancel
             </button>
-            <button type="button" onClick={handleSubmit} disabled={saving}
+            <button type="button" onClick={handleSubmit} disabled={saving || beats.length === 0}
               className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:from-orange-700 hover:to-red-700 transition-all disabled:opacity-50">
               {saving ? 'Saving...' : pack ? 'Update Pack' : 'Create Pack'}
             </button>
