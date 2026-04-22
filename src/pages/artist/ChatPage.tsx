@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ArtistLayout from '../../components/artist/ArtistLayout';
-import { MessageSquare, Send, CheckCheck } from 'lucide-react';
+import { MessageSquare, Send, Check, CheckCheck } from 'lucide-react';
 import { db } from '../../lib/firebase/config';
 import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp, or } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,6 +14,7 @@ interface ChatMessage {
   recipientId?: string;
   message: string;
   createdAt: Timestamp;
+  status: 'sent' | 'delivered' | 'read';
 }
 
 interface Conversation {
@@ -22,13 +23,12 @@ interface Conversation {
   userEmail: string;
   lastMessage: string;
   lastMessageTime: Timestamp;
-  unreadCount: number;
 }
 
 const ArtistChat: React.FC = () => {
   const { user } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
@@ -39,17 +39,18 @@ const ArtistChat: React.FC = () => {
     const messagesRef = collection(db, 'supportMessages');
     const q = query(
       messagesRef,
-      or(
-        where('senderId', '==', user.uid),
-        where('recipientId', '==', user.uid)
-      ),
+      or(where('senderId', '==', user.uid), where('recipientId', '==', user.uid)),
       orderBy('createdAt', 'asc')
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs: ChatMessage[] = [];
       snapshot.forEach((doc) => {
-        msgs.push({ id: doc.id, ...doc.data() } as ChatMessage);
+        msgs.push({
+          id: doc.id,
+          ...doc.data(),
+          status: doc.data().status || 'sent',
+        } as ChatMessage);
       });
       setAllMessages(msgs);
     });
@@ -76,7 +77,6 @@ const ArtistChat: React.FC = () => {
           userEmail: otherUserEmail,
           lastMessage: msg.message,
           lastMessageTime: msg.createdAt,
-          unreadCount: 0,
         });
       } else {
         const existing = conversationMap.get(otherUserId)!;
@@ -92,32 +92,28 @@ const ArtistChat: React.FC = () => {
     );
 
     setConversations(convos);
-
-    if (!selectedConversation && convos.length > 0) {
-      setSelectedConversation(convos[0].userId);
-    }
-  }, [allMessages, user, selectedConversation]);
+  }, [allMessages, user]);
 
   useEffect(() => {
-    if (!selectedConversation || !user) {
+    if (!selectedUserId || !user) {
       setMessages([]);
       return;
     }
 
     const filtered = allMessages.filter(
       (msg) =>
-        (msg.senderId === user.uid && msg.recipientId === selectedConversation) ||
-        (msg.senderId === selectedConversation && msg.recipientId === user.uid) ||
-        (msg.senderId === selectedConversation && !msg.recipientId) ||
+        (msg.senderId === user.uid && msg.recipientId === selectedUserId) ||
+        (msg.senderId === selectedUserId && msg.recipientId === user.uid) ||
+        (msg.senderId === selectedUserId && !msg.recipientId) ||
         (msg.senderId === user.uid && !msg.recipientId)
     );
 
     setMessages(filtered);
-  }, [selectedConversation, allMessages, user]);
+  }, [selectedUserId, allMessages, user]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user || !selectedConversation) return;
+    if (!newMessage.trim() || !user || !selectedUserId) return;
 
     try {
       await addDoc(collection(db, 'supportMessages'), {
@@ -125,9 +121,10 @@ const ArtistChat: React.FC = () => {
         senderName: user.displayName || 'Artist',
         senderEmail: user.email,
         senderRole: 'artist',
-        recipientId: selectedConversation,
+        recipientId: selectedUserId,
         message: newMessage.trim(),
         createdAt: serverTimestamp(),
+        status: 'sent',
       });
       setNewMessage('');
     } catch (error) {
@@ -135,163 +132,76 @@ const ArtistChat: React.FC = () => {
     }
   };
 
-  if (conversations.length === 0) {
-    return (
-      <ArtistLayout>
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold text-white">Support Chat</h1>
-            <p className="text-white/40 mt-2">Get help from the Jonna Rincon team</p>
-          </div>
-
-          <div className="backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl p-12 text-center">
-            <MessageSquare size={64} className="mx-auto mb-4 text-white/20" />
-            <h2 className="text-2xl font-bold text-white mb-2">No conversations yet</h2>
-            <p className="text-white/40 mb-6">Start a conversation with our support team</p>
-
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                if (!newMessage.trim() || !user) return;
-                try {
-                  await addDoc(collection(db, 'supportMessages'), {
-                    senderId: user.uid,
-                    senderName: user.displayName || 'Artist',
-                    senderEmail: user.email,
-                    senderRole: 'artist',
-                    message: newMessage.trim(),
-                    createdAt: serverTimestamp(),
-                  });
-                  setNewMessage('');
-                } catch (error) {
-                  console.error('Failed to send message:', error);
-                }
-              }}
-              className="max-w-2xl mx-auto"
-            >
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type your message to support..."
-                  className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-red-500 focus:bg-white/[0.12] transition-all"
-                />
-                <button
-                  type="submit"
-                  disabled={!newMessage.trim()}
-                  className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 px-6 py-3 rounded-full text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                >
-                  <Send size={20} />
-                  Send
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </ArtistLayout>
-    );
-  }
+  const getStatusIcon = (status: string) => {
+    if (status === 'read') return <CheckCheck size={14} className="text-blue-400" />;
+    if (status === 'delivered') return <CheckCheck size={14} className="text-white/60" />;
+    return <Check size={14} className="text-white/60" />;
+  };
 
   return (
     <ArtistLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Support Chat</h1>
-          <p className="text-white/40 mt-2">Get help from the Jonna Rincon team</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 h-[calc(100vh-250px)]">
-          {/* Conversations Sidebar — Compact */}
-          <div className="lg:col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden hidden lg:flex lg:flex-col">
-            <div className="p-4 border-b border-white/[0.1]">
-              <h2 className="font-semibold text-white">Conversations</h2>
-            </div>
-            <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 350px)' }}>
-              {conversations.map((convo) => (
+      <div className="grid grid-cols-5 h-[calc(100vh-250px)] gap-4">
+        {/* Conversations */}
+        <div className="backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
+          <div className="p-4 border-b border-white/[0.1]">
+            <h2 className="font-semibold text-white text-sm">Support</h2>
+          </div>
+          <div className="flex-1 overflow-y-auto space-y-1 p-2">
+            {conversations.length === 0 ? (
+              <p className="text-xs text-white/40 text-center py-4">No messages</p>
+            ) : (
+              conversations.map((convo) => (
                 <button
                   key={convo.userId}
-                  onClick={() => setSelectedConversation(convo.userId)}
-                  className={`w-full px-4 py-3 text-left transition border-b border-white/[0.1] ${
-                    selectedConversation === convo.userId
-                      ? 'bg-white/[0.08] border-l-4 border-l-red-500'
-                      : 'hover:bg-white/[0.04]'
+                  onClick={() => setSelectedUserId(convo.userId)}
+                  className={`w-full p-2 rounded-lg text-left text-xs transition ${
+                    selectedUserId === convo.userId
+                      ? 'bg-white/[0.12] border border-red-600/40'
+                      : 'hover:bg-white/[0.06]'
                   }`}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
-                      {convo.userName[0] || 'S'}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="font-semibold text-white text-sm truncate">{convo.userName}</p>
-                        <span className="text-xs text-white/40">
-                          {convo.lastMessageTime?.toDate?.()?.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) || ''}
-                        </span>
-                      </div>
-                      <p className="text-xs text-white/40 truncate">{convo.lastMessage}</p>
-                    </div>
-                  </div>
+                  <p className="font-semibold text-white truncate">{convo.userName}</p>
+                  <p className="text-white/40 truncate">{convo.lastMessage}</p>
                 </button>
-              ))}
-            </div>
+              ))
+            )}
           </div>
+        </div>
 
-          {/* Chat Window — Full Width on Mobile, Large on Desktop */}
+        {/* Chat */}
+        {selectedUserId ? (
           <div className="lg:col-span-4 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
-            {/* Chat Header */}
             <div className="p-4 border-b border-white/[0.1] backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/15">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white font-semibold text-sm">
-                  {conversations.find((c) => c.userId === selectedConversation)?.userName[0] || 'S'}
-                </div>
-                <div>
-                  <p className="font-semibold text-white">
-                    {conversations.find((c) => c.userId === selectedConversation)?.userName || 'Support'}
-                  </p>
-                  <p className="text-xs text-white/40">
-                    {conversations.find((c) => c.userId === selectedConversation)?.userEmail || ''}
-                  </p>
-                </div>
-              </div>
+              <p className="font-semibold text-white">
+                {conversations.find((c) => c.userId === selectedUserId)?.userName}
+              </p>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-2 flex flex-col bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
               {messages.length === 0 ? (
-                <div className="text-center text-white/40 py-12 m-auto">
-                  <MessageSquare size={48} className="mx-auto mb-4 opacity-50" />
-                  <p>No messages yet. Start the conversation!</p>
+                <div className="text-center text-white/40 py-8">
+                  <MessageSquare size={32} className="mx-auto mb-2 opacity-50" />
+                  <p>Start the conversation</p>
                 </div>
               ) : (
                 messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'} mb-2`}
-                  >
+                  <div key={msg.id} className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}>
                     <div
-                      className={`max-w-xs px-4 py-2 rounded-2xl backdrop-blur-sm ${
+                      className={`max-w-xs px-3 py-2 rounded-lg ${
                         msg.senderId === user?.uid
-                          ? 'bg-gradient-to-br from-red-600 to-orange-600 text-white rounded-br-none shadow-lg'
-                          : 'bg-gradient-to-br from-white/[0.15] to-white/[0.08] text-white rounded-bl-none border border-white/[0.15]'
+                          ? 'bg-red-600 text-white rounded-br-none'
+                          : 'bg-white/[0.15] text-white rounded-bl-none border border-white/[0.15]'
                       }`}
                     >
-                      {msg.senderId !== user?.uid && (
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-xs">{msg.senderName}</span>
-                          {msg.senderRole && (
-                            <span className="px-1.5 py-0.5 bg-white/[0.2] rounded text-[10px] capitalize">
-                              {msg.senderRole}
-                            </span>
-                          )}
-                        </div>
-                      )}
                       <p className="text-sm break-words">{msg.message}</p>
-                      <div className="flex items-center gap-1 mt-1 text-xs opacity-70 justify-end">
+                      <div className="flex items-center gap-1 mt-1 justify-end text-xs opacity-70">
                         <span>
-                          {msg.createdAt?.toDate?.()?.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
+                          {msg.createdAt?.toDate?.()?.toLocaleTimeString('nl-NL', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
                         </span>
-                        {msg.senderId === user?.uid && <CheckCheck size={12} />}
+                        {msg.senderId === user?.uid && getStatusIcon(msg.status)}
                       </div>
                     </div>
                   </div>
@@ -299,29 +209,34 @@ const ArtistChat: React.FC = () => {
               )}
             </div>
 
-            {/* Message Input */}
             <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.1] backdrop-blur-lg bg-gradient-to-t from-white/[0.08] to-white/[0.04]">
-              <div className="flex gap-3 items-end">
+              <div className="flex gap-3">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(e as any)}
-                  placeholder="Type a message..."
-                  className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3] focus:bg-white/[0.12] text-sm resize-none transition-all"
+                  placeholder="Type message..."
+                  className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3] text-sm"
                 />
                 <button
                   type="submit"
                   disabled={!newMessage.trim()}
-                  className="p-2.5 bg-red-600 hover:bg-red-700 disabled:bg-white/[0.06] disabled:text-white/40 text-white rounded-full transition-all flex-shrink-0"
+                  className="p-2 bg-red-600 hover:bg-red-700 disabled:bg-white/[0.06] text-white rounded-full transition flex-shrink-0"
                 >
                   <Send size={18} />
                 </button>
               </div>
             </form>
           </div>
-        </div>
-
+        ) : (
+          <div className="lg:col-span-4 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl flex items-center justify-center">
+            <div className="text-center">
+              <MessageSquare size={48} className="mx-auto mb-4 text-white/20" />
+              <p className="text-white/40">Select a conversation</p>
+            </div>
+          </div>
+        )}
       </div>
     </ArtistLayout>
   );
