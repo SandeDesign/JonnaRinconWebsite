@@ -208,19 +208,6 @@ export default function RemixesPage() {
     return extractUniqueGenres(remixTracks, { sort: true });
   }, [remixTracks]);
 
-  // Show login modal if not authenticated
-  if (!isLoading && !isAuthenticated) {
-    return (
-      <div className="min-h-screen text-white">
-      {/* Fixed Dark Overlay */}
-      <div className="fixed inset-0 w-full h-screen -z-10 bg-black/80" />
-
-        <Navigation isDarkOverlay={true} isLightMode={false} />
-        <LoginModal isOpen={true} onClose={() => {}} />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen text-white">
       {/* Fixed Dark Overlay */}
