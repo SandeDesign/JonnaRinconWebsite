@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { MessageSquare, Send, Search, Filter, User } from 'lucide-react';
+import { MessageSquare, Send, Search, Filter, CheckCheck } from 'lucide-react';
 import { db } from '../../lib/firebase/config';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
@@ -26,6 +26,18 @@ interface UserConversation {
   unreadCount: number;
 }
 
+const roleColor = (role: string) => {
+  if (role === 'customer') return 'from-blue-500 to-cyan-500';
+  if (role === 'artist') return 'from-purple-500 to-pink-500';
+  return 'from-green-500 to-teal-500';
+};
+
+const roleBadge = (role: string) => {
+  if (role === 'customer') return 'bg-blue-900/60 text-blue-300';
+  if (role === 'artist') return 'bg-purple-900/60 text-purple-300';
+  return 'bg-cyan-900/60 text-cyan-300';
+};
+
 const AdminChat: React.FC = () => {
   const { user } = useAuth();
   const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
@@ -36,7 +48,6 @@ const AdminChat: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'customer' | 'artist' | 'manager'>('all');
 
-  // Load all messages
   useEffect(() => {
     const messagesRef = collection(db, 'supportMessages');
     const q = query(messagesRef, orderBy('createdAt', 'desc'));
@@ -52,16 +63,13 @@ const AdminChat: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Build conversations from messages
   useEffect(() => {
     if (allMessages.length === 0) return;
 
     const userMap = new Map<string, UserConversation>();
 
     allMessages.forEach((msg) => {
-      // Skip messages sent by admin
       if (msg.senderRole === 'admin') return;
-
       const userId = msg.senderId;
 
       if (!userMap.has(userId)) {
@@ -87,12 +95,7 @@ const AdminChat: React.FC = () => {
       (a, b) => (b.lastMessageTime?.toMillis?.() || 0) - (a.lastMessageTime?.toMillis?.() || 0)
     );
 
-    // Apply role filter
-    if (roleFilter !== 'all') {
-      convos = convos.filter((c) => c.userRole === roleFilter);
-    }
-
-    // Apply search filter
+    if (roleFilter !== 'all') convos = convos.filter((c) => c.userRole === roleFilter);
     if (searchTerm) {
       convos = convos.filter(
         (c) =>
@@ -105,7 +108,6 @@ const AdminChat: React.FC = () => {
     setConversations(convos);
   }, [allMessages, roleFilter, searchTerm]);
 
-  // Filter messages for selected user
   useEffect(() => {
     if (!selectedUserId) {
       setMessages([]);
@@ -115,7 +117,7 @@ const AdminChat: React.FC = () => {
     const filtered = allMessages
       .filter(
         (msg) =>
-          (msg.senderId === selectedUserId) ||
+          msg.senderId === selectedUserId ||
           (msg.recipientId === selectedUserId && msg.senderRole === 'admin')
       )
       .sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
@@ -146,7 +148,6 @@ const AdminChat: React.FC = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-white">Support Chat</h1>
           <p className="text-white/40 mt-2">Manage customer, artist, and manager communications</p>
@@ -154,28 +155,17 @@ const AdminChat: React.FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
-            <p className="text-white/40 text-sm">Total Messages</p>
-            <p className="text-2xl font-bold text-white mt-1">{allMessages.length}</p>
-          </div>
-          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
-            <p className="text-white/40 text-sm">Customers</p>
-            <p className="text-2xl font-bold text-blue-400 mt-1">
-              {allMessages.filter((m) => m.senderRole === 'customer').length}
-            </p>
-          </div>
-          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
-            <p className="text-white/40 text-sm">Artists</p>
-            <p className="text-2xl font-bold text-purple-400 mt-1">
-              {allMessages.filter((m) => m.senderRole === 'artist').length}
-            </p>
-          </div>
-          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-4">
-            <p className="text-white/40 text-sm">Managers</p>
-            <p className="text-2xl font-bold text-cyan-400 mt-1">
-              {allMessages.filter((m) => m.senderRole === 'manager').length}
-            </p>
-          </div>
+          {[
+            { label: 'Total Messages', value: allMessages.length, color: 'text-white' },
+            { label: 'Customers', value: allMessages.filter((m) => m.senderRole === 'customer').length, color: 'text-blue-400' },
+            { label: 'Artists', value: allMessages.filter((m) => m.senderRole === 'artist').length, color: 'text-purple-400' },
+            { label: 'Managers', value: allMessages.filter((m) => m.senderRole === 'manager').length, color: 'text-cyan-400' },
+          ].map((stat) => (
+            <div key={stat.label} className="backdrop-blur-lg bg-gradient-to-br from-white/[0.1] to-white/[0.04] border border-white/[0.15] rounded-xl p-4">
+              <p className="text-white/40 text-sm">{stat.label}</p>
+              <p className={`text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</p>
+            </div>
+          ))}
         </div>
 
         {/* Filters */}
@@ -187,16 +177,15 @@ const AdminChat: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search conversations..."
-              className="w-full pl-12 pr-4 py-3 bg-white/[0.08] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-purple-500"
+              className="w-full pl-12 pr-4 py-3 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3] focus:bg-white/[0.12] transition-all"
             />
           </div>
-
           <div className="relative">
             <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value as any)}
-              className="w-full pl-12 pr-4 py-3 bg-white/[0.08] border border-white/[0.06] rounded-lg text-white focus:outline-none focus:border-purple-500 appearance-none"
+              className="w-full pl-12 pr-4 py-3 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full text-white focus:outline-none focus:border-white/[0.3] appearance-none transition-all"
             >
               <option value="all">All Roles</option>
               <option value="customer">Customers</option>
@@ -209,11 +198,11 @@ const AdminChat: React.FC = () => {
         {/* Chat Interface */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Conversations Sidebar */}
-          <div className="lg:col-span-1 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="p-4 border-b border-white/[0.06]">
+          <div className="lg:col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-white/[0.1]">
               <h2 className="font-semibold text-white">Conversations ({conversations.length})</h2>
             </div>
-            <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 450px)' }}>
+            <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 550px)' }}>
               {conversations.length === 0 ? (
                 <div className="p-8 text-center text-white/40">
                   <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />
@@ -224,41 +213,25 @@ const AdminChat: React.FC = () => {
                   <button
                     key={convo.userId}
                     onClick={() => setSelectedUserId(convo.userId)}
-                    className={`w-full p-4 text-left transition border-b border-white/[0.06] ${
+                    className={`w-full px-4 py-3 text-left transition border-b border-white/[0.1] ${
                       selectedUserId === convo.userId
-                        ? 'bg-purple-900/30 border-l-4 border-l-purple-500'
-                        : 'hover:bg-white/[0.05]'
+                        ? 'bg-white/[0.08] border-l-4 border-l-red-500'
+                        : 'hover:bg-white/[0.04]'
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 ${
-                          convo.userRole === 'customer'
-                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500'
-                            : convo.userRole === 'artist'
-                            ? 'bg-gradient-to-r from-purple-500 to-pink-500'
-                            : 'bg-gradient-to-r from-green-500 to-teal-500'
-                        }`}
-                      >
+                      <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${roleColor(convo.userRole)} flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm`}>
                         {convo.userName[0] || 'U'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <p className="font-semibold text-white text-sm truncate">{convo.userName}</p>
                           <span className="text-xs text-white/40">
-                            {convo.lastMessageTime?.toDate?.()?.toLocaleDateString() || ''}
+                            {convo.lastMessageTime?.toDate?.()?.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) || ''}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span
-                            className={`px-2 py-0.5 rounded text-xs capitalize ${
-                              convo.userRole === 'customer'
-                                ? 'bg-blue-900 text-blue-300'
-                                : convo.userRole === 'artist'
-                                ? 'bg-purple-900 text-purple-300'
-                                : 'bg-cyan-900 text-cyan-300'
-                            }`}
-                          >
+                          <span className={`px-2 py-0.5 rounded text-xs capitalize ${roleBadge(convo.userRole)}`}>
                             {convo.userRole}
                           </span>
                         </div>
@@ -272,43 +245,24 @@ const AdminChat: React.FC = () => {
           </div>
 
           {/* Chat Window */}
-          <div
-            className="lg:col-span-2 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col"
-            style={{ height: 'calc(100vh - 450px)' }}
-          >
+          <div className="lg:col-span-2 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 550px)' }}>
             {selectedUserId ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-white/[0.06] bg-white/[0.05]">
+                <div className="p-4 border-b border-white/[0.1] backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/15">
                   <div className="flex items-center gap-3">
                     {(() => {
                       const convo = conversations.find((c) => c.userId === selectedUserId);
                       return (
                         <>
-                          <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
-                              convo?.userRole === 'customer'
-                                ? 'bg-gradient-to-r from-blue-500 to-cyan-500'
-                                : convo?.userRole === 'artist'
-                                ? 'bg-gradient-to-r from-purple-500 to-pink-500'
-                                : 'bg-gradient-to-r from-green-500 to-teal-500'
-                            }`}
-                          >
+                          <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${roleColor(convo?.userRole || '')} flex items-center justify-center text-white font-semibold text-sm`}>
                             {convo?.userName[0] || 'U'}
                           </div>
                           <div>
                             <p className="font-semibold text-white">{convo?.userName || 'User'}</p>
                             <p className="text-xs text-white/40">{convo?.userEmail || ''}</p>
                           </div>
-                          <span
-                            className={`ml-auto px-3 py-1 rounded text-xs capitalize ${
-                              convo?.userRole === 'customer'
-                                ? 'bg-blue-900 text-blue-300'
-                                : convo?.userRole === 'artist'
-                                ? 'bg-purple-900 text-purple-300'
-                                : 'bg-cyan-900 text-cyan-300'
-                            }`}
-                          >
+                          <span className={`ml-auto px-3 py-1 rounded-full text-xs capitalize ${roleBadge(convo?.userRole || '')}`}>
                             {convo?.userRole}
                           </span>
                         </>
@@ -318,9 +272,9 @@ const AdminChat: React.FC = () => {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 p-6 overflow-y-auto space-y-4">
+                <div className="flex-1 p-6 overflow-y-auto space-y-2 flex flex-col bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
                   {messages.length === 0 ? (
-                    <div className="text-center text-white/40 py-12">
+                    <div className="text-center text-white/40 py-12 m-auto">
                       <MessageSquare size={48} className="mx-auto mb-4 opacity-50" />
                       <p>No messages yet</p>
                     </div>
@@ -328,62 +282,56 @@ const AdminChat: React.FC = () => {
                     messages.map((msg) => (
                       <div
                         key={msg.id}
-                        className={`p-4 rounded-lg ${
-                          msg.senderRole === 'admin' ? 'bg-purple-900/30 ml-12' : 'bg-white/[0.06] mr-12'
-                        }`}
+                        className={`flex ${msg.senderRole === 'admin' ? 'justify-end' : 'justify-start'} mb-2`}
                       >
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <span className="font-semibold text-white">
-                              {msg.senderRole === 'admin' ? 'You (Admin)' : msg.senderName}
+                        <div
+                          className={`max-w-xs px-4 py-2 rounded-2xl backdrop-blur-sm ${
+                            msg.senderRole === 'admin'
+                              ? 'bg-gradient-to-br from-red-600 to-orange-600 text-white rounded-br-none shadow-lg'
+                              : 'bg-gradient-to-br from-white/[0.15] to-white/[0.08] text-white rounded-bl-none border border-white/[0.15]'
+                          }`}
+                        >
+                          {msg.senderRole !== 'admin' && (
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-xs">{msg.senderName}</span>
+                              <span className={`px-1.5 py-0.5 rounded text-[10px] capitalize ${roleBadge(msg.senderRole)}`}>
+                                {msg.senderRole}
+                              </span>
+                            </div>
+                          )}
+                          <p className="text-sm break-words">{msg.message}</p>
+                          <div className="flex items-center gap-1 mt-1 text-xs opacity-70 justify-end">
+                            <span>
+                              {msg.createdAt?.toDate?.()?.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) || 'Nu'}
                             </span>
-                            <span
-                              className={`ml-2 px-2 py-0.5 rounded text-xs capitalize ${
-                                msg.senderRole === 'customer'
-                                  ? 'bg-blue-600 text-blue-100'
-                                  : msg.senderRole === 'artist'
-                                  ? 'bg-purple-600 text-purple-100'
-                                  : msg.senderRole === 'manager'
-                                  ? 'bg-cyan-600 text-cyan-100'
-                                  : 'bg-white/[0.08] text-white/80'
-                              }`}
-                            >
-                              {msg.senderRole}
-                            </span>
+                            {msg.senderRole === 'admin' && <CheckCheck size={12} />}
                           </div>
-                          <span className="text-xs text-white/40">
-                            {msg.createdAt?.toDate?.()?.toLocaleString() || 'Just now'}
-                          </span>
                         </div>
-                        <p className="text-white/60">{msg.message}</p>
                       </div>
                     ))
                   )}
                 </div>
 
                 {/* Message Input */}
-                <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.06] bg-white/[0.05]">
-                  <div className="mb-2 text-sm text-white/40">
-                    Replying to:{' '}
-                    <span className="text-white font-semibold">
-                      {conversations.find((u) => u.userId === selectedUserId)?.userName}
-                    </span>
+                <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.1] backdrop-blur-lg bg-gradient-to-t from-white/[0.08] to-white/[0.04]">
+                  <div className="mb-2 text-xs text-white/40">
+                    Replying to: <span className="text-white/70 font-semibold">{conversations.find((u) => u.userId === selectedUserId)?.userName}</span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-3 items-end">
                     <input
                       type="text"
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(e as any)}
                       placeholder="Type your reply..."
-                      className="flex-1 bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                      className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3] focus:bg-white/[0.12] text-sm transition-all"
                     />
                     <button
                       type="submit"
                       disabled={!newMessage.trim()}
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-lg text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className="p-2.5 bg-red-600 hover:bg-red-700 disabled:bg-white/[0.06] disabled:text-white/40 text-white rounded-full transition-all flex-shrink-0"
                     >
-                      <Send size={20} />
-                      Send
+                      <Send size={18} />
                     </button>
                   </div>
                 </form>

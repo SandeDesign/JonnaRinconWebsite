@@ -193,7 +193,6 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
   const getInTouchSubmenu = [
     { label: 'Social Media', subtitle: 'Follow on all platforms', href: '/socials', action: () => { closeMenu(); navigate('/socials'); } },
-    { label: 'Messenger', subtitle: 'Chat with Jonna Rincon', href: '/messenger', action: () => { closeMenu(); navigate('/messenger'); } },
     { label: 'Contact', subtitle: 'For serious inquiries', href: '#contact', action: () => { closeMenu(); navigate('/contact'); } },
   ];
 
