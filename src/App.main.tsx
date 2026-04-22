@@ -76,6 +76,7 @@ import AdminDiscountCodes from './pages/admin/DiscountCodesPage';
 import AdminArt from './pages/admin/ArtAdminPage';
 import AdminServices from './pages/admin/ServicesPage';
 import AdminMerchandise from './pages/admin/MerchandiseAdminPage';
+import AdminPlaylists from './pages/admin/PlaylistsPage';
 
 // Manager pages (protected - manager role)
 import ManagerDashboard from './pages/manager/DashboardPage';
@@ -320,6 +321,14 @@ const MainApp: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminRemixes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/playlists"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminPlaylists />
               </ProtectedRoute>
             }
           />
