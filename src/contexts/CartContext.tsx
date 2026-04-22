@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Beat, Track } from '../lib/firebase/types';
+import { Beat, Track, BeatPack } from '../lib/firebase/types';
 
 export interface CartItem {
   id: string;
-  type: 'beat' | 'track';
+  type: 'beat' | 'track' | 'beatpack';
   title: string;
   artist: string;
   artworkUrl: string;
@@ -20,6 +20,7 @@ interface CartContextType {
   setIsOpen: (open: boolean) => void;
   addToCart: (beat: Beat) => void;
   addTrackToCart: (track: Track) => void;
+  addPackToCart: (pack: BeatPack) => void;
   removeFromCart: (itemId: string) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
@@ -56,6 +57,19 @@ function trackToCartItem(track: Track): CartItem {
     bpm: track.bpm,
     key: track.key,
     originalData: track,
+  };
+}
+
+function packToCartItem(pack: BeatPack): CartItem {
+  return {
+    id: `pack-${pack.id}`,
+    type: 'beatpack',
+    title: pack.title,
+    artist: `Beat Pack · ${pack.beats.length} beats`,
+    artworkUrl: pack.coverUrl,
+    audioUrl: pack.beats[0]?.audioUrl || '',
+    price: pack.price,
+    originalData: pack,
   };
 }
 
@@ -116,6 +130,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsOpen(true);
   };
 
+  const addPackToCart = (pack: BeatPack) => {
+    const cartId = `pack-${pack.id}`;
+    if (cartItems.some(item => item.id === cartId)) return;
+    setCartItems(prev => [...prev, packToCartItem(pack)]);
+    setIsOpen(true);
+  };
+
   const removeFromCart = (itemId: string) => {
     setCartItems(prev => prev.filter(item => item.id !== itemId));
   };
@@ -135,6 +156,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsOpen,
       addToCart,
       addTrackToCart,
+      addPackToCart,
       removeFromCart,
       clearCart,
       getTotalPrice,

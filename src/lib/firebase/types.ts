@@ -139,6 +139,33 @@ export interface Beat {
 }
 
 // ============================================
+// BEAT PACK TYPES
+// ============================================
+
+export interface BeatPackItem {
+  title: string;
+  artist: string;
+  bpm: number;
+  key: string;
+  genre: string;
+  audioUrl: string;
+  downloadUrl: string;
+}
+
+export interface BeatPack {
+  id: string;
+  title: string;
+  description?: string;
+  coverUrl: string;
+  beats: BeatPackItem[];
+  price: number;
+  status: 'draft' | 'published';
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  createdBy: string;
+}
+
+// ============================================
 // ART TYPES
 // ============================================
 
@@ -323,6 +350,17 @@ export interface Purchase {
 
   // Status
   status: 'pending' | 'completed' | 'expired';
+
+  // Optional: present for beat-pack purchases. Individual beats inside the pack
+  // with their own download links.
+  packBeats?: {
+    title: string;
+    artist: string;
+    bpm: number;
+    key: string;
+    genre: string;
+    downloadUrl: string;
+  }[];
 
   // Timestamps
   createdAt: Timestamp;
