@@ -28,7 +28,7 @@ const BackgroundRenderer: React.FC = () => {
         right: 0;
         bottom: 0;
         z-index: -1;
-        background-attachment: fixed;
+        background-attachment: scroll;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -83,7 +83,7 @@ const BackgroundRenderer: React.FC = () => {
 
       if (bgContainer) {
         bgContainer.style.backgroundImage = `url('${imageUrl}')`;
-        bgContainer.style.backgroundAttachment = 'fixed';
+        bgContainer.style.backgroundAttachment = 'scroll';
         bgContainer.classList.remove('site-bg-container-loading');
         bgContainer.classList.add('site-bg-container-loaded');
       }
