@@ -210,7 +210,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <img
                 src="/Jonna Rincon Logo WH.png"
                 alt="Jonna Rincon"
-                className="h-14 w-auto opacity-40 hover:opacity-90 transition-opacity duration-300"
+                className="h-20 w-auto opacity-40 hover:opacity-90 transition-opacity duration-300"
               />
             </button>
             <button

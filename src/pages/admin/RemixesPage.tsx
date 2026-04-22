@@ -261,6 +261,7 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
     remixType: remix?.remixType || 'Remix',
     year: remix?.year || currentYear,
     collab: remix?.collab || 'Solo',
+    duration: remix?.duration || '0:00',
     tags: remix?.tags?.join(', ') || '',
     audioUrl: remix?.audioUrl || '',
     artworkUrl: remix?.artworkUrl || '',
@@ -285,6 +286,7 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
         remixType: formData.remixType,
         year: formData.year,
         collab: formData.collab,
+        duration: formData.duration,
         tags: formData.tags.split(',').map((t) => t.trim()),
         audioUrl: formData.audioUrl,
         artworkUrl: formData.artworkUrl,
@@ -432,6 +434,16 @@ const RemixFormModal: React.FC<RemixFormModalProps> = ({ remix, onClose, onSave 
                 onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Duration</label>
+              <input
+                type="text"
+                value={formData.duration}
+                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="e.g. 3:45"
               />
             </div>
             <div>

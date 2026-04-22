@@ -700,6 +700,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
     type: track?.type || 'Single',
     year: track?.year || currentYear,
     collab: track?.collab || 'Solo',
+    duration: track?.duration || '0:00',
     tags: track?.tags?.join(', ') || '',
     audioUrl: track?.audioUrl || '',
     artworkUrl: track?.artworkUrl || '',
@@ -744,6 +745,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         type: formData.type,
         year: formData.year,
         collab: formData.collab,
+        duration: formData.duration,
         tags: formData.tags.split(',').map((t) => t.trim()),
         artworkUrl: formData.artworkUrl,
         slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, '-'),
@@ -988,6 +990,16 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
                 onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Duration</label>
+              <input
+                type="text"
+                value={formData.duration}
+                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="e.g. 3:45"
               />
             </div>
             <div>

@@ -178,7 +178,7 @@ export default function TrackDetailModal({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8">
+          <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8 pt-12 md:pt-8">
           {/* Artwork */}
           <div className="w-full md:w-1/3 flex-shrink-0">
             <div
@@ -268,9 +268,9 @@ export default function TrackDetailModal({
               </h2>
               <p className="text-white/40 text-sm md:text-base mb-2">{track.artist}</p>
 
-              {/* Original Artist for Remixes */}
+              {/* Remix Artist Info */}
               {track.originalArtist && (
-                <p className="text-white/30 text-xs md:text-sm mb-6">Original: {track.originalArtist}</p>
+                <p className="text-white/50 text-xs md:text-sm mb-4">Remix by {track.artist}</p>
               )}
 
               {/* Producer Credits */}

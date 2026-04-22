@@ -92,7 +92,7 @@ export default function BeatPackDetailModal({ pack, isOpen, onClose }: BeatPackD
 
         {/* Header */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-          <div className="relative aspect-square">
+          <div className="relative aspect-square pt-12 md:pt-0">
             <img src={pack.coverUrl || '/JEIGHTENESIS.jpg'} alt={pack.title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
             <div className="absolute top-4 left-4 px-3 py-1.5 bg-red-600 rounded-full text-xs font-bold uppercase flex items-center gap-1.5">
@@ -132,15 +132,19 @@ export default function BeatPackDetailModal({ pack, isOpen, onClose }: BeatPackD
             {pack.beats.map((b, i) => (
               <div
                 key={i}
-                className={`flex items-center gap-4 p-3 rounded-xl border transition-all ${
+                className={`flex items-center gap-4 p-3 rounded-xl border transition-all cursor-pointer ${
                   isPackBeatPlaying(b.audioUrl)
                     ? 'bg-red-600/10 border-red-500/30'
                     : 'bg-white/[0.04] border-white/[0.06] hover:bg-white/[0.06]'
                 }`}
+                onClick={() => handlePlayBeat(i)}
               >
                 <button
-                  onClick={() => handlePlayBeat(i)}
-                  className="p-2 rounded-full bg-white/[0.08] hover:bg-white/[0.16] transition"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlayBeat(i);
+                  }}
+                  className="hidden md:flex p-2 rounded-full bg-white/[0.08] hover:bg-white/[0.16] transition flex-shrink-0"
                   title={isPackBeatPlaying(b.audioUrl) ? 'Pause' : 'Play'}
                 >
                   {isPackBeatPlaying(b.audioUrl) ? (
@@ -161,6 +165,20 @@ export default function BeatPackDetailModal({ pack, isOpen, onClose }: BeatPackD
                   <span>&middot;</span>
                   <span>{b.genre}</span>
                 </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlayBeat(i);
+                  }}
+                  className="md:hidden p-3 rounded-full bg-white/[0.08] hover:bg-white/[0.16] transition flex-shrink-0"
+                  title={isPackBeatPlaying(b.audioUrl) ? 'Pause' : 'Play'}
+                >
+                  {isPackBeatPlaying(b.audioUrl) ? (
+                    <Pause size={18} className="text-red-500" fill="currentColor" />
+                  ) : (
+                    <Play size={18} className="text-white/70" fill="currentColor" />
+                  )}
+                </button>
               </div>
             ))}
           </div>

@@ -359,6 +359,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
     bpm: beat?.bpm || 120,
     key: beat?.key || '',
     genre: beat?.genre || '',
+    duration: beat?.duration || '0:00',
     tags: beat?.tags?.join(', ') || '',
     audioUrl: beat?.audioUrl || '',
     artworkUrl: beat?.artworkUrl || '',
@@ -380,6 +381,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
         bpm: beat.bpm || 120,
         key: beat.key || '',
         genre: beat.genre || '',
+        duration: beat.duration || '0:00',
         tags: beat.tags?.join(', ') || '',
         audioUrl: beat.audioUrl || '',
         artworkUrl: beat.artworkUrl || '',
@@ -465,6 +467,7 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
         bpm: formData.bpm,
         key: formData.key,
         genre: formData.genre,
+        duration: formData.duration,
         tags: formData.tags.split(',').map((t) => t.trim()),
         audioUrl: formData.audioUrl,
         artworkUrl: formData.artworkUrl,
@@ -566,6 +569,17 @@ const BeatFormModal: React.FC<BeatFormModalProps> = ({ beat, onClose, onSave }) 
                 onChange={(e) => setFormData({ ...formData, key: e.target.value })}
                 className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-white/60 mb-2">Duration</label>
+              <input
+                type="text"
+                value={formData.duration}
+                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                className="w-full px-4 py-2 bg-white/[0.06] border border-white/[0.08] rounded-lg text-white"
+                placeholder="e.g. 3:45"
               />
             </div>
 
