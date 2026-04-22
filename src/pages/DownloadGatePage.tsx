@@ -79,7 +79,7 @@ export default function DownloadGatePage() {
   return (
     <div className="min-h-screen text-white">
       {/* Fixed Dark Overlay */}
-      <div className="fixed inset-0 w-full h-screen -z-10 bg-black/80" />
+      <div className="fixed inset-0 w-full h-screen -z-10 bg-black/20" />
 <Navigation isDarkOverlay={true} isLightMode={false} />
 
       {/* Hero */}

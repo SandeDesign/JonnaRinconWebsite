@@ -82,7 +82,7 @@ export default function PlayerModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md">
       <div
         ref={modalRef}
-        className="relative w-full max-w-2xl bg-black/90 backdrop-blur-2xl border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-4xl bg-black/90 backdrop-blur-2xl border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden"
       >
         <button
           onClick={onClose}
