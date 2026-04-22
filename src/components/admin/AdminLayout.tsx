@@ -213,10 +213,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <button
                   onClick={() => {
                     closeMenu();
-                    setTimeout(() => navigate('/admin/dashboard'), 100);
+                    setTimeout(() => navigate('/'), 100);
                   }}
                   className="block flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
-                  title="Back to Dashboard"
+                  title="Back to Home"
                 >
                   <img
                     src="/Jonna Rincon Logo WH.png"
