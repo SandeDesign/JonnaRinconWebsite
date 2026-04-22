@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   LayoutDashboard,
@@ -10,6 +10,7 @@ import {
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -27,8 +28,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [sidebarPosition, setSidebarPosition] = useState<SidebarPosition>('floating');
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollPositionRef = useRef(0);
+
+  const isOnDashboard = location.pathname === '/admin/dashboard';
 
   const handleSignOut = async () => {
     await signOut();
@@ -152,7 +156,18 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       {/* Top Bar — Menu button right */}
       <div className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 md:px-10 py-4 md:py-5">
         <div className="flex-shrink-0">
-          <h1 className="text-lg font-bold text-white">Jonna Rincon</h1>
+          {!isOnDashboard && (
+            <button
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 rounded-full border border-white/20 hover:border-white/40 hover:bg-white/5 transition-all duration-300 flex items-center justify-center"
+              title="Go back"
+            >
+              <ArrowLeft size={18} className="text-white/60 hover:text-white" />
+            </button>
+          )}
+          {isOnDashboard && (
+            <h1 className="text-lg font-bold text-white">Admin Dashboard</h1>
+          )}
         </div>
 
         {/* Menu button */}
@@ -192,10 +207,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <button
                   onClick={() => {
                     closeMenu();
-                    navigate(-1);
+                    navigate('/admin/dashboard');
                   }}
                   className="block flex-shrink-0 cursor-pointer"
-                  title="Go back"
+                  title="Dashboard"
                 >
                   <img
                     src="/Jonna Rincon Logo WH.png"

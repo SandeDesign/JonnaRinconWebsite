@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LinkInput from '../../components/admin/LinkInput';
-import CustomTrackLinksEditor from '../../components/admin/CustomTrackLinksEditor';
-import CustomButtonConfig from '../../components/admin/CustomButtonConfig';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { useTracks } from '../../hooks/useTracks';
 import { trackService } from '../../lib/firebase/services';
-import { Track, CustomTrackLink } from '../../lib/firebase/types';
+import { Track } from '../../lib/firebase/types';
 import { Plus, Edit, Trash2, Play, Pause, ChevronDown, GripVertical, ArrowUp, ArrowDown, Link as LinkIcon, AlertCircle } from 'lucide-react';
 import { toDirectUrl, detectUrlType, isValidUrl } from '../../lib/utils/urlUtils';
 
@@ -345,7 +343,7 @@ const TracksPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Filter and Custom Button Configuration Section */}
+        {/* Filter Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Filter Section */}
           <div className="lg:col-span-1 bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
@@ -432,10 +430,6 @@ const TracksPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Custom Button Configuration */}
-          <div className="lg:col-span-2">
-            <CustomButtonConfig isExpanded={true} />
-          </div>
         </div>
 
         <div className="space-y-3">
@@ -718,10 +712,7 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
   });
 
   const [tracklist, setTracklist] = useState<TracklistItem[]>([]);
-  const [customTrackLinks, setCustomTrackLinks] = useState<CustomTrackLink[]>(track?.customTrackLinks || []);
   const [saving, setSaving] = useState(false);
-  const [showCustomLinkForm, setShowCustomLinkForm] = useState(false);
-  const [newCustomLink, setNewCustomLink] = useState({ mode: 'custom' as 'custom' | 'existing', title: '', audioUrl: '', trackId: '' });
   const { tracks: allTracks } = useTracks();
 
   // Load album tracks when editing an album
@@ -760,7 +751,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
         featured: formData.featured,
         isFree: formData.isFree,
         description: formData.description || undefined,
-        customTrackLinks: customTrackLinks.length > 0 ? customTrackLinks : undefined,
         licenses: {
           basic: {
             type: 'basic' as const,
@@ -918,40 +908,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
       [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
       setTracklist(newList);
     }
-  };
-
-  const addCustomTrackLink = () => {
-    if (newCustomLink.mode === 'custom' && (!newCustomLink.title || !newCustomLink.audioUrl)) {
-      alert('Please enter both title and audio URL');
-      return;
-    }
-    if (newCustomLink.mode === 'existing' && !newCustomLink.trackId) {
-      alert('Please select a track');
-      return;
-    }
-
-    if (newCustomLink.mode === 'custom') {
-      setCustomTrackLinks([...customTrackLinks, {
-        title: newCustomLink.title,
-        audioUrl: toDirectUrl(newCustomLink.audioUrl),
-      }]);
-    } else {
-      const selectedTrack = allTracks.find(t => t.id === newCustomLink.trackId);
-      if (selectedTrack) {
-        setCustomTrackLinks([...customTrackLinks, {
-          title: selectedTrack.title,
-          audioUrl: selectedTrack.audioUrl,
-          trackId: selectedTrack.id,
-        }]);
-      }
-    }
-
-    setNewCustomLink({ mode: 'custom', title: '', audioUrl: '', trackId: '' });
-    setShowCustomLinkForm(false);
-  };
-
-  const removeCustomTrackLink = (index: number) => {
-    setCustomTrackLinks(customTrackLinks.filter((_, i) => i !== index));
   };
 
   return (
@@ -1258,13 +1214,6 @@ const TrackFormModal: React.FC<TrackFormModalProps> = ({ track, onClose, onSave 
             </div>
           )}
 
-          {/* Custom Track Links Section */}
-          <div className="space-y-3 border-t border-white/[0.06] pt-4">
-            <CustomTrackLinksEditor
-              customLinks={customTrackLinks}
-              onLinksChange={setCustomTrackLinks}
-            />
-          </div>
 
           <div>
             <label className="block text-sm font-medium text-white/60 mb-2">
