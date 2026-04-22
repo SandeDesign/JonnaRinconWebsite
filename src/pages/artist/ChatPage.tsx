@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ArtistLayout from '../../components/artist/ArtistLayout';
-import { MessageSquare, Send } from 'lucide-react';
+import { MessageSquare, Send, CheckCheck } from 'lucide-react';
 import { db } from '../../lib/firebase/config';
 import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp, or } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
@@ -33,12 +33,10 @@ const ArtistChat: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
 
-  // Load ALL messages (sent and received)
   useEffect(() => {
     if (!user) return;
 
     const messagesRef = collection(db, 'supportMessages');
-
     const q = query(
       messagesRef,
       or(
@@ -59,7 +57,6 @@ const ArtistChat: React.FC = () => {
     return () => unsubscribe();
   }, [user]);
 
-  // Build conversations from all messages
   useEffect(() => {
     if (!user || allMessages.length === 0) return;
 
@@ -101,7 +98,6 @@ const ArtistChat: React.FC = () => {
     }
   }, [allMessages, user, selectedConversation]);
 
-  // Filter messages for selected conversation
   useEffect(() => {
     if (!selectedConversation || !user) {
       setMessages([]);
@@ -148,18 +144,15 @@ const ArtistChat: React.FC = () => {
             <p className="text-white/40 mt-2">Get help from the Jonna Rincon team</p>
           </div>
 
-          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-12 text-center">
+          <div className="backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl p-12 text-center">
             <MessageSquare size={64} className="mx-auto mb-4 text-white/20" />
             <h2 className="text-2xl font-bold text-white mb-2">No conversations yet</h2>
-            <p className="text-white/40 mb-6">
-              Start a conversation with our support team
-            </p>
+            <p className="text-white/40 mb-6">Start a conversation with our support team</p>
 
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (!newMessage.trim() || !user) return;
-
                 try {
                   await addDoc(collection(db, 'supportMessages'), {
                     senderId: user.uid,
@@ -176,18 +169,18 @@ const ArtistChat: React.FC = () => {
               }}
               className="max-w-2xl mx-auto"
             >
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Type your message to support..."
-                  className="flex-1 bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                  className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-red-500 focus:bg-white/[0.12] transition-all"
                 />
                 <button
                   type="submit"
                   disabled={!newMessage.trim()}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-lg text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 px-6 py-3 rounded-full text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   <Send size={20} />
                   Send
@@ -210,8 +203,8 @@ const ArtistChat: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Conversations Sidebar */}
-          <div className="lg:col-span-1 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="p-4 border-b border-white/[0.06]">
+          <div className="lg:col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-white/[0.1]">
               <h2 className="font-semibold text-white">Conversations</h2>
             </div>
             <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 350px)' }}>
@@ -219,23 +212,21 @@ const ArtistChat: React.FC = () => {
                 <button
                   key={convo.userId}
                   onClick={() => setSelectedConversation(convo.userId)}
-                  className={`w-full p-4 text-left transition border-b border-white/[0.06] ${
+                  className={`w-full px-4 py-3 text-left transition border-b border-white/[0.1] ${
                     selectedConversation === convo.userId
-                      ? 'bg-purple-900/30 border-l-4 border-l-purple-500'
-                      : 'hover:bg-white/[0.05]'
+                      ? 'bg-white/[0.08] border-l-4 border-l-red-500'
+                      : 'hover:bg-white/[0.04]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
                       {convo.userName[0] || 'S'}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-semibold text-white text-sm truncate">
-                          {convo.userName}
-                        </p>
+                        <p className="font-semibold text-white text-sm truncate">{convo.userName}</p>
                         <span className="text-xs text-white/40">
-                          {convo.lastMessageTime?.toDate?.()?.toLocaleDateString() || ''}
+                          {convo.lastMessageTime?.toDate?.()?.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) || ''}
                         </span>
                       </div>
                       <p className="text-xs text-white/40 truncate">{convo.lastMessage}</p>
@@ -247,11 +238,11 @@ const ArtistChat: React.FC = () => {
           </div>
 
           {/* Chat Window */}
-          <div className="lg:col-span-2 bg-white/[0.08] border border-white/[0.06] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
+          <div className="lg:col-span-2 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
             {/* Chat Header */}
-            <div className="p-4 border-b border-white/[0.06] bg-white/[0.05]">
+            <div className="p-4 border-b border-white/[0.1] backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/15">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-orange-600 flex items-center justify-center text-white font-semibold text-sm">
                   {conversations.find((c) => c.userId === selectedConversation)?.userName[0] || 'S'}
                 </div>
                 <div>
@@ -266,60 +257,65 @@ const ArtistChat: React.FC = () => {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-4">
+            <div className="flex-1 p-6 overflow-y-auto space-y-2 flex flex-col bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
               {messages.length === 0 ? (
-                <div className="text-center text-white/40 py-12">
+                <div className="text-center text-white/40 py-12 m-auto">
                   <MessageSquare size={48} className="mx-auto mb-4 opacity-50" />
-                  <p>No messages yet</p>
+                  <p>No messages yet. Start the conversation!</p>
                 </div>
               ) : (
                 messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`p-4 rounded-lg ${
-                      msg.senderId === user?.uid
-                        ? 'bg-purple-900/30 ml-12'
-                        : 'bg-white/[0.06] mr-12'
-                    }`}
+                    className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'} mb-2`}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <span className="font-semibold text-white">
-                          {msg.senderId === user?.uid ? 'You' : msg.senderName}
+                    <div
+                      className={`max-w-xs px-4 py-2 rounded-2xl backdrop-blur-sm ${
+                        msg.senderId === user?.uid
+                          ? 'bg-gradient-to-br from-red-600 to-orange-600 text-white rounded-br-none shadow-lg'
+                          : 'bg-gradient-to-br from-white/[0.15] to-white/[0.08] text-white rounded-bl-none border border-white/[0.15]'
+                      }`}
+                    >
+                      {msg.senderId !== user?.uid && (
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-xs">{msg.senderName}</span>
+                          {msg.senderRole && (
+                            <span className="px-1.5 py-0.5 bg-white/[0.2] rounded text-[10px] capitalize">
+                              {msg.senderRole}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <p className="text-sm break-words">{msg.message}</p>
+                      <div className="flex items-center gap-1 mt-1 text-xs opacity-70 justify-end">
+                        <span>
+                          {msg.createdAt?.toDate?.()?.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}
                         </span>
-                        {msg.senderRole && msg.senderId !== user?.uid && (
-                          <span className="ml-2 px-2 py-0.5 bg-purple-600 text-purple-100 rounded text-xs capitalize">
-                            {msg.senderRole}
-                          </span>
-                        )}
+                        {msg.senderId === user?.uid && <CheckCheck size={12} />}
                       </div>
-                      <span className="text-xs text-white/40">
-                        {msg.createdAt?.toDate?.()?.toLocaleString() || 'Just now'}
-                      </span>
                     </div>
-                    <p className="text-white/60">{msg.message}</p>
                   </div>
                 ))
               )}
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.06] bg-white/[0.05]">
-              <div className="flex gap-2">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.1] backdrop-blur-lg bg-gradient-to-t from-white/[0.08] to-white/[0.04]">
+              <div className="flex gap-3 items-end">
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1 bg-white/[0.06] border border-white/[0.08] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
+                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(e as any)}
+                  placeholder="Type a message..."
+                  className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3] focus:bg-white/[0.12] text-sm resize-none transition-all"
                 />
                 <button
                   type="submit"
                   disabled={!newMessage.trim()}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-lg text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="p-2.5 bg-red-600 hover:bg-red-700 disabled:bg-white/[0.06] disabled:text-white/40 text-white rounded-full transition-all flex-shrink-0"
                 >
-                  <Send size={20} />
-                  Send
+                  <Send size={18} />
                 </button>
               </div>
             </form>
@@ -327,9 +323,9 @@ const ArtistChat: React.FC = () => {
         </div>
 
         {/* Info Box */}
-        <div className="bg-purple-900/20 border border-purple-700 rounded-xl p-4">
-          <p className="text-sm text-purple-200">
-            💬 <strong>Support Hours:</strong> Our team typically responds within 24 hours during business days.
+        <div className="backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/10 border border-red-600/30 rounded-xl p-4">
+          <p className="text-sm text-white/70">
+            💬 <strong className="text-white">Support Hours:</strong> Our team typically responds within 24 hours during business days.
           </p>
         </div>
       </div>
