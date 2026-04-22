@@ -74,7 +74,9 @@
 
 @media (max-width: 768px) {
   .jonna-cover-section {
-    display: none !important;
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px;
   }
 }
 
@@ -326,17 +328,40 @@
   }
 
   .jonna-player-content {
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: nowrap;
     gap: 8px;
     padding: 12px 8px;
-    min-height: 100px;
-    justify-content: center;
+    min-height: auto;
+    justify-content: flex-start;
     align-items: center;
   }
 
   .jonna-cover-section {
-    display: none !important;
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+  }
+
+  .jonna-cover-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+  }
+
+  .jonna-track-info {
+    width: 100%;
+    text-align: center;
+  }
+
+  .jonna-track-title {
+    max-width: 100%;
+  }
+
+  .jonna-track-artist {
+    max-width: 100%;
   }
 
   .jonna-center-section {
@@ -344,6 +369,7 @@
     justify-content: center;
     gap: 8px;
     order: 2;
+    width: 100%;
   }
 
   .jonna-play-controls {

@@ -154,7 +154,7 @@ export default function PlayerModal({
               }
             `}</style>
             <div className="flex justify-between text-xs text-white/40 mt-2">
-              <span>{formatTime(currentTime)}</span>
+              <span>{formatDuration(currentTime)}</span>
               <span>{formatDuration(duration)}</span>
             </div>
           </div>
