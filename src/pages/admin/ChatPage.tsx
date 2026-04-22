@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { MessageSquare, Send, Check, CheckCheck, Search, Filter } from 'lucide-react';
+import { MessageSquare, Send, Check, CheckCheck, Briefcase, Headphones, ArrowLeft, Search } from 'lucide-react';
 import { db } from '../../lib/firebase/config';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,117 +11,138 @@ interface ChatMessage {
   senderName: string;
   senderEmail: string;
   senderRole: string;
-  category?: string;
+  category: string;
+  recipientGroup: 'jonna' | 'manager' | 'support';
   recipientId?: string;
   message: string;
   createdAt: Timestamp;
   status: 'sent' | 'delivered' | 'read';
 }
 
-interface Conversation {
+interface UserEntry {
   userId: string;
   userName: string;
   userEmail: string;
   userRole: string;
   lastMessage: string;
   lastMessageTime: Timestamp;
+  threadCount: number;
 }
+
+interface ChatThread {
+  id: string;
+  category: string;
+  lastMessage: string;
+  lastMessageTime: Timestamp;
+}
+
+type RecipientGroup = 'jonna' | 'manager' | 'support';
+type LeftView = 'contacts' | 'users' | 'threads';
+
+const contactDefs: Record<RecipientGroup, { name: string; description: string }> = {
+  jonna: { name: 'Jonna Rincon', description: 'Berichten gericht aan Jonna persoonlijk' },
+  manager: { name: 'Manager', description: 'Business inquiries & samenwerking' },
+  support: { name: 'Support Team', description: 'Vragen, hulp en ondersteuning' },
+};
+
+const ContactAvatar = ({ group, size = 'md' }: { group: RecipientGroup; size?: 'sm' | 'md' }) => {
+  const cls = size === 'sm' ? 'w-8 h-8' : 'w-10 h-10';
+  if (group === 'jonna') return (
+    <div className={`${cls} rounded-full overflow-hidden flex-shrink-0 border-2 border-white/20`}>
+      <img src="/JEIGHTENESIS.jpg" alt="Jonna" className="w-full h-full object-cover object-top" />
+    </div>
+  );
+  if (group === 'manager') return (
+    <div className={`${cls} rounded-full flex-shrink-0 bg-gradient-to-br from-neutral-700 to-neutral-900 border border-white/10 flex items-center justify-center`}>
+      <Briefcase size={size === 'sm' ? 14 : 18} className="text-white/70" />
+    </div>
+  );
+  return (
+    <div className={`${cls} rounded-full flex-shrink-0 bg-gradient-to-br from-red-900/60 to-neutral-900 border border-red-500/20 flex items-center justify-center`}>
+      <Headphones size={size === 'sm' ? 14 : 18} className="text-red-400/80" />
+    </div>
+  );
+};
 
 const AdminChat: React.FC = () => {
   const { user } = useAuth();
   const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [leftView, setLeftView] = useState<LeftView>('contacts');
+  const [selectedGroup, setSelectedGroup] = useState<RecipientGroup | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedThread, setSelectedThread] = useState<string | null>(null);
+  const [users, setUsers] = useState<UserEntry[]>([]);
+  const [threads, setThreads] = useState<ChatThread[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'customer' | 'artist' | 'manager'>('all');
+  const [userSearch, setUserSearch] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Fetch all support messages
   useEffect(() => {
-    const messagesRef = collection(db, 'supportMessages');
-    const q = query(messagesRef, orderBy('createdAt', 'desc'));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const q = query(collection(db, 'supportMessages'), orderBy('createdAt', 'asc'));
+    return onSnapshot(q, (snap) => {
       const msgs: ChatMessage[] = [];
-      snapshot.forEach((doc) => {
-        msgs.push({
-          id: doc.id,
-          ...doc.data(),
-          status: doc.data().status || 'sent',
-        } as ChatMessage);
+      snap.forEach((doc) => {
+        const d = doc.data();
+        msgs.push({ id: doc.id, ...d, category: d.category || 'General', recipientGroup: d.recipientGroup || 'support', status: d.status || 'sent' } as ChatMessage);
       });
       setAllMessages(msgs);
     });
-
-    return () => unsubscribe();
   }, []);
 
-  // Build conversations
+  // Build users list when contact group selected
   useEffect(() => {
-    if (allMessages.length === 0) return;
-
-    const userMap = new Map<string, Conversation>();
-
-    allMessages.forEach((msg) => {
-      if (msg.senderRole === 'admin') return;
-      const userId = msg.senderId;
-
-      if (!userMap.has(userId)) {
-        userMap.set(userId, {
-          userId,
-          userName: msg.senderName,
-          userEmail: msg.senderEmail,
-          userRole: msg.senderRole,
-          lastMessage: msg.message,
-          lastMessageTime: msg.createdAt,
+    if (!selectedGroup) return;
+    const groupMsgs = allMessages.filter((m) => m.recipientGroup === selectedGroup && m.senderRole !== 'admin' && m.senderRole !== 'manager');
+    const map = new Map<string, UserEntry>();
+    groupMsgs.forEach((m) => {
+      const existing = map.get(m.senderId);
+      const categories = new Set(groupMsgs.filter(x => x.senderId === m.senderId).map(x => x.category));
+      if (!existing || (m.createdAt?.toMillis?.() || 0) > (existing.lastMessageTime?.toMillis?.() || 0)) {
+        map.set(m.senderId, {
+          userId: m.senderId,
+          userName: m.senderName,
+          userEmail: m.senderEmail,
+          userRole: m.senderRole,
+          lastMessage: m.message,
+          lastMessageTime: m.createdAt,
+          threadCount: categories.size,
         });
-      } else {
-        const existing = userMap.get(userId)!;
-        if ((msg.createdAt?.toMillis?.() || 0) > (existing.lastMessageTime?.toMillis?.() || 0)) {
-          existing.lastMessage = msg.message;
-          existing.lastMessageTime = msg.createdAt;
-        }
       }
     });
+    const sorted = Array.from(map.values()).sort((a, b) => (b.lastMessageTime?.toMillis?.() || 0) - (a.lastMessageTime?.toMillis?.() || 0));
+    setUsers(sorted);
+  }, [allMessages, selectedGroup]);
 
-    let convos = Array.from(userMap.values()).sort(
-      (a, b) => (b.lastMessageTime?.toMillis?.() || 0) - (a.lastMessageTime?.toMillis?.() || 0)
-    );
-
-    if (roleFilter !== 'all') convos = convos.filter((c) => c.userRole === roleFilter);
-    if (searchTerm) {
-      convos = convos.filter(
-        (c) =>
-          c.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          c.userEmail.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    setConversations(convos);
-  }, [allMessages, roleFilter, searchTerm]);
-
-  // Load messages for selected user
+  // Build threads when user selected
   useEffect(() => {
-    if (!selectedUserId) {
-      setMessages([]);
-      return;
-    }
+    if (!selectedUserId || !selectedGroup) { setThreads([]); return; }
+    const userMsgs = allMessages.filter((m) => m.recipientGroup === selectedGroup && (m.senderId === selectedUserId || m.recipientId === selectedUserId));
+    const map = new Map<string, ChatThread>();
+    userMsgs.forEach((m) => {
+      const existing = map.get(m.category);
+      if (!existing || (m.createdAt?.toMillis?.() || 0) > (existing.lastMessageTime?.toMillis?.() || 0)) {
+        map.set(m.category, { id: m.category, category: m.category, lastMessage: m.message, lastMessageTime: m.createdAt });
+      }
+    });
+    setThreads(Array.from(map.values()).sort((a, b) => (b.lastMessageTime?.toMillis?.() || 0) - (a.lastMessageTime?.toMillis?.() || 0)));
+  }, [allMessages, selectedUserId, selectedGroup]);
 
+  // Load messages for selected thread
+  useEffect(() => {
+    if (!selectedThread || !selectedUserId || !selectedGroup) { setMessages([]); return; }
     const filtered = allMessages
-      .filter(
-        (msg) =>
-          msg.senderId === selectedUserId ||
-          (msg.recipientId === selectedUserId && msg.senderRole === 'admin')
-      )
+      .filter((m) => m.category === selectedThread && m.recipientGroup === selectedGroup && (m.senderId === selectedUserId || m.recipientId === selectedUserId || m.senderRole === 'admin'))
       .sort((a, b) => (a.createdAt?.toMillis?.() || 0) - (b.createdAt?.toMillis?.() || 0));
-
     setMessages(filtered);
-  }, [selectedUserId, allMessages]);
+  }, [selectedThread, selectedUserId, selectedGroup, allMessages]);
+
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !user || !selectedUserId) return;
-
+    if (!newMessage.trim() || !user || !selectedUserId || !selectedThread || !selectedGroup) return;
     try {
       await addDoc(collection(db, 'supportMessages'), {
         senderId: user.uid,
@@ -129,168 +150,208 @@ const AdminChat: React.FC = () => {
         senderEmail: user.email,
         senderRole: 'admin',
         recipientId: selectedUserId,
+        recipientGroup: selectedGroup,
+        category: selectedThread,
         message: newMessage.trim(),
         createdAt: serverTimestamp(),
         status: 'sent',
       });
       setNewMessage('');
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    }
+    } catch (err) { console.error(err); }
   };
 
   const getStatusIcon = (status: string) => {
-    if (status === 'read') return <CheckCheck size={14} className="text-blue-400" />;
-    if (status === 'delivered') return <CheckCheck size={14} className="text-white/60" />;
-    return <Check size={14} className="text-white/60" />;
+    if (status === 'read') return <CheckCheck size={12} className="text-blue-400" />;
+    if (status === 'delivered') return <CheckCheck size={12} className="text-white/60" />;
+    return <Check size={12} className="text-white/60" />;
   };
 
   const getRoleColor = (role: string) => {
-    if (role === 'customer') return 'from-blue-500 to-cyan-500';
-    if (role === 'artist') return 'from-purple-500 to-pink-500';
-    return 'from-green-500 to-teal-500';
+    if (role === 'artist') return 'from-orange-600 to-red-700';
+    if (role === 'manager') return 'from-green-700 to-teal-700';
+    return 'from-blue-700 to-cyan-700';
   };
+
+  const filteredUsers = users.filter(
+    (u) => !userSearch || u.userName.toLowerCase().includes(userSearch.toLowerCase()) || u.userEmail.toLowerCase().includes(userSearch.toLowerCase())
+  );
+
+  const selectedUserEntry = users.find((u) => u.userId === selectedUserId);
 
   return (
     <AdminLayout>
-      <div className="grid grid-cols-5 h-[calc(100vh-250px)] gap-4">
-        {/* Conversations Panel - Links */}
-        <div className="backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
-          <div className="p-3 border-b border-white/[0.1] space-y-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 text-white/40" size={14} />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search..."
-                className="w-full pl-8 pr-3 py-1.5 bg-white/[0.08] border border-white/[0.15] rounded-full text-xs text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3]"
-              />
-            </div>
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value as any)}
-              className="w-full px-2 py-1 bg-white/[0.08] border border-white/[0.15] rounded text-xs text-white focus:outline-none"
-            >
-              <option value="all">All</option>
-              <option value="customer">Customers</option>
-              <option value="artist">Artists</option>
-              <option value="manager">Managers</option>
-            </select>
-          </div>
+      <div className="grid grid-cols-12 h-[calc(100vh-120px)] gap-3">
 
-          <div className="flex-1 overflow-y-auto space-y-1 p-2">
-            {conversations.map((convo) => (
-              <button
-                key={convo.userId}
-                onClick={() => setSelectedUserId(convo.userId)}
-                className={`w-full p-2 rounded-lg text-left text-xs transition ${
-                  selectedUserId === convo.userId
-                    ? 'bg-white/[0.12] border border-red-600/40'
-                    : 'hover:bg-white/[0.06]'
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <div
-                    className={`w-6 h-6 rounded-full bg-gradient-to-r ${getRoleColor(convo.userRole)} flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0`}
-                  >
-                    {convo.userName[0]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-white truncate text-xs">{convo.userName}</p>
-                  </div>
-                </div>
-                <p className="text-[10px] text-white/40 truncate">{convo.lastMessage}</p>
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Left panel */}
+        <div className="col-span-4 backdrop-blur-xl bg-gradient-to-b from-white/[0.08] to-white/[0.03] border border-white/[0.12] rounded-xl overflow-hidden flex flex-col">
 
-        {/* Chat Panel - Rechts */}
-        {selectedUserId ? (
-          <div className="lg:col-span-4 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
-            {/* Header */}
-            <div className="p-4 border-b border-white/[0.1] backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/15">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-10 h-10 rounded-full bg-gradient-to-r ${getRoleColor(
-                      conversations.find((c) => c.userId === selectedUserId)?.userRole || ''
-                    )} flex items-center justify-center text-white font-semibold`}
-                  >
-                    {conversations.find((c) => c.userId === selectedUserId)?.userName[0]}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-white">
-                      {conversations.find((c) => c.userId === selectedUserId)?.userName}
-                    </p>
-                    <p className="text-xs text-white/40">
-                      {conversations.find((c) => c.userId === selectedUserId)?.userEmail}
-                    </p>
-                  </div>
+          {/* Contacts view */}
+          {leftView === 'contacts' && (
+            <>
+              <div className="p-4 border-b border-white/[0.08] flex-shrink-0">
+                <p className="text-[10px] text-white/40 uppercase tracking-widest font-semibold">Inbox overzicht</p>
+              </div>
+              <div className="flex-1 overflow-y-auto py-3 px-3 space-y-2">
+                {(Object.entries(contactDefs) as [RecipientGroup, any][]).map(([key, def]) => {
+                  const count = allMessages.filter(m => m.recipientGroup === key && m.senderRole !== 'admin' && m.senderRole !== 'manager').length;
+                  const uniqueUsers = new Set(allMessages.filter(m => m.recipientGroup === key && m.senderRole !== 'admin' && m.senderRole !== 'manager').map(m => m.senderId)).size;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => { setSelectedGroup(key); setSelectedUserId(null); setSelectedThread(null); setLeftView('users'); }}
+                      className="w-full p-3 rounded-xl text-left transition-all flex items-center gap-4 hover:bg-white/[0.06] border border-transparent hover:border-white/[0.08]"
+                    >
+                      <ContactAvatar group={key} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white">{def.name}</p>
+                        <p className="text-[11px] text-white/40 mt-0.5">{uniqueUsers} gebruiker{uniqueUsers !== 1 ? 's' : ''} · {count} bericht{count !== 1 ? 'en' : ''}</p>
+                      </div>
+                      {uniqueUsers > 0 && (
+                        <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[10px] text-white font-bold">{uniqueUsers}</span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* Users list view */}
+          {leftView === 'users' && selectedGroup && (
+            <>
+              <div className="p-3 border-b border-white/[0.08] flex items-center gap-3 flex-shrink-0">
+                <button onClick={() => { setLeftView('contacts'); setSelectedUserId(null); setSelectedThread(null); }} className="text-white/40 hover:text-white transition-colors">
+                  <ArrowLeft size={18} />
+                </button>
+                <ContactAvatar group={selectedGroup} size="sm" />
+                <p className="text-sm font-semibold text-white flex-1 truncate">{contactDefs[selectedGroup].name}</p>
+              </div>
+              <div className="px-3 py-2 border-b border-white/[0.06] flex-shrink-0">
+                <div className="relative">
+                  <Search size={13} className="absolute left-3 top-2.5 text-white/30" />
+                  <input type="text" value={userSearch} onChange={(e) => setUserSearch(e.target.value)} placeholder="Zoek gebruiker..."
+                    className="w-full pl-8 pr-3 py-1.5 bg-white/[0.06] border border-white/[0.1] rounded-lg text-xs text-white placeholder-white/30 focus:outline-none focus:border-white/[0.2]" />
                 </div>
               </div>
-            </div>
+              <div className="flex-1 overflow-y-auto py-1">
+                {filteredUsers.length === 0 ? (
+                  <div className="py-10 text-center text-white/30">
+                    <MessageSquare size={24} className="mx-auto mb-2 opacity-40" />
+                    <p className="text-xs">Geen berichten</p>
+                  </div>
+                ) : (
+                  filteredUsers.map((u) => (
+                    <button key={u.userId} onClick={() => { setSelectedUserId(u.userId); setSelectedThread(null); setLeftView('threads'); }}
+                      className={`w-full px-3 py-3 text-left transition-all border-b border-white/[0.04] flex items-center gap-3 ${selectedUserId === u.userId ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'}`}>
+                      <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${getRoleColor(u.userRole)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                        {u.userName[0]?.toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-white truncate">{u.userName}</p>
+                        <p className="text-[10px] text-white/40 truncate">{u.lastMessage}</p>
+                      </div>
+                      <span className="text-[10px] text-white/30 flex-shrink-0">{u.threadCount} chat{u.threadCount !== 1 ? 's' : ''}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </>
+          )}
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
+          {/* Threads view */}
+          {leftView === 'threads' && selectedGroup && selectedUserEntry && (
+            <>
+              <div className="p-3 border-b border-white/[0.08] flex items-center gap-3 flex-shrink-0">
+                <button onClick={() => { setLeftView('users'); setSelectedThread(null); }} className="text-white/40 hover:text-white transition-colors">
+                  <ArrowLeft size={18} />
+                </button>
+                <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${getRoleColor(selectedUserEntry.userRole)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                  {selectedUserEntry.userName[0]?.toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-white truncate">{selectedUserEntry.userName}</p>
+                  <p className="text-[10px] text-white/40 truncate">{contactDefs[selectedGroup].name}</p>
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto py-1">
+                {threads.length === 0 ? (
+                  <div className="py-10 text-center text-white/30">
+                    <MessageSquare size={24} className="mx-auto mb-2 opacity-40" />
+                    <p className="text-xs">Geen chats</p>
+                  </div>
+                ) : (
+                  threads.map((thread) => (
+                    <button key={thread.id} onClick={() => setSelectedThread(thread.id)}
+                      className={`w-full px-4 py-3 text-left transition-all border-b border-white/[0.04] flex items-center gap-3 ${selectedThread === thread.id ? 'bg-white/[0.08]' : 'hover:bg-white/[0.04]'}`}>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-white truncate">{thread.category}</p>
+                        <p className="text-[10px] text-white/40 truncate mt-0.5">{thread.lastMessage}</p>
+                      </div>
+                      {selectedThread === thread.id && <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />}
+                    </button>
+                  ))
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Right panel: chat */}
+        {selectedThread && selectedUserEntry && selectedGroup ? (
+          <div className="col-span-8 backdrop-blur-xl bg-gradient-to-br from-white/[0.08] to-white/[0.03] border border-white/[0.12] rounded-xl overflow-hidden flex flex-col">
+            <div className="px-4 py-3 border-b border-white/[0.08] flex items-center gap-3 flex-shrink-0 bg-white/[0.04]">
+              <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${getRoleColor(selectedUserEntry.userRole)} flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}>
+                {selectedUserEntry.userName[0]?.toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-white text-sm">{selectedUserEntry.userName}</p>
+                <p className="text-[11px] text-white/40">{contactDefs[selectedGroup].name} · {selectedThread}</p>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
               {messages.length === 0 ? (
-                <div className="text-center text-white/40 py-8">
-                  <MessageSquare size={32} className="mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No messages yet</p>
+                <div className="text-center text-white/30 py-16">
+                  <MessageSquare size={32} className="mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">Geen berichten</p>
                 </div>
               ) : (
                 messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.senderRole === 'admin' ? 'justify-end' : 'justify-start'}`}>
-                    <div
-                      className={`max-w-xs px-3 py-2 rounded-lg ${
-                        msg.senderRole === 'admin'
-                          ? 'bg-red-600 text-white rounded-br-none'
-                          : 'bg-white/[0.15] text-white rounded-bl-none border border-white/[0.15]'
-                      }`}
-                    >
-                      <p className="text-sm break-words">{msg.message}</p>
-                      <div className="flex items-center gap-1 mt-1 justify-end text-xs opacity-70">
-                        <span>
-                          {msg.createdAt?.toDate?.()?.toLocaleTimeString('nl-NL', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
+                    <div className={`max-w-sm px-3 py-2 rounded-xl text-sm ${msg.senderRole === 'admin' ? 'bg-red-600 text-white rounded-br-sm' : 'bg-white/[0.1] text-white rounded-bl-sm border border-white/[0.1]'}`}>
+                      {msg.senderRole !== 'admin' && <p className="text-[10px] font-semibold text-white/60 mb-1">{msg.senderName}</p>}
+                      <p className="break-words leading-relaxed">{msg.message}</p>
+                      <div className="flex items-center gap-1 mt-1 justify-end">
+                        <span className="text-[10px] opacity-60">{msg.createdAt?.toDate?.()?.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}</span>
                         {msg.senderRole === 'admin' && getStatusIcon(msg.status)}
                       </div>
                     </div>
                   </div>
                 ))
               )}
+              <div ref={messagesEndRef} />
             </div>
-
-            {/* Input */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-white/[0.1] backdrop-blur-lg bg-gradient-to-t from-white/[0.08] to-white/[0.04]">
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
+            <form onSubmit={handleSendMessage} className="px-4 py-3 border-t border-white/[0.08] bg-white/[0.03] flex-shrink-0">
+              <div className="flex gap-2">
+                <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(e as any)}
-                  placeholder="Type reply..."
-                  className="flex-1 backdrop-blur-sm bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:border-white/[0.3] text-sm"
-                />
-                <button
-                  type="submit"
-                  disabled={!newMessage.trim()}
-                  className="p-2 bg-red-600 hover:bg-red-700 disabled:bg-white/[0.06] text-white rounded-full transition flex-shrink-0"
-                >
-                  <Send size={18} />
+                  placeholder={`Antwoord aan ${selectedUserEntry.userName}...`}
+                  className="flex-1 bg-white/[0.06] border border-white/[0.12] rounded-full px-4 py-2 text-white placeholder-white/30 focus:outline-none focus:border-white/[0.25] text-sm" />
+                <button type="submit" disabled={!newMessage.trim()}
+                  className="w-9 h-9 bg-red-600 hover:bg-red-700 disabled:bg-white/[0.06] text-white rounded-full transition flex items-center justify-center flex-shrink-0">
+                  <Send size={16} />
                 </button>
               </div>
             </form>
           </div>
         ) : (
-          <div className="lg:col-span-4 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl flex items-center justify-center">
+          <div className="col-span-8 backdrop-blur-xl bg-gradient-to-br from-white/[0.08] to-white/[0.03] border border-white/[0.12] rounded-xl flex items-center justify-center">
             <div className="text-center">
-              <MessageSquare size={48} className="mx-auto mb-4 text-white/20" />
-              <p className="text-white/40">Select a conversation</p>
+              <MessageSquare size={40} className="mx-auto mb-3 text-white/10" />
+              <p className="text-white/30 text-sm">
+                {leftView === 'contacts' ? 'Selecteer een contact inbox' : leftView === 'users' ? 'Selecteer een gebruiker' : 'Selecteer een chat'}
+              </p>
             </div>
           </div>
         )}
