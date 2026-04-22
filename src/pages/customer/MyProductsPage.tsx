@@ -22,8 +22,32 @@ export default function MyProductsPage() {
   const [sortBy, setSortBy] = useState<'recent' | 'expiry'>('recent');
   const [filter, setFilter] = useState<FilterType>('all');
 
+  if (!isAuthenticated || !user?.uid) {
+    return (
+      <CustomerLayout>
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-4xl font-black text-white mb-2">My Products</h1>
+            <p className="text-white/40">Your purchased beats, tracks, and free downloads</p>
+          </div>
+          <div className="text-center py-20">
+            <div className="bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl p-12 max-w-md mx-auto">
+              <Package className="w-12 h-12 text-white/20 mx-auto mb-4" />
+              <p className="text-xl font-bold text-white mb-2">Sign In Required</p>
+              <p className="text-white/40 text-sm mb-6">
+                Please sign in to view your purchased products and downloads.
+              </p>
+              <a href="/login" className="inline-block px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all">
+                Sign In
+              </a>
+            </div>
+          </div>
+        </div>
+      </CustomerLayout>
+    );
+  }
+
   useEffect(() => {
-    if (!isAuthenticated || !user?.uid) return;
 
     const fetchData = async () => {
       try {

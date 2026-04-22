@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
 import { TrackDetailProvider } from './contexts/TrackDetailContext';
 import { BeatDetailProvider } from './contexts/BeatDetailContext';
 import { useScrollToTop } from './hooks/useScrollToTop';
@@ -83,6 +84,10 @@ import ManagerBeats from './pages/manager/BeatsPage';
 import ManagerCollaborations from './pages/manager/CollaborationsPage';
 import ManagerChat from './pages/manager/ChatPage';
 
+// Checkout pages (public)
+import CheckoutPage from './pages/CheckoutPage';
+import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
+
 // Scroll to top on route change
 const ScrollToTopWrapper = ({ children }: { children: React.ReactNode }) => {
   useScrollToTop();
@@ -92,39 +97,44 @@ const ScrollToTopWrapper = ({ children }: { children: React.ReactNode }) => {
 const MainApp: React.FC = () => {
   return (
     <AuthProvider>
-      <TrackDetailProvider>
-        <BeatDetailProvider>
-          <BrowserRouter>
-          <ScrollToTopWrapper>
-              <GlobalAudioPlayer />
-              <GlobalBeatDetailModal />
-              <Routes>
-              {/* Public Routes */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+      <CartProvider>
+        <TrackDetailProvider>
+          <BeatDetailProvider>
+            <BrowserRouter>
+              <ScrollToTopWrapper>
+                <GlobalAudioPlayer />
+                <GlobalBeatDetailModal />
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
 
-          {/* Shop Routes (public) */}
-          <Route path="/shop" element={<ShopHub />} />
-          <Route path="/shop/beats" element={<BeatsShop />} />
-          <Route path="/shop/services" element={<ServicesShop />} />
-          <Route path="/shop/merchandise" element={<MerchandiseShop />} />
-          <Route path="/shop/art" element={<ArtShop />} />
+                  {/* Shop Routes (public) */}
+                  <Route path="/shop" element={<ShopHub />} />
+                  <Route path="/shop/beats" element={<BeatsShop />} />
+                  <Route path="/shop/services" element={<ServicesShop />} />
+                  <Route path="/shop/merchandise" element={<MerchandiseShop />} />
+                  <Route path="/shop/art" element={<ArtShop />} />
 
-          {/* Standalone Pages (public) */}
-          <Route path="/catalogue" element={<CataloguePage />} />
-          <Route path="/tracks" element={<TracksPage />} />
-          <Route path="/remixes" element={<RemixesPage />} />
-          <Route path="/dj-sets" element={<DJSetsPage />} />
-          <Route path="/productions" element={<ProductionsPage />} />
-          <Route path="/spotify" element={<SpotifyPage />} />
-          <Route path="/support" element={<SupportPage />} />
-          <Route path="/releases" element={<ReleasesPage />} />
-          <Route path="/download/:trackId" element={<DownloadGatePage />} />
-          <Route path="/socials" element={<SocialsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+                  {/* Standalone Pages (public) */}
+                  <Route path="/catalogue" element={<CataloguePage />} />
+                  <Route path="/tracks" element={<TracksPage />} />
+                  <Route path="/remixes" element={<RemixesPage />} />
+                  <Route path="/dj-sets" element={<DJSetsPage />} />
+                  <Route path="/productions" element={<ProductionsPage />} />
+                  <Route path="/spotify" element={<SpotifyPage />} />
+                  <Route path="/support" element={<SupportPage />} />
+                  <Route path="/releases" element={<ReleasesPage />} />
+                  <Route path="/download/:trackId" element={<DownloadGatePage />} />
+                  <Route path="/socials" element={<SocialsPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
 
-          {/* Customer Routes (protected - user role only) */}
+                  {/* Checkout (public) */}
+                  <Route path="/checkout" element={<CheckoutPage />} />
+                  <Route path="/checkout-success" element={<CheckoutSuccessPage />} />
+
+                  {/* Customer Routes (protected - user role only) */}
           <Route
             path="/customer/dashboard"
             element={
@@ -467,6 +477,7 @@ const MainApp: React.FC = () => {
             </BrowserRouter>
           </BeatDetailProvider>
         </TrackDetailProvider>
+      </CartProvider>
       </AuthProvider>
     );
   };

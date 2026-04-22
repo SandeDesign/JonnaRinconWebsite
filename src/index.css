@@ -16,11 +16,23 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    background-origin: padding-box;
+    background-clip: border-box;
+  }
+
+  body {
+    background-attachment: fixed;
+    background-image: inherit;
   }
 
   @media (max-width: 768px) {
     html {
       background-attachment: scroll;
+      background-size: auto;
+    }
+    body {
+      background-attachment: scroll;
+      background-size: auto;
     }
   }
 
