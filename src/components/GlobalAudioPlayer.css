@@ -75,8 +75,9 @@
 @media (max-width: 768px) {
   .jonna-cover-section {
     display: flex !important;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
+    order: -1;
   }
 }
 
@@ -328,10 +329,10 @@
   }
 
   .jonna-player-content {
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: nowrap;
     gap: 8px;
-    padding: 12px 8px;
+    padding: 8px;
     min-height: auto;
     justify-content: flex-start;
     align-items: center;
@@ -346,14 +347,17 @@
   }
 
   .jonna-cover-wrapper {
-    width: 100px;
-    height: 100px;
-    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    flex-shrink: 0;
   }
 
   .jonna-track-info {
-    width: 100%;
-    text-align: center;
+    width: auto;
+    text-align: left;
+    flex-shrink: 1;
+    min-width: 0;
   }
 
   .jonna-track-title {

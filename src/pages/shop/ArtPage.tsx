@@ -58,7 +58,7 @@ const ArtPage: React.FC = () => {
   return (
     <div className="min-h-screen text-white">
       {/* Fixed Dark Overlay */}
-      <div className="fixed inset-0 w-full h-screen -z-10 bg-black/80" />
+      <div className="fixed inset-0 w-full h-screen -z-10 bg-black/20" />
 
       <Navigation isDarkOverlay={true} isLightMode={false} />
 
@@ -275,7 +275,7 @@ const ArtPage: React.FC = () => {
 
       {/* Detail Modal */}
       {selectedArt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-white/[0.08] backdrop-blur-md border border-white/[0.1] rounded-3xl max-w-3xl w-full my-auto max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white/[0.08] border-b border-white/[0.1] z-10 flex items-center justify-between p-4">
               <h2 className="text-xl font-bold text-white">{selectedArt.title}</h2>
