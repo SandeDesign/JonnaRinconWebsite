@@ -6,6 +6,8 @@ import { useRemixes } from '../../hooks/useRemixes';
 import { useOrders } from '../../hooks/useOrders';
 import { useContent } from '../../hooks/useContent';
 import { useCollaborations } from '../../hooks/useCollaborations';
+import { db } from '../../lib/firebase/config';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import {
   TrendingUp,
   TrendingDown,
@@ -17,6 +19,7 @@ import {
   FileText,
   Handshake,
   Calendar,
+  MessageSquare,
 } from 'lucide-react';
 
 const AnalyticsPage: React.FC = () => {
@@ -28,6 +31,43 @@ const AnalyticsPage: React.FC = () => {
   const { collaborations, statistics: collabStats } = useCollaborations();
 
   const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
+  const [chatStats, setChatStats] = useState({
+    totalMessages: 0,
+    uniqueConversations: 0,
+    messagesByRole: { customer: 0, artist: 0, manager: 0, admin: 0 },
+  });
+
+  // Load chat statistics
+  useEffect(() => {
+    const messagesRef = collection(db, 'supportMessages');
+    const q = query(messagesRef, orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages = snapshot.docs.map((doc) => doc.data());
+      const uniqueSenders = new Set(messages.map((m: any) => m.senderId));
+      const roleCount = {
+        customer: 0,
+        artist: 0,
+        manager: 0,
+        admin: 0,
+      };
+
+      messages.forEach((msg: any) => {
+        if (msg.senderRole === 'customer') roleCount.customer++;
+        else if (msg.senderRole === 'artist') roleCount.artist++;
+        else if (msg.senderRole === 'manager') roleCount.manager++;
+        else if (msg.senderRole === 'admin') roleCount.admin++;
+      });
+
+      setChatStats({
+        totalMessages: messages.length,
+        uniqueConversations: uniqueSenders.size,
+        messagesByRole: roleCount,
+      });
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Calculate analytics
   const totalRevenue = orderStats?.totalRevenue || 0;
@@ -341,6 +381,45 @@ const AnalyticsPage: React.FC = () => {
                 </div>
               ))
             )}
+          </div>
+        </div>
+
+        {/* Chat Analytics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-white/40 text-sm">Total Messages</p>
+              <MessageSquare className="text-red-400" size={20} />
+            </div>
+            <p className="text-3xl font-bold text-white">{chatStats.totalMessages}</p>
+            <p className="text-sm text-white/40 mt-2">support messages</p>
+          </div>
+
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-white/40 text-sm">Conversations</p>
+              <Users className="text-blue-400" size={20} />
+            </div>
+            <p className="text-3xl font-bold text-white">{chatStats.uniqueConversations}</p>
+            <p className="text-sm text-white/40 mt-2">unique participants</p>
+          </div>
+
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-white/40 text-sm">Customer Messages</p>
+              <ShoppingCart className="text-cyan-400" size={20} />
+            </div>
+            <p className="text-3xl font-bold text-white">{chatStats.messagesByRole.customer}</p>
+            <p className="text-sm text-white/40 mt-2">from customers</p>
+          </div>
+
+          <div className="bg-white/[0.08] border border-white/[0.06] rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-white/40 text-sm">Admin Responses</p>
+              <FileText className="text-green-400" size={20} />
+            </div>
+            <p className="text-3xl font-bold text-white">{chatStats.messagesByRole.admin}</p>
+            <p className="text-sm text-white/40 mt-2">admin messages</p>
           </div>
         </div>
 
