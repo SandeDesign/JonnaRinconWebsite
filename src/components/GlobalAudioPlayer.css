@@ -357,7 +357,7 @@
     width: auto;
     text-align: left;
     flex-shrink: 1;
-    min-w-0;
+    min-width: 0;
   }
 
   .jonna-track-title {
