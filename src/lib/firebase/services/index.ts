@@ -16,3 +16,4 @@ export { discountCodeService } from './discountCodeService';
 export { followGateService } from './followGateService';
 export { merchandiseService } from './merchandiseService';
 export { playlistService } from './playlistService';
+export { beatPackService } from './beatPackService';

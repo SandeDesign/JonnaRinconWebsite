@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, X, Sliders } from 'lucide-react';
-import { Beat } from '../../lib/firebase/types';
+import { Search, Filter, Grid3x3, List, Play, Pause, ShoppingCart, X, Sliders, ChevronLeft, ChevronRight, Package } from 'lucide-react';
+import { Beat, BeatPack } from '../../lib/firebase/types';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import { useCyberDecodeInView } from '../../hooks/useCyberDecode';
@@ -13,7 +13,8 @@ import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestor
 import { db } from '../../lib/firebase/config';
 import FilterModal from '../../components/FilterModal';
 import BeatDetailModal from '../../components/BeatDetailModal';
-import { beatService } from '../../lib/firebase/services';
+import BeatPackDetailModal from '../../components/BeatPackDetailModal';
+import { beatService, beatPackService } from '../../lib/firebase/services';
 import { useScrollToTop } from '../../hooks/useScrollToTop';
 
 const BeatsShop: React.FC = () => {
@@ -31,8 +32,19 @@ const BeatsShop: React.FC = () => {
     sortBy: 'newest',
   });
   const [dynamicGenres, setDynamicGenres] = useState<string[]>([]);
+  const [beatPacks, setBeatPacks] = useState<BeatPack[]>([]);
+  const [packIndex, setPackIndex] = useState(0);
+  const [selectedPack, setSelectedPack] = useState<BeatPack | null>(null);
 
   const heroTitle = useCyberDecodeInView('BEATSTORE');
+
+  useEffect(() => {
+    const unsub = beatPackService.subscribeToPacks((packs) => {
+      setBeatPacks(packs);
+      setPackIndex((i) => Math.min(i, Math.max(0, packs.length - 1)));
+    });
+    return () => unsub();
+  }, []);
 
   // Use same real-time Firebase listener as homepage BeatStore component
   useEffect(() => {
@@ -271,7 +283,90 @@ const BeatsShop: React.FC = () => {
         cartCount={cartItems.length}
       />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
+      {/* Beat Pack Detail Modal */}
+      <BeatPackDetailModal
+        pack={selectedPack}
+        isOpen={!!selectedPack}
+        onClose={() => setSelectedPack(null)}
+      />
+
+      <div className={`max-w-7xl mx-auto px-6 md:px-12 ${beatPacks.length > 0 || trendingBeats.length > 0 ? 'py-12 md:py-16' : 'py-8 md:py-10'}`}>
+
+        {/* Beat Packs Carousel */}
+        {beatPacks.length > 0 && (
+          <div className="mb-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight flex items-center gap-3">
+                <Package className="w-7 h-7 md:w-9 md:h-9 text-red-500" />
+                Beat Packs
+              </h2>
+              {beatPacks.length > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setPackIndex((i) => (i - 1 + beatPacks.length) % beatPacks.length)}
+                    className="p-3 rounded-full bg-white/[0.06] border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+                    aria-label="Previous pack"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className="text-xs text-white/40 px-2">{packIndex + 1} / {beatPacks.length}</span>
+                  <button
+                    onClick={() => setPackIndex((i) => (i + 1) % beatPacks.length)}
+                    className="p-3 rounded-full bg-white/[0.06] border border-white/[0.1] text-white/60 hover:text-white hover:bg-white/[0.12] transition-all"
+                    aria-label="Next pack"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {beatPacks[packIndex] && (
+              <button
+                onClick={() => setSelectedPack(beatPacks[packIndex])}
+                className="w-full text-left group relative overflow-hidden rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/[0.06] hover:border-white/[0.15] transition-all"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
+                  <div className="md:col-span-2 relative aspect-square md:aspect-auto overflow-hidden">
+                    <img
+                      src={beatPacks[packIndex].coverUrl || '/JEIGHTENESIS.jpg'}
+                      alt={beatPacks[packIndex].title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/40 md:to-black/60" />
+                    <div className="absolute top-4 left-4 px-3 py-1.5 bg-red-600 rounded-full text-xs font-bold uppercase shadow-lg flex items-center gap-1.5">
+                      <Package size={12} /> Pack
+                    </div>
+                  </div>
+                  <div className="md:col-span-3 p-6 md:p-10 flex flex-col justify-center">
+                    <p className="text-xs uppercase tracking-widest text-red-400/80 font-bold mb-3">
+                      {beatPacks[packIndex].beats.length} Beat{beatPacks[packIndex].beats.length !== 1 ? 's' : ''} · Beat Pack
+                    </p>
+                    <h3 className="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">
+                      {beatPacks[packIndex].title}
+                    </h3>
+                    {beatPacks[packIndex].description && (
+                      <p className="text-white/60 text-sm md:text-base mb-6 line-clamp-2">
+                        {beatPacks[packIndex].description}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <div className="text-[10px] uppercase tracking-widest text-white/30">From</div>
+                        <div className="text-3xl md:text-4xl font-black text-red-500">
+                          &euro;{beatPacks[packIndex].price.toFixed(0)}
+                        </div>
+                      </div>
+                      <span className="px-5 py-3 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-bold uppercase tracking-wider transition-all group-hover:scale-105">
+                        View Pack
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Trending Section */}
         {!loading && trendingBeats.length > 0 && (
@@ -324,7 +419,7 @@ const BeatsShop: React.FC = () => {
         )}
 
         {/* Divider */}
-        {!loading && (featuredBeats.length > 0 || trendingBeats.length > 0) && (
+        {!loading && (beatPacks.length > 0 || trendingBeats.length > 0) && (
           <div className="my-12 border-t border-white/[0.06]" />
         )}
 

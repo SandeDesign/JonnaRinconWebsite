@@ -9,7 +9,7 @@ import ProductDetailModal from '../../components/ProductDetailModal';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { Download, Calendar, Package, AlertCircle, Gift, ShoppingBag, ExternalLink, Image } from 'lucide-react';
 
-type FilterType = 'all' | 'purchased' | 'art' | 'free';
+type FilterType = 'all' | 'purchased' | 'packs' | 'art' | 'free';
 
 export default function MyProductsPage() {
   const { user, isAuthenticated } = useAuth();
@@ -80,8 +80,10 @@ export default function MyProductsPage() {
     }
   });
 
-  const activeProducts = sortedPurchases.filter(p => !purchaseService.isDownloadExpired(p.expiresAt));
-  const expiredProducts = sortedPurchases.filter(p => purchaseService.isDownloadExpired(p.expiresAt));
+  const activeProducts = sortedPurchases.filter(p => !purchaseService.isDownloadExpired(p.expiresAt) && !p.packBeats);
+  const expiredProducts = sortedPurchases.filter(p => purchaseService.isDownloadExpired(p.expiresAt) && !p.packBeats);
+  const activeBeatPacks = sortedPurchases.filter(p => !purchaseService.isDownloadExpired(p.expiresAt) && !!p.packBeats);
+  const expiredBeatPacks = sortedPurchases.filter(p => purchaseService.isDownloadExpired(p.expiresAt) && !!p.packBeats);
 
   const activeFreeDownloads = freeDownloads.filter(f => !followGateService.isExpired(f.expiresAt));
   const expiredFreeDownloads = freeDownloads.filter(f => followGateService.isExpired(f.expiresAt));
@@ -91,7 +93,8 @@ export default function MyProductsPage() {
 
   const filterTabs: { value: FilterType; label: string; icon: React.ElementType; count: number }[] = [
     { value: 'all', label: 'All', icon: Package, count: totalAll },
-    { value: 'purchased', label: 'Purchased', icon: ShoppingBag, count: purchases.length },
+    { value: 'purchased', label: 'Purchased', icon: ShoppingBag, count: activeProducts.length + expiredProducts.length },
+    { value: 'packs', label: 'Beat Packs', icon: Package, count: activeBeatPacks.length + expiredBeatPacks.length },
     { value: 'art', label: 'Art Collection', icon: Image, count: purchasedArt.length },
     { value: 'free', label: 'Free Downloads', icon: Gift, count: freeDownloads.length },
   ];
@@ -217,6 +220,55 @@ export default function MyProductsPage() {
                       onClick={() => setSelectedProduct(product)}
                       daysUntilExpiry={purchaseService.getDaysUntilExpiry(product.expiresAt)}
                     />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Beat Packs */}
+            {(filter === 'all' || filter === 'packs') && activeBeatPacks.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-black text-white uppercase flex items-center gap-3">
+                  <Package className="w-6 h-6 text-red-500" />
+                  Beat Packs
+                </h2>
+                <div className="space-y-4">
+                  {activeBeatPacks.map((pack) => (
+                    <div key={pack.id} className="bg-white/[0.06] border border-white/[0.06] rounded-2xl overflow-hidden">
+                      <div className="p-5 flex items-center gap-4 border-b border-white/[0.06]">
+                        <img src={pack.artworkUrl || '/JEIGHTENESIS.jpg'} alt={pack.beatTitle} className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-white truncate">{pack.beatTitle}</h3>
+                          <p className="text-xs text-white/40">
+                            {pack.packBeats?.length || 0} beat{(pack.packBeats?.length || 0) !== 1 ? 's' : ''} · {purchaseService.getDaysUntilExpiry(pack.expiresAt)}d left
+                          </p>
+                        </div>
+                        <span className="text-sm font-black text-red-500">&euro;{pack.price.toFixed(0)}</span>
+                      </div>
+                      <div className="divide-y divide-white/[0.04]">
+                        {pack.packBeats?.map((b, i) => (
+                          <div key={i} className="px-5 py-3 flex items-center gap-4 hover:bg-white/[0.03]">
+                            <span className="text-xs text-white/30 w-6 text-center flex-shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-white truncate">{b.title}</p>
+                              <p className="text-xs text-white/40 truncate">{b.artist} &middot; {b.bpm} BPM &middot; {b.key} &middot; {b.genre}</p>
+                            </div>
+                            {b.downloadUrl ? (
+                              <a
+                                href={b.downloadUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 border border-red-500/20 rounded-lg text-red-400 text-xs font-bold transition-all flex-shrink-0"
+                              >
+                                <Download size={14} /> Download
+                              </a>
+                            ) : (
+                              <span className="text-xs text-white/30">No link</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
