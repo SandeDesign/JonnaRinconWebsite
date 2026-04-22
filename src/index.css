@@ -31,11 +31,11 @@
   @media (max-width: 768px) {
     html {
       background-attachment: scroll;
-      background-size: auto;
+      background-size: cover;
     }
     body {
       background-attachment: scroll;
-      background-size: auto;
+      background-size: cover;
     }
   }
 
