@@ -201,9 +201,9 @@ const ArtistChat: React.FC = () => {
           <p className="text-white/40 mt-2">Get help from the Jonna Rincon team</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Conversations Sidebar */}
-          <div className="lg:col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 h-[calc(100vh-250px)]">
+          {/* Conversations Sidebar — Compact */}
+          <div className="lg:col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden hidden lg:flex lg:flex-col">
             <div className="p-4 border-b border-white/[0.1]">
               <h2 className="font-semibold text-white">Conversations</h2>
             </div>
@@ -237,8 +237,8 @@ const ArtistChat: React.FC = () => {
             </div>
           </div>
 
-          {/* Chat Window */}
-          <div className="lg:col-span-2 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 300px)' }}>
+          {/* Chat Window — Full Width on Mobile, Large on Desktop */}
+          <div className="lg:col-span-4 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
             {/* Chat Header */}
             <div className="p-4 border-b border-white/[0.1] backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/15">
               <div className="flex items-center gap-3">
@@ -322,12 +322,6 @@ const ArtistChat: React.FC = () => {
           </div>
         </div>
 
-        {/* Info Box */}
-        <div className="backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/10 border border-red-600/30 rounded-xl p-4">
-          <p className="text-sm text-white/70">
-            💬 <strong className="text-white">Support Hours:</strong> Our team typically responds within 24 hours during business days.
-          </p>
-        </div>
       </div>
     </ArtistLayout>
   );
