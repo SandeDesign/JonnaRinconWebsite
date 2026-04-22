@@ -4,7 +4,8 @@ import { X, ShoppingBag, ArrowUpRight, Music, LogOut, LogIn } from 'lucide-react
 import { useAuth } from '../contexts/AuthContext';
 import { useCartContext } from '../contexts/CartContext';
 import ShoppingCart from './ShoppingCart';
-import { getCurrentTrack, togglePlayerOpen } from './GlobalAudioPlayer';
+import { getCurrentTrack, togglePlayerOpen, openPlayer, setPreviewTrack } from './GlobalAudioPlayer';
+import { useTracks } from '../hooks/useTracks';
 import { useContrastColor } from '../lib/utils/colorDetection';
 
 interface NavigationProps {
@@ -30,6 +31,7 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
   const [expandedGetInTouch, setExpandedGetInTouch] = useState(false);
   const { user, signIn, signUp, signOut } = useAuth();
   const { cartItems, isOpen: isCartOpen, setIsOpen: setIsCartOpen, removeFromCart, clearCart } = useCartContext();
+  const { tracks } = useTracks();
   const navigate = useNavigate();
   const closeTimeout = useRef<NodeJS.Timeout | null>(null);
   const scrollPositionRef = useRef(0);
@@ -576,7 +578,25 @@ export default function Navigation({ cartItemCount = 0, onCartClick, isDarkOverl
 
                       {/* Player Button */}
                       <button
-                        onClick={() => { closeMenu(); togglePlayerOpen(); }}
+                        onClick={() => {
+                          closeMenu();
+                          if (!getCurrentTrack() && tracks.length > 0) {
+                            const published = tracks.filter(t => t.status === 'published');
+                            const random = published[Math.floor(Math.random() * published.length)];
+                            if (random) {
+                              setPreviewTrack({
+                                id: random.id,
+                                title: random.title,
+                                artist: random.artist,
+                                audioUrl: random.audioUrl,
+                                coverArt: random.artworkUrl || '',
+                              });
+                            }
+                            openPlayer();
+                          } else {
+                            togglePlayerOpen();
+                          }
+                        }}
                         className="transition-all hover:scale-110 duration-300 cursor-pointer"
                         title="Toggle player"
                       >
