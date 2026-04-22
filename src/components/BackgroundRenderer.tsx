@@ -8,6 +8,8 @@ import { useBackground } from '../contexts/BackgroundContext';
  * - Placeholder color while loading
  * - Proper error handling with fallback
  */
+const FALLBACK_BG = "url('/JEIGHTENESIS.jpg')";
+
 const BackgroundRenderer: React.FC = () => {
   const { activeBackground } = useBackground();
   const [imageLoaded, setImageLoaded] = React.useState(false);
@@ -20,7 +22,7 @@ const BackgroundRenderer: React.FC = () => {
     if (!bgContainer) {
       bgContainer = document.createElement('div');
       bgContainer.id = 'site-bg-container';
-      bgContainer.className = 'site-bg-container-loading'; // Add loading state class
+      bgContainer.className = 'site-bg-container-loading';
       bgContainer.style.cssText = `
         position: fixed;
         top: 0;
@@ -29,6 +31,7 @@ const BackgroundRenderer: React.FC = () => {
         bottom: 0;
         z-index: -1;
         background-attachment: scroll;
+        background-image: ${FALLBACK_BG};
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -52,7 +55,7 @@ const BackgroundRenderer: React.FC = () => {
       setCurrentImageUrl(null);
       const bgContainer = document.getElementById('site-bg-container');
       if (bgContainer) {
-        bgContainer.style.backgroundImage = 'none';
+        bgContainer.style.backgroundImage = FALLBACK_BG;
       }
       return;
     }
@@ -77,7 +80,6 @@ const BackgroundRenderer: React.FC = () => {
     const img = new Image();
 
     const handleLoad = () => {
-      // Image has loaded successfully
       setCurrentImageUrl(imageUrl);
       setImageLoaded(true);
 
@@ -93,29 +95,23 @@ const BackgroundRenderer: React.FC = () => {
       console.warn(`Failed to load background image: ${imageUrl}`);
       setImageLoaded(false);
 
-      // Fallback: set a dark placeholder or try default
       if (bgContainer) {
-        bgContainer.style.backgroundImage = 'none';
-        bgContainer.style.backgroundColor = '#0a0a0a';
+        bgContainer.style.backgroundImage = FALLBACK_BG;
         bgContainer.classList.remove('site-bg-container-loading');
       }
     };
 
-    // Set up load handlers before setting src
     img.onload = handleLoad;
     img.onerror = handleError;
 
-    // Add timeout for slow/hanging loads (10 seconds)
     const timeoutId = setTimeout(() => {
       if (!imageLoaded) {
         handleError();
       }
     }, 10000);
 
-    // Start preloading
     img.src = imageUrl;
 
-    // Cleanup
     return () => {
       clearTimeout(timeoutId);
       img.onload = null;
