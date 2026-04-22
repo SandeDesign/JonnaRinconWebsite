@@ -4,10 +4,12 @@ import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import { TrackDetailProvider } from './contexts/TrackDetailContext';
 import { BeatDetailProvider } from './contexts/BeatDetailContext';
+import { BackgroundProvider } from './contexts/BackgroundContext';
 import { useScrollToTop } from './hooks/useScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import GlobalAudioPlayer from './components/GlobalAudioPlayer';
 import GlobalBeatDetailModal from './components/GlobalBeatDetailModal';
+import BackgroundRenderer from './components/BackgroundRenderer';
 
 // Public pages
 import HomePage from './App';
@@ -96,14 +98,16 @@ const ScrollToTopWrapper = ({ children }: { children: React.ReactNode }) => {
 
 const MainApp: React.FC = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <TrackDetailProvider>
-          <BeatDetailProvider>
-            <BrowserRouter>
-              <ScrollToTopWrapper>
-                <GlobalAudioPlayer />
-                <GlobalBeatDetailModal />
+    <BackgroundProvider>
+      <BackgroundRenderer />
+      <AuthProvider>
+        <CartProvider>
+          <TrackDetailProvider>
+            <BeatDetailProvider>
+              <BrowserRouter>
+                <ScrollToTopWrapper>
+                  <GlobalAudioPlayer />
+                  <GlobalBeatDetailModal />
                 <Routes>
                   {/* Public Routes */}
                   <Route path="/" element={<HomePage />} />
@@ -472,13 +476,14 @@ const MainApp: React.FC = () => {
 
           {/* 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </ScrollToTopWrapper>
-            </BrowserRouter>
-          </BeatDetailProvider>
-        </TrackDetailProvider>
-      </CartProvider>
+                </Routes>
+                </ScrollToTopWrapper>
+              </BrowserRouter>
+            </BeatDetailProvider>
+          </TrackDetailProvider>
+        </CartProvider>
       </AuthProvider>
+    </BackgroundProvider>
     );
   };
 

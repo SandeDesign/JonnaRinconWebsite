@@ -33,6 +33,8 @@ const playerStore: PlayerStore = {
   isPlaying: false,
 };
 
+let previewTrack: Track | null = null;
+
 let setPlayerUI: ((store: PlayerStore) => void) | null = null;
 let togglePlayerVisibility: (() => void) | null = null;
 let isPlayerVisible = true;
@@ -85,6 +87,15 @@ export function togglePlayerOpen() {
 export function openPlayer() {
   isPlayerVisible = true;
   if (togglePlayerVisibility) togglePlayerVisibility();
+}
+
+export function setPreviewTrack(track: Track) {
+  previewTrack = track;
+  if (setPlayerUI) setPlayerUI({ ...playerStore });
+}
+
+export function getPreviewTrack() {
+  return previewTrack;
 }
 
 export function setIsPlaying(isPlaying: boolean) {
@@ -252,7 +263,8 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
     }
   }, [store.currentTrack?.id]);
 
-  if (!store.currentTrack || !isVisible) {
+  const displayTrack = store.currentTrack || previewTrack;
+  if (!displayTrack || !isVisible) {
     return null;
   }
 
@@ -303,6 +315,12 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
   };
 
   const togglePlayPause = () => {
+    // If in preview mode (no currentTrack), clicking play promotes the preview to current track
+    if (!store.currentTrack && previewTrack) {
+      setCurrentTrack(previewTrack, [previewTrack]);
+      previewTrack = null;
+      return;
+    }
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
@@ -402,7 +420,7 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
       />
       <audio
         ref={audioRef}
-        src={store.currentTrack.audioUrl || ''}
+        src={store.currentTrack?.audioUrl || ''}
         autoPlay
         volume={isMuted ? 0 : volume}
       />
@@ -427,7 +445,7 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
         <div className="jonna-player-content">
           {/* LEFT: Cover Art + Title + Artist */}
           <div className="jonna-cover-section">
-            {store.currentTrack?.coverArt && (
+            {displayTrack.coverArt && (
               <div
                 className="jonna-cover-wrapper"
                 onClick={() => setIsPlayerModalOpen(true)}
@@ -440,15 +458,15 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
                 }}
               >
                 <img
-                  src={store.currentTrack.coverArt}
-                  alt={store.currentTrack.title}
+                  src={displayTrack.coverArt}
+                  alt={displayTrack.title}
                   className="jonna-cover-image"
                 />
               </div>
             )}
             <div className="jonna-track-info">
-              <div className="jonna-track-title">{store.currentTrack.title}</div>
-              <div className="jonna-track-artist">{store.currentTrack.artist}</div>
+              <div className="jonna-track-title">{displayTrack.title}</div>
+              <div className="jonna-track-artist">{displayTrack.artist}</div>
             </div>
           </div>
 
@@ -559,11 +577,11 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
       </div>
       <style>{`
         body {
-          padding-bottom: ${store.currentTrack ? '170px' : '0'};
+          padding-bottom: ${displayTrack ? '120px' : '0'};
         }
         @media (max-width: 768px) {
           body {
-            padding-bottom: ${store.currentTrack ? '190px' : '0'} !important;
+            padding-bottom: ${displayTrack ? '100px' : '0'} !important;
           }
         }
       `}</style>
