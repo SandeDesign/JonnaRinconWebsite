@@ -82,8 +82,8 @@ const ManagerChat: React.FC = () => {
           />
         </div>
 
-        {/* Chat Container */}
-        <div className="backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 400px)' }}>
+        {/* Chat Container — Full Height */}
+        <div className="backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 250px)' }}>
           {/* Messages List */}
           <div className="flex-1 p-6 overflow-y-auto space-y-2 flex flex-col bg-gradient-to-b from-transparent via-white/[0.01] to-transparent">
             {filteredMessages.length === 0 ? (
@@ -149,12 +149,6 @@ const ManagerChat: React.FC = () => {
           </form>
         </div>
 
-        {/* Info Box */}
-        <div className="backdrop-blur-lg bg-gradient-to-r from-red-600/15 to-orange-600/10 border border-red-600/30 rounded-xl p-4">
-          <p className="text-sm text-white/70">
-            💬 <strong className="text-white">Manager Chat Access:</strong> You can view and send messages across all collaborations. Use this to coordinate with artists and the team.
-          </p>
-        </div>
       </div>
     </ManagerLayout>
   );

@@ -196,13 +196,13 @@ const AdminChat: React.FC = () => {
         </div>
 
         {/* Chat Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Conversations Sidebar */}
-          <div className="lg:col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 h-[calc(100vh-400px)]">
+          {/* Conversations Sidebar — Compact */}
+          <div className="lg:col-span-1 backdrop-blur-xl bg-gradient-to-b from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden hidden lg:flex lg:flex-col">
             <div className="p-4 border-b border-white/[0.1]">
               <h2 className="font-semibold text-white">Conversations ({conversations.length})</h2>
             </div>
-            <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 550px)' }}>
+            <div className="overflow-y-auto flex-1">
               {conversations.length === 0 ? (
                 <div className="p-8 text-center text-white/40">
                   <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />
@@ -244,8 +244,8 @@ const AdminChat: React.FC = () => {
             </div>
           </div>
 
-          {/* Chat Window */}
-          <div className="lg:col-span-2 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 550px)' }}>
+          {/* Chat Window — Full Width on Mobile, Large on Desktop */}
+          <div className="lg:col-span-4 backdrop-blur-xl bg-gradient-to-br from-white/[0.12] to-white/[0.05] border border-white/[0.2] rounded-xl overflow-hidden flex flex-col">
             {selectedUserId ? (
               <>
                 {/* Chat Header */}
