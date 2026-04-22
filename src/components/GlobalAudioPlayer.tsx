@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import { SkipBack, Play, Pause, SkipForward, Shuffle, Repeat, Volume2, VolumeX, X } from 'lucide-react';
 import { useTrackDetail } from '../contexts/TrackDetailContext';
 import { useBeatDetail } from '../contexts/BeatDetailContext';
+import PlayerModal from './PlayerModal';
+import { formatDuration } from '../lib/utils/audioMetadata';
 import './GlobalAudioPlayer.css';
 
 interface Track {
@@ -170,6 +172,7 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
   const [isMuted, setIsMuted] = useState(false);
   const [previousVolume, setPreviousVolume] = useState(volume);
   const [repeat, setRepeat] = useState<'off' | 'all' | 'one'>('off');
+  const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
 
   // Register UI updaters
   React.useEffect(() => {
@@ -369,8 +372,34 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const handlePreviousClick = () => {
+    handlePrevious();
+  };
+
+  const handleNextClick = () => {
+    handleNext();
+  };
+
   return (
     <>
+      <PlayerModal
+        isOpen={isPlayerModalOpen}
+        onClose={() => setIsPlayerModalOpen(false)}
+        audioRef={audioRef}
+        isPlaying={isPlaying}
+        onPlayPauseClick={togglePlayPause}
+        currentTime={currentTime}
+        duration={duration}
+        onProgressChange={handleProgressChange}
+        volume={volume}
+        onVolumeChange={handleVolumeChange}
+        isMuted={isMuted}
+        onMuteToggle={handleMuteToggle}
+        repeat={repeat}
+        onRepeatToggle={handleRepeatToggle}
+        onPreviousClick={handlePreviousClick}
+        onNextClick={handleNextClick}
+      />
       <audio
         ref={audioRef}
         src={store.currentTrack.audioUrl || ''}
@@ -401,52 +430,12 @@ export default function GlobalAudioPlayer({ onCoverClick }: { onCoverClick?: () 
             {store.currentTrack?.coverArt && (
               <div
                 className="jonna-cover-wrapper"
-                onClick={() => {
-                  if (store.currentTrack) {
-                    const isBeat = (store.currentTrack as any)._isBeat;
-                    if (isBeat && (store.currentTrack as any)._beatData) {
-                      // Open beat detail modal
-                      setSelectedBeat((store.currentTrack as any)._beatData);
-                      setBeatModalOpen(true);
-                    } else {
-                      // Open track detail modal
-                      const trackData: any = {
-                        id: store.currentTrack.id,
-                        title: store.currentTrack.title,
-                        artist: store.currentTrack.artist,
-                        audioUrl: store.currentTrack.audioUrl,
-                        coverArt: store.currentTrack.coverArt,
-                      };
-                      setSelectedTrack(trackData);
-                      setIsModalOpen(true);
-                    }
-                  }
-                  onCoverClick?.();
-                }}
+                onClick={() => setIsPlayerModalOpen(true)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
-                    if (store.currentTrack) {
-                      const isBeat = (store.currentTrack as any)._isBeat;
-                      if (isBeat && (store.currentTrack as any)._beatData) {
-                        // Open beat detail modal
-                        setSelectedBeat((store.currentTrack as any)._beatData);
-                        setBeatModalOpen(true);
-                      } else {
-                        // Open track detail modal
-                        const trackData: any = {
-                          id: store.currentTrack.id,
-                          title: store.currentTrack.title,
-                          artist: store.currentTrack.artist,
-                          audioUrl: store.currentTrack.audioUrl,
-                          coverArt: store.currentTrack.coverArt,
-                        };
-                        setSelectedTrack(trackData);
-                        setIsModalOpen(true);
-                      }
-                    }
-                    onCoverClick?.();
+                    setIsPlayerModalOpen(true);
                   }
                 }}
               >
